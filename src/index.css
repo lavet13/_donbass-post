@@ -1,0 +1,152 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --container-max-width-2xl: 1400px;
+
+  /* Color definitions for light mode */
+  --primary: #e11d48;
+  --primary-foreground: #fdf2f8;
+  --background: #ffffff;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --card-foreground: #1c1917;
+  --popover: #ffffff;
+  --popover-foreground: #1c1917;
+  --secondary: #fdf2f8;
+  --secondary-foreground: #4c1d24;
+  --muted: #f5f5f4;
+  --muted-foreground: #78716c;
+  --accent: #f5f5f4;
+  --accent-foreground: #292524;
+  --destructive: #dc2626;
+  --destructive-foreground: #fef2f2;
+  --border: #e7e5e4;
+  --input: #e7e5e4;
+  --ring: #e11d48;
+}
+
+.dark {
+  /* Color definitions for dark mode */
+  --primary: #e11d48;
+  --primary-foreground: #fdf2f8;
+  --background: #1c1917;
+  --foreground: #fafaf9;
+  --card: #292524;
+  --card-foreground: #fafaf9;
+  --popover: #292524;
+  --popover-foreground: #fafaf9;
+  --secondary: #4c1d24;
+  --secondary-foreground: #fdf2f8;
+  --muted: #44403c;
+  --muted-foreground: #a8a29e;
+  --accent: #44403c;
+  --accent-foreground: #fafaf9;
+  --destructive: #fca5a5;
+  --destructive-foreground: #fafaf9;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #e11d48;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-inter:
+    Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+
+  /* Reference the CSS variables */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  @font-face {
+    font-family: Inter;
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/Inter-Regular.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: Inter;
+    font-weight: 500;
+    font-style: medium;
+    font-display: swap;
+    src: url("/fonts/Inter-Medium.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: Inter;
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/Inter-Bold.ttf") format("truetype");
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply font-inter bg-background text-foreground;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: hsl(var(--border));
+      border-radius: 5px;
+    }
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: hsl(var(--border)) transparent;
+    }
+    input[type="search"]::-webkit-search-decoration,
+    input[type="search"]::-webkit-search-cancel-button,
+    input[type="search"]::-webkit-search-results-button,
+    input[type="search"]::-webkit-search-results-decoration {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+  }
+
+  @media (min-width: 1400px) {
+    .container {
+      max-width: var(--container-max-width-2xl);
+    }
+  }
+}
