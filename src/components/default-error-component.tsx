@@ -2,7 +2,7 @@ import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { type ErrorRouteComponent } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 export const DefaultErrorComponent: ErrorRouteComponent = ({ error }) => {
   const router = useRouter();

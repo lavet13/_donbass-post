@@ -7,8 +7,10 @@ import type { DeliveryCompany } from "@/features/delivery-company/types";
 const deliveryCompany = createQueryKeys("delivery-company");
 
 // Query functions
-const fetchDeliveryCompanies = async () =>
-  workplacePostApi.get<DeliveryCompany[]>("/delivery-company");
+const fetchDeliveryCompanies = async () => {
+  const response = await workplacePostApi.get<DeliveryCompany[]>("/delivery-company");
+  return response.data;
+}
 
 const useDeliveryCompaniesQuery = () =>
   useQuery({

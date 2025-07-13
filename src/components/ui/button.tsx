@@ -18,7 +18,7 @@ const buttonVariants = cva(
         xs: "h-7 rounded-md px-2 gap-1 has-[>svg]:px-2",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
+        icon: "size-9 rounded-md",
       },
     },
     defaultVariants: {
@@ -28,14 +28,10 @@ const buttonVariants = cva(
   },
 );
 
-function Button({
-  className,
-  variant,
-  size,
-  asChild = false,
-  ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & { asChild?: boolean }) {
+const Button: React.FC<
+  React.ComponentProps<"button"> &
+    VariantProps<typeof buttonVariants> & { asChild?: boolean }
+> = ({ className, variant, size, asChild = false, ...props }) => {
   const Comp = asChild ? Slot : "button";
 
   return (
@@ -45,6 +41,6 @@ function Button({
       {...props}
     />
   );
-}
+};
 
 export { Button, buttonVariants };

@@ -9,8 +9,10 @@ const additionalService = createQueryKeys("additional-service", {
   },
 });
 
-const fetchAdditionalServicePickUp = async () =>
-  workplacePostApi.get<AdditionalServicePickUp[]>("additional-service/pick-up");
+const fetchAdditionalServicePickUp = async () => {
+  const response = await workplacePostApi.get<AdditionalServicePickUp[]>("additional-service/pick-up");
+  return response.data;
+}
 
 const useAdditionalServicePickUpQuery = () =>
   useQuery({

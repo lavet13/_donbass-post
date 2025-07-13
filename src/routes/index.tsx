@@ -1,4 +1,4 @@
-import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
+import ShopCostCalculationOrderPage from "@/features/shop-cost-calculation-order/page";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
@@ -6,12 +6,9 @@ export const Route = createFileRoute("/")({
 });
 
 function IndexComponent() {
-  const { data } = useAdditionalServicePickUpQuery();
-  console.log({ data });
-
   return (
-    <div className="flex-1 flex items-center justify-center">
-      Wassup
+    <div className="flex-1 flex flex-col items-center justify-center">
+      <ShopCostCalculationOrderPage />
     </div>
   );
 }
