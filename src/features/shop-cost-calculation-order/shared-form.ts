@@ -8,12 +8,12 @@ export const defaultShopCostCalculationOrderOpts = formOptions({
       patronymic: "",
       phone: "",
       email: "",
-      pointTo: undefined,
+      pointTo: "",
     },
     shop: [
       {
         name: "",
-        products: [{ description: "", price: 0, link: "" }],
+        products: [{ description: "", price: "", link: "" }],
       },
     ],
     accepted: false,

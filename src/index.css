@@ -16,8 +16,8 @@
   --secondary: #f2e9e1; /* Rose Pine surface (warm beige) */
   --secondary-foreground: #797593;
   --muted: #f2e9e1;
-  --muted-foreground: #9893a5; /* Rose Pine muted */
-  --accent: #ea9d34; /* Rose Pine gold */
+  --muted-foreground: #908caa; /* Rose Pine muted */
+  --accent: #ea9a97; /* Rose Pine love (lighter variant for light mode) */
   --accent-foreground: #575279;
   --destructive: #b4637a; /* Rose Pine love (darker variant) */
   --destructive-foreground: #faf4ed;
@@ -39,12 +39,12 @@
   --secondary: #26233a; /* Rose Pine overlay (muted purple) */
   --secondary-foreground: #e0def4;
   --muted: #26233a;
-  --muted-foreground: #6e6a86; /* Rose Pine subtle */
-  --accent: #f6c177; /* Rose Pine gold (warm yellow) */
+  --muted-foreground: #908caa; /* Rose Pine subtle */
+  --accent: #f6c177; /* Rose Pine gold (matches the orange buttons in your image) */
   --accent-foreground: #191724;
   --destructive: #eb6f92; /* Rose Pine love (vibrant pink) */
   --destructive-foreground: #191724;
-  --border: #403d52; /* Rose Pine highlight med */
+  --border: #403d52;
   --input: #403d52;
   --ring: #ebbcba;
 }
@@ -76,6 +76,58 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  /* Animations */
+  --ease-slide-popover: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-slide-up-and-fade: slideUpAndFade 0.4s var(--ease-slide-popover);
+  --animate-slide-right-and-fade: slideRightAndFade 0.4s
+    var(--ease-slide-popover);
+  --animate-slide-down-and-fade: slideDownAndFade 0.4s var(--ease-slide-popover);
+  --animate-slide-left-and-fade: slideLeftAndFade 0.4s var(--ease-slide-popover);
+
+  @keyframes slideUpAndFade {
+    from {
+      opacity: 0;
+      transform: translateY(2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideRightAndFade {
+    from {
+      opacity: 0;
+      transform: translateX(-2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideDownAndFade {
+    from {
+      opacity: 0;
+      transform: translateY(-2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideLeftAndFade {
+    from {
+      opacity: 0;
+      transform: translateX(2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
 }
 
 @layer base {

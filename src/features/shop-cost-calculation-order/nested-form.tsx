@@ -2,7 +2,6 @@ import { withForm } from "@/hooks/form";
 import { defaultShopCostCalculationOrderOpts } from "@/features/shop-cost-calculation-order/shared-form";
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { getEmailErrorMessage } from "@/lib/utils";
 import ru from "react-phone-number-input/locale/ru.json";
@@ -12,6 +11,8 @@ import { isPossiblePhoneNumber } from "react-phone-number-input";
 // Исходный regex из Zod:
 // /^(?!\.)(?!.*\.\.)([a-z0-9_'+\-\.]*)[a-z0-9_'+\-]@([a-z0-9][a-z0-9\-]*\.)+[a-z]{2,}$/i;
 const emailSchema = z.email({ pattern: z.regexes.email });
+
+const linkSchema = z.url();
 
 export const ShopCostCalculationOrderForm = withForm({
   ...defaultShopCostCalculationOrderOpts,
@@ -28,30 +29,45 @@ export const ShopCostCalculationOrderForm = withForm({
         <form.AppField
           name="shopCostCalculationOrder.surname"
           validators={{
-            onChange: ({ value }) =>
-              value.length < 2 || value.length > 50
-                ? "Фамилия должна быть от 2 до 50 символов"
-                : undefined,
+            onChange: ({ value }) => {
+              if (!value.length) {
+                return "Фамилия обязательна";
+              }
+              if (value.length < 5 || value.length > 50) {
+                return "Фамилия не должна быть короче 5 символов и длиннее 50";
+              }
+              return undefined;
+            },
           }}
           children={(field) => <field.TextField label="Фамилия" />}
         />
         <form.AppField
           name="shopCostCalculationOrder.name"
           validators={{
-            onChange: ({ value }) =>
-              value.length < 2 || value.length > 50
-                ? "Имя должно быть от 2 до 50 символов"
-                : undefined,
+            onChange: ({ value }) => {
+              if (!value.length) {
+                return "Имя обязательно";
+              }
+              if (value.length < 2 || value.length > 50) {
+                return "Имя не должно быть короче 2 символов и длиннее 50";
+              }
+              return undefined;
+            },
           }}
           children={(field) => <field.TextField label="Имя" />}
         />
         <form.AppField
           name="shopCostCalculationOrder.patronymic"
           validators={{
-            onChange: ({ value }) =>
-              value.length < 2 || value.length > 50
-                ? "Отчество должно быть от 2 до 50 символов"
-                : undefined,
+            onChange: ({ value }) => {
+              if (!value.length) {
+                return "Отчество обязательно";
+              }
+              if (value.length < 5 || value.length > 50) {
+                return "Отчество не должно быть короче 5 символов и длиннее 50";
+              }
+              return undefined;
+            },
           }}
           children={(field) => <field.TextField label="Отчество" />}
         />
@@ -92,6 +108,17 @@ export const ShopCostCalculationOrderForm = withForm({
         />
 
         {/* Пункт выдачи*/}
+        <form.AppField
+          name="shopCostCalculationOrder.pointTo"
+          children={(pointToField) => (
+            <pointToField.ComboboxField
+              label="Пункт выдачи"
+              aria-label="Выбрать пункт выдачи"
+              emptyMessage="Таких отделений нет"
+              inputPlaceholder="Найти отделение..."
+            />
+          )}
+        />
 
         {/* Заказ */}
         <form.AppField
@@ -107,10 +134,15 @@ export const ShopCostCalculationOrderForm = withForm({
                         key={shopIndex}
                         name={`shop[${shopIndex}].name`}
                         validators={{
-                          onChange: ({ value }) =>
-                            value.length < 2 || value.length > 50
-                              ? "Магазин не должен быть короче 2 символов и длиннее 50"
-                              : undefined,
+                          onChange: ({ value }) => {
+                            if (!value.length) {
+                              return "Магазин обязателен";
+                            }
+                            if (value.length < 2 || value.length > 50) {
+                              return "Магазин не должен быть короче 2 символов и длиннее 50";
+                            }
+                            return undefined;
+                          },
                         }}
                         children={(shopNameField) => (
                           <shopNameField.TextField
@@ -132,6 +164,29 @@ export const ShopCostCalculationOrderForm = withForm({
                                     <React.Fragment key={productIndex}>
                                       <form.AppField
                                         name={`shop[${shopIndex}].products[${productIndex}].link`}
+                                        validators={{
+                                          onChange: ({ value }) => {
+                                            if (!value.length) {
+                                              return "Ссылка обязательна";
+                                            }
+
+                                            if (
+                                              value.length < 8 ||
+                                              value.length > 255
+                                            ) {
+                                              return "Ссылка не должна быть короче 8 символов и длиннее 255";
+                                            }
+
+                                            const result =
+                                              linkSchema.safeParse(value);
+
+                                            if (result.error) {
+                                              return "Неверный формат ссылки";
+                                            }
+
+                                            return undefined;
+                                          },
+                                        }}
                                         children={(linkField) => (
                                           <linkField.TextField
                                             label="Ссылка"
@@ -142,6 +197,20 @@ export const ShopCostCalculationOrderForm = withForm({
 
                                       <form.AppField
                                         name={`shop[${shopIndex}].products[${productIndex}].description`}
+                                        validators={{
+                                          onChange: ({ value }) => {
+                                            if (!value.length) {
+                                              return "Описание обязательно";
+                                            }
+                                            if (
+                                              value.length < 8 ||
+                                              value.length > 255
+                                            ) {
+                                              return "Описание не должен быть короче 8 символов и длиннее 255";
+                                            }
+                                            return undefined;
+                                          },
+                                        }}
                                         children={(descriptionField) => (
                                           <descriptionField.TextField
                                             label="Описание"
@@ -152,6 +221,13 @@ export const ShopCostCalculationOrderForm = withForm({
 
                                       <form.AppField
                                         name={`shop[${shopIndex}].products[${productIndex}].price`}
+                                        validators={{
+                                          onSubmit: ({ value }) => {
+                                            return !value.length
+                                              ? "Введите цену"
+                                              : undefined;
+                                          },
+                                        }}
                                         children={(priceField) => (
                                           <priceField.PriceField
                                             label="Цена"
@@ -169,7 +245,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                 onClick={() =>
                                   productsField.pushValue({
                                     description: "",
-                                    price: 0,
+                                    price: "",
                                     link: "",
                                   })
                                 }
@@ -189,7 +265,7 @@ export const ShopCostCalculationOrderForm = withForm({
                   onClick={() =>
                     shopsField.pushValue({
                       name: "",
-                      products: [{ price: 0, link: "", description: "" }],
+                      products: [{ price: "", link: "", description: "" }],
                     })
                   }
                 >
@@ -207,29 +283,9 @@ export const ShopCostCalculationOrderForm = withForm({
           )}
         />
 
-        <form.Subscribe
-          selector={(state) => [
-            state.canSubmit,
-            state.isSubmitting,
-            state.isDefaultValue,
-            state.values.accepted,
-          ]}
-          children={([canSubmit, isSubmitting, isDefaultValue, isAccepted]) => (
-            <Button
-              type="submit"
-              disabled={!canSubmit || isDefaultValue || !isAccepted}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="animate-spin" />
-                  Подтверждается
-                </>
-              ) : (
-                <>Зарегистрировать</>
-              )}
-            </Button>
-          )}
-        />
+        <form.AppForm>
+          <form.SubscribeButton label="Зарегистрировать" />
+        </form.AppForm>
       </form>
     );
   },

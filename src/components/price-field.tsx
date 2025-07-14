@@ -1,16 +1,16 @@
 import type { FC } from "react";
 import { NumericFormat } from "react-number-format";
 import type { NumericFormatProps } from "react-number-format";
-import { Input } from "./ui/input";
+import { Input } from "@/components/ui/input";
 import { useFieldContext } from "@/hooks/form-context";
-import { FormItem, FormLabel, FormMessage } from "./ui/form";
+import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const PriceField: FC<NumericFormatProps & { label: string }> = ({
   label,
   className,
   ...props
 }) => {
-  const field = useFieldContext<number | undefined>();
+  const field = useFieldContext<string>();
 
   return (
     <FormItem>
@@ -20,12 +20,11 @@ const PriceField: FC<NumericFormatProps & { label: string }> = ({
         name={field.name}
         type="tel"
         customInput={Input}
-        thousandSeparator=" "
         suffix=" ₽"
         decimalScale={0}
+        thousandSeparator=" "
         allowNegative={false}
         isAllowed={(values) => {
-          console.log({ values });
           const floatValue = values.floatValue;
 
           return (
@@ -33,9 +32,9 @@ const PriceField: FC<NumericFormatProps & { label: string }> = ({
             (floatValue > 0 && floatValue <= 999_999_999)
           );
         }}
-        onValueChange={(values) =>
-          field.handleChange(values.floatValue || undefined)
-        }
+        onValueChange={(values) => {
+          field.handleChange(values.value || "");
+        }}
         value={field.state.value || ""}
         {...props}
       />
@@ -43,5 +42,4 @@ const PriceField: FC<NumericFormatProps & { label: string }> = ({
     </FormItem>
   );
 };
-
 export default PriceField;
