@@ -7,31 +7,52 @@ import type { DeliveryPoint } from "@/features/point/types";
 const point = createQueryKeys("point", {
   post: {
     queryKey: null,
+    contextQueries: {
+      combobox: {
+        queryKey: null,
+      },
+    },
   },
 });
 
-// Query Functions
-async function fetchPointPost() {
+async function fetchPointsPostData() {
   let { data: points } =
     await workplacePostApi.get<DeliveryPoint[]>("/point/post");
 
-  points = points.map((point) => ({
+  return points.map((point) => ({
     ...point,
     fullName: [point.name?.trim(), point.address?.trim()]
       .filter(Boolean)
       .join(", "),
   }));
+}
+
+// Query Functions
+async function pointsPostForCombobox() {
+  const points = await fetchPointsPostData();
 
   const mobilePoints = points.filter((point) => point.mobilePoint);
   const staticPoints = points.filter((point) => !point.mobilePoint);
 
-  return { mobilePoints, staticPoints };
+  const mobile = mobilePoints.map(({ id, fullName }) => ({
+    value: id,
+    label: fullName,
+  }));
+  const stationary = staticPoints.map(({ id, fullName }) => ({
+    value: id,
+    label: fullName,
+  }));
+
+  return {
+    "Стационарные отделения": stationary,
+    "Мобильные отделения": mobile,
+  };
 }
 
 const usePointPostQuery = () =>
   useQuery({
-    queryKey: point.post.queryKey,
-    queryFn: fetchPointPost,
+    queryKey: point.post._ctx.combobox.queryKey,
+    queryFn: pointsPostForCombobox,
 
     // Prevents unnecessary background refetches by keeping server data fresh
     // indefinitely

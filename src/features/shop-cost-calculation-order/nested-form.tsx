@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getEmailErrorMessage } from "@/lib/utils";
 import ru from "react-phone-number-input/locale/ru.json";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
+import { usePointPostQuery } from "@/features/point/queries";
 
 // https://colinhacks.com/essays/reasonable-email-regex
 // Исходный regex из Zod:
@@ -17,6 +18,8 @@ const linkSchema = z.url();
 export const ShopCostCalculationOrderForm = withForm({
   ...defaultShopCostCalculationOrderOpts,
   render: function ({ form }) {
+    const { data: values, isLoading } = usePointPostQuery();
+
     return (
       <form
         onSubmit={(e) => {
@@ -110,14 +113,18 @@ export const ShopCostCalculationOrderForm = withForm({
         {/* Пункт выдачи*/}
         <form.AppField
           name="shopCostCalculationOrder.pointTo"
-          children={(pointToField) => (
-            <pointToField.ComboboxField
-              label="Пункт выдачи"
-              aria-label="Выбрать пункт выдачи"
-              emptyMessage="Таких отделений нет"
-              inputPlaceholder="Найти отделение..."
-            />
-          )}
+          children={(pointToField) => {
+            return (
+              <pointToField.ComboboxField
+                label="Пункт выдачи"
+                aria-label="Выбрать пункт выдачи"
+                emptyMessage="Таких отделений нет"
+                inputPlaceholder="Найти отделение..."
+                isLoading={isLoading}
+                values={values}
+              />
+            );
+          }}
         />
 
         {/* Заказ */}

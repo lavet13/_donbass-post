@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { useFieldContext } from "@/hooks/form-context";
+import { CheckIcon } from "lucide-react";
 
 type ValueType = { label: string; value: string | number }[];
 
@@ -31,6 +32,7 @@ const ComboboxField: FC<
     inputPlaceholder?: string;
     width?: string;
     isLoading?: boolean;
+    values?: ValuesType;
     label: string;
   }
 > = ({
@@ -39,12 +41,13 @@ const ComboboxField: FC<
   width = "200px",
   emptyMessage = "Не найдено.",
   inputPlaceholder = "Найти...",
+  values = {},
   isLoading = undefined,
   ...props
 }) => {
-  const field = useFieldContext<ValuesType>();
-  const values = field.state.value;
+  const field = useFieldContext<string | number>();
   const [open, setOpen] = useState(false);
+  console.log({ values });
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -58,7 +61,7 @@ const ComboboxField: FC<
           {label}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={`w-[${width}] p-0`}>
+      <PopoverContent className={`min-w-[${width}] max-w-[400px] p-0`}>
         <Command>
           <CommandInput placeholder={inputPlaceholder} />
           <CommandList>
@@ -67,14 +70,31 @@ const ComboboxField: FC<
               <CommandGroup key={valuesIdx} heading={heading}>
                 {items.map(({ label, value }) => (
                   <CommandItem
+                    className={cn(
+                      value === field.state.value && "bg-primary/10",
+                    )}
                     key={value}
                     value={value as string}
-                    onSelect={(currentValue) => {
-                      console.log({ currentValue });
+                    onSelect={() => {
+                      field.handleChange(value);
                       setOpen(false);
                     }}
                   >
-                    {label}
+                    <span
+                      className={cn(
+                        value === field.state.value && "text-primary",
+                      )}
+                    >
+                      {label}
+                    </span>
+                    <CheckIcon
+                      className={cn(
+                        "size-4 text-primary",
+                        value === field.state.value
+                          ? "opacity-100"
+                          : "opacity-0",
+                      )}
+                    />
                   </CommandItem>
                 ))}
               </CommandGroup>
