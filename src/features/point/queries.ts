@@ -28,19 +28,21 @@ async function fetchPointsPostData() {
 }
 
 // Query Functions
-async function pointsPostForCombobox() {
+async function pointsPost() {
   const points = await fetchPointsPostData();
 
   const mobilePoints = points.filter((point) => point.mobilePoint);
   const staticPoints = points.filter((point) => !point.mobilePoint);
 
-  const mobile = mobilePoints.map(({ id, fullName }) => ({
+  const mobile = mobilePoints.map(({ id, fullName, name }) => ({
     value: id,
     label: fullName,
+    name,
   }));
-  const stationary = staticPoints.map(({ id, fullName }) => ({
+  const stationary = staticPoints.map(({ id, fullName, name }) => ({
     value: id,
     label: fullName,
+    name,
   }));
 
   return {
@@ -52,7 +54,7 @@ async function pointsPostForCombobox() {
 const usePointPostQuery = () =>
   useQuery({
     queryKey: point.post._ctx.combobox.queryKey,
-    queryFn: pointsPostForCombobox,
+    queryFn: pointsPost,
 
     // Prevents unnecessary background refetches by keeping server data fresh
     // indefinitely

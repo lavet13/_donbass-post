@@ -18,7 +18,7 @@ const linkSchema = z.url();
 export const ShopCostCalculationOrderForm = withForm({
   ...defaultShopCostCalculationOrderOpts,
   render: function ({ form }) {
-    const { data: values, isLoading } = usePointPostQuery();
+    const { data: values, isLoading, refetch: refetchPoints } = usePointPostQuery();
 
     return (
       <form
@@ -113,13 +113,23 @@ export const ShopCostCalculationOrderForm = withForm({
         {/* Пункт выдачи*/}
         <form.AppField
           name="shopCostCalculationOrder.pointTo"
+          validators={{
+            onChange: ({ value }) => {
+              if (typeof value === "string" && !value.length) {
+                return "Выберите пункт выдачи";
+              }
+              return undefined;
+            },
+          }}
           children={(pointToField) => {
             return (
               <pointToField.ComboboxField
-                label="Пункт выдачи"
+                formLabel="Пункт выдачи"
+                label="Выберите пункт выдачи"
                 aria-label="Выбрать пункт выдачи"
                 emptyMessage="Таких отделений нет"
                 inputPlaceholder="Найти отделение..."
+                refetch={refetchPoints}
                 isLoading={isLoading}
                 values={values}
               />
