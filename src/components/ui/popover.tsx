@@ -25,7 +25,6 @@ const PopoverContent: React.FC<
         className={cn(
           "bg-popover text-popover-foreground rounded-md p-3 w-72 shadow-md will-change-transform",
           "data-[state=open]:data-[side=top]:animate-slide-down-and-fade data-[state=open]:data-[side=right]:animate-slide-left-and-fade data-[state=open]:data-[side=bottom]:animate-slide-up-and-fade data-[state=open]:data-[side=left]:animate-slide-right-and-fade",
-          "data-[state=closed]:fade-out-0 data-[state=closed]:animate-out",
           "outline-hidden",
 
           // removing blur

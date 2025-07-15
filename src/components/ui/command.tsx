@@ -61,7 +61,7 @@ const CommandItem: FC<ComponentProps<typeof CommandPrimitive.Item>> = ({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "hover:data-[selected=true]:bg-primary/10 hover:data-[selected=true]:text-primary active:data-[selected=true]:bg-primary/15 data-[selected=true]:bg-primary/10 data-[selected=true]:text-primary",
+        "hover:data-[selected=true]:bg-popover-foreground/5 hover:data-[selected=true]:text-popover-foreground active:data-[selected=true]:bg-popover-foreground/10 data-[selected=true]:bg-popover-foreground/10 data-[selected=true]:text-popover-foreground",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
         "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 select-none outline-hidden text-sm",

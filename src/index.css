@@ -17,8 +17,8 @@
   --secondary-foreground: #797593;
   --muted: #f2e9e1;
   --muted-foreground: #908caa; /* Rose Pine muted */
-  --accent: #ea9a97; /* Rose Pine love (lighter variant for light mode) */
-  --accent-foreground: #575279;
+  --accent: #31748f; /* Rose Pine pine (teal-blue) */
+  --accent-foreground: #faf4ed;
   --destructive: #b4637a; /* Rose Pine love (darker variant) */
   --destructive-foreground: #faf4ed;
   --border: #dfdad9; /* Rose Pine highlight low */
@@ -40,8 +40,8 @@
   --secondary-foreground: #e0def4;
   --muted: #26233a;
   --muted-foreground: #908caa; /* Rose Pine subtle */
-  --accent: #f6c177; /* Rose Pine gold (matches the orange buttons in your image) */
-  --accent-foreground: #191724;
+  --accent: #31748f; /* Rose Pine pine (teal-blue) */
+  --accent-foreground: #e0def4;
   --destructive: #eb6f92; /* Rose Pine love (vibrant pink) */
   --destructive-foreground: #191724;
   --border: #403d52;
@@ -79,11 +79,11 @@
 
   /* Animations */
   --ease-slide-popover: cubic-bezier(0.16, 1, 0.3, 1);
-  --animate-slide-up-and-fade: slideUpAndFade 0.4s var(--ease-slide-popover);
-  --animate-slide-right-and-fade: slideRightAndFade 0.4s
+  --animate-slide-up-and-fade: slideUpAndFade 0.1s var(--ease-slide-popover);
+  --animate-slide-right-and-fade: slideRightAndFade 0.1s
     var(--ease-slide-popover);
-  --animate-slide-down-and-fade: slideDownAndFade 0.4s var(--ease-slide-popover);
-  --animate-slide-left-and-fade: slideLeftAndFade 0.4s var(--ease-slide-popover);
+  --animate-slide-down-and-fade: slideDownAndFade 0.1s var(--ease-slide-popover);
+  --animate-slide-left-and-fade: slideLeftAndFade 0.1s var(--ease-slide-popover);
 
   @keyframes slideUpAndFade {
     from {

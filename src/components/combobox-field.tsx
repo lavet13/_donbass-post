@@ -93,6 +93,7 @@ const ComboboxField: FC<
             variant="outline"
             ref={buttonRef}
             className={cn(
+              "dark:bg-input/30 dark:hover:bg-input/40 dark:active:bg-input/50",
               `justify-between`,
               open && "bg-secondary/90",
               className,
@@ -104,25 +105,28 @@ const ComboboxField: FC<
           >
             {/* make it shrink the name of the selected entry */}
             {!selectedEntry ? (
-              label
+              <span className="dark:text-muted-foreground">{label}</span>
             ) : (
               <span className="font-bold">{selectedEntry.name}</span>
             )}
             {selectedEntry && (
-              <span
-                className="cursor-default flex items-center justify-center rounded-full hover:bg-popover-foreground/10 active:bg-popover-foreground/15 size-6 [&_svg]:size-4 pointer-events-auto"
+              <button
+                className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                type="button"
+                aria-label="Убрать отделение"
                 onClick={(e) => {
                   e.preventDefault();
                   field.handleChange("");
                 }}
               >
                 <X />
-              </span>
+              </button>
             )}
-            <ChevronsUpDownIcon className="ml-auto" />
+            <ChevronsUpDownIcon className="pointer-events-none ml-auto" />
           </Button>
         </PopoverTrigger>
         <PopoverContent
+          sideOffset={2}
           style={{ width: `${popoverWidth}px` }}
           className={`p-0`}
         >
