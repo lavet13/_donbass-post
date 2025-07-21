@@ -10,7 +10,7 @@ const PriceField: FC<NumericFormatProps & { label: string }> = ({
   className,
   ...props
 }) => {
-  const field = useFieldContext<string>();
+  const field = useFieldContext<number>();
 
   return (
     <FormItem>
@@ -33,7 +33,7 @@ const PriceField: FC<NumericFormatProps & { label: string }> = ({
           );
         }}
         onValueChange={(values) => {
-          field.handleChange(values.value || "");
+          field.handleChange(values.floatValue || 0);
         }}
         value={field.state.value || ""}
         {...props}

@@ -1,8 +1,9 @@
 import { createRouter as reactRouter } from "@tanstack/react-router";
 import { routeTree } from "@/routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { DefaultErrorComponent } from "./components/default-error-component";
-import { DefaultNotFoundComponent } from "./components/default-not-found-component";
+import { DefaultErrorComponent } from "@/components/default-error-component";
+import { DefaultNotFoundComponent } from "@/components/default-not-found-component";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
 
 export function createRouter() {
   const queryClient = new QueryClient();
@@ -22,7 +23,9 @@ export function createRouter() {
     Wrap: ({ children }) => {
       return (
         <QueryClientProvider client={queryClient}>
-          {children}
+          <TooltipProvider delayDuration={400}>
+            {children}
+          </TooltipProvider>
         </QueryClientProvider>
       );
     },

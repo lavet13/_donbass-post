@@ -95,7 +95,7 @@ const ComboboxField: FC<
             className={cn(
               "dark:bg-input/30 dark:hover:bg-input/40 dark:active:bg-input/50",
               `justify-between`,
-              open && "bg-secondary/90",
+              open && "bg-secondary/90 dark:bg-input/50",
               className,
             )}
             role="combobox"
@@ -103,24 +103,36 @@ const ComboboxField: FC<
             aria-expanded={open}
             {...props}
           >
-            {/* make it shrink the name of the selected entry */}
-            {!selectedEntry ? (
-              <span className="dark:text-muted-foreground">{label}</span>
-            ) : (
-              <span className="font-bold">{selectedEntry.name}</span>
-            )}
+            <div className="flex shrink items-center min-w-0">
+              {!selectedEntry ? (
+                <span className="dark:text-muted-foreground truncate text-base md:text-sm">
+                  {label}
+                </span>
+              ) : (
+                <span className="font-bold truncate text-base md:text-sm">{selectedEntry.name}</span>
+              )}
+            </div>
+
+            {/* Right side controls */}
             {selectedEntry && (
-              <button
+              <span
+                tabIndex={0}
                 className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                type="button"
                 aria-label="Убрать отделение"
                 onClick={(e) => {
                   e.preventDefault();
                   field.handleChange("");
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    field.handleChange("");
+                    buttonRef.current?.focus();
+                  }
+                }}
               >
                 <X />
-              </button>
+              </span>
             )}
             <ChevronsUpDownIcon className="pointer-events-none ml-auto" />
           </Button>
@@ -132,7 +144,7 @@ const ComboboxField: FC<
         >
           <Command>
             <CommandInput closeButton placeholder={inputPlaceholder} />
-            <CommandList onWheelCapture={(e) => e.stopPropagation()}>
+            <CommandList>
               {isLoading ? (
                 <CommandLoading label={loadingMessage}>
                   {loadingMessage}
@@ -149,7 +161,7 @@ const ComboboxField: FC<
                         <CommandItem
                           className={cn(
                             value === field.state.value &&
-                              "bg-primary/10 data-[selected=true]:bg-primary/20 hover:data-[selected=true]:bg-primary/20 active:data-[selected=true]:bg-primary/25",
+                              "dark:bg-primary dark:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:text-primary-foreground dark:active:data-[selected=true]:bg-primary/80 dark:text-primary-foreground bg-primary data-[selected=true]:bg-primary/90 hover:data-[selected=true]:bg-primary/90 active:data-[selected=true]:bg-primary/80 text-popover hover:data-[selected=true]:text-popover data-[selected=true]:text-popover",
                           )}
                           key={value}
                           value={value as string}
@@ -160,14 +172,14 @@ const ComboboxField: FC<
                         >
                           <span
                             className={cn(
-                              value === field.state.value && "text-primary",
+                              value === field.state.value && "font-bold",
                             )}
                           >
                             {label}
                           </span>
                           <CheckIcon
                             className={cn(
-                              "ml-auto size-4 text-primary",
+                              "ml-auto size-4 text-popover dark:text-primary-foreground",
                               value === field.state.value
                                 ? "opacity-100"
                                 : "opacity-0",

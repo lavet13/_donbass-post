@@ -28,7 +28,7 @@ const CommandList: FC<ComponentProps<typeof CommandPrimitive.List>> = ({
     <CommandPrimitive.List
       data-slot="command-list"
       className={cn(
-        "max-h-[300px] scroll-py-2 transition-[height] duration-100 ease-out overflow-x-hidden overflow-y-auto outline-none",
+        "scroll-py-1 transition-[height] duration-100 ease-out overflow-x-hidden overflow-y-auto outline-none max-h-[300px] h-[40vh]",
         className,
       )}
       {...props}
@@ -61,7 +61,7 @@ const CommandItem: FC<ComponentProps<typeof CommandPrimitive.Item>> = ({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "hover:data-[selected=true]:bg-popover-foreground/5 hover:data-[selected=true]:text-popover-foreground active:data-[selected=true]:bg-popover-foreground/10 data-[selected=true]:bg-popover-foreground/10 data-[selected=true]:text-popover-foreground",
+        "hover:data-[selected=true]:bg-popover-foreground/5 active:data-[selected=true]:bg-popover-foreground/10 dark:active:data-[selected=true]:bg-popover-foreground/15 data-[selected=true]:bg-popover-foreground/5 data-[selected=true]:text-popover-foreground",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
         "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 select-none outline-hidden text-sm",
