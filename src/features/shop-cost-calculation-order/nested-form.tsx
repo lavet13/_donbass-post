@@ -160,8 +160,8 @@ export const ShopCostCalculationOrderForm = withForm({
             children={(pointToField) => {
               return (
                 <pointToField.ComboboxField
-                  formLabel="Пункт выдачи"
-                  label="Выберите пункт выдачи"
+                  label="Пункт выдачи"
+                  placeholder="Выберите пункт выдачи"
                   loadingMessage="Загружаем отделения"
                   aria-label="Выбрать пункт выдачи"
                   searchEmptyMessage="Таких отделений нет"

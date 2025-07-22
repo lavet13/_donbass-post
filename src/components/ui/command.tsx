@@ -106,14 +106,14 @@ const CommandSeparator: FC<
 
 const CommandInput: FC<
   ComponentProps<typeof CommandPrimitive.Input> & {
-    closeButton?: boolean;
-    closeButtonTooltipMessage?: string;
+    clearButton?: boolean;
+    clearButtonTooltipMessage?: string;
   }
 > = ({
   className,
   value: valueProp,
-  closeButton = false,
-  closeButtonTooltipMessage = "Очистить поле",
+  clearButton = false,
+  clearButtonTooltipMessage = "Очистить поле",
   onValueChange,
   ...props
 }) => {
@@ -149,16 +149,16 @@ const CommandInput: FC<
         )}
         {...props}
       />
-      {closeButton && value && (
-        <Tooltip content={closeButtonTooltipMessage}>
+      {clearButton && value && (
+        <Tooltip content={clearButtonTooltipMessage}>
           <button
             className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
             onKeyDown={handleKeyDown}
             onClick={handleClear}
             type="button"
-            aria-label={closeButtonTooltipMessage}
+            aria-label={clearButtonTooltipMessage}
           >
-            <AccessibleIconPrimitive.Root label={closeButtonTooltipMessage}>
+            <AccessibleIconPrimitive.Root label={clearButtonTooltipMessage}>
               <X />
             </AccessibleIconPrimitive.Root>
           </button>

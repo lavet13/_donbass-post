@@ -41,29 +41,31 @@ const ComboboxField: FC<
   ComponentProps<"button"> & {
     searchEmptyMessage?: string;
     searchInputPlaceholder?: string;
-    searchCloseButtonTooltipMessage?: string;
+    searchClearButtonTooltipMessage?: string;
     isLoading?: boolean;
     values?: ValuesType;
+    placeholder: string;
     label: string;
-    formLabel: string;
-    clearSelectedEntry?: string;
+    selectedEntryClearTooltipMessage?: string;
     loadingMessage?: string;
-    refetchMessage?: string;
+    refetchErrorMessage?: string;
     refetch?: () => void;
   }
 > = ({
   className,
+  placeholder,
   label,
-  formLabel,
   searchEmptyMessage = "Не найдено.",
   searchInputPlaceholder = "Найти...",
-  searchCloseButtonTooltipMessage = "Очистить поле",
-  refetchMessage = "Отделения не прогрузились.",
+  searchClearButtonTooltipMessage = "Очистить поле",
+  refetchErrorMessage = "Не удалось загрузить данные.",
+  refetch,
   values = {},
-  clearSelectedEntry = "Очистить выбор",
+  selectedEntryClearTooltipMessage = "Очистить выбор",
   isLoading = undefined,
   loadingMessage = "Подождите",
-  refetch,
+  "aria-label": ariaLabel,
+  "aria-describedby": ariaDescribedBy,
   ...props
 }) => {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -92,7 +94,7 @@ const ComboboxField: FC<
 
   return (
     <FormItem>
-      <FormLabel>{formLabel}</FormLabel>
+      <FormLabel>{label}</FormLabel>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -105,14 +107,15 @@ const ComboboxField: FC<
               className,
             )}
             role="combobox"
-            aria-label={props["aria-label"]}
+            aria-label={ariaLabel}
+            aria-describedby={ariaDescribedBy}
             aria-expanded={open}
             {...props}
           >
             <div className="flex shrink items-center min-w-0">
               {!selectedEntry ? (
                 <span className="dark:text-muted-foreground truncate text-base md:text-sm">
-                  {label}
+                  {placeholder}
                 </span>
               ) : (
                 <span className="font-bold truncate text-base md:text-sm">
@@ -123,11 +126,11 @@ const ComboboxField: FC<
 
             {/* Right side controls */}
             {selectedEntry && (
-              <Tooltip content={clearSelectedEntry}>
+              <Tooltip content={selectedEntryClearTooltipMessage}>
                 <span
                   tabIndex={0}
                   className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                  aria-label={clearSelectedEntry}
+                  aria-label={selectedEntryClearTooltipMessage}
                   onClick={(e) => {
                     e.preventDefault();
                     field.handleChange("");
@@ -140,7 +143,9 @@ const ComboboxField: FC<
                     }
                   }}
                 >
-                  <AccessibleIconPrimitive.Root label={clearSelectedEntry}>
+                  <AccessibleIconPrimitive.Root
+                    label={selectedEntryClearTooltipMessage}
+                  >
                     <X />
                   </AccessibleIconPrimitive.Root>
                 </span>
@@ -156,8 +161,8 @@ const ComboboxField: FC<
         >
           <Command>
             <CommandInput
-              closeButton
-              closeButtonTooltipMessage={searchCloseButtonTooltipMessage}
+              clearButton
+              clearButtonTooltipMessage={searchClearButtonTooltipMessage}
               placeholder={searchInputPlaceholder}
             />
             <CommandList>
@@ -210,12 +215,8 @@ const ComboboxField: FC<
 
               {!entries.length && !isLoading && refetch && (
                 <p className="py-2 text-center text-sm text-muted-foreground">
-                  {refetchMessage}
-                  <Button
-                    variant="secondary"
-                    size="xs"
-                    onClick={refetch}
-                  >
+                  {refetchErrorMessage}
+                  <Button variant="secondary" size="xs" onClick={refetch}>
                     Повторить запрос
                   </Button>
                 </p>
