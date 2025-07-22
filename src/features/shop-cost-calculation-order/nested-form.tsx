@@ -8,6 +8,7 @@ import ru from "react-phone-number-input/locale/ru.json";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import { usePointPostQuery } from "@/features/point/queries";
 import { X } from "lucide-react";
+import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
 import { Tooltip } from "@/components/ui/tooltip";
 import { AutoDismissMessage } from "@/components/auto-dismiss-message";
 
@@ -163,8 +164,8 @@ export const ShopCostCalculationOrderForm = withForm({
                   label="Выберите пункт выдачи"
                   loadingMessage="Загружаем отделения"
                   aria-label="Выбрать пункт выдачи"
-                  emptyMessage="Таких отделений нет"
-                  inputPlaceholder="Найти отделение..."
+                  searchEmptyMessage="Таких отделений нет"
+                  searchInputPlaceholder="Найти отделение..."
                   refetch={refetchPoints}
                   isLoading={isLoading}
                   values={values}
@@ -186,14 +187,16 @@ export const ShopCostCalculationOrderForm = withForm({
                     <React.Fragment key={shopIndex}>
                       {shopIndex !== 0 && (
                         <div className="flex justify-between items-center mt-2">
-                          <Tooltip content="Убрать магазин">
+                          <Tooltip content="Удалить магазин и товары">
                             <button
                               className="relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                              aria-label="Убрать товар"
+                              aria-label="Удалить магазин и товары"
                               type="button"
                               onClick={() => shopsField.removeValue(shopIndex)}
                             >
-                              <X />
+                              <AccessibleIconPrimitive.Root label="Удалить магазин и товары">
+                                <X />
+                              </AccessibleIconPrimitive.Root>
                             </button>
                           </Tooltip>
                         </div>
@@ -241,10 +244,10 @@ export const ShopCostCalculationOrderForm = withForm({
                                             <h3 className="font-medium text-sm">
                                               Товар № {productIndex + 1}
                                             </h3>
-                                            <Tooltip content="Убрать товар">
+                                            <Tooltip content="Удалить товар">
                                               <button
                                                 className="relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                                                aria-label="Убрать товар"
+                                                aria-label="Удалить товар"
                                                 type="button"
                                                 onClick={() =>
                                                   productsField.removeValue(
@@ -252,7 +255,9 @@ export const ShopCostCalculationOrderForm = withForm({
                                                   )
                                                 }
                                               >
-                                                <X />
+                                                <AccessibleIconPrimitive.Root label="Удалить товар">
+                                                  <X />
+                                                </AccessibleIconPrimitive.Root>
                                               </button>
                                             </Tooltip>
                                           </div>

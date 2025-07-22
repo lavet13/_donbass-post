@@ -30,8 +30,7 @@ export default function ShopCostCalculationOrderPage() {
         shopCostCalculationOrderPosition,
       };
       try {
-        console.log({ payload });
-        // await createShopCostCalculationOrder(payload);
+        await createShopCostCalculationOrder(payload);
         formApi.reset();
         meta.onSuccess?.({
           message: "Заявка успешно принята!",

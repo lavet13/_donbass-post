@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
 import { Loader2, SearchIcon, X } from "lucide-react";
 import { useRef, type ComponentProps, type FC } from "react";
+import { Tooltip } from "@/components/ui/tooltip";
+import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
 
 // https://github.com/pacocoursey/cmdk?tab=readme-ov-file
 const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
@@ -103,11 +105,15 @@ const CommandSeparator: FC<
 };
 
 const CommandInput: FC<
-  ComponentProps<typeof CommandPrimitive.Input> & { closeButton?: boolean }
+  ComponentProps<typeof CommandPrimitive.Input> & {
+    closeButton?: boolean;
+    closeButtonTooltipMessage?: string;
+  }
 > = ({
   className,
   value: valueProp,
   closeButton = false,
+  closeButtonTooltipMessage = "Очистить поле",
   onValueChange,
   ...props
 }) => {
@@ -144,15 +150,19 @@ const CommandInput: FC<
         {...props}
       />
       {closeButton && value && (
-        <button
-          className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-all"
-          onKeyDown={handleKeyDown}
-          onClick={handleClear}
-          type="button"
-          aria-label="Очистить поле"
-        >
-          <X />
-        </button>
+        <Tooltip content={closeButtonTooltipMessage}>
+          <button
+            className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+            onKeyDown={handleKeyDown}
+            onClick={handleClear}
+            type="button"
+            aria-label={closeButtonTooltipMessage}
+          >
+            <AccessibleIconPrimitive.Root label={closeButtonTooltipMessage}>
+              <X />
+            </AccessibleIconPrimitive.Root>
+          </button>
+        </Tooltip>
       )}
     </div>
   );

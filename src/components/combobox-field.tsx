@@ -26,6 +26,8 @@ import { cn } from "@/lib/utils";
 import { useFieldContext } from "@/hooks/form-context";
 import { CheckIcon, ChevronsUpDownIcon, X } from "lucide-react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Tooltip } from "@/components/ui/tooltip";
+import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
 
 type ValueType = { label: string; value: string | number; name: string }[];
 
@@ -37,12 +39,14 @@ type ValuesType =
 
 const ComboboxField: FC<
   ComponentProps<"button"> & {
-    emptyMessage?: string;
-    inputPlaceholder?: string;
+    searchEmptyMessage?: string;
+    searchInputPlaceholder?: string;
+    searchCloseButtonTooltipMessage?: string;
     isLoading?: boolean;
     values?: ValuesType;
     label: string;
     formLabel: string;
+    clearSelectedEntry?: string;
     loadingMessage?: string;
     refetchMessage?: string;
     refetch?: () => void;
@@ -51,10 +55,12 @@ const ComboboxField: FC<
   className,
   label,
   formLabel,
-  emptyMessage = "Не найдено.",
+  searchEmptyMessage = "Не найдено.",
+  searchInputPlaceholder = "Найти...",
+  searchCloseButtonTooltipMessage = "Очистить поле",
   refetchMessage = "Отделения не прогрузились.",
-  inputPlaceholder = "Найти...",
   values = {},
+  clearSelectedEntry = "Очистить выбор",
   isLoading = undefined,
   loadingMessage = "Подождите",
   refetch,
@@ -109,30 +115,36 @@ const ComboboxField: FC<
                   {label}
                 </span>
               ) : (
-                <span className="font-bold truncate text-base md:text-sm">{selectedEntry.name}</span>
+                <span className="font-bold truncate text-base md:text-sm">
+                  {selectedEntry.name}
+                </span>
               )}
             </div>
 
             {/* Right side controls */}
             {selectedEntry && (
-              <span
-                tabIndex={0}
-                className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                aria-label="Убрать отделение"
-                onClick={(e) => {
-                  e.preventDefault();
-                  field.handleChange("");
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
+              <Tooltip content={clearSelectedEntry}>
+                <span
+                  tabIndex={0}
+                  className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                  aria-label={clearSelectedEntry}
+                  onClick={(e) => {
                     e.preventDefault();
                     field.handleChange("");
-                    buttonRef.current?.focus();
-                  }
-                }}
-              >
-                <X />
-              </span>
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      field.handleChange("");
+                      buttonRef.current?.focus();
+                    }
+                  }}
+                >
+                  <AccessibleIconPrimitive.Root label={clearSelectedEntry}>
+                    <X />
+                  </AccessibleIconPrimitive.Root>
+                </span>
+              </Tooltip>
             )}
             <ChevronsUpDownIcon className="pointer-events-none ml-auto" />
           </Button>
@@ -143,14 +155,18 @@ const ComboboxField: FC<
           className={`p-0`}
         >
           <Command>
-            <CommandInput closeButton placeholder={inputPlaceholder} />
+            <CommandInput
+              closeButton
+              closeButtonTooltipMessage={searchCloseButtonTooltipMessage}
+              placeholder={searchInputPlaceholder}
+            />
             <CommandList>
               {isLoading ? (
                 <CommandLoading label={loadingMessage}>
                   {loadingMessage}
                 </CommandLoading>
               ) : (
-                <CommandEmpty>{emptyMessage}</CommandEmpty>
+                <CommandEmpty>{searchEmptyMessage}</CommandEmpty>
               )}
               {entries.length !== 0 &&
                 !isLoading &&
@@ -192,15 +208,15 @@ const ComboboxField: FC<
                   </Fragment>
                 ))}
 
-              {!entries.length && !isLoading && (
+              {!entries.length && !isLoading && refetch && (
                 <p className="py-2 text-center text-sm text-muted-foreground">
                   {refetchMessage}
                   <Button
                     variant="secondary"
                     size="xs"
-                    onClick={() => refetch?.()}
+                    onClick={refetch}
                   >
-                    Попробовать еще раз
+                    Повторить запрос
                   </Button>
                 </p>
               )}
