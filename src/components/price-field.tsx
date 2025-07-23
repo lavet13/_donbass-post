@@ -2,21 +2,31 @@ import type { FC } from "react";
 import { NumericFormat } from "react-number-format";
 import type { NumericFormatProps } from "react-number-format";
 import { Input } from "@/components/ui/input";
-import { useFieldContext } from "@/hooks/form-context";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
 const PriceField: FC<NumericFormatProps & { label: string }> = ({
   label,
   className,
   ...props
 }) => {
-  const field = useFieldContext<number>();
+  const {
+    field,
+    defaultAriaLabel,
+    error,
+    formMessageId,
+    formItemId,
+    ariaDescribedBy,
+  } = useFieldAccessibility<number>({ label });
 
   return (
     <FormItem>
-      <FormLabel>{label}</FormLabel>
+      <FormLabel id={formItemId}>{label}</FormLabel>
       <NumericFormat
-        id={field.name}
+        aria-label={defaultAriaLabel}
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={!!error}
+        id={formItemId || field.name}
         name={field.name}
         type="tel"
         customInput={Input}
@@ -38,7 +48,7 @@ const PriceField: FC<NumericFormatProps & { label: string }> = ({
         value={field.state.value || ""}
         {...props}
       />
-      <FormMessage />
+      <FormMessage id={formMessageId} />
     </FormItem>
   );
 };

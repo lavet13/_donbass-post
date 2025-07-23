@@ -61,13 +61,6 @@ const ComboboxField: FC<
   "aria-label": ariaLabel,
   ...props
 }) => {
-  const [open, setOpen] = useState(false);
-  const entries = Object.entries(values ?? {});
-  const allEntries = entries.flatMap(([, items]) => items);
-  const selectedEntry = allEntries.find(
-    (entry) => entry.value === field.state.value,
-  );
-
   const {
     field,
     ariaDescribedBy,
@@ -79,6 +72,13 @@ const ComboboxField: FC<
     label,
     ariaLabel,
   });
+
+  const [open, setOpen] = useState(false);
+  const entries = Object.entries(values ?? {});
+  const allEntries = entries.flatMap(([, items]) => items);
+  const selectedEntry = allEntries.find(
+    (entry) => entry.value === field.state.value,
+  );
 
   const { elementRef: buttonRef, width: popoverWidth } =
     useElementWidth<HTMLButtonElement>({ dependencies: [open] });
