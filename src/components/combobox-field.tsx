@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  Fragment,
-  type ComponentProps,
-  type FC,
-} from "react";
+import { useState, Fragment, type ComponentProps, type FC } from "react";
 import {
   Popover,
   PopoverContent,
@@ -23,11 +16,12 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { useFieldContext } from "@/hooks/form-context";
 import { CheckIcon, ChevronsUpDownIcon, X } from "lucide-react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Tooltip } from "@/components/ui/tooltip";
 import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
+import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
+import { useElementWidth } from "@/hooks/use-element-width";
 
 type ValueType = { label: string; value: string | number; name: string }[];
 
@@ -65,12 +59,8 @@ const ComboboxField: FC<
   isLoading = undefined,
   loadingMessage = "Подождите",
   "aria-label": ariaLabel,
-  "aria-describedby": ariaDescribedBy,
   ...props
 }) => {
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const [popoverWidth, setPopoverWidth] = useState(0);
-  const field = useFieldContext<string | number>();
   const [open, setOpen] = useState(false);
   const entries = Object.entries(values ?? {});
   const allEntries = entries.flatMap(([, items]) => items);
@@ -78,23 +68,24 @@ const ComboboxField: FC<
     (entry) => entry.value === field.state.value,
   );
 
-  useEffect(() => {
-    const updateWidth = () => {
-      const width = buttonRef.current?.offsetWidth ?? 0;
-      setPopoverWidth(width);
-    };
+  const {
+    field,
+    ariaDescribedBy,
+    formItemId,
+    formMessageId,
+    error,
+    defaultAriaLabel,
+  } = useFieldAccessibility<string | number>({
+    label,
+    ariaLabel,
+  });
 
-    if (buttonRef.current) {
-      updateWidth();
-      window.addEventListener("resize", updateWidth);
-    }
-
-    return () => window.removeEventListener("resize", updateWidth);
-  }, [open]);
+  const { elementRef: buttonRef, width: popoverWidth } =
+    useElementWidth<HTMLButtonElement>({ dependencies: [open] });
 
   return (
     <FormItem>
-      <FormLabel>{label}</FormLabel>
+      <FormLabel id={formItemId}>{label}</FormLabel>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -106,10 +97,13 @@ const ComboboxField: FC<
               open && "bg-secondary/90 dark:bg-input/50",
               className,
             )}
+            id={formItemId}
             role="combobox"
-            aria-label={ariaLabel}
+            aria-label={defaultAriaLabel}
             aria-describedby={ariaDescribedBy}
             aria-expanded={open}
+            aria-haspopup="listbox"
+            aria-invalid={!!error}
             {...props}
           >
             <div className="flex shrink items-center min-w-0">
@@ -155,6 +149,7 @@ const ComboboxField: FC<
           </Button>
         </PopoverTrigger>
         <PopoverContent
+          role="listbox"
           sideOffset={2}
           style={{ width: `${popoverWidth}px` }}
           className={`p-0`}
@@ -180,12 +175,15 @@ const ComboboxField: FC<
                     <CommandGroup heading={heading}>
                       {items.map(({ label, value }) => (
                         <CommandItem
+                          title={label}
                           className={cn(
                             value === field.state.value &&
                               "dark:bg-primary dark:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:text-primary-foreground dark:active:data-[selected=true]:bg-primary/80 dark:text-primary-foreground bg-primary data-[selected=true]:bg-primary/90 hover:data-[selected=true]:bg-primary/90 active:data-[selected=true]:bg-primary/80 text-popover hover:data-[selected=true]:text-popover data-[selected=true]:text-popover",
                           )}
                           key={value}
                           value={value as string}
+                          role="option"
+                          aria-selected={value === field.state.value}
                           onSelect={() => {
                             field.handleChange(value);
                             setOpen(false);
@@ -225,7 +223,7 @@ const ComboboxField: FC<
           </Command>
         </PopoverContent>
       </Popover>
-      <FormMessage />
+      <FormMessage id={formMessageId} />
     </FormItem>
   );
 };

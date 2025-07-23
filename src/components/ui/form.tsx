@@ -1,13 +1,15 @@
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Label } from "@/components/ui/label";
 import type { FC } from "react";
-import React from "react";
+import { type ComponentProps } from "react";
 import { useFieldContext } from "@/hooks/form-context";
 import { cn } from "@/lib/utils";
 
-export const FormLabel: FC<
-  React.ComponentProps<typeof LabelPrimitive.Root>
-> = ({ className, ...props }) => {
+export const FormLabel: FC<ComponentProps<typeof LabelPrimitive.Root>> = ({
+  className,
+  id,
+  ...props
+}) => {
   const field = useFieldContext();
   const name = field.name;
   const hasErrors = !!field.state.meta.errors.length;
@@ -16,14 +18,14 @@ export const FormLabel: FC<
     <Label
       data-slot="form-label"
       data-error={hasErrors}
-      htmlFor={name}
+      htmlFor={id || name}
       className={cn("data-[error=true]:text-destructive", className)}
       {...props}
     />
   );
 };
 
-export const FormItem: FC<React.ComponentProps<"div">> = ({
+export const FormItem: FC<ComponentProps<"div">> = ({
   className,
   ...props
 }) => {
@@ -36,7 +38,7 @@ export const FormItem: FC<React.ComponentProps<"div">> = ({
   );
 };
 
-export const FormMessage: FC<React.ComponentProps<"p">> = ({
+export const FormMessage: FC<ComponentProps<"p">> = ({
   className,
   ...props
 }) => {
@@ -59,7 +61,7 @@ export const FormMessage: FC<React.ComponentProps<"p">> = ({
   );
 };
 
-export const FormDescription: FC<React.ComponentProps<"p">> = ({
+export const FormDescription: FC<ComponentProps<"p">> = ({
   className,
   ...props
 }) => {
