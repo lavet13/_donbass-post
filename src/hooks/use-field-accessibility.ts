@@ -11,6 +11,7 @@ export const useFieldAccessibility = <T extends string | number | boolean>({
   ariaLabel,
 }: UseFieldAccessibilityProps) => {
   const field = useFieldContext<T>();
+
   // https://react.dev/reference/react/useId#usage
   const reactId = useId();
   const error = field.state.meta.errors.length > 0;

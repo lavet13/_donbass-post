@@ -60,6 +60,7 @@ const Tooltip: FC<
       "open" | "defaultOpen" | "onOpenChange"
     >
 > = ({ open, onOpenChange, defaultOpen, children, content, ...props }) => {
+
   return (
     <TooltipRoot
       open={open}

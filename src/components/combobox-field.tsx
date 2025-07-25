@@ -98,6 +98,7 @@ const ComboboxField: FC<
               className,
             )}
             id={formItemId}
+            name={field.name}
             role="combobox"
             aria-label={defaultAriaLabel}
             aria-describedby={ariaDescribedBy}
@@ -212,7 +213,7 @@ const ComboboxField: FC<
                 ))}
 
               {!entries.length && !isLoading && refetch && (
-                <p className="py-2 text-center text-sm text-muted-foreground">
+                <p className="flex flex-col items-center justify-center py-2 text-center text-sm text-muted-foreground">
                   {refetchErrorMessage}
                   <Button variant="secondary" size="xs" onClick={refetch}>
                     Повторить запрос
