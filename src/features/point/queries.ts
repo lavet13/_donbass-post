@@ -34,15 +34,17 @@ async function pointsPost() {
   const mobilePoints = points.filter((point) => point.mobilePoint);
   const staticPoints = points.filter((point) => !point.mobilePoint);
 
-  const mobile = mobilePoints.map(({ id, fullName, name }) => ({
+  const mobile = mobilePoints.map(({ id, fullName, name, address }) => ({
     value: id,
     label: fullName,
     name,
+    address,
   }));
-  const stationary = staticPoints.map(({ id, fullName, name }) => ({
+  const stationary = staticPoints.map(({ id, fullName, name, address }) => ({
     value: id,
     label: fullName,
     name,
+    address,
   }));
 
   return {

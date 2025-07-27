@@ -25,10 +25,11 @@ export default defineConfig({
     host: true,
   },
   build: {
-    minify: "esbuild",
+    // https://vite.dev/config/build-options.html#build-rollupoptions
     rollupOptions: {
       input: "./index.html",
       output: {
+        // https://rollupjs.org/configuration-options/#output-manualchunks
         manualChunks: {
           // Core react
           "react-core": ["react", "react-dom"],
@@ -57,7 +58,7 @@ export default defineConfig({
           form: ["zod", "@tanstack/react-form"],
 
           // Styling and class utilities
-          styling: ["class-variance-authority", "tailwind-merge"],
+          styling: ["class-variance-authority", "tailwind-merge", "clsx"],
 
           // State management
           state: ["jotai"],

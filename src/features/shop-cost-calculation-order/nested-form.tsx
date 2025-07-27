@@ -10,13 +10,15 @@ import { usePointPostQuery } from "@/features/point/queries";
 import { X } from "lucide-react";
 import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
 import { Tooltip } from "@/components/ui/tooltip";
-import { AutoDismissMessage } from "@/components/auto-dismiss-message";
+import {
+  AutoDismissMessage,
+  type AutoDimissMessageProps,
+} from "@/components/auto-dismiss-message";
 
 // https://colinhacks.com/essays/reasonable-email-regex
 // Исходный regex из Zod:
 // /^(?!\.)(?!.*\.\.)([a-z0-9_'+\-\.]*)[a-z0-9_'+\-]@([a-z0-9][a-z0-9\-]*\.)+[a-z]{2,}$/i;
 const emailSchema = z.email({ pattern: z.regexes.email });
-
 const linkSchema = z.url();
 
 export const ShopCostCalculationOrderForm = withForm({
@@ -28,13 +30,14 @@ export const ShopCostCalculationOrderForm = withForm({
       refetch: refetchPoints,
     } = usePointPostQuery();
 
-    const [successMessage, setSuccessMessage] = useState({
-      message: "",
-      isOpen: false,
-    });
-
-    const handleCloseSuccessMessage = () =>
-      setSuccessMessage((prev) => ({ ...prev, isOpen: false }));
+    const [successMessage, setSuccessMessage] =
+      useState<AutoDimissMessageProps>({
+        title: "Регистрация успешно проведена!",
+        onClose: () =>
+          setSuccessMessage((prev) => ({ ...prev, isOpen: false })),
+        isOpen: false,
+        durationMs: 60_000,
+      });
 
     return (
       <form
@@ -44,11 +47,7 @@ export const ShopCostCalculationOrderForm = withForm({
           void form.handleSubmit({ onSuccess: setSuccessMessage });
         }}
       >
-        <AutoDismissMessage
-          message={successMessage.message}
-          isOpen={successMessage.isOpen}
-          onClose={handleCloseSuccessMessage}
-        />
+        <AutoDismissMessage {...successMessage} />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
           {/* Получатель */}
           <form.AppField

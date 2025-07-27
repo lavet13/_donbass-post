@@ -6,10 +6,12 @@ import { Loader } from "lucide-react";
 import { useShopCostCalculationOrderMutation } from "./mutations";
 import { isAxiosError } from "axios";
 import { transformApiErrorsToFormErrors } from "@/lib/utils";
+import { usePointPostQuery } from "@/features/point/queries";
 
 export default function ShopCostCalculationOrderPage() {
   const { mutateAsync: createShopCostCalculationOrder } =
     useShopCostCalculationOrderMutation();
+  const { data: values } = usePointPostQuery();
 
   const form = useAppForm({
     ...defaultShopCostCalculationOrderOpts,
@@ -29,13 +31,35 @@ export default function ShopCostCalculationOrderPage() {
         shopCostCalculationOrder,
         shopCostCalculationOrderPosition,
       };
+
       try {
         await createShopCostCalculationOrder(payload);
         formApi.reset();
-        meta.onSuccess?.({
-          message: "Заявка успешно принята!",
+        const entries = Object.entries(values ?? {});
+        const allEntries = entries.flatMap(([, items]) => items);
+        const selectedEntry = allEntries.find(
+          (entry) => entry.value === payload.shopCostCalculationOrder.pointTo,
+        )!;
+
+        meta.onSuccess?.((prev) => ({
+          ...prev,
           isOpen: true,
-        });
+          options: [
+            {
+              label: "Пункт выдачи:",
+              value: `${selectedEntry.name.trim()}, по адресу: ${selectedEntry.address}`,
+            },
+          ],
+          extra: [
+            `Мы отправили письмо с заполненными данными на вашу почту: ${payload.shopCostCalculationOrder.email}`,
+            `Это письмо сформировано автоматически службой уведомлений сайта компании.`,
+            `Отвечать на него не нужно.`,
+            <br />,
+            <p className="font-bold text-sm">
+              В случае не соответствия повторите заказ.
+            </p>,
+          ],
+        }));
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {

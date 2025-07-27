@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 
-export const useMessageTimer = (
-  isOpen: boolean,
-  onClose: () => void,
-  duration: number = 5000,
-) => {
-  const [count, setCount] = useState(duration / 1000);
+export const useMessageTimer = ({
+  isOpen,
+  onClose,
+  durationMs,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  durationMs: number;
+}) => {
+  const [count, setCount] = useState(durationMs / 1000);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    setCount(duration / 1000);
+    setCount(durationMs / 1000);
     let intervalId: NodeJS.Timeout | null = null;
-    let nextCount = duration / 1000;
+    let nextCount = durationMs / 1000;
 
     const onTick = () => {
       setCount((c) => {
@@ -30,7 +34,7 @@ export const useMessageTimer = (
     return () => {
       if (intervalId) clearTimeout(intervalId);
     };
-  }, [isOpen, duration]);
+  }, [isOpen, durationMs]);
 
   return count;
 };

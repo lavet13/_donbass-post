@@ -24,7 +24,7 @@ const PopoverContent: React.FC<
         data-slot="popover-content"
         className={cn(
           "bg-popover text-popover-foreground rounded-sm p-3 w-72 shadow-md",
-          "data-[state=open]:data-[side=top]:animate-slide-down-and-fade data-[state=open]:data-[side=right]:animate-slide-left-and-fade data-[state=open]:data-[side=bottom]:animate-slide-up-and-fade data-[state=open]:data-[side=left]:animate-slide-right-and-fade",
+          // "data-[state=open]:data-[side=top]:animate-slide-down-and-fade data-[state=open]:data-[side=right]:animate-slide-left-and-fade data-[state=open]:data-[side=bottom]:animate-slide-up-and-fade data-[state=open]:data-[side=left]:animate-slide-right-and-fade",
           "outline-hidden z-50",
 
           // removing blur

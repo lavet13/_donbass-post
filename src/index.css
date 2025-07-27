@@ -2,51 +2,82 @@
 @import "tw-animate-css";
 
 :root {
-  --container-max-width-2xl: 1400px;
+  /* Primary - slightly adjusted for better accessibility */
+  --primary: #d12d2e; /* More saturated red with better contrast */
+  --primary-foreground: #ffffff;
 
-  /* Rose Pine Light Mode Colors */
-  --primary: #d7827e; /* Rose Pine love (muted red/pink) */
-  --primary-foreground: #faf4ed;
-  --background: #faf4ed; /* Rose Pine base (warm cream) */
-  --foreground: #575279; /* Rose Pine text (muted purple-gray) */
-  --card: #fffaf3; /* Slightly warmer than background */
-  --card-foreground: #575279;
-  --popover: #fffaf3;
-  --popover-foreground: #575279;
-  --secondary: #f2e9e1; /* Rose Pine surface (warm beige) */
-  --secondary-foreground: #797593;
-  --muted: #f2e9e1;
-  --muted-foreground: #908caa; /* Rose Pine muted */
-  --accent: #31748f; /* Rose Pine pine (teal-blue) */
-  --accent-foreground: #faf4ed;
-  --destructive: #b4637a; /* Rose Pine love (darker variant) */
-  --destructive-foreground: #faf4ed;
-  --border: #dfdad9; /* Rose Pine highlight low */
-  --input: #dfdad9;
-  --ring: #d7827e;
+  /* Background and foreground - improved contrast */
+  --background: #fdf7f7; /* Lighter, cleaner background */
+  --foreground: #333333; /* Higher contrast dark text */
+
+  /* Card - maintained but with better shadow compatibility */
+  --card: #ffffff;
+  --card-foreground: #333333; /* Darker for better readability */
+
+  /* Popover */
+  --popover: #ffffff;
+  --popover-foreground: #333333;
+  --popover-border: #e6caca; /* Slightly more saturated */
+
+  /* Secondary - clearer hierarchy */
+  --secondary: #f2d2d2; /* More distinct from background */
+  --secondary-foreground: #333333;
+
+  /* Muted - better differentiation */
+  --muted: #f5e4e4; /* Lighter, more distinct */
+  --muted-foreground: #6b5e5e; /* Improved readability */
+
+  /* Accent - enhanced blue */
+  --accent: #2e8bb0; /* More vibrant, better contrast */
+  --accent-foreground: #ffffff;
+
+  /* Destructive - maintained but optimized */
+  --destructive: #c43c2f;
+  --destructive-foreground: #ffffff;
+
+  /* Borders and inputs - unified */
+  --border: #e6caca; /* Matches popover border */
+  --input: #e6caca;
+  --ring: #d12d2e; /* Matches primary */
+
+  /* New additions for better design system */
+  --success: #2d8c49; /* Green for positive actions */
+  --success-foreground: #ffffff;
+  --warning: #c97c13; /* Amber for warnings */
+  --warning-foreground: #ffffff;
+  --info: #2e8bb0; /* Blue for information */
+  --info-foreground: #ffffff;
 }
 
 .dark {
-  /* Rose Pine Dark Mode Colors */
-  --primary: #ebbcba; /* Rose Pine love (soft rose) */
-  --primary-foreground: #191724;
-  --background: #191724; /* Rose Pine base (deep purple) */
-  --foreground: #e0def4; /* Rose Pine text (soft lavender) */
-  --card: #1f1d2e; /* Rose Pine surface (slightly lighter) */
-  --card-foreground: #e0def4;
-  --popover: #1f1d2e;
-  --popover-foreground: #e0def4;
-  --secondary: #26233a; /* Rose Pine overlay (muted purple) */
-  --secondary-foreground: #e0def4;
-  --muted: #26233a;
-  --muted-foreground: #908caa; /* Rose Pine subtle */
-  --accent: #31748f; /* Rose Pine pine (teal-blue) */
-  --accent-foreground: #e0def4;
-  --destructive: #eb6f92; /* Rose Pine love (vibrant pink) */
-  --destructive-foreground: #191724;
-  --border: #403d52;
-  --input: #403d52;
-  --ring: #ebbcba;
+  --primary: #f26b6b;
+  --primary-foreground: #161616;
+  --background: #161616;
+  --foreground: #f0f0f0;
+  --card: #262020;
+  --card-foreground: #f0f0f0;
+  --popover: #2a2424; /* Slightly different from card for distinction */
+  --popover-foreground: #f0f0f0;
+  --secondary: #362d2d;
+  --secondary-foreground: #e0e0e0;
+  --muted: #362d2d;
+  --muted-foreground: #b8b8b8;
+  --accent: #5cb3d9;
+  --accent-foreground: #161616;
+  --destructive: #ff7f7f;
+  --destructive-foreground: #161616;
+  --border: #524545;
+  --input: #524545;
+  --ring: #f26b6b;
+
+  /* Added semantic colors */
+  --success: #4ade80; /* Bright green for dark mode */
+  --success-foreground: #161616;
+  --warning: #fbbf24; /* Bright amber for dark mode */
+  --warning-foreground: #161616;
+  --info: #60a5fa; /* Bright blue for dark mode */
+  --info-foreground: #161616;
+  --popover-border: #524545; /* Added for consistency */
 }
 
 @custom-variant dark (&:is(.dark *));

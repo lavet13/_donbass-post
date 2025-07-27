@@ -1,11 +1,9 @@
+import type { AutoDimissMessageProps } from "@/components/auto-dismiss-message";
 import { formOptions } from "@tanstack/react-form";
 
 type FormMeta = {
   onSuccess: React.Dispatch<
-    React.SetStateAction<{
-      message: string;
-      isOpen: boolean;
-    }>
+    React.SetStateAction<AutoDimissMessageProps>
   > | null;
 };
 
