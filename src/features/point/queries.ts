@@ -7,11 +7,6 @@ import type { DeliveryPoint } from "@/features/point/types";
 const point = createQueryKeys("point", {
   post: {
     queryKey: null,
-    contextQueries: {
-      combobox: {
-        queryKey: null,
-      },
-    },
   },
 });
 
@@ -50,12 +45,14 @@ async function pointsPost() {
   return {
     "Стационарные отделения": stationary,
     "Мобильные отделения": mobile,
+    // consider caching all points("All": [...stationary, ...mobile]), but
+    // I want to experiment with new Set()
   };
 }
 
 const usePointPostQuery = () =>
   useQuery({
-    queryKey: point.post._ctx.combobox.queryKey,
+    queryKey: point.post.queryKey,
     queryFn: pointsPost,
 
     // Prevents unnecessary background refetches by keeping server data fresh

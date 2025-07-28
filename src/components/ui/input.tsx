@@ -1,14 +1,15 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
 
-const Input: React.FC<React.ComponentProps<"input">> = ({
-  className,
-  type,
-  ...props
-}) => {
+const Input: React.FC<
+  React.ComponentProps<"input"> & { asChild?: boolean }
+> = ({ className, type, asChild, ...props }) => {
+  const Comp = asChild ? Slot : "input";
+
   return (
-    <input
+    <Comp
       type={type}
       data-slot="input"
       className={cn(

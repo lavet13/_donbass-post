@@ -7,6 +7,7 @@ import { useShopCostCalculationOrderMutation } from "./mutations";
 import { isAxiosError } from "axios";
 import { transformApiErrorsToFormErrors } from "@/lib/utils";
 import { usePointPostQuery } from "@/features/point/queries";
+import { Suspend } from "@/components/suspend";
 
 export default function ShopCostCalculationOrderPage() {
   const { mutateAsync: createShopCostCalculationOrder } =
@@ -102,14 +103,8 @@ export default function ShopCostCalculationOrderPage() {
   });
 
   return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center">
-          <Loader className="animate-spin size-5" />
-        </div>
-      }
-    >
+    <Suspend>
       <ShopCostCalculationOrderForm form={form} />
-    </Suspense>
+    </Suspend>
   );
 }

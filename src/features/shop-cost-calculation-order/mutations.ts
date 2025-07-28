@@ -3,11 +3,8 @@ import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
 import type { ShopCostCalculationOrder } from "@/features/shop-cost-calculation-order/types";
 
 type UseShopCostCalculationOrderProps = {
-  options?: UseMutationOptions<
-    ShopCostCalculationOrder,
-    Error,
-    ShopCostCalculationOrder
-  >;
+  // UseMutationOptions<result, error, variables passed to mutationFn>
+  options?: UseMutationOptions<{}, Error, ShopCostCalculationOrder>;
 };
 
 export const useShopCostCalculationOrderMutation = (
@@ -16,8 +13,8 @@ export const useShopCostCalculationOrderMutation = (
   const { options = {} } = props;
 
   return useMutation({
-    async mutationFn(variables: ShopCostCalculationOrder) {
-      const response = await workplacePostApi.post<ShopCostCalculationOrder>(
+    async mutationFn(variables) {
+      const response = await workplacePostApi.post<{}>(
         "shop-cost-calculation-order",
         variables,
       );

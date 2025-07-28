@@ -1,7 +1,7 @@
 import { useFormContext } from "@/hooks/form-context";
 import { cn } from "@/lib/utils";
 import type { ComponentProps, FC } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 const SubscribeButton: FC<ComponentProps<"button"> & { label: string }> = ({

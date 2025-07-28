@@ -47,6 +47,7 @@ export default defineConfig({
 
           // Radix UI component library
           "radix-ui": [
+            "@radix-ui/react-password-toggle-field",
             "@radix-ui/react-accessible-icon",
             "@radix-ui/react-checkbox",
             "@radix-ui/react-label",
