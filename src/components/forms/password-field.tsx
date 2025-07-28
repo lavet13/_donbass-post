@@ -20,7 +20,7 @@ export const isPasswordValid = (password: string) => {
   if (/[а-я]/i.test(password)) {
     return [false, "Не должен содержать кириллицу"];
   }
-  if (/[^\w]/.test(password)) {
+  if (/\W/.test(password)) {
     return [
       false,
       "Не должен содержать спецсимволы (!@#$%^&*()+-={}[]|;:'\",<>.?/ и т.д.)",
