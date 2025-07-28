@@ -17,11 +17,19 @@ export const isPasswordValid = (password: string) => {
   if (password.length < 8) {
     return [false, "Слишком короткий пароль"];
   }
-  // Catching uppercase letters from any writing system
-  if (!/\p{Lu}/u.test(password)) {
+  if (/[а-я]/i.test(password)) {
+    return [false, "Не должен содержать кириллицу"];
+  }
+  if (/[^\w]/.test(password)) {
+    return [
+      false,
+      "Не должен содержать спецсимволы (!@#$%^&*()+-={}[]|;:'\",<>.?/ и т.д.)",
+    ];
+  }
+  if (!/[A-Z]/.test(password)) {
     return [false, "Должна быть хотя бы одна заглавная буква"];
   }
-  if (!/(?=.*\d.*\d)/i.test(password)) {
+  if (!/(?=.*\d.*\d)/.test(password)) {
     return [false, "Хотя бы две цифры"];
   }
   return [true];
