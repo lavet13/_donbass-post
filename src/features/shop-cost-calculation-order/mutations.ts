@@ -1,10 +1,10 @@
 import { workplacePostApi } from "@/axios";
 import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
-import type { ShopCostCalculationOrder } from "@/features/shop-cost-calculation-order/types";
+import type { ShopCostCalculationOrderVariables } from "@/features/shop-cost-calculation-order/types";
 
 type UseShopCostCalculationOrderProps = {
   // UseMutationOptions<result, error, variables passed to mutationFn>
-  options?: UseMutationOptions<{}, Error, ShopCostCalculationOrder>;
+  options?: UseMutationOptions<{}, Error, ShopCostCalculationOrderVariables>;
 };
 
 export const useShopCostCalculationOrderMutation = (

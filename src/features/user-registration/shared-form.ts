@@ -1,6 +1,6 @@
 import { formOptions } from "@tanstack/react-form";
 
-export const defaultRegistrationUserOpts = formOptions({
+export const defaultUserRegistrationOpts = formOptions({
   defaultValues: {
     phone: "",
     password: "",

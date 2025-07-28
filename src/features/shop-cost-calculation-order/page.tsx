@@ -1,15 +1,14 @@
 import { useAppForm } from "@/hooks/form";
 import { defaultShopCostCalculationOrderOpts } from "@/features/shop-cost-calculation-order/shared-form";
 import { ShopCostCalculationOrderForm } from "@/features/shop-cost-calculation-order/nested-form";
-import { Suspense } from "react";
-import { Loader } from "lucide-react";
 import { useShopCostCalculationOrderMutation } from "./mutations";
 import { isAxiosError } from "axios";
 import { transformApiErrorsToFormErrors } from "@/lib/utils";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Suspend } from "@/components/suspend";
+import type { FC } from "react";
 
-export default function ShopCostCalculationOrderPage() {
+const ShopCostCalculationOrderPage: FC = () => {
   const { mutateAsync: createShopCostCalculationOrder } =
     useShopCostCalculationOrderMutation();
   const { data: values } = usePointPostQuery();
@@ -107,4 +106,6 @@ export default function ShopCostCalculationOrderPage() {
       <ShopCostCalculationOrderForm form={form} />
     </Suspend>
   );
-}
+};
+
+export default ShopCostCalculationOrderPage;

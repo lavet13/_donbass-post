@@ -1,4 +1,4 @@
-export type ShopCostCalculationOrder = {
+export type ShopCostCalculationOrderVariables = {
   shopCostCalculationOrder: {
     name: string;
     surname: string;
@@ -13,5 +13,4 @@ export type ShopCostCalculationOrder = {
     price: number;
     link: string;
   }[];
-  [x: string]: any;
 };

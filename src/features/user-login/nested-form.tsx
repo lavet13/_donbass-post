@@ -1,18 +1,18 @@
 import { withForm } from "@/hooks/form";
-import { defaultRegistrationUserOpts } from "./shared-form";
+import { defaultUserLoginOpts } from "./shared-form";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import ru from "react-phone-number-input/locale/ru.json";
 import { isPasswordValid } from "@/components/forms/password-field";
 
-export const RegistrationUserForm = withForm({
-  ...defaultRegistrationUserOpts,
+export const UserLoginForm = withForm({
+  ...defaultUserLoginOpts,
   render: function ({ form }) {
     return (
       <form
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          void form.handleSubmit();
+          form.handleSubmit();
         }}
       >
         <form.AppField
@@ -50,24 +50,8 @@ export const RegistrationUserForm = withForm({
           children={(field) => <field.PasswordField label="Пароль" />}
         />
 
-        <form.AppField
-          name="confirmPassword"
-          validators={{
-            onChangeListenTo: ["password"],
-            onChange: ({ value, fieldApi }) => {
-              if (value !== fieldApi.form.getFieldValue("password")) {
-                return "Пароли не совпадают";
-              }
-              return undefined;
-            },
-          }}
-          children={(field) => (
-            <field.PasswordField label="Подтвердите пароль" />
-          )}
-        />
-
         <form.AppForm>
-          <form.SubscribeButton label="Зарегистрировать" />
+          <form.SubscribeButton label="Войти в аккаунт" />
         </form.AppForm>
       </form>
     );

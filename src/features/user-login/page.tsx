@@ -1,19 +1,20 @@
-import { useRegistrationUserMutation } from "./mutations";
 import { useAppForm } from "@/hooks/form";
-import { defaultRegistrationUserOpts } from "./shared-form";
-import { RegistrationUserForm } from "./nested-form";
-import { Suspend } from "@/components/suspend";
+import type { FC } from "react";
+import { defaultUserLoginOpts } from "./shared-form";
+import { UserLoginForm } from "./nested-form";
+import { useUserLoginMutation } from "./mutations";
 import { isAxiosError } from "axios";
 
-export default function RegistrationUserPage() {
-  const { mutateAsync: registerUser } = useRegistrationUserMutation();
+const UserLoginPage: FC = () => {
+  const { mutateAsync: loginUser } = useUserLoginMutation();
 
   const form = useAppForm({
-    ...defaultRegistrationUserOpts,
+    ...defaultUserLoginOpts,
     onSubmit: async ({ value, formApi }) => {
-      const { phone, password } = value;
       try {
-        await registerUser({ phone, password });
+        const { phone, password } = value;
+        await loginUser({ phone, password });
+        formApi.reset();
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {
@@ -35,16 +36,13 @@ export default function RegistrationUserPage() {
             import.meta.env.DEV && console.log("Error", error.message);
           }
         } else {
+          import.meta.env.DEV && console.error("Unknown error");
         }
-      } finally {
-        formApi.reset();
       }
     },
   });
 
-  return (
-    <Suspend>
-      <RegistrationUserForm form={form} />
-    </Suspend>
-  );
-}
+  return <UserLoginForm form={form} />;
+};
+
+export default UserLoginPage;
