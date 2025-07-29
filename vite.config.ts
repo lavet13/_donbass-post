@@ -53,6 +53,7 @@ export default defineConfig({
             "@radix-ui/react-label",
             "@radix-ui/react-popover",
             "@radix-ui/react-tooltip",
+            "@radix-ui/reacts-tabs",
           ],
 
           // Form validation and schema

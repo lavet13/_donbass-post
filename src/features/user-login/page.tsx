@@ -23,6 +23,10 @@ const UserLoginPage: FC = () => {
 
             const status = error.response.status;
 
+            if (status === 404) {
+              // User not found
+            }
+
             if (status >= 500) {
               console.error("Server is out");
             }
