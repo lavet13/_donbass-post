@@ -8,7 +8,7 @@ const Tabs: FC<ComponentProps<typeof TabsPrimitive.Root>> = ({
 }) => {
   return (
     <TabsPrimitive.Root
-      className={cn("flex flex-col w-[300px] shadow-sm", className)}
+      className={cn("flex flex-col max-w-[300px] w-full rounded-md overflow-hidden", className)}
       {...props}
     />
   );
@@ -21,7 +21,7 @@ const TabsList: FC<ComponentProps<typeof TabsPrimitive.List>> = ({
   return (
     <TabsPrimitive.List
       className={cn(
-        "shrink-0 flex border-b border-input",
+        "shrink-0 flex border-b border-input bg-popover",
         className,
       )}
       {...props}
@@ -36,8 +36,8 @@ const TabsTrigger: FC<ComponentProps<typeof TabsPrimitive.Trigger>> = ({
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "flex-1 flex items-center justify-center px-5 h-[45px] text-sm outline-ring bg-popover",
-        "leading-none select-none first:rounded-tl-md last:rounded-tr-md focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+        "flex-1 flex items-center justify-center px-5 h-[45px] text-sm outline-none",
+        "leading-none select-none focus-visible:relative focus-visible:data-[state=active]:[box-shadow:0_0_0_2px_var(--color-primary)]",
         "hover:text-primary data-[state=active]:text-primary data-[state=active]:[box-shadow:inset_0_-1px_0_0_currentColor,_0_1px_0_0_currentColor]",
         className,
       )}
@@ -53,7 +53,7 @@ const TabsContent: FC<ComponentProps<typeof TabsPrimitive.Content>> = ({
   return (
     <TabsPrimitive.Content
       className={cn(
-        "grow p-5 bg-popover rounded-bl-md rounded-br-md focus-visible:outline-ring",
+        "grow p-5 bg-popover outline-none focus-visible:[box-shadow:0_0_0_2px_var(--color-primary)]",
         className,
       )}
       {...props}

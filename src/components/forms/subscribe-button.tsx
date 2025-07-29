@@ -4,9 +4,10 @@ import type { ComponentProps, FC } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-const SubscribeButton: FC<ComponentProps<"button"> & { label: string }> = ({
+const SubscribeButton: FC<ComponentProps<"button"> & { label: string; loadingMessage?: string; }> = ({
   className,
   label,
+  loadingMessage = "Подтверждается",
   ...props
 }) => {
   const form = useFormContext();
@@ -29,7 +30,7 @@ const SubscribeButton: FC<ComponentProps<"button"> & { label: string }> = ({
           {isSubmitting ? (
             <>
               <Loader2 className="animate-spin" />
-              Подтверждается
+              {loadingMessage}
             </>
           ) : (
             <>{label}</>

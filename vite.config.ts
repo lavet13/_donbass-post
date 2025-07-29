@@ -53,7 +53,7 @@ export default defineConfig({
             "@radix-ui/react-label",
             "@radix-ui/react-popover",
             "@radix-ui/react-tooltip",
-            "@radix-ui/reacts-tabs",
+            "@radix-ui/react-tabs",
           ],
 
           // Form validation and schema
@@ -73,6 +73,9 @@ export default defineConfig({
 
           // Network and API
           network: ["axios"],
+
+          // Browser utilities
+          utilities: ["js-cookie"],
         },
       },
     },

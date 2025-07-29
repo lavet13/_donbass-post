@@ -9,6 +9,7 @@ export const UserRegistrationForm = withForm({
   render: function ({ form }) {
     return (
       <form
+        className="flex flex-col gap-1"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -67,7 +68,7 @@ export const UserRegistrationForm = withForm({
         />
 
         <form.AppForm>
-          <form.SubscribeButton label="Зарегистрировать" />
+          <form.SubscribeButton label="Зарегистрироваться" loadingMessage="Регистрируем" />
         </form.AppForm>
       </form>
     );
