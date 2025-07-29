@@ -4,16 +4,20 @@ import { defaultUserLoginOpts } from "./shared-form";
 import { UserLoginForm } from "./nested-form";
 import { useUserLoginMutation } from "./mutations";
 import { isAxiosError } from "axios";
+import { useAtom } from "jotai";
+import { authTokenAtom } from "@/atoms";
 
 const UserLoginPage: FC = () => {
   const { mutateAsync: loginUser } = useUserLoginMutation();
+  const setAuthToken = useAtom(authTokenAtom)[1];
 
   const form = useAppForm({
     ...defaultUserLoginOpts,
     onSubmit: async ({ value, formApi }) => {
       try {
         const { phone, password } = value;
-        await loginUser({ phone, password });
+        const { token } = await loginUser({ phone, password });
+        setAuthToken(token);
         formApi.reset();
       } catch (error) {
         if (isAxiosError(error)) {

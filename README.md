@@ -6,3 +6,4 @@
 - [] I might need to show departments outside of popover, directly in the form
 - [x] add loading state for combobox
 - [] add sonner
+- [] try to use Provider from jotai instead of useFieldAccessibility hook

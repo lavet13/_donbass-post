@@ -1,26 +1,26 @@
 import { atom } from "jotai";
 import Cookies from "js-cookie";
-import type { CookieAttributes } from "node_modules/@types/js-cookie";
+import { AUTH_CONFIG } from "@/config";
 
-const COOKIE_OPTIONS: CookieAttributes = {
-  expires: 14,
-  secure: !!import.meta.env.PROD,
-  sameSite: "strict",
-  domain: ".workplace-post.ru",
-};
-
-//
+// read-write atom
 export const authTokenAtom = atom(
-  () => Cookies.get("auth-token") || null,
+  () => Cookies.get(AUTH_CONFIG.cookieName) || null,
   (_get, _set, receivedToken: string | null) => {
     if (receivedToken) {
-      Cookies.set("auth-token", receivedToken, COOKIE_OPTIONS);
+      Cookies.set(
+        AUTH_CONFIG.cookieName,
+        receivedToken,
+        AUTH_CONFIG.cookieOptions,
+      );
     } else if (receivedToken === null) {
-      Cookies.remove("auth-token", { domain: ".workplace-post.ru" });
+      Cookies.remove(AUTH_CONFIG.cookieName, AUTH_CONFIG.removeCookieOptions);
     }
   },
 );
 
+// read-only atom (derived atom)
+// derives value from other atoms
+// cannot be written to directly
 export const userIdAtom = atom((get) => {
   const token = get(authTokenAtom);
   if (!token) {

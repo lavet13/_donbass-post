@@ -1,9 +1,9 @@
 import { workplacePostApi } from "@/axios";
 import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
-import type { UserLoginVariables } from "./types";
+import type { UserLoginResult, UserLoginVariables } from "./types";
 
 type UseUserLoginMutationProps = {
-  options?: UseMutationOptions<{}, Error, UserLoginVariables>;
+  options?: UseMutationOptions<UserLoginResult, Error, UserLoginVariables>;
 };
 
 export const useUserLoginMutation = (props: UseUserLoginMutationProps = {}) => {
