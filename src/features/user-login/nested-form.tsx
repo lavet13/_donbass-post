@@ -20,6 +20,8 @@ export const UserLoginForm = withForm({
       },
       title: "Сообщение",
     });
+
+
     return (
       <Fragment>
         <AutoDismissMessage {...message} />

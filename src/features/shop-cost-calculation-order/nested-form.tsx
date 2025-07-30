@@ -14,6 +14,7 @@ import {
   AutoDismissMessage,
   type AutoDimissMessageProps,
 } from "@/components/auto-dismiss-message";
+import { useBlocker } from "@tanstack/react-router";
 
 // https://colinhacks.com/essays/reasonable-email-regex
 // Исходный regex из Zod:
@@ -38,6 +39,17 @@ export const ShopCostCalculationOrderForm = withForm({
         isOpen: false,
         durationMs: 60_000,
       });
+
+    useBlocker({
+      shouldBlockFn: () => {
+        if (!form.state.isDirty) return false;
+
+        const shouldLeave = confirm(
+          "Вы действительно хотите покинуть страницу? Форма была заполнена!",
+        );
+        return !shouldLeave;
+      },
+    });
 
     return (
       <form
