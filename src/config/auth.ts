@@ -47,7 +47,7 @@ export const AUTH_CONFIG = {
    */
   cookieOptions: {
     /** Cookie expiration time in days */
-    expires: 14, // days
+    expires: 14,
     /** Only send cookie over HTTPS in production */
     secure: !!import.meta.env.PROD,
     /** CSRF protection - strict in prod, lax in dev for easier development */

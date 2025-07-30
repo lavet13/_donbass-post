@@ -10,8 +10,13 @@ export const decodeJWTPayload = (token: string): CustomJWTPayload | null => {
   try {
     const payload = decodeJwt<CustomJWTPayload>(token);
 
-    // Additional check
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+    // Check for missing expiration claim
+    if (!payload.exp) {
+      throw new Error('No expiration claim found');
+    }
+
+    // Check expiration
+    if (payload.exp < Math.floor(Date.now() / 1000)) {
       throw new Error("Token has expired");
     }
 
