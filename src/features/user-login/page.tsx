@@ -1,5 +1,5 @@
 import { useAppForm } from "@/hooks/form";
-import type { FC } from "react";
+import { type FC } from "react";
 import { defaultUserLoginOpts } from "./shared-form";
 import { UserLoginForm } from "./nested-form";
 import { useUserLoginMutation } from "./mutations";
@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 const UserLoginPage: FC = () => {
   const { mutateAsync: loginUser } = useUserLoginMutation();
+
   const { user, setToken, isAuthenticated } = useAuth();
   console.log({ user, isAuthenticated });
 

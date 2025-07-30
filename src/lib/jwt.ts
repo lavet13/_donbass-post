@@ -4,7 +4,55 @@ export type CustomJWTPayload = {
   id: string;
   manager: boolean;
   phone: string;
-} & JWTPayload;
+  /**
+   * JWT Issuer
+   *
+   * @see {@link https://www.rfc-editor.org/rfc/rfc7519#section-4.1.1 RFC7519#section-4.1.1}
+   */
+  iss?: string;
+
+  /**
+   * JWT Subject
+   *
+   * @see {@link https://www.rfc-editor.org/rfc/rfc7519#section-4.1.2 RFC7519#section-4.1.2}
+   */
+  sub?: string;
+
+  /**
+   * JWT Audience
+   *
+   * @see {@link https://www.rfc-editor.org/rfc/rfc7519#section-4.1.3 RFC7519#section-4.1.3}
+   */
+  aud?: string | string[];
+
+  /**
+   * JWT ID
+   *
+   * @see {@link https://www.rfc-editor.org/rfc/rfc7519#section-4.1.7 RFC7519#section-4.1.7}
+   */
+  jti?: string;
+
+  /**
+   * JWT Not Before
+   *
+   * @see {@link https://www.rfc-editor.org/rfc/rfc7519#section-4.1.5 RFC7519#section-4.1.5}
+   */
+  nbf?: number;
+
+  /**
+   * JWT Expiration Time
+   *
+   * @see {@link https://www.rfc-editor.org/rfc/rfc7519#section-4.1.4 RFC7519#section-4.1.4}
+   */
+  exp?: number;
+
+  /**
+   * JWT Issued At
+   *
+   * @see {@link https://www.rfc-editor.org/rfc/rfc7519#section-4.1.6 RFC7519#section-4.1.6}
+   */
+  iat?: number;
+};
 
 export const decodeJWTPayload = (token: string): CustomJWTPayload | null => {
   try {
@@ -12,7 +60,7 @@ export const decodeJWTPayload = (token: string): CustomJWTPayload | null => {
 
     // Check for missing expiration claim
     if (!payload.exp) {
-      throw new Error('No expiration claim found');
+      throw new Error("No expiration claim found");
     }
 
     // Check expiration
@@ -25,37 +73,6 @@ export const decodeJWTPayload = (token: string): CustomJWTPayload | null => {
     if (error instanceof Error) {
       console.warn("Jwt decode failed:", error.message);
     }
-    return null;
-  }
-};
-
-/**
- * Get remaining time until token expires (in seconds)
- */
-export const getJWTTimeToExpiry = (token: string): number => {
-  try {
-    const payload = decodeJwt<CustomJWTPayload>(token);
-
-    if (!payload.exp) return 0;
-
-    const now = Math.floor(Date.now() / 1000);
-    return Math.max(0, payload.exp - now);
-  } catch {
-    return 0;
-  }
-};
-/**
- * Extract specific claims from JWT
- * */
-export const getJWTClaim = <K extends keyof CustomJWTPayload>(
-  token: string,
-  claim: K,
-): CustomJWTPayload[K] | null => {
-  try {
-    const payload = decodeJwt<CustomJWTPayload>(token);
-
-    return payload[claim] ?? null;
-  } catch {
     return null;
   }
 };

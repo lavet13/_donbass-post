@@ -35,11 +35,25 @@ export const authTokenAtom = atom(
 );
 
 // read-write atom
-export const userPayloadAtom = atom((get) => {
+export const jwtPayloadAtom = atom((get) => {
   const token = get(rawTokenAtom);
   if (!token) return null;
 
   return decodeJWTPayload(token);
 });
 
-export const isAuthenticatedAtom = atom((get) => !!get(userPayloadAtom));
+export const isAuthenticatedAtom = atom((get) => !!get(jwtPayloadAtom));
+
+/**
+ * Get remaining time until token expires (in seconds)
+ */
+export const jwtTimeToExpiryAtom = atom((get) => {
+  const payload = get(jwtPayloadAtom);
+  if (!payload || !payload.exp) {
+    return 0;
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+
+  return Math.max(0, payload.exp - now);
+});
