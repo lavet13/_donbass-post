@@ -4,12 +4,15 @@ import { defaultUserLoginOpts } from "./shared-form";
 import { UserLoginForm } from "./nested-form";
 import { useUserLoginMutation } from "./mutations";
 import { isAxiosError } from "axios";
-import { useAtom } from "jotai";
-import { authTokenAtom } from "@/atoms";
+import { useAtomValue, useSetAtom } from "jotai";
+import { authTokenAtom, isJWTExpiredAtom, userPayloadAtom } from "@/atoms";
 
 const UserLoginPage: FC = () => {
   const { mutateAsync: loginUser } = useUserLoginMutation();
-  const setAuthToken = useAtom(authTokenAtom)[1];
+  const setAuthToken = useSetAtom(authTokenAtom);
+  const isExpired = useAtomValue(isJWTExpiredAtom);
+  const user = useAtomValue(userPayloadAtom);
+  console.log({ isExpired, user });
 
   const form = useAppForm({
     ...defaultUserLoginOpts,
