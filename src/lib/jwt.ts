@@ -1,4 +1,4 @@
-import { decodeJwt, type JWTPayload } from "jose";
+import { decodeJwt } from "jose";
 
 export type CustomJWTPayload = {
   id: string;

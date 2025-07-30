@@ -9,8 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 const UserLoginPage: FC = () => {
   const { mutateAsync: loginUser } = useUserLoginMutation();
 
-  const { user, setToken, isAuthenticated } = useAuth();
-  console.log({ user, isAuthenticated });
+  const { setToken } = useAuth();
 
   const form = useAppForm({
     ...defaultUserLoginOpts,

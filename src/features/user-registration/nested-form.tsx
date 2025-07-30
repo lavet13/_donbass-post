@@ -2,7 +2,7 @@ import { withForm } from "@/hooks/form";
 import { defaultUserRegistrationOpts } from "@/features/user-registration/shared-form";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import ru from "react-phone-number-input/locale/ru.json";
-import { isPasswordValid } from "@/components/forms/password-field";
+import { isPasswordValid } from "@/lib/utils";
 
 export const UserRegistrationForm = withForm({
   ...defaultUserRegistrationOpts,

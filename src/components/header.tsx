@@ -7,7 +7,12 @@ export const Header: FC = () => {
   return (
     <header className="container px-2 h-14 flex items-center">
       <Button asChild>
-        <Link to="/">Главная</Link>
+        <Link to="/" activeOptions={{ exact: true }}>
+          Главная
+        </Link>
+      </Button>
+      <Button asChild>
+        <Link to="/auth">Авторизоваться</Link>
       </Button>
       <ModeToggle />
     </header>

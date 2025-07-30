@@ -2,7 +2,7 @@ import { withForm } from "@/hooks/form";
 import { defaultUserLoginOpts } from "./shared-form";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import ru from "react-phone-number-input/locale/ru.json";
-import { isPasswordValid } from "@/components/forms/password-field";
+import { isPasswordValid } from "@/lib/utils";
 import { Fragment } from "react/jsx-runtime";
 import {
   AutoDismissMessage,

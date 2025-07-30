@@ -18,14 +18,13 @@ export function createRouter() {
     defaultPreload: "intent",
     defaultErrorComponent: DefaultErrorComponent,
     defaultNotFoundComponent: DefaultNotFoundComponent,
+    defaultPreloadStaleTime: 0, // @see (link: https://tanstack.com/router/latest/docs/framework/react/guide/preloading#preloading-with-external-libraries)
 
     // Optionally, we can use `Wrap` to wrap our router in the loader client provider
     Wrap: ({ children }) => {
       return (
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider delayDuration={400}>
-            {children}
-          </TooltipProvider>
+          <TooltipProvider delayDuration={400}>{children}</TooltipProvider>
         </QueryClientProvider>
       );
     },

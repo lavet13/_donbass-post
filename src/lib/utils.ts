@@ -115,3 +115,25 @@ export const getEmailErrorMessage = (email: string) => {
 
 export const sleep = (time: number) =>
   new Promise((resolve) => setTimeout(resolve, time));
+
+export const isPasswordValid = (password: string) => {
+  if (password.length < 8) {
+    return [false, "Слишком короткий пароль"];
+  }
+  if (/[а-я]/i.test(password)) {
+    return [false, "Не должен содержать кириллицу"];
+  }
+  if (/\W/.test(password)) {
+    return [
+      false,
+      "Не должен содержать спецсимволы (!@#$%^&*()+-={}[]|;:'\",<>.?/ и т.д.)",
+    ];
+  }
+  if (!/[A-Z]/.test(password)) {
+    return [false, "Должна быть хотя бы одна заглавная буква"];
+  }
+  if (!/(?=.*\d.*\d)/.test(password)) {
+    return [false, "Хотя бы две цифры"];
+  }
+  return [true];
+};

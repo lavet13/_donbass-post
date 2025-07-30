@@ -8,16 +8,11 @@ import pluginQuery from "@tanstack/eslint-plugin-query";
 import { globalIgnores } from "eslint/config";
 
 export default tseslint.config([
+  ...pluginQuery.configs["flat/recommended"],
   globalIgnores(["dist"]),
   js.configs.recommended,
   {
     files: ["**/*.{ts,tsx}"],
-    plugins: {
-      "@tanstack/query": pluginQuery,
-    },
-    rules: {
-      "@tanstack/query/exhaustive-deps": "error",
-    },
     extends: [
       ...tseslint.configs.recommendedTypeChecked,
       // Optionally, add this for stylistic rules

@@ -21,7 +21,9 @@ function RootComponent() {
 
       <Header />
       <main className="flex flex-col grow shrink-0 min-h-[calc(100svh-3.5rem)]">
-        <Outlet />
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <Outlet />
+        </div>
       </main>
       <Footer />
 
