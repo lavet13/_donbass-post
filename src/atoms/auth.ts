@@ -46,7 +46,7 @@ export const userPayloadAtom = atom(
 
     return payload;
   },
-  (_get, set, updateToken: string) => {
+  (_get, set, updateToken: string | null) => {
     set(rawTokenAtom, updateToken);
   },
 );
