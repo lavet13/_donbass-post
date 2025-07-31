@@ -5,7 +5,7 @@ import { RouterProvider } from "@tanstack/react-router";
 import { createRouter } from "@/router.tsx";
 import { useAuth } from "@/hooks/use-auth";
 
-const router = createRouter();
+export const router = createRouter();
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
@@ -16,7 +16,6 @@ declare module "@tanstack/react-router" {
 
 function App() {
   const auth = useAuth();
-  console.log({ auth });
   return <RouterProvider router={router} context={{ auth }} />;
 }
 

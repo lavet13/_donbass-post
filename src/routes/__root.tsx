@@ -23,9 +23,7 @@ function RootComponent() {
   return (
     <React.Fragment>
       <HeadContent />
-
       <Outlet />
-
       <Scripts />
       <TanStackRouterDevtools initialIsOpen={false} />
       <ReactQueryDevtools initialIsOpen={false} />

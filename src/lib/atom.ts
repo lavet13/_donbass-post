@@ -75,29 +75,6 @@ export function atomWithCookie<T extends string | null>(
         return () => {
           (window as any).cookieStore.removeEventListener("change", handler);
         };
-      } else {
-        // Fallback: Use focus events and periodic checks
-        let currentValue = getCookieValue();
-
-        const checkForChanges = () => {
-          const newValue = getCookieValue();
-          if (newValue !== currentValue) {
-            currentValue = newValue;
-            callback(newValue);
-          }
-        };
-
-        // Check on page focus (cross-tab changes)
-        const handleFocus = () => checkForChanges();
-        window.addEventListener("focus", handleFocus);
-
-        // Optional: Light polling as backup (every 5 seconds)
-        const intervalId = setInterval(checkForChanges, 5000);
-
-        return () => {
-          window.removeEventListener("focus", handleFocus);
-          clearInterval(intervalId);
-        };
       }
     },
   });

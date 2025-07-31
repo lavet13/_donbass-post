@@ -33,9 +33,17 @@ const UserLoginPage: FC = () => {
             // that falls out of the range of 2xx
 
             const status = error.response.status;
+            const errorMessage = error.response.data.message as string;
 
             if (status === 401) {
               // Invalid password
+              formApi.setErrorMap({
+                onChange: {
+                  fields: {
+                    password: errorMessage,
+                  },
+                },
+              });
             }
 
             if (status === 404) {

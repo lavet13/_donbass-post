@@ -9,7 +9,7 @@ const PriceField = lazy(() => import("@/components/forms/price-field"));
 const PhoneField = lazy(() => import("@/components/forms/phone-field"));
 const ComboboxField = lazy(() => import("@/components/forms/combobox-field"));
 const SubscribeButton = lazy(
-  () => import("../components/forms/subscribe-button"),
+  () => import("@/components/forms/subscribe-button"),
 );
 
 // https://tanstack.com/form/latest/docs/framework/react/guides/form-composition

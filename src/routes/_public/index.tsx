@@ -5,5 +5,5 @@ export const Route = createFileRoute('/_public/')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_layout/"!</div>
+  return <div>Hello client</div>
 }

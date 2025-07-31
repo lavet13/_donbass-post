@@ -6,6 +6,7 @@ export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedComponent,
   beforeLoad({ context, location }) {
     if (!context.auth.isAuthenticated) {
+      console.log('_authenticated before load fired');
       throw redirect({
         to: "/auth",
         search: {
