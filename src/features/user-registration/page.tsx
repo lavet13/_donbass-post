@@ -5,14 +5,13 @@ import { UserRegistrationForm } from "@/features/user-registration/nested-form";
 import { Suspend } from "@/components/suspend";
 import { isAxiosError } from "axios";
 import type { FC } from "react";
-import { getRouteApi, useRouter } from "@tanstack/react-router";
-
-const routeApi = getRouteApi("/_layout/auth");
+import { useRouter } from "@tanstack/react-router";
+import { Route as AuthRoute } from '@/routes/_public/auth';
 
 const UserRegistrationPage: FC = () => {
   const router = useRouter();
-  const search = routeApi.useSearch();
-  const navigate = routeApi.useNavigate();
+  const search = AuthRoute.useSearch();
+  const navigate = AuthRoute.useNavigate();
   const { mutateAsync: registerUser } = useUserRegistrationMutation();
 
   const form = useAppForm({

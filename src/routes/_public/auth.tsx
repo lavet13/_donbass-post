@@ -20,7 +20,7 @@ const isValidTab = (value: unknown): value is TabsSearch["tab"] => {
   return typeof value === "string" && VALID_TABS.includes(value as any);
 };
 
-export const Route = createFileRoute("/_layout/auth")({
+export const Route = createFileRoute("/_public/auth")({
   component: AuthComponent,
   validateSearch: (search): TabsSearch => {
     return {

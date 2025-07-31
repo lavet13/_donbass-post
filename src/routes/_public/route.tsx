@@ -1,9 +1,9 @@
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
+import { Footer } from "@/components/layout-public/footer";
+import { Header } from "@/components/layout-public/header";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Fragment } from "react/jsx-runtime";
 
-export const Route = createFileRoute("/_layout")({
+export const Route = createFileRoute("/_public")({
   component: RouteComponent,
 });
 
