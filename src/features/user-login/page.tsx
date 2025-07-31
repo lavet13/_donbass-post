@@ -5,8 +5,8 @@ import { UserLoginForm } from "./nested-form";
 import { useUserLoginMutation } from "./mutations";
 import { isAxiosError } from "axios";
 import { useAuth } from "@/hooks/use-auth";
-import { useRouter } from "@tanstack/react-router";
 import { Route as AuthRoute } from "@/routes/_public/auth";
+import { useRouter } from "@tanstack/react-router";
 
 const UserLoginPage: FC = () => {
   const router = useRouter();

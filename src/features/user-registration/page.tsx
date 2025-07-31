@@ -5,8 +5,8 @@ import { UserRegistrationForm } from "@/features/user-registration/nested-form";
 import { Suspend } from "@/components/suspend";
 import { isAxiosError } from "axios";
 import type { FC } from "react";
-import { useRouter } from "@tanstack/react-router";
 import { Route as AuthRoute } from '@/routes/_public/auth';
+import { useRouter } from "@tanstack/react-router";
 
 const UserRegistrationPage: FC = () => {
   const router = useRouter();

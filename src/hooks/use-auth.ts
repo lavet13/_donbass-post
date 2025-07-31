@@ -6,6 +6,7 @@ export const useAuth = () => {
   const setToken = useSetAtom(setAuthTokenAtom);
   const user = useAtomValue(jwtPayloadAtom);
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
+  console.log({ user, isAuthenticated });
 
   const handleLogout = async () => {
     setToken(null);

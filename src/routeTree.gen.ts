@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as PublicShopCostCalculationOrderRouteImport } from './routes/_public/shop-cost-calculation-order'
 import { Route as PublicAuthRouteImport } from './routes/_public/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
@@ -28,6 +29,12 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+const PublicShopCostCalculationOrderRoute =
+  PublicShopCostCalculationOrderRouteImport.update({
+    id: '/shop-cost-calculation-order',
+    path: '/shop-cost-calculation-order',
+    getParentRoute: () => PublicRouteRoute,
+  } as any)
 const PublicAuthRoute = PublicAuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -42,11 +49,13 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
 export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/auth': typeof PublicAuthRoute
+  '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/auth': typeof PublicAuthRoute
+  '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
 }
 export interface FileRoutesById {
@@ -55,19 +64,21 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_public/auth': typeof PublicAuthRoute
+  '/_public/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/_public/': typeof PublicIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dashboard' | '/auth' | '/'
+  fullPaths: '/dashboard' | '/auth' | '/shop-cost-calculation-order' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/dashboard' | '/auth' | '/'
+  to: '/dashboard' | '/auth' | '/shop-cost-calculation-order' | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/_public'
     | '/_authenticated/dashboard'
     | '/_public/auth'
+    | '/_public/shop-cost-calculation-order'
     | '/_public/'
   fileRoutesById: FileRoutesById
 }
@@ -97,6 +108,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/shop-cost-calculation-order': {
+      id: '/_public/shop-cost-calculation-order'
+      path: '/shop-cost-calculation-order'
+      fullPath: '/shop-cost-calculation-order'
+      preLoaderRoute: typeof PublicShopCostCalculationOrderRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/auth': {
@@ -129,11 +147,13 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface PublicRouteRouteChildren {
   PublicAuthRoute: typeof PublicAuthRoute
+  PublicShopCostCalculationOrderRoute: typeof PublicShopCostCalculationOrderRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicAuthRoute: PublicAuthRoute,
+  PublicShopCostCalculationOrderRoute: PublicShopCostCalculationOrderRoute,
   PublicIndexRoute: PublicIndexRoute,
 }
 

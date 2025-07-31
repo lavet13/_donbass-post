@@ -9,19 +9,24 @@ export const Header: FC = () => {
 
   return (
     <header className="container px-2 h-14 flex items-center">
-      <Button asChild>
-        <Link to="/" activeOptions={{ exact: true }}>
-          Главная
-        </Link>
-      </Button>
-      {!isAuthenticated ? (
+      <div className="flex items-center gap-1">
         <Button asChild>
+          <Link to="/" activeOptions={{ exact: true }}>
+            Главная
+          </Link>
+        </Button>
+        <Button asChild>
+          <Link to="/shop-cost-calculation-order">Заявка ИМ</Link>
+        </Button>
+        <ModeToggle />
+      </div>
+      {!isAuthenticated ? (
+        <Button className="ml-auto" asChild>
           <Link to="/auth">Авторизоваться</Link>
         </Button>
       ) : (
-        <Button onClick={handleLogout}>Выйти</Button>
+        <Button className="ml-auto" onClick={handleLogout}>Выйти</Button>
       )}
-      <ModeToggle />
     </header>
   );
 };
