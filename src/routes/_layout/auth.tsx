@@ -20,12 +20,12 @@ const isValidTab = (value: unknown): value is TabsSearch["tab"] => {
   return typeof value === "string" && VALID_TABS.includes(value as any);
 };
 
-export const Route = createFileRoute("/auth")({
+export const Route = createFileRoute("/_layout/auth")({
   component: AuthComponent,
   validateSearch: (search): TabsSearch => {
     return {
       tab: isValidTab(search.tab) ? search.tab : "login",
-      redirect: (search.redirect as string) || '/',
+      redirect: (search.redirect as string) || "/",
     };
   },
   beforeLoad({ context, search }) {
@@ -37,7 +37,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthComponent() {
   const { tab } = useSearch({
-    from: Route.fullPath,
+    from: Route.id,
   });
 
   return (

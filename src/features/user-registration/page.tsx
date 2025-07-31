@@ -7,7 +7,7 @@ import { isAxiosError } from "axios";
 import type { FC } from "react";
 import { getRouteApi, useRouter } from "@tanstack/react-router";
 
-const routeApi = getRouteApi("/auth");
+const routeApi = getRouteApi("/_layout/auth");
 
 const UserRegistrationPage: FC = () => {
   const router = useRouter();

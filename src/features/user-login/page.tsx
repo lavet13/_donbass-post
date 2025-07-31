@@ -7,7 +7,7 @@ import { isAxiosError } from "axios";
 import { useAuth } from "@/hooks/use-auth";
 import { getRouteApi, useRouter } from "@tanstack/react-router";
 
-const routeApi = getRouteApi("/auth");
+const routeApi = getRouteApi("/_layout/auth");
 
 const UserLoginPage: FC = () => {
   const router = useRouter();
@@ -34,6 +34,10 @@ const UserLoginPage: FC = () => {
             // that falls out of the range of 2xx
 
             const status = error.response.status;
+
+            if (status === 401) {
+              // Invalid password
+            }
 
             if (status === 404) {
               // User not found

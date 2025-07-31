@@ -7,3 +7,4 @@
 - [x] add loading state for combobox
 - [] add sonner
 - [] try to use Provider from jotai instead of useFieldAccessibility hook
+- [] make sure when we delete auth-token we effectively invalidate router
