@@ -47,6 +47,15 @@ export const setAuthTokenAtom = atom(
 );
 
 /**
+ * Read-only atom that returns the current raw JWT token.
+ * Wraps rawTokenAtom in an async getter for consistency with other auth atoms.
+ * This seems unnecessary since rawTokenAtom could be used directly.
+ */
+// export const currentAuthTokenAtom = atom(
+//   async (get) => await get(rawTokenAtom),
+// );
+
+/**
  * Derived atom that returns the decoded JWT payload.
  * Automatically decodes the current token and returns null if no token exists.
  *
