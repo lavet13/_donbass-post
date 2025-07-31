@@ -3,14 +3,21 @@ import {
   HeadContent,
   Outlet,
   Scripts,
-  createRootRoute,
+  createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import type { QueryClient } from "@tanstack/react-query";
+import type { useAuth } from "@/hooks/use-auth";
 
-export const Route = createRootRoute({
+type MyRouterContext = {
+  queryClient: QueryClient;
+  auth: ReturnType<typeof useAuth>;
+};
+
+export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: RootComponent,
 });
 

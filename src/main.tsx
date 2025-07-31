@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "@/index.css";
 import { RouterProvider } from "@tanstack/react-router";
 import { createRouter } from "@/router.tsx";
+import { useAuth } from "@/hooks/use-auth";
 
 const router = createRouter();
 
@@ -13,12 +14,18 @@ declare module "@tanstack/react-router" {
   }
 }
 
+function App() {
+  const auth = useAuth();
+  console.log({ auth });
+  return <RouterProvider router={router} context={{ auth }} />;
+}
+
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <App />
     </StrictMode>,
   );
 }

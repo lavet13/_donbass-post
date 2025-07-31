@@ -1,4 +1,9 @@
-import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useSearch,
+} from "@tanstack/react-router";
 import UserRegistrationPage from "@/features/user-registration/page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserLoginPage from "@/features/user-login/page";
@@ -6,6 +11,7 @@ import { Suspend } from "@/components/suspend";
 
 type TabsSearch = {
   tab?: "login" | "sign-in";
+  redirect?: string;
 };
 
 const VALID_TABS = ["login", "sign-in"] as const;
@@ -16,12 +22,16 @@ const isValidTab = (value: unknown): value is TabsSearch["tab"] => {
 
 export const Route = createFileRoute("/auth")({
   component: AuthComponent,
-  loader() {
-  },
   validateSearch: (search): TabsSearch => {
     return {
       tab: isValidTab(search.tab) ? search.tab : "login",
+      redirect: (search.redirect as string) || '/',
     };
+  },
+  beforeLoad({ context, search }) {
+    if (context.auth.isAuthenticated) {
+      throw redirect({ to: search.redirect });
+    }
   },
 });
 

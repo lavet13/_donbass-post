@@ -76,24 +76,3 @@ export const decodeJWTPayload = (token: string): CustomJWTPayload | null => {
     return null;
   }
 };
-
-/**
- * Extract multiple claims at once with type safety
- */
-export function getJWTClaims<K extends keyof CustomJWTPayload>(
-  token: string,
-  claims: K[],
-): Pick<CustomJWTPayload, K> | null {
-  try {
-    const payload = decodeJwt<CustomJWTPayload>(token);
-    const result = {} as Pick<CustomJWTPayload, K>;
-
-    for (const claim of claims) {
-      result[claim] = payload[claim];
-    }
-
-    return result;
-  } catch {
-    return null;
-  }
-}

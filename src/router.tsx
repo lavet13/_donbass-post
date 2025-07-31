@@ -11,6 +11,7 @@ export function createRouter() {
   return reactRouter({
     context: {
       queryClient,
+      auth: undefined!,
     },
     routeTree,
     scrollRestoration: true,
