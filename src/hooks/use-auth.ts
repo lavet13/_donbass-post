@@ -3,6 +3,8 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { router } from "@/main";
 
 const roles = ["manager"] as const;
+
+// @future reminder: https://tanstack.com/router/latest/docs/framework/react/how-to/setup-rbac#3-using-permission-guards
 const definedPermissions = [
   "manager:create",
   "manager:write",
