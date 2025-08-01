@@ -73,7 +73,7 @@ export default defineConfig({
           network: ["axios"],
 
           // Browser utilities
-          utilities: ["js-cookie"],
+          utilities: ["js-cookie", "immer"],
         },
       },
     },

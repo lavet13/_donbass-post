@@ -42,12 +42,12 @@ async function pointsPost() {
     address,
   }));
 
-  return {
+  return Object.entries({
     "Стационарные отделения": stationary,
     "Мобильные отделения": mobile,
     // consider caching all points("All": [...stationary, ...mobile]), but
     // I want to experiment with new Set()
-  };
+  });
 }
 
 const usePointPostQuery = () =>

@@ -17,43 +17,23 @@ export function atomWithCookie<T extends string | null>(
     return (value as T) || initialValue;
   };
 
-  // Set initial cookie if it doesn't exist
   const defaultValue = getCookieValue();
-  if (!defaultValue && initialValue) {
-    Cookies.set(key, initialValue, cookieOptions);
-  }
 
   return atomWithStorage<T>("cookie:" + key, defaultValue, {
-    getItem: async () => {
-      if (hasCookieStore) {
-        // Use Cookie Store API if available
-        const cookie = await (window as any).cookieStore.get(key);
-        return (cookie?.value as T) || initialValue;
-      } else {
-        // Fallback to js-cookie
-        return getCookieValue();
-      }
+    getItem: () => {
+      return getCookieValue();
     },
 
-    setItem: async (_, value) => {
+    setItem: (_, value) => {
       if (value === null || value === initialValue) {
         Cookies.remove(key, removeCookieOptions);
-        if (hasCookieStore) {
-          await (window as any).cookieStore.delete(key);
-        }
       } else {
         Cookies.set(key, value, cookieOptions);
-        if (hasCookieStore) {
-          await (window as any).cookieStore.set(key, value);
-        }
       }
     },
 
-    removeItem: async () => {
+    removeItem: () => {
       Cookies.remove(key, removeCookieOptions);
-      if (hasCookieStore) {
-        await (window as any).cookieStore.delete(key);
-      }
     },
 
     subscribe: (_, callback) => {

@@ -25,19 +25,13 @@ import { useElementWidth } from "@/hooks/use-element-width";
 
 type ValueType = { label: string; value: string | number; name: string }[];
 
-type ValuesType =
-  | {
-      [x: string]: ValueType;
-    }
-  | undefined;
-
 const ComboboxField: FC<
   ComponentProps<"button"> & {
     searchEmptyMessage?: string;
     searchInputPlaceholder?: string;
     searchClearButtonTooltipMessage?: string;
     isLoading?: boolean;
-    values?: ValuesType;
+    values?: [string, ValueType][];
     placeholder: string;
     label: string;
     selectedEntryClearTooltipMessage?: string;
@@ -54,7 +48,7 @@ const ComboboxField: FC<
   searchClearButtonTooltipMessage = "Очистить поле",
   refetchErrorMessage = "Не удалось загрузить данные.",
   refetch,
-  values = {},
+  values: entries = [],
   selectedEntryClearTooltipMessage = "Очистить выбор",
   isLoading = undefined,
   loadingMessage = "Подождите",
@@ -74,7 +68,6 @@ const ComboboxField: FC<
   });
 
   const [open, setOpen] = useState(false);
-  const entries = Object.entries(values ?? {});
   const allEntries = entries.flatMap(([, items]) => items);
   const selectedEntry = allEntries.find(
     (entry) => entry.value === field.state.value,
@@ -153,7 +146,7 @@ const ComboboxField: FC<
           role="listbox"
           sideOffset={2}
           style={{ width: `${popoverWidth}px` }}
-          className={`p-0`}
+          className={`p-0 border border-input`}
         >
           <Command>
             <CommandInput

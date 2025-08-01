@@ -52,8 +52,8 @@ export const setAuthTokenAtom = atom(
  *
  * @returns JWT payload object or null if no valid token
  */
-export const jwtPayloadAtom = atom(async (get) => {
-  const token = await get(rawTokenAtom);
+export const jwtPayloadAtom = atom((get) => {
+  const token = get(rawTokenAtom);
   if (!token) return null;
 
   return decodeJWTPayload(token);
@@ -65,9 +65,7 @@ export const jwtPayloadAtom = atom(async (get) => {
  *
  * @returns boolean - true if user has valid JWT, false otherwise
  */
-export const isAuthenticatedAtom = atom(
-  async (get) => !!(await get(jwtPayloadAtom)),
-);
+export const isAuthenticatedAtom = atom((get) => !!get(jwtPayloadAtom));
 
 /**
  * Derived atom that calculates seconds until JWT expires.
@@ -80,8 +78,8 @@ export const isAuthenticatedAtom = atom(
  * - Uses Math.max to ensure never returns negative values
  * - Compares against current Unix timestamp
  */
-export const jwtTimeToExpiryAtom = atom(async (get) => {
-  const payload = await get(jwtPayloadAtom);
+export const jwtTimeToExpiryAtom = atom((get) => {
+  const payload = get(jwtPayloadAtom);
   if (!payload || !payload.exp) {
     return 0;
   }

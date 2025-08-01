@@ -35,7 +35,7 @@ const ShopCostCalculationOrderPage: FC = () => {
       try {
         await createShopCostCalculationOrder(payload);
         formApi.reset();
-        const entries = Object.entries(values ?? {});
+        const entries = values || [];
         const allEntries = entries.flatMap(([, items]) => items);
         const selectedEntry = allEntries.find(
           (entry) => entry.value === payload.shopCostCalculationOrder.pointTo,
