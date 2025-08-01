@@ -5,7 +5,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Header: FC = () => {
-  const { isAuthenticated, handleLogout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   return (
     <header className="container px-2 h-14 flex items-center">
@@ -25,7 +25,7 @@ export const Header: FC = () => {
           <Link to="/auth">Авторизоваться</Link>
         </Button>
       ) : (
-        <Button className="ml-auto" onClick={handleLogout}>Выйти</Button>
+        <Button className="ml-auto" onClick={logout}>Выйти</Button>
       )}
     </header>
   );

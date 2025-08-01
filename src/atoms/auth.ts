@@ -67,6 +67,8 @@ export const jwtPayloadAtom = atom((get) => {
  */
 export const isAuthenticatedAtom = atom((get) => !!get(jwtPayloadAtom));
 
+export const isManagerAtom = atom((get) => !!get(jwtPayloadAtom)?.manager);
+
 /**
  * Derived atom that calculates seconds until JWT expires.
  * Useful for implementing token refresh logic or showing expiry warnings.

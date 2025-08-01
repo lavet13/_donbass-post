@@ -5,16 +5,13 @@ import { UserLoginForm } from "./nested-form";
 import { useUserLoginMutation } from "./mutations";
 import { isAxiosError } from "axios";
 import { useAuth } from "@/hooks/use-auth";
-import { Route as AuthRoute } from "@/routes/_public/auth";
-import { useRouter } from "@tanstack/react-router";
+import { useSearch } from "@tanstack/react-router";
 
 const UserLoginPage: FC = () => {
-  const router = useRouter();
-  const navigate = AuthRoute.useNavigate();
-  const search = AuthRoute.useSearch();
+  const search = useSearch({ from: "/_public/auth" });
   const { mutateAsync: loginUser } = useUserLoginMutation();
 
-  const { setToken } = useAuth();
+  const { login } = useAuth();
 
   const form = useAppForm({
     ...defaultUserLoginOpts,
@@ -22,10 +19,8 @@ const UserLoginPage: FC = () => {
       try {
         const { phone, password } = value;
         const { token } = await loginUser({ phone, password });
-        setToken(token);
+        await login(token, search);
         formApi.reset();
-        await router.invalidate();
-        await navigate({ to: search.redirect });
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {

@@ -1,9 +1,9 @@
 import { workplacePostApi } from "@/axios";
 import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
-import type { UserRegistrationVariables } from "@/features/user-registration/types";
+import type { UserRegistrationResult, UserRegistrationVariables } from "@/features/user-registration/types";
 
 type UseUserRegistrationMutationProps = {
-  options?: UseMutationOptions<{}, Error, UserRegistrationVariables>;
+  options?: UseMutationOptions<UserRegistrationResult, Error, UserRegistrationVariables>;
 };
 
 export const useUserRegistrationMutation = (

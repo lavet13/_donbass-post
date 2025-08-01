@@ -4,10 +4,10 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Fragment } from "react/jsx-runtime";
 
 export const Route = createFileRoute("/_public")({
-  component: RouteComponent,
+  component: PublicLayout,
 });
 
-function RouteComponent() {
+function PublicLayout() {
   return (
     <Fragment>
       <Header />

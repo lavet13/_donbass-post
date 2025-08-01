@@ -44,12 +44,12 @@ function AuthComponent() {
     <Tabs value={tab}>
       <TabsList aria-label="Вход и регистрация">
         <TabsTrigger value="login" asChild>
-          <Link to="." search={{ tab: "login" }}>
+          <Link to="." search={(prev) => ({ ...prev, tab: "login" })}>
             Войти
           </Link>
         </TabsTrigger>
         <TabsTrigger value="sign-in" asChild>
-          <Link to="." search={{ tab: "sign-in" }}>
+          <Link to="." search={(prev) => ({ ...prev, tab: "sign-in" })}>
             Зарегистрироваться
           </Link>
         </TabsTrigger>

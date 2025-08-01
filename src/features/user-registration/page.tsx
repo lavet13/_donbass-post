@@ -5,24 +5,23 @@ import { UserRegistrationForm } from "@/features/user-registration/nested-form";
 import { Suspend } from "@/components/suspend";
 import { isAxiosError } from "axios";
 import type { FC } from "react";
-import { Route as AuthRoute } from '@/routes/_public/auth';
-import { useRouter } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/use-auth";
+import { useSearch } from "@tanstack/react-router";
 
 const UserRegistrationPage: FC = () => {
-  const router = useRouter();
-  const search = AuthRoute.useSearch();
-  const navigate = AuthRoute.useNavigate();
+  const search = useSearch({ from: "/_public/auth" });
   const { mutateAsync: registerUser } = useUserRegistrationMutation();
+
+  const { login } = useAuth();
 
   const form = useAppForm({
     ...defaultUserRegistrationOpts,
     onSubmit: async ({ value, formApi }) => {
       const { phone, password } = value;
       try {
-        await registerUser({ phone, password });
+        const { token } = await registerUser({ phone, password });
+        await login(token, search);
         formApi.reset();
-        await router.invalidate();
-        await navigate({ to: search.redirect });
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {

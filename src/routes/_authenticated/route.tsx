@@ -10,22 +10,22 @@ import {
 import { Fragment } from "react/jsx-runtime";
 
 export const Route = createFileRoute("/_authenticated")({
-  component: AuthenticatedComponent,
+  component: AuthenticatedLayout,
   beforeLoad({ context, location }) {
     if (!context.auth.isAuthenticated) {
-      console.log("_authenticated before load fired");
       throw redirect({
         to: "/auth",
         search: {
           redirect: location.href,
         },
+        replace: true,
       });
     }
   },
 });
 
-function AuthenticatedComponent() {
-  const { isAuthenticated, handleLogout } = useAuth();
+function AuthenticatedLayout() {
+  const { isAuthenticated, logout } = useAuth();
 
   return (
     <Fragment>
@@ -34,7 +34,7 @@ function AuthenticatedComponent() {
           <Link to="/auth">Авторизоваться</Link>
         </Button>
       ) : (
-        <Button onClick={handleLogout}>Выйти</Button>
+        <Button onClick={logout}>Выйти</Button>
       )}
       <ModeToggle />
       <main className="flex flex-col grow shrink-0 min-h-[calc(100svh-3.5rem)]">
