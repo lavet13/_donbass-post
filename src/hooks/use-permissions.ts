@@ -1,12 +1,15 @@
-import { useAuth } from "./use-auth";
+import { useAuth } from "@/hooks/use-auth";
 
 export const usePermissions = () => {
-  const { hasRole, hasAnyRole, hasPermission, hasAnyPermission } = useAuth();
+  const { hasRole, hasPermission } = useAuth();
 
-  return {
-    hasRole,
-    hasAnyRole,
-    hasPermission,
-    hasAnyPermission,
+  const permissions = {
+    canReadManagers: hasPermission("manager:read"),
+    canCreateManagers: hasPermission("manager:create"),
+    canEditManagers: hasPermission("manager:write"),
+    canDeleteManagers: hasPermission("manager:delete"),
+    isManager: hasRole("manager"),
   };
+
+  return permissions;
 };

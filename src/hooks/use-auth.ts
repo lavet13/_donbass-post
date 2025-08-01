@@ -4,6 +4,7 @@ import { router } from "@/main";
 
 const roles = ["manager"] as const;
 const permissions = [
+  "manager:create",
   "manager:write",
   "manager:read",
   "manager:delete",
@@ -17,11 +18,11 @@ export const useAuth = () => {
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
 
   const hasRole = (role: Role) => {
-    return roles.includes(role);
+    return user?.[role] ?? false;
   };
 
   const hasAnyRole = (roles: Role[]) => {
-    return roles.some((role) => roles.includes(role));
+    return roles.some((role) => Object.keys(user ?? []).includes(role));
   };
 
   const hasPermission = (permission: Permission) => {
