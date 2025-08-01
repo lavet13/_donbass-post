@@ -8,4 +8,5 @@
 - [] add sonner
 - [] try to use Provider from jotai instead of useFieldAccessibility hook
 - [] we should pass exp claim from token to the AUTH_CONFIG for consistency
-- [] it shouldn't block if the user submitted the form
+- [x] it shouldn't block if the user submitted the form
+- [] never have been used the vitest, try it, at least for testing the forms

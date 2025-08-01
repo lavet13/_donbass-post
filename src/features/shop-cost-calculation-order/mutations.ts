@@ -18,7 +18,6 @@ export const useShopCostCalculationOrderMutation = (
         "shop-cost-calculation-order",
         variables,
       );
-      console.log({ response });
 
       return response.data;
     },
