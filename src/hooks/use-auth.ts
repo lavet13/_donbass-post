@@ -3,14 +3,14 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { router } from "@/main";
 
 const roles = ["manager"] as const;
-const permissions = [
+const definedPermissions = [
   "manager:create",
   "manager:write",
   "manager:read",
   "manager:delete",
 ] as const;
 type Role = (typeof roles)[number];
-type Permission = (typeof permissions)[number];
+type Permission = (typeof definedPermissions)[number];
 
 export const useAuth = () => {
   const setToken = useSetAtom(setAuthTokenAtom);
@@ -26,11 +26,19 @@ export const useAuth = () => {
   };
 
   const hasPermission = (permission: Permission) => {
-    return permissions.includes(permission);
+    return definedPermissions.includes(permission);
   };
 
   const hasAnyPermission = (permissions: Permission[]) => {
-    return permissions.some((permission) => permissions.includes(permission));
+    return permissions.some((permission) => definedPermissions.includes(permission));
+  };
+
+  const permissions = {
+    canReadManagers: hasPermission("manager:read"),
+    canCreateManagers: hasPermission("manager:create"),
+    canEditManagers: hasPermission("manager:write"),
+    canDeleteManagers: hasPermission("manager:delete"),
+    isManager: hasRole("manager"),
   };
 
   const login = async (token: string, search: { redirect?: string }) => {
@@ -46,6 +54,7 @@ export const useAuth = () => {
   };
 
   return {
+    permissions,
     hasRole,
     hasAnyRole,
     hasPermission,
