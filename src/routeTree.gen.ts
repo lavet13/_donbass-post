@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
@@ -17,11 +16,6 @@ import { Route as PublicShopCostCalculationOrderRouteImport } from './routes/_pu
 import { Route as PublicAuthRouteImport } from './routes/_public/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
-const UnauthorizedRoute = UnauthorizedRouteImport.update({
-  id: '/unauthorized',
-  path: '/unauthorized',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
@@ -53,14 +47,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/unauthorized': typeof UnauthorizedRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/auth': typeof PublicAuthRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
 }
 export interface FileRoutesByTo {
-  '/unauthorized': typeof UnauthorizedRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/auth': typeof PublicAuthRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
@@ -70,7 +62,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
-  '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_public/auth': typeof PublicAuthRoute
   '/_public/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
@@ -78,24 +69,13 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/unauthorized'
-    | '/dashboard'
-    | '/auth'
-    | '/shop-cost-calculation-order'
-    | '/'
+  fullPaths: '/dashboard' | '/auth' | '/shop-cost-calculation-order' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/unauthorized'
-    | '/dashboard'
-    | '/auth'
-    | '/shop-cost-calculation-order'
-    | '/'
+  to: '/dashboard' | '/auth' | '/shop-cost-calculation-order' | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/_public'
-    | '/unauthorized'
     | '/_authenticated/dashboard'
     | '/_public/auth'
     | '/_public/shop-cost-calculation-order'
@@ -105,18 +85,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
-  UnauthorizedRoute: typeof UnauthorizedRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/unauthorized': {
-      id: '/unauthorized'
-      path: '/unauthorized'
-      fullPath: '/unauthorized'
-      preLoaderRoute: typeof UnauthorizedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_public': {
       id: '/_public'
       path: ''
@@ -192,7 +164,6 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
-  UnauthorizedRoute: UnauthorizedRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
