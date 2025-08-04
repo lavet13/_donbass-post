@@ -20,7 +20,7 @@ const CheckboxField: FC<React.ComponentProps<"input"> & { label: string }> = ({
   return (
     <FormItem className={cn("flex items-center", className)}>
       <Checkbox
-        id={formItemId || field.name}
+        id={formItemId}
         name={field.name}
         aria-label={defaultAriaLabel}
         aria-describedby={ariaDescribedBy}

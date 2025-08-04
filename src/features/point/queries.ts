@@ -10,7 +10,7 @@ const point = createQueryKeys("point", {
   },
 });
 
-async function fetchPointsPostData() {
+async function fetchAllPointsPost() {
   let { data: points } =
     await workplacePostApi.get<DeliveryPoint[]>("/point/post");
 
@@ -24,7 +24,7 @@ async function fetchPointsPostData() {
 
 // Query Functions
 async function pointsPost() {
-  const points = await fetchPointsPostData();
+  const points = await fetchAllPointsPost();
 
   const mobilePoints = points.filter((point) => point.mobilePoint);
   const staticPoints = points.filter((point) => !point.mobilePoint);
@@ -45,8 +45,6 @@ async function pointsPost() {
   return Object.entries({
     "Стационарные отделения": stationary,
     "Мобильные отделения": mobile,
-    // consider caching all points("All": [...stationary, ...mobile]), but
-    // I want to experiment with new Set()
   });
 }
 

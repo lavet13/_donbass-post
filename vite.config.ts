@@ -61,7 +61,7 @@ export default defineConfig({
           styling: ["class-variance-authority", "tailwind-merge", "clsx"],
 
           // State management
-          state: ["jotai"],
+          state: ["jotai", "immer"],
 
           // UI and interaction
           icons: ["lucide-react"],
@@ -73,7 +73,7 @@ export default defineConfig({
           network: ["axios"],
 
           // Browser utilities
-          utilities: ["js-cookie", "immer"],
+          JWT: ["js-cookie", "jose"],
         },
       },
     },

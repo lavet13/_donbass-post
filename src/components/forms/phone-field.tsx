@@ -22,7 +22,7 @@ const PhoneField: FC<DefaultInputComponentProps & { label: string }> = ({
     <FormItem>
       <FormLabel id={formItemId}>{label}</FormLabel>
       <RPNInput
-        id={formItemId || field.name}
+        id={formItemId}
         name={field.name}
         inputComponent={Input}
         aria-label={defaultAriaLabel}

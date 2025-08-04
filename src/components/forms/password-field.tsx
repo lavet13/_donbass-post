@@ -28,7 +28,7 @@ const PasswordField: FC<PasswordFieldProps> = ({ label, ...props }) => {
       <FormLabel id={formItemId}>{label}</FormLabel>
       <PasswordToggleField>
         <PasswordToggleFieldInput
-          id={formItemId || field.name}
+          id={formItemId}
           name={field.name}
           value={field.state.value}
           aria-label={defaultAriaLabel}

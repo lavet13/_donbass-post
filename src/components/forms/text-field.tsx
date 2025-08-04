@@ -21,7 +21,7 @@ const TextField: FC<TextFieldProps> = ({ label, ...props }) => {
     <FormItem>
       <FormLabel id={formItemId}>{label}</FormLabel>
       <Input
-        id={formItemId || field.name}
+        id={formItemId}
         name={field.name}
         value={field.state.value}
         aria-label={defaultAriaLabel}
