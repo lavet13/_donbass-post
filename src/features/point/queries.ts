@@ -59,6 +59,7 @@ const usePointPostQuery = () =>
     // indefinitely
     // (see: https://tkdodo.eu/blog/practical-react-query#keep-server-and-client-state-separate)
     staleTime: Infinity,
+    retry: false,
   });
 
 export { usePointPostQuery, point };

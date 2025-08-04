@@ -4,6 +4,7 @@ import { AUTH_CONFIG } from "@/config";
 
 const workplacePostApi = axios.create({
   baseURL: "https://workplace-post.ru/api/",
+  timeout: 10_000,
 });
 
 workplacePostApi.interceptors.request.use((config) => {
