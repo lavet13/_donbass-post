@@ -405,7 +405,7 @@ export const ShopCostCalculationOrderForm = withForm({
           children={(field) => (
             <field.CheckboxField
               className="my-2 flex-row gap-2"
-              label="Подтверждаю, что мне исполнилось 18 лет, и ознакомился с правилами предоставления услуг"
+              label="Подтверждаю, что мне исполнилось 14 лет, и ознакомился с правилами предоставления услуг"
             />
           )}
         />
