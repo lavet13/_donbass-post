@@ -8,11 +8,11 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   base: "/user",
   plugins: [
+    tailwindcss(),
     tanstackRouter({
       target: "react",
       autoCodeSplitting: true,
     }),
-    tailwindcss(),
     react(),
   ],
   resolve: {

@@ -41,7 +41,10 @@ export const ShopCostCalculationOrderForm = withForm({
         durationMs: 60_000,
       });
 
-    const isDefaultValue = useStore(form.store, state => state.isDefaultValue);
+    const isDefaultValue = useStore(
+      form.store,
+      (state) => state.isDefaultValue,
+    );
 
     useBlocker({
       shouldBlockFn: () => {
@@ -56,6 +59,7 @@ export const ShopCostCalculationOrderForm = withForm({
 
     return (
       <form
+        className="px-2 md:px-0"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -203,7 +207,7 @@ export const ShopCostCalculationOrderForm = withForm({
                         <div className="flex justify-between items-center mt-2">
                           <Tooltip content="Удалить магазин и товары">
                             <button
-                              className="relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                              className="text-secondary-foreground relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary/60 active:bg-secondary/70 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                               aria-label="Удалить магазин и товары"
                               type="button"
                               onClick={() => shopsField.removeValue(shopIndex)}
@@ -247,7 +251,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                 (_, productIndex) => {
                                   return (
                                     <React.Fragment key={productIndex}>
-                                      <div className="relative flex flex-col gap-1 mt-2 px-2">
+                                      <div className="relative flex flex-col gap-1 mt-2 pl-2 ml-1 border-l-3 border-ring rounded-l-xs ">
                                         {productIndex === 0 && (
                                           <h3 className="font-medium text-sm">
                                             Товар № {productIndex + 1}
@@ -260,7 +264,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                             </h3>
                                             <Tooltip content="Удалить товар">
                                               <button
-                                                className="relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                                                className="text-secondary-foreground relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary/60 active:bg-secondary/70 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                                                 aria-label="Удалить товар"
                                                 type="button"
                                                 onClick={() =>
@@ -358,8 +362,9 @@ export const ShopCostCalculationOrderForm = withForm({
                                 },
                               )}
 
-                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 mt-2 px-2">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
                                 <Button
+                                  variant="outline"
                                   className="rounded-full"
                                   type="button"
                                   onClick={() =>
@@ -381,8 +386,9 @@ export const ShopCostCalculationOrderForm = withForm({
                   );
                 })}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 mt-2">
+                <div className="grid gap-2 mt-2">
                   <Button
+                    variant="ghost"
                     className="rounded-full"
                     type="button"
                     onClick={() =>
@@ -410,9 +416,11 @@ export const ShopCostCalculationOrderForm = withForm({
           )}
         />
 
-        <form.AppForm>
-          <form.SubscribeButton label="Зарегистрировать" />
-        </form.AppForm>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
+          <form.AppForm>
+            <form.SubscribeButton label="Зарегистрировать" />
+          </form.AppForm>
+        </div>
       </form>
     );
   },

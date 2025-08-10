@@ -2,82 +2,84 @@
 @import "tw-animate-css";
 
 :root {
-  /* Primary - slightly adjusted for better accessibility */
-  --primary: #d12d2e; /* More saturated red with better contrast */
+  --primary: #d66a6a;
   --primary-foreground: #ffffff;
 
-  /* Background and foreground - improved contrast */
   --background: #fdf7f7; /* Lighter, cleaner background */
-  --foreground: #333333; /* Higher contrast dark text */
+  --foreground: #2e2222;
 
-  /* Card - maintained but with better shadow compatibility */
   --card: #ffffff;
-  --card-foreground: #333333; /* Darker for better readability */
+  --card-foreground: #2e2222; /* Darker for better readability */
 
-  /* Popover */
   --popover: #ffffff;
-  --popover-foreground: #333333;
-  --popover-border: #e6caca; /* Slightly more saturated */
+  --popover-foreground: #2e2222;
+  --popover-border: #ddd0d0;
 
-  /* Secondary - clearer hierarchy */
-  --secondary: #f2d2d2; /* More distinct from background */
-  --secondary-foreground: #333333;
+  --secondary: #f4d8d6;
+  --secondary-foreground: #2e2222;
 
-  /* Muted - better differentiation */
-  --muted: #f5e4e4; /* Lighter, more distinct */
+  --muted: #fdf0f0; /* Lighter, more distinct */
   --muted-foreground: #6b5e5e; /* Improved readability */
 
-  /* Accent - enhanced blue */
-  --accent: #2e8bb0; /* More vibrant, better contrast */
-  --accent-foreground: #ffffff;
+  --accent: #f0d1d1; /* Soft clay blush – warm, dusty, quiet */
+  --accent-foreground: #814343; /* Dark text for contrast */
 
-  /* Destructive - maintained but optimized */
-  --destructive: #c43c2f;
+  --destructive: #c75a5a; /* Balanced: soft but clear */
   --destructive-foreground: #ffffff;
 
-  /* Borders and inputs - unified */
-  --border: #e6caca; /* Matches popover border */
-  --input: #e6caca;
-  --ring: #d12d2e; /* Matches primary */
+  --ring: #e6b6b6; /* Soft warm focus */
+  --border: #ddd0d0; /* Very soft warm line */
+  --input: #ddd0d0;
 
-  /* New additions for better design system */
   --success: #2d8c49; /* Green for positive actions */
   --success-foreground: #ffffff;
+
   --warning: #c97c13; /* Amber for warnings */
   --warning-foreground: #ffffff;
+
   --info: #2e8bb0; /* Blue for information */
   --info-foreground: #ffffff;
 }
 
 .dark {
-  --primary: #f26b6b;
+  --primary: #e08484;
   --primary-foreground: #161616;
+
   --background: #161616;
   --foreground: #f0f0f0;
+
   --card: #262020;
   --card-foreground: #f0f0f0;
+
   --popover: #2a2424; /* Slightly different from card for distinction */
   --popover-foreground: #f0f0f0;
-  --secondary: #362d2d;
+  --popover-border: #665555;
+
+  --secondary: #422e2e;
   --secondary-foreground: #e0e0e0;
+
   --muted: #362d2d;
   --muted-foreground: #b8b8b8;
-  --accent: #5cb3d9;
-  --accent-foreground: #161616;
-  --destructive: #ff7f7f;
+
+  --accent: #3a2424; /* Slightly lighter than #2c1d1d — still deep */
+  --accent-foreground: #f0c8c8; /* Soft rose instead of bright #ffa4a4 */
+
+  --destructive: #c87a7a;
   --destructive-foreground: #161616;
-  --border: #524545;
-  --input: #524545;
-  --ring: #f26b6b;
+
+  --ring: #b37070; /* Dusty rose — focus only */
+  --border: #665555; /* Soft warm line, visible */
+  --input: #665555;
 
   /* Added semantic colors */
   --success: #4ade80; /* Bright green for dark mode */
   --success-foreground: #161616;
+
   --warning: #fbbf24; /* Bright amber for dark mode */
   --warning-foreground: #161616;
+
   --info: #60a5fa; /* Bright blue for dark mode */
   --info-foreground: #161616;
-  --popover-border: #524545; /* Added for consistency */
 }
 
 @custom-variant dark (&:is(.dark *));

@@ -172,7 +172,7 @@ const ComboboxField: FC<
                           title={label}
                           className={cn(
                             value === field.state.value &&
-                              "dark:bg-primary dark:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:text-primary-foreground dark:active:data-[selected=true]:bg-primary/80 dark:text-primary-foreground bg-primary data-[selected=true]:bg-primary/90 hover:data-[selected=true]:bg-primary/90 active:data-[selected=true]:bg-primary/80 text-popover hover:data-[selected=true]:text-popover data-[selected=true]:text-popover",
+                              "dark:bg-secondary dark:data-[selected=true]:bg-secondary/90 dark:hover:data-[selected=true]:bg-secondary/90 dark:hover:data-[selected=true]:text-secondary-foreground dark:active:data-[selected=true]:bg-secondary/80 dark:text-secondary-foreground bg-secondary data-[selected=true]:bg-secondary/90 hover:data-[selected=true]:bg-secondary/90 active:data-[selected=true]:bg-secondary/80 text-secondary-foreground hover:data-[selected=true]:text-secondary-foreground data-[selected=true]:text-popover",
                           )}
                           key={value}
                           value={value as string}
@@ -192,7 +192,7 @@ const ComboboxField: FC<
                           </span>
                           <CheckIcon
                             className={cn(
-                              "ml-auto size-4 text-popover dark:text-primary-foreground",
+                              "ml-auto size-4 text-secondary-foreground dark:text-secondary-foreground",
                               value === field.state.value
                                 ? "opacity-100"
                                 : "opacity-0",

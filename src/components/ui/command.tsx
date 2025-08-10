@@ -63,10 +63,11 @@ const CommandItem: FC<ComponentProps<typeof CommandPrimitive.Item>> = ({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "hover:data-[selected=true]:bg-popover-foreground/5 active:data-[selected=true]:bg-popover-foreground/10 dark:active:data-[selected=true]:bg-popover-foreground/15 data-[selected=true]:bg-popover-foreground/5 data-[selected=true]:text-popover-foreground",
+        "hover:data-[selected=true]:bg-secondary/25 dark:hover:data-[selected=true]:bg-secondary/80 dark:data-[selected=true]:bg-secondary/80 active:data-[selected=true]:bg-secondary/50 dark:active:data-[selected=true]:bg-secondary/50 data-[selected=true]:bg-secondary/25 data-[selected=true]:text-secondary-foreground",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
         "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 select-none outline-hidden text-sm",
+        "md:text-sm text-base",
         className,
       )}
       {...props}
@@ -145,6 +146,7 @@ const CommandInput: FC<
         className={cn(
           "flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden",
           "placeholder:text-muted-foreground caret-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+          "text-base md:text-sm",
           className,
         )}
         {...props}
@@ -152,7 +154,7 @@ const CommandInput: FC<
       {clearButton && value && (
         <Tooltip content={clearButtonTooltipMessage}>
           <button
-            className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+            className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary-foreground/10 active:bg-secondary-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
             onKeyDown={handleKeyDown}
             onClick={handleClear}
             type="button"
