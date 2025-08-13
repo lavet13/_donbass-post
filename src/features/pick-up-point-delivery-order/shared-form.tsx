@@ -65,6 +65,7 @@ export const defaultPickUpPointDeliveryOrderOpts = formOptions({
       {
         label: "",
         value: 0,
+        selected: "no" as "yes" | "no",
       },
     ],
 

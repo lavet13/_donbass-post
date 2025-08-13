@@ -7,17 +7,20 @@ import {
   RadioGroupRoot,
 } from "@/components/ui/radio-group";
 import { FormItem, FormMessage } from "../ui/form";
+import { cn } from "@/lib/utils";
 
 type RadioGroupFieldProps = {
   options: { value: string; label: string }[];
   "aria-label"?: string;
   ariaLabel?: string;
+  stretched?: boolean;
 };
 
 const RadioGroupField: FC<RadioGroupFieldProps> = ({
   options,
   "aria-label": ariaLabelProp,
   ariaLabel,
+  stretched = false,
 }) => {
   const {
     field,
@@ -31,6 +34,7 @@ const RadioGroupField: FC<RadioGroupFieldProps> = ({
   return (
     <FormItem>
       <RadioGroupRoot
+        className={cn(stretched && "flex-1")}
         name={field.name}
         aria-label={defaultAriaLabel}
         value={field.state.value}
@@ -38,6 +42,7 @@ const RadioGroupField: FC<RadioGroupFieldProps> = ({
       >
         {options.map(({ value, label }, idx) => (
           <RadioGroupItem
+            className={cn(stretched && "flex-1 inline-flex items-center justify-center")}
             key={value}
             aria-invalid={!!error}
             aria-describedby={ariaDescribedBy}

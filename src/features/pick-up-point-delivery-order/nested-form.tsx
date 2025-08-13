@@ -9,7 +9,10 @@ import { useDeliveryCompaniesQuery } from "@/features/delivery-company/queries";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "../additional-service/queries";
-import { useMemo } from "react";
+import { useEffect } from "react";
+import { Label } from "@/components/ui/label";
+import { FormItem } from "@/components/ui/form";
+import { Loader2 } from "lucide-react";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -41,8 +44,11 @@ export const PickUpPointDeliveryOrderForm = withForm({
     } = useAdditionalServicePickUpQuery();
     console.log({ additionalServices });
 
-    useMemo(() => {
-      form.setFieldValue("additionalService", additionalServices ?? []);
+    useEffect(() => {
+      form.setFieldValue(
+        "additionalService",
+        additionalServices?.map((s) => ({ ...s, selected: "no" })) ?? [],
+      );
     }, [additionalServices]);
 
     return (
@@ -865,28 +871,40 @@ export const PickUpPointDeliveryOrderForm = withForm({
           }}
         />
 
+        {isAdditionalServiceLoading && (
+          <div className="flex items-center justify-center py-1.5">
+            <Loader2 className="text-primary animate-spin" />
+          </div>
+        )}
         <form.AppField
           name="additionalService"
           mode="array"
           children={(field) => {
             return (
-              <div>
+              <div className="sm:grid sm:grid-cols-3 flex flex-col gap-x-4 gap-y-2">
                 {field.state.value.map((_, i) => (
-                  <>
-                    <form.AppField
-                      key={i}
-                      name={`additionalService[${i}].label`}
-                      children={(field) => {
-                        return `${field.state.value}, `;
-                      }}
-                    />
-                    <form.AppField
-                      name={`additionalService[${i}].value`}
-                      children={(field) => {
-                        return `id: ${field.state.value}; `;
-                      }}
-                    />
-                  </>
+                  <form.AppField
+                    key={i}
+                    name={`additionalService[${i}].selected`}
+                    children={(field) => {
+                      const label = form.getFieldValue(
+                        `additionalService[${i}].label`,
+                      );
+                      return (
+                        <FormItem className="items-stretch">
+                          <Label>{label}</Label>
+                          <field.RadioGroupField
+                            stretched
+                            options={[
+                              { label: "Да", value: "yes" },
+                              { label: "Нет", value: "no" },
+                            ]}
+                            ariaLabel={`Дополнительная услуга '${label}'`}
+                          />
+                        </FormItem>
+                      );
+                    }}
+                  />
                 ))}
               </div>
             );
@@ -901,7 +919,10 @@ export const PickUpPointDeliveryOrderForm = withForm({
         />
 
         <form.AppForm>
-          <form.SubscribeButton loadingMessage="Оформляем заявку" label="Оформить заявку" />
+          <form.SubscribeButton
+            loadingMessage="Оформляем заявку"
+            label="Оформить заявку"
+          />
         </form.AppForm>
       </form>
     );

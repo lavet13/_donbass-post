@@ -53,7 +53,7 @@ const RadioGroupLabel: FC<ComponentProps<typeof Label>> = ({
   return (
     <Label
       className={cn(
-        "cursor-pointer relative z-1 text-accent-foreground",
+        "cursor-pointer relative z-0 text-accent-foreground",
         "group-data-[state=checked]:text-primary-foreground",
         "relative group-active:top-[1px]",
         className,
