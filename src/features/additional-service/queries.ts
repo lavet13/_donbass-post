@@ -10,9 +10,13 @@ const additionalServiceKeys = createQueryKeys("additional-service", {
 });
 
 const fetchAdditionalServicePickUp = async () => {
-  const response = await workplacePostApi.get<AdditionalServicePickUp[]>("additional-service/pick-up");
-  return response.data;
-}
+  const response = await workplacePostApi.get<AdditionalServicePickUp[]>(
+    "additional-service/pick-up",
+  );
+  return response.data
+    .filter(({ active }) => active)
+    .map(({ id, name, price }) => ({ label: name, value: id, price }));
+};
 
 const useAdditionalServicePickUpQuery = () =>
   useQuery({

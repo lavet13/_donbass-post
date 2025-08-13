@@ -1,7 +1,7 @@
 import type { inferQueryKeys } from "@lukemorales/query-key-factory";
-import type { additionalService } from "@/features/additional-service/queries";
+import type { additionalServiceKeys } from "@/features/additional-service/queries";
 
-export type AdditionalServiceKeys = inferQueryKeys<typeof additionalService>;
+export type AdditionalServiceKeys = inferQueryKeys<typeof additionalServiceKeys>;
 export type AdditionalServicePickUp = {
   id: number;
   name: string;

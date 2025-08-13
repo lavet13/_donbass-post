@@ -5,11 +5,16 @@ import { lazy } from "react";
 const TextField = lazy(() => import("@/components/forms/text-field"));
 const PasswordField = lazy(() => import("@/components/forms/password-field"));
 const CheckboxField = lazy(() => import("@/components/forms/checkbox-field"));
-const PriceField = lazy(() => import("@/components/forms/price-field"));
+const NumericField = lazy(() => import("@/components/forms/numeric-field"));
 const PhoneField = lazy(() => import("@/components/forms/phone-field"));
-const ComboboxGroupField = lazy(() => import("@/components/forms/combobox-group-field"));
+const ComboboxGroupField = lazy(
+  () => import("@/components/forms/combobox-group-field"),
+);
 const ComboboxField = lazy(() => import("@/components/forms/combobox-field"));
-const RadioGroupField = lazy(() => import("@/components/forms/radio-group-field"));
+const RadioGroupField = lazy(
+  () => import("@/components/forms/radio-group-field"),
+);
+const TextareaField = lazy(() => import("@/components/forms/textarea-field"));
 const SubscribeButton = lazy(
   () => import("@/components/forms/subscribe-button"),
 );
@@ -21,12 +26,13 @@ export const { useAppForm, withForm } = createFormHook({
   fieldComponents: {
     TextField,
     CheckboxField,
-    PriceField,
+    NumericField,
     PhoneField,
     ComboboxGroupField,
     ComboboxField,
     PasswordField,
     RadioGroupField,
+    TextareaField,
   },
   formComponents: {
     SubscribeButton,

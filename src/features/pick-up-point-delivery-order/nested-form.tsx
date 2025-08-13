@@ -5,9 +5,11 @@ import { Fragment } from "react/jsx-runtime";
 import { Suspend } from "@/components/suspend";
 import z from "zod";
 import { getEmailErrorMessage } from "@/lib/utils";
-import { useDeliveryCompaniesQuery } from "../delivery-company/queries";
-import { usePointPostQuery } from "../point/queries";
-import { Button } from "@/components/ui/button";
+import { useDeliveryCompaniesQuery } from "@/features/delivery-company/queries";
+import { usePointPostQuery } from "@/features/point/queries";
+import { Toggle } from "@/components/ui/toggle";
+import { useAdditionalServicePickUpQuery } from "../additional-service/queries";
+import { useMemo } from "react";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -31,7 +33,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
       isLoading: isDeliveryCompaniesLoading,
       refetch: refetchDeliveryCompanies,
     } = useDeliveryCompaniesQuery();
-    console.log({ deliveryCompanies });
+
+    const {
+      data: additionalServices,
+      isLoading: isAdditionalServiceLoading,
+      refetch: refetchAdditionalServices,
+    } = useAdditionalServicePickUpQuery();
+    console.log({ additionalServices });
+
+    useMemo(() => {
+      form.setFieldValue("additionalService", additionalServices ?? []);
+    }, [additionalServices]);
 
     return (
       <form
@@ -63,7 +75,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
           selector={(state) => state.values.sender.type}
           children={(senderType) => {
             if (senderType !== "individual") return null;
-
             return (
               <Fragment>
                 <Suspend>
@@ -185,11 +196,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     validators={{
                       onChange: ({ value }) => {
                         const result = emailSchema.safeParse(value);
-
                         if (result.error) {
                           return getEmailErrorMessage(value);
                         }
-
                         return undefined;
                       },
                     }}
@@ -213,7 +222,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
           selector={(state) => state.values.sender.type}
           children={(senderType) => {
             if (senderType !== "company") return null;
-
             return (
               <Fragment>
                 <Suspend>
@@ -246,11 +254,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     validators={{
                       onChange: ({ value }) => {
                         const result = emailSchema.safeParse(value);
-
                         if (result.error) {
                           return getEmailErrorMessage(value);
                         }
-
                         return undefined;
                       },
                     }}
@@ -332,7 +338,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
           selector={(state) => state.values.recipient.type}
           children={(recipientType) => {
             if (recipientType !== "individual") return null;
-
             return (
               <Fragment>
                 <Suspend>
@@ -408,7 +413,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       }}
                     />
                   </div>
-
                   <form.AppField
                     name="recipient.deliveryCompany"
                     children={(field) => {
@@ -427,7 +431,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       );
                     }}
                   />
-
                   <form.AppField
                     name="recipient.deliveryAddress"
                     children={(field) => {
@@ -450,7 +453,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
           selector={(state) => state.values.recipient.type}
           children={(recipientType) => {
             if (recipientType !== "company") return null;
-
             return (
               <Fragment>
                 <Suspend>
@@ -483,11 +485,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     validators={{
                       onChange: ({ value }) => {
                         const result = emailSchema.safeParse(value);
-
                         if (result.error) {
                           return getEmailErrorMessage(value);
                         }
-
                         return undefined;
                       },
                     }}
@@ -513,7 +513,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       );
                     }}
                   />
-
                   <form.AppField
                     name="recipient.innRecipient"
                     children={(field) => {
@@ -525,7 +524,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       );
                     }}
                   />
-
                   <form.AppField
                     name="recipient.deliveryCompany"
                     children={(field) => {
@@ -553,7 +551,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
         <form.AppField
           name="customer.isToggled"
           children={(field) => {
-            return null;
+            return (
+              <Toggle
+                pressed={field.state.value}
+                onPressedChange={field.handleChange}
+              >
+                Заказчик(по выбору клиента)
+              </Toggle>
+            );
           }}
         />
 
@@ -561,7 +566,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
           selector={(state) => state.values.customer.isToggled}
           children={(customerIsToggled) => {
             if (!customerIsToggled) return null;
-
             return (
               <form.AppField
                 name="customer.type"
@@ -583,6 +587,312 @@ export const PickUpPointDeliveryOrderForm = withForm({
           }}
         />
 
+        <form.Subscribe
+          selector={(state) => [
+            state.values.customer.type,
+            state.values.customer.isToggled,
+          ]}
+          children={([customerType, customerIsToggled]) => {
+            if (!customerIsToggled) return null;
+            if (customerType !== "individual") return null;
+            return (
+              <Fragment>
+                <Suspend>
+                  <form.AppField
+                    name="customer.surnameCustomer"
+                    children={(field) => {
+                      return (
+                        <field.TextField
+                          label="Фамилия"
+                          placeholder="Иванов"
+                          ariaLabel="Заполните фамилию физического лица заказчика"
+                        />
+                      );
+                    }}
+                  />
+                  <form.AppField
+                    name="customer.nameCustomer"
+                    children={(field) => {
+                      return (
+                        <field.TextField
+                          label="Имя"
+                          placeholder="Иван"
+                          ariaLabel="Заполните имя физического лица заказчика"
+                        />
+                      );
+                    }}
+                  />
+                  <form.AppField
+                    name="customer.patronymicCustomer"
+                    children={(field) => {
+                      return (
+                        <field.TextField
+                          label="Отчество"
+                          placeholder="Иванович"
+                          ariaLabel="Заполните отчество физического лица заказчика"
+                        />
+                      );
+                    }}
+                  />
+                  <form.AppField
+                    name="customer.phoneCustomer"
+                    children={(field) => {
+                      return (
+                        <field.PhoneField
+                          label="Телефон"
+                          placeholder="Заполните телефон"
+                          ariaLabel="Заполните телефон заказчика"
+                        />
+                      );
+                    }}
+                  />
+                  <div className="flex justify-center gap-2">
+                    <form.AppField
+                      name="customer.telegramCustomer"
+                      children={(field) => {
+                        return (
+                          <field.CheckboxField
+                            label="Telegram"
+                            ariaLabel="Заполните телеграм заказчика"
+                          />
+                        );
+                      }}
+                    />
+                    <form.AppField
+                      name="customer.whatsAppCustomer"
+                      children={(field) => {
+                        return (
+                          <field.CheckboxField
+                            label="WhatsApp"
+                            ariaLabel="Заполните ватсап заказчика"
+                          />
+                        );
+                      }}
+                    />
+                  </div>
+                </Suspend>
+              </Fragment>
+            );
+          }}
+        />
+
+        <form.Subscribe
+          selector={(state) => [
+            state.values.customer.type,
+            state.values.customer.isToggled,
+          ]}
+          children={([customerType, customerIsToggled]) => {
+            if (!customerIsToggled) return null;
+            if (customerType !== "company") return null;
+            return (
+              <Fragment>
+                <Suspend>
+                  <form.AppField
+                    name="customer.companyCustomer"
+                    children={(field) => {
+                      return (
+                        <field.TextField
+                          label="Компания"
+                          placeholder="Компания"
+                          ariaLabel="Заполните компанию заказчика"
+                        />
+                      );
+                    }}
+                  />
+                  <form.AppField
+                    name="customer.phoneCustomer"
+                    children={(field) => {
+                      return (
+                        <field.PhoneField
+                          label="Телефон"
+                          placeholder="Заполните телефон"
+                          ariaLabel="Заполните телефон заказчика компании"
+                        />
+                      );
+                    }}
+                  />
+                  <form.AppField
+                    name="customer.emailCustomer"
+                    validators={{
+                      onChange: ({ value }) => {
+                        const result = emailSchema.safeParse(value);
+                        if (result.error) {
+                          return getEmailErrorMessage(value);
+                        }
+                        return undefined;
+                      },
+                    }}
+                    children={(field) => {
+                      return (
+                        <field.TextField
+                          label="E-mail"
+                          placeholder="example@mail.ru"
+                          aria-label="Укажите адрес электронной почты заказчика компании"
+                        />
+                      );
+                    }}
+                  />
+                  <form.AppField
+                    name="customer.innCustomer"
+                    children={(field) => {
+                      return (
+                        <field.TextField
+                          label="ИНН"
+                          placeholder="Укажите ИНН"
+                        />
+                      );
+                    }}
+                  />
+                </Suspend>
+              </Fragment>
+            );
+          }}
+        />
+
+        <form.AppField
+          name="cargoData.totalWeight"
+          children={(field) => {
+            return (
+              <field.NumericField
+                label="Общий вес(кг)"
+                placeholder="Общий вес в килограммах"
+                suffix=" кг"
+                decimalScale={1}
+                thousandSeparator=","
+              />
+            );
+          }}
+        />
+
+        <form.AppField
+          name="cargoData.declaredPrice"
+          children={(field) => {
+            return (
+              <field.NumericField
+                label="Заявленная стоимость(в рублях)"
+                placeholder="Заявленная стоимость в рублях"
+                suffix=" ₽"
+                thousandSeparator=" "
+              />
+            );
+          }}
+        />
+
+        <form.AppField
+          name="cargoData.weightHeaviestPosition"
+          children={(field) => {
+            return (
+              <field.NumericField
+                label="Вес самой тяжелой позиции(кг)"
+                placeholder="Вес самой тяжелой позиции в килограммах"
+                suffix=" кг"
+                decimalScale={1}
+                thousandSeparator=","
+              />
+            );
+          }}
+        />
+
+        <form.AppField
+          name="cargoData.cubicMeter"
+          children={(field) => {
+            return (
+              <field.NumericField
+                label="Метр кубический"
+                placeholder="Метр кубический"
+                suffix=" м³"
+                decimalScale={5}
+                thousandSeparator=","
+              />
+            );
+          }}
+        />
+
+        <form.AppField
+          name="cargoData.long"
+          children={(field) => {
+            return (
+              <field.NumericField
+                label="Длина(см)"
+                placeholder="Длина в сантиметрах"
+                suffix=" см"
+                decimalScale={1}
+                thousandSeparator=","
+              />
+            );
+          }}
+        />
+
+        <form.AppField
+          name="cargoData.width"
+          children={(field) => {
+            return (
+              <field.NumericField
+                label="Ширина(см)"
+                placeholder="Ширина в сантиметрах"
+                suffix=" см"
+                decimalScale={1}
+                thousandSeparator=","
+              />
+            );
+          }}
+        />
+
+        <form.AppField
+          name="cargoData.height"
+          children={(field) => {
+            return (
+              <field.NumericField
+                label="Высота(см)"
+                placeholder="Высота в сантиметрах"
+                suffix=" см"
+                decimalScale={1}
+                thousandSeparator=","
+              />
+            );
+          }}
+        />
+
+        <form.AppField
+          name="cargoData.description"
+          children={(field) => {
+            return (
+              <field.TextareaField
+                label="Краткое описание"
+                placeholder="Краткое описание"
+              />
+            );
+          }}
+        />
+
+        <form.AppField
+          name="additionalService"
+          mode="array"
+          children={(field) => {
+            return (
+              <div>
+                {field.state.value.map((_, i) => (
+                  <>
+                    <form.AppField
+                      key={i}
+                      name={`additionalService[${i}].label`}
+                      children={(field) => {
+                        return `${field.state.value}, `;
+                      }}
+                    />
+                    <form.AppField
+                      name={`additionalService[${i}].value`}
+                      children={(field) => {
+                        return `id: ${field.state.value}; `;
+                      }}
+                    />
+                  </>
+                ))}
+              </div>
+            );
+          }}
+        />
+
         <form.AppField
           name="accepted"
           children={(field) => (
@@ -591,7 +901,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
         />
 
         <form.AppForm>
-          <form.SubscribeButton label="Зарегистрировать" />
+          <form.SubscribeButton loadingMessage="Оформляем заявку" label="Оформить заявку" />
         </form.AppForm>
       </form>
     );

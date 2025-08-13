@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
-const PriceField: FC<
+const NumericField: FC<
   NumericFormatProps & { label: string; ariaLabel?: string }
 > = ({
   label,
@@ -37,9 +37,7 @@ const PriceField: FC<
         name={field.name}
         type="tel"
         customInput={Input}
-        suffix=" ₽"
         decimalScale={0}
-        thousandSeparator=" "
         allowNegative={false}
         isAllowed={(values) => {
           const floatValue = values.floatValue;
@@ -59,4 +57,5 @@ const PriceField: FC<
     </FormItem>
   );
 };
-export default PriceField;
+
+export default NumericField;

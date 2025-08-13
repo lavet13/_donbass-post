@@ -54,9 +54,19 @@ export const defaultPickUpPointDeliveryOrderOpts = formOptions({
       declaredPrice: 0,
       cubicMeter: 0,
       cashOnDelivery: 0,
+
+      // additional fields for calculating cubicMeter
+      long: 0,
+      width: 0,
+      height: 0,
     },
 
-    additionalService: [],
+    additionalService: [
+      {
+        label: "",
+        value: 0,
+      },
+    ],
 
     accepted: false,
   },

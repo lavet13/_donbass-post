@@ -154,7 +154,7 @@ const ComboboxField: FC<
               clearButtonTooltipMessage={searchClearButtonTooltipMessage}
               placeholder={searchInputPlaceholder}
             />
-            <CommandList>
+            <CommandList className="py-1">
               {isLoading ? (
                 <CommandLoading label={loadingMessage}>
                   {loadingMessage}
@@ -165,7 +165,7 @@ const ComboboxField: FC<
               {entries.length !== 0 &&
                 !isLoading &&
                 entries.map(({ value, label }) => (
-                  <CommandGroup className="py-0 first:py-1.5 last:pb-1.5" key={value}>
+                  <CommandGroup className="py-0" key={value}>
                     <CommandItem
                       title={label}
                       className={cn(
