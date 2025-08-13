@@ -7,7 +7,9 @@ const PasswordField = lazy(() => import("@/components/forms/password-field"));
 const CheckboxField = lazy(() => import("@/components/forms/checkbox-field"));
 const PriceField = lazy(() => import("@/components/forms/price-field"));
 const PhoneField = lazy(() => import("@/components/forms/phone-field"));
+const ComboboxGroupField = lazy(() => import("@/components/forms/combobox-group-field"));
 const ComboboxField = lazy(() => import("@/components/forms/combobox-field"));
+const RadioGroupField = lazy(() => import("@/components/forms/radio-group-field"));
 const SubscribeButton = lazy(
   () => import("@/components/forms/subscribe-button"),
 );
@@ -21,8 +23,10 @@ export const { useAppForm, withForm } = createFormHook({
     CheckboxField,
     PriceField,
     PhoneField,
+    ComboboxGroupField,
     ComboboxField,
     PasswordField,
+    RadioGroupField,
   },
   formComponents: {
     SubscribeButton,

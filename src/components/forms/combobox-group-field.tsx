@@ -13,6 +13,7 @@ import {
   CommandItem,
   CommandList,
   CommandLoading,
+  CommandSeparator,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { CheckIcon, ChevronsUpDownIcon, X } from "lucide-react";
@@ -22,15 +23,15 @@ import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { useElementWidth } from "@/hooks/use-element-width";
 
-type ValueType = { label: string; value: string | number; name?: string };
+type ValueType = { label: string; value: string | number; name?: string }[];
 
-const ComboboxField: FC<
+const ComboboxGroupField: FC<
   ComponentProps<"button"> & {
     searchEmptyMessage?: string;
     searchInputPlaceholder?: string;
     searchClearButtonTooltipMessage?: string;
     isLoading?: boolean;
-    values?: ValueType[];
+    values?: [string, ValueType][];
     placeholder: string;
     label: string;
     selectedEntryClearTooltipMessage?: string;
@@ -69,7 +70,8 @@ const ComboboxField: FC<
   });
 
   const [open, setOpen] = useState(false);
-  const selectedEntry = entries.find(
+  const allEntries = entries.flatMap(([, items]) => items);
+  const selectedEntry = allEntries.find(
     (entry) => entry.value === field.state.value,
   );
 
@@ -164,40 +166,45 @@ const ComboboxField: FC<
               )}
               {entries.length !== 0 &&
                 !isLoading &&
-                entries.map(({ value, label }) => (
-                  <CommandGroup className="py-0 first:py-1.5 last:pb-1.5" key={value}>
-                    <CommandItem
-                      title={label}
-                      className={cn(
-                        value === field.state.value &&
-                          "dark:bg-secondary dark:data-[selected=true]:bg-secondary/90 dark:hover:data-[selected=true]:bg-secondary/90 dark:hover:data-[selected=true]:text-secondary-foreground dark:active:data-[selected=true]:bg-secondary/80 dark:text-secondary-foreground bg-secondary data-[selected=true]:bg-secondary/90 hover:data-[selected=true]:bg-secondary/90 active:data-[selected=true]:bg-secondary/80 text-secondary-foreground hover:data-[selected=true]:text-secondary-foreground data-[selected=true]:text-secondary-foreground",
-                      )}
-                      key={value}
-                      value={value as string}
-                      role="option"
-                      aria-selected={value === field.state.value}
-                      onSelect={() => {
-                        field.handleChange(value);
-                        setOpen(false);
-                      }}
-                    >
-                      <span
-                        className={cn(
-                          value === field.state.value && "font-bold",
-                        )}
-                      >
-                        {label}
-                      </span>
-                      <CheckIcon
-                        className={cn(
-                          "ml-auto size-4 text-secondary-foreground dark:text-secondary-foreground",
-                          value === field.state.value
-                            ? "opacity-100"
-                            : "opacity-0",
-                        )}
-                      />
-                    </CommandItem>
-                  </CommandGroup>
+                entries.map(([heading, items], valuesIdx, entries) => (
+                  <Fragment key={valuesIdx}>
+                    <CommandGroup heading={heading}>
+                      {items.map(({ label, value }) => (
+                        <CommandItem
+                          title={label}
+                          className={cn(
+                            value === field.state.value &&
+                              "dark:bg-secondary dark:data-[selected=true]:bg-secondary/90 dark:hover:data-[selected=true]:bg-secondary/90 dark:hover:data-[selected=true]:text-secondary-foreground dark:active:data-[selected=true]:bg-secondary/80 dark:text-secondary-foreground bg-secondary data-[selected=true]:bg-secondary/90 hover:data-[selected=true]:bg-secondary/90 active:data-[selected=true]:bg-secondary/80 text-secondary-foreground hover:data-[selected=true]:text-secondary-foreground data-[selected=true]:text-secondary-foreground",
+                          )}
+                          key={value}
+                          value={value as string}
+                          role="option"
+                          aria-selected={value === field.state.value}
+                          onSelect={() => {
+                            field.handleChange(value);
+                            setOpen(false);
+                          }}
+                        >
+                          <span
+                            className={cn(
+                              value === field.state.value && "font-bold",
+                            )}
+                          >
+                            {label}
+                          </span>
+                          <CheckIcon
+                            className={cn(
+                              "ml-auto size-4 text-secondary-foreground dark:text-secondary-foreground",
+                              value === field.state.value
+                                ? "opacity-100"
+                                : "opacity-0",
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                    {valuesIdx !== entries.length - 1 && <CommandSeparator />}
+                  </Fragment>
                 ))}
 
               {!entries.length && !isLoading && refetch && (
@@ -217,4 +224,4 @@ const ComboboxField: FC<
   );
 };
 
-export default ComboboxField;
+export default ComboboxGroupField;

@@ -5,9 +5,15 @@ import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
 type TextFieldProps = React.ComponentProps<"input"> & {
   label: string;
+  ariaLabel?: string;
 };
 
-const TextField: FC<TextFieldProps> = ({ label, ...props }) => {
+const TextField: FC<TextFieldProps> = ({
+  label,
+  "aria-label": ariaLabelProp,
+  ariaLabel,
+  ...props
+}) => {
   const {
     field,
     defaultAriaLabel,
@@ -15,11 +21,14 @@ const TextField: FC<TextFieldProps> = ({ label, ...props }) => {
     formMessageId,
     formItemId,
     ariaDescribedBy,
-  } = useFieldAccessibility<string>({ label });
+  } = useFieldAccessibility<string>({
+    label,
+    ariaLabel: ariaLabelProp || ariaLabel,
+  });
 
   return (
     <FormItem>
-      <FormLabel id={formItemId}>{label}</FormLabel>
+      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
       <Input
         id={formItemId}
         name={field.name}

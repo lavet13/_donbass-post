@@ -3,7 +3,7 @@ import { createQueryKeys } from "@lukemorales/query-key-factory";
 import { useQuery } from "@tanstack/react-query";
 import type { AdditionalServicePickUp } from "@/features/additional-service/types";
 
-const additionalService = createQueryKeys("additional-service", {
+const additionalServiceKeys = createQueryKeys("additional-service", {
   "pick-up": {
     queryKey: null,
   },
@@ -16,7 +16,7 @@ const fetchAdditionalServicePickUp = async () => {
 
 const useAdditionalServicePickUpQuery = () =>
   useQuery({
-    queryKey: additionalService["pick-up"].queryKey,
+    queryKey: additionalServiceKeys["pick-up"].queryKey,
     queryFn: fetchAdditionalServicePickUp,
 
     // Prevents unnecessary background refetches by keeping server data fresh
@@ -25,4 +25,4 @@ const useAdditionalServicePickUpQuery = () =>
     staleTime: Infinity,
   });
 
-export { additionalService, useAdditionalServicePickUpQuery };
+export { additionalServiceKeys, useAdditionalServicePickUpQuery };

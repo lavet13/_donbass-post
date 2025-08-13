@@ -40,6 +40,7 @@ const Button: React.FC<
   return (
     <Comp
       data-slot="button"
+      role="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />

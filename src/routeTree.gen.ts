@@ -13,6 +13,7 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicShopCostCalculationOrderRouteImport } from './routes/_public/shop-cost-calculation-order'
+import { Route as PublicPickUpPointDeliveryOrderRouteImport } from './routes/_public/pick-up-point-delivery-order'
 import { Route as PublicAuthRouteImport } from './routes/_public/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
@@ -35,6 +36,12 @@ const PublicShopCostCalculationOrderRoute =
     path: '/shop-cost-calculation-order',
     getParentRoute: () => PublicRouteRoute,
   } as any)
+const PublicPickUpPointDeliveryOrderRoute =
+  PublicPickUpPointDeliveryOrderRouteImport.update({
+    id: '/pick-up-point-delivery-order',
+    path: '/pick-up-point-delivery-order',
+    getParentRoute: () => PublicRouteRoute,
+  } as any)
 const PublicAuthRoute = PublicAuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -49,12 +56,14 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
 export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/auth': typeof PublicAuthRoute
+  '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/auth': typeof PublicAuthRoute
+  '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
 }
@@ -64,20 +73,32 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_public/auth': typeof PublicAuthRoute
+  '/_public/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/_public/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/_public/': typeof PublicIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dashboard' | '/auth' | '/shop-cost-calculation-order' | '/'
+  fullPaths:
+    | '/dashboard'
+    | '/auth'
+    | '/pick-up-point-delivery-order'
+    | '/shop-cost-calculation-order'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/dashboard' | '/auth' | '/shop-cost-calculation-order' | '/'
+  to:
+    | '/dashboard'
+    | '/auth'
+    | '/pick-up-point-delivery-order'
+    | '/shop-cost-calculation-order'
+    | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/_public'
     | '/_authenticated/dashboard'
     | '/_public/auth'
+    | '/_public/pick-up-point-delivery-order'
     | '/_public/shop-cost-calculation-order'
     | '/_public/'
   fileRoutesById: FileRoutesById
@@ -117,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicShopCostCalculationOrderRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/_public/pick-up-point-delivery-order': {
+      id: '/_public/pick-up-point-delivery-order'
+      path: '/pick-up-point-delivery-order'
+      fullPath: '/pick-up-point-delivery-order'
+      preLoaderRoute: typeof PublicPickUpPointDeliveryOrderRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
     '/_public/auth': {
       id: '/_public/auth'
       path: '/auth'
@@ -147,12 +175,14 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface PublicRouteRouteChildren {
   PublicAuthRoute: typeof PublicAuthRoute
+  PublicPickUpPointDeliveryOrderRoute: typeof PublicPickUpPointDeliveryOrderRoute
   PublicShopCostCalculationOrderRoute: typeof PublicShopCostCalculationOrderRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicAuthRoute: PublicAuthRoute,
+  PublicPickUpPointDeliveryOrderRoute: PublicPickUpPointDeliveryOrderRoute,
   PublicShopCostCalculationOrderRoute: PublicShopCostCalculationOrderRoute,
   PublicIndexRoute: PublicIndexRoute,
 }

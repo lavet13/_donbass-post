@@ -10,3 +10,4 @@
 - [?] we should pass exp claim from token to the AUTH_CONFIG for consistency
 - [x] it shouldn't block if the user submitted the form
 - [] never have been used the vitest, try it, at least for testing the forms
+- [] try implementing loading indicator(e.g. botfather's mini app), and basic fade in and out animation

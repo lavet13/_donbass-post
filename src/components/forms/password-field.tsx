@@ -11,9 +11,15 @@ import { Eye, EyeClosed } from "lucide-react";
 
 type PasswordFieldProps = ComponentProps<typeof PasswordToggleFieldInput> & {
   label: string;
+  ariaLabel?: string;
 };
 
-const PasswordField: FC<PasswordFieldProps> = ({ label, ...props }) => {
+const PasswordField: FC<PasswordFieldProps> = ({
+  label,
+  "aria-label": ariaLabelProp,
+  ariaLabel,
+  ...props
+}) => {
   const {
     field,
     defaultAriaLabel,
@@ -21,11 +27,14 @@ const PasswordField: FC<PasswordFieldProps> = ({ label, ...props }) => {
     formMessageId,
     formItemId,
     ariaDescribedBy,
-  } = useFieldAccessibility<string>({ label });
+  } = useFieldAccessibility<string>({
+    label,
+    ariaLabel: ariaLabelProp || ariaLabel,
+  });
 
   return (
     <FormItem>
-      <FormLabel id={formItemId}>{label}</FormLabel>
+      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
       <PasswordToggleField>
         <PasswordToggleFieldInput
           id={formItemId}
@@ -45,6 +54,5 @@ const PasswordField: FC<PasswordFieldProps> = ({ label, ...props }) => {
     </FormItem>
   );
 };
-
 
 export default PasswordField;

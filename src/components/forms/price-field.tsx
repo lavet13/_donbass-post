@@ -5,9 +5,13 @@ import { Input } from "@/components/ui/input";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
-const PriceField: FC<NumericFormatProps & { label: string }> = ({
+const PriceField: FC<
+  NumericFormatProps & { label: string; ariaLabel?: string }
+> = ({
   label,
   className,
+  "aria-label": ariaLabelProp,
+  ariaLabel,
   ...props
 }) => {
   const {
@@ -17,11 +21,14 @@ const PriceField: FC<NumericFormatProps & { label: string }> = ({
     formMessageId,
     formItemId,
     ariaDescribedBy,
-  } = useFieldAccessibility<number>({ label });
+  } = useFieldAccessibility<number>({
+    label,
+    ariaLabel: ariaLabelProp || ariaLabel,
+  });
 
   return (
     <FormItem>
-      <FormLabel id={formItemId}>{label}</FormLabel>
+      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
       <NumericFormat
         aria-label={defaultAriaLabel}
         aria-describedby={ariaDescribedBy}

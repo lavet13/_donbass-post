@@ -8,7 +8,7 @@ export const Header: FC = () => {
   const { isAuthenticated, logout } = useAuth();
 
   return (
-    <header className="container px-2 h-14 flex items-center">
+    <header className="container max-w-7xl px-2 h-14 flex items-center">
       <div className="flex items-center gap-1">
         <Button variant="ghost" asChild>
           <Link to="/" activeOptions={{ exact: true }}>

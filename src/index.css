@@ -51,11 +51,11 @@
   --card: #262020;
   --card-foreground: #f0f0f0;
 
-  --popover: #2a2424; /* Slightly different from card for distinction */
+  --popover: #2e2626; /* Warm, soft, clearly layered */
   --popover-foreground: #f0f0f0;
-  --popover-border: #665555;
+  --popover-border: #665555; /* Keep — perfect match */
 
-  --secondary: #422e2e;
+  --secondary: #4a3232; /* Warm, visible, harmonious */
   --secondary-foreground: #e0e0e0;
 
   --muted: #362d2d;
@@ -117,6 +117,8 @@
     var(--ease-slide-popover);
   --animate-slide-down-and-fade: slideDownAndFade 0.1s var(--ease-slide-popover);
   --animate-slide-left-and-fade: slideLeftAndFade 0.1s var(--ease-slide-popover);
+
+  --container-max-width-2xl: 1400px;
 
   @keyframes slideUpAndFade {
     from {

@@ -2,14 +2,14 @@ import { useId } from "react";
 import { useFieldContext } from "./form-context";
 
 type UseFieldAccessibilityProps = {
-  label: string;
+  label?: string;
   ariaLabel?: string;
 };
 
 export const useFieldAccessibility = <T extends string | number | boolean>({
   label,
   ariaLabel,
-}: UseFieldAccessibilityProps) => {
+}: UseFieldAccessibilityProps = {}) => {
   const field = useFieldContext<T>();
 
   // https://react.dev/reference/react/useId#usage

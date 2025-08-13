@@ -4,17 +4,18 @@ import { useQuery } from "@tanstack/react-query";
 import type { DeliveryCompany } from "@/features/delivery-company/types";
 
 // Query Keys
-const deliveryCompany = createQueryKeys("delivery-company");
+const deliveryCompanyKeys = createQueryKeys("delivery-company");
 
 // Query functions
 const fetchDeliveryCompanies = async () => {
-  const response = await workplacePostApi.get<DeliveryCompany[]>("/delivery-company");
-  return response.data;
-}
+  const response =
+    await workplacePostApi.get<DeliveryCompany[]>("/delivery-company");
+  return response.data.map(({ id, name }) => ({ label: name, value: id }));
+};
 
 const useDeliveryCompaniesQuery = () =>
   useQuery({
-    queryKey: deliveryCompany._def,
+    queryKey: deliveryCompanyKeys._def,
     queryFn: fetchDeliveryCompanies,
 
     // Prevents unnecessary background refetches by keeping server data fresh
@@ -23,4 +24,4 @@ const useDeliveryCompaniesQuery = () =>
     staleTime: Infinity,
   });
 
-export { useDeliveryCompaniesQuery, deliveryCompany };
+export { useDeliveryCompaniesQuery, deliveryCompanyKeys };

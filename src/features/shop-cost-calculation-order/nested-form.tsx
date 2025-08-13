@@ -153,11 +153,11 @@ export const ShopCostCalculationOrderForm = withForm({
             children={(phoneField) => (
               <phoneField.PhoneField
                 label={"Телефон"}
-                placeholder="Введите номер телефона"
-                country={"RU"}
-                international
-                withCountryCallingCode
-                labels={ru}
+                placeholder="Заполните номер телефона"
+                // country={"RU"}
+                // international
+                // withCountryCallingCode
+                // labels={ru}
               />
             )}
           />
@@ -177,11 +177,11 @@ export const ShopCostCalculationOrderForm = withForm({
             }}
             children={(pointToField) => {
               return (
-                <pointToField.ComboboxField
+                <pointToField.ComboboxGroupField
                   label="Пункт выдачи"
                   placeholder="Выберите пункт выдачи"
                   loadingMessage="Загружаем отделения"
-                  aria-label="Выбрать пункт выдачи из списка"
+                  ariaLabel="Выбрать пункт выдачи из списка"
                   searchEmptyMessage="Таких отделений нет"
                   searchInputPlaceholder="Найти отделение..."
                   refetch={refetchPoints}
@@ -362,7 +362,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                 },
                               )}
 
-                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
                                 <Button
                                   variant="outline"
                                   className="rounded-full"
@@ -386,7 +386,7 @@ export const ShopCostCalculationOrderForm = withForm({
                   );
                 })}
 
-                <div className="grid gap-2 mt-2">
+                <div className="grid sm:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
                   <Button
                     variant="ghost"
                     className="rounded-full"
@@ -409,10 +409,7 @@ export const ShopCostCalculationOrderForm = withForm({
         <form.AppField
           name="accepted"
           children={(field) => (
-            <field.CheckboxField
-              className="my-2 flex-row gap-2"
-              label="Подтверждаю, что мне исполнилось 14 лет, и ознакомился с правилами предоставления услуг"
-            />
+            <field.CheckboxField label="Подтверждаю, что мне исполнилось 14 лет, и ознакомился с правилами предоставления услуг" />
           )}
         />
 

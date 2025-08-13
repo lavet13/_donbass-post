@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export const FormLabel: FC<ComponentProps<typeof LabelPrimitive.Root>> = ({
   className,
-  id,
+  htmlFor,
   ...props
 }) => {
   const field = useFieldContext();
@@ -18,7 +18,7 @@ export const FormLabel: FC<ComponentProps<typeof LabelPrimitive.Root>> = ({
     <Label
       data-slot="form-label"
       data-error={hasErrors}
-      htmlFor={id || name}
+      htmlFor={htmlFor || name}
       className={cn("data-[error=true]:text-destructive", className)}
       {...props}
     />

@@ -4,7 +4,7 @@ import { createQueryKeys } from "@lukemorales/query-key-factory";
 import type { DeliveryPoint } from "@/features/point/types";
 
 // Query Keys
-const point = createQueryKeys("point", {
+const pointKeys = createQueryKeys("point", {
   post: {
     queryKey: null,
   },
@@ -50,7 +50,7 @@ async function pointsPost() {
 
 const usePointPostQuery = () =>
   useQuery({
-    queryKey: point.post.queryKey,
+    queryKey: pointKeys.post.queryKey,
     queryFn: pointsPost,
 
     // Prevents unnecessary background refetches by keeping server data fresh
@@ -60,4 +60,4 @@ const usePointPostQuery = () =>
     retry: false,
   });
 
-export { usePointPostQuery, point };
+export { usePointPostQuery, pointKeys };

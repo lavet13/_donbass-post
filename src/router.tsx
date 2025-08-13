@@ -5,7 +5,7 @@ import { DefaultErrorComponent } from "@/components/default-error-component";
 import { DefaultNotFoundComponent } from "@/components/default-not-found-component";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 
-export function createRouter() {
+function createRouter() {
   const queryClient = new QueryClient();
 
   return reactRouter({
@@ -32,3 +32,5 @@ export function createRouter() {
     },
   });
 }
+
+export const router = createRouter();

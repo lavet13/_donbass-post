@@ -5,10 +5,9 @@ import { Input } from "@/components/ui/input";
 import type { DefaultInputComponentProps } from "react-phone-number-input";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
-const PhoneField: FC<DefaultInputComponentProps & { label: string }> = ({
-  label,
-  ...props
-}) => {
+const PhoneField: FC<
+  DefaultInputComponentProps & { label: string; ariaLabel?: string }
+> = ({ label, "aria-label": ariaLabelProp, ariaLabel, ...props }) => {
   const {
     field,
     defaultAriaLabel,
@@ -16,11 +15,14 @@ const PhoneField: FC<DefaultInputComponentProps & { label: string }> = ({
     formMessageId,
     formItemId,
     ariaDescribedBy,
-  } = useFieldAccessibility<string>({ label });
+  } = useFieldAccessibility<string>({
+    label,
+    ariaLabel: ariaLabelProp || ariaLabel,
+  });
 
   return (
     <FormItem>
-      <FormLabel id={formItemId}>{label}</FormLabel>
+      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
       <RPNInput
         id={formItemId}
         name={field.name}
