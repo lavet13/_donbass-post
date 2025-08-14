@@ -23,6 +23,7 @@ const RadioGroupItem: FC<ComponentProps<typeof RadioGroupPrimitive.Item>> = ({
         "hover:cursor-pointer first-of-type:rounded-l-sm last-of-type:rounded-r-sm overflow-hidden",
         "data-[state=unchecked]:hover:bg-accent/80 data-[state=unchecked]:active:bg-accent/95",
         "data-[state=unchecked]:border data-[state=unchecked]:border-accent",
+        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
         className,
       )}
       {...props}

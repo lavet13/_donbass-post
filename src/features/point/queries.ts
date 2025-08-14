@@ -42,10 +42,16 @@ async function pointsPost() {
     address,
   }));
 
-  return Object.entries({
-    "Стационарные отделения": stationary,
-    "Мобильные отделения": mobile,
-  });
+  return [
+    {
+      label: "Стационарные отделения",
+      items: stationary,
+    },
+    {
+      label: "Мобильные отделения",
+      items: mobile,
+    },
+  ];
 }
 
 const usePointPostQuery = () =>

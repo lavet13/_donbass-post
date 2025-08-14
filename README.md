@@ -3,11 +3,16 @@
 - [x] react query query key generator(GET requests)
 - [x] try and implement form with TanStack Form(newly released package). UPD: it's as good as react-hook-form, even better than I expected
 - [x] point/list endpoint is needed for displaying schedule info
-- [] I might need to show departments outside of popover, directly in the form
+- [?] I might need to show departments outside of popover, directly in the form
 - [x] add loading state for combobox
 - [] add sonner
-- [] try to use Provider from jotai instead of useFieldAccessibility hook
+- [?] try to use Provider from jotai instead of useFieldAccessibility hook
 - [?] we should pass exp claim from token to the AUTH_CONFIG for consistency
 - [x] it shouldn't block if the user submitted the form
 - [] never have been used the vitest, try it, at least for testing the forms
+- [x] make unified combobox, instead of making 2 separate ones
+- [] fix the focus-visible for auth buttons
+
+# Future requests
 - [] try implementing loading indicator(e.g. botfather's mini app), and basic fade in and out animation
+

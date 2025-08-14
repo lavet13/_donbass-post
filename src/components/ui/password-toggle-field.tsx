@@ -32,7 +32,7 @@ const PasswordToggleFieldToggle: FC<
   return (
     <PasswordToggleFieldPrimitive.Toggle
       className={cn(
-        "flex items-center justify-center aspect-[1] rounded-md [&_svg]:size-5",
+        "flex items-center justify-center aspect-[1] rounded-sm [&_svg]:size-5",
         "focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
         "absolute right-0 top-1/2 -translate-y-1/2 mr-2",
         className,

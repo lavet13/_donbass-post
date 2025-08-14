@@ -4,15 +4,16 @@ import { useStore } from "@tanstack/react-form";
 import { Fragment } from "react/jsx-runtime";
 import { Suspend } from "@/components/suspend";
 import z from "zod";
-import { getEmailErrorMessage } from "@/lib/utils";
+import { cn, getEmailErrorMessage } from "@/lib/utils";
 import { useDeliveryCompaniesQuery } from "@/features/delivery-company/queries";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Toggle } from "@/components/ui/toggle";
-import { useAdditionalServicePickUpQuery } from "../additional-service/queries";
+import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
 import { useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { FormItem } from "@/components/ui/form";
-import { Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -36,10 +37,12 @@ export const PickUpPointDeliveryOrderForm = withForm({
       isLoading: isDeliveryCompaniesLoading,
       refetch: refetchDeliveryCompanies,
     } = useDeliveryCompaniesQuery();
+    console.log({ deliveryCompanies });
 
     const {
       data: additionalServices,
       isLoading: isAdditionalServiceLoading,
+      isFetching: isAdditionalServiceFetching,
       refetch: refetchAdditionalServices,
     } = useAdditionalServicePickUpQuery();
     console.log({ additionalServices });
@@ -171,7 +174,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     name="sender.pointFrom"
                     children={(field) => {
                       return (
-                        <field.ComboboxGroupField
+                        <field.ComboboxField
                           label="Населенный пункт"
                           placeholder="Выберите населенный пункт"
                           searchEmptyMessage="Нет населенных пунктов"
@@ -280,7 +283,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     name="sender.pointFrom"
                     children={(field) => {
                       return (
-                        <field.ComboboxGroupField
+                        <field.ComboboxField
                           searchEmptyMessage="Нет населенных пунктов"
                           aria-label="Выберите удобный по местоположению населенный пункт из списка"
                           loadingMessage="Загружаем населенные пункты"
@@ -559,10 +562,15 @@ export const PickUpPointDeliveryOrderForm = withForm({
           children={(field) => {
             return (
               <Toggle
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  "border-accent border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground",
+                )}
                 pressed={field.state.value}
                 onPressedChange={field.handleChange}
               >
                 Заказчик(по выбору клиента)
+                {field.state.value ? <ChevronDown /> : <ChevronUp />}
               </Toggle>
             );
           }}
@@ -876,40 +884,80 @@ export const PickUpPointDeliveryOrderForm = withForm({
             <Loader2 className="text-primary animate-spin" />
           </div>
         )}
+        {!additionalServices && !isAdditionalServiceLoading && (
+          <div className="py-2 w-full flex flex-col gap-2 items-center justify-center">
+            Не удалось загрузить дополнительные услуги
+            <Button
+              onClick={() => refetchAdditionalServices()}
+              size="sm"
+              variant="secondary"
+            >
+              {isAdditionalServiceFetching && (
+                <Loader2 className={"animate-spin"} />
+              )}
+              Попробовать еще раз
+            </Button>
+          </div>
+        )}
         <form.AppField
           name="additionalService"
           mode="array"
           children={(field) => {
             return (
               <div className="sm:grid sm:grid-cols-3 flex flex-col gap-x-4 gap-y-2">
-                {field.state.value.map((_, i) => (
-                  <form.AppField
-                    key={i}
-                    name={`additionalService[${i}].selected`}
-                    children={(field) => {
-                      const label = form.getFieldValue(
-                        `additionalService[${i}].label`,
-                      );
-                      return (
-                        <FormItem className="items-stretch">
-                          <Label>{label}</Label>
-                          <field.RadioGroupField
-                            stretched
-                            options={[
-                              { label: "Да", value: "yes" },
-                              { label: "Нет", value: "no" },
-                            ]}
-                            ariaLabel={`Дополнительная услуга '${label}'`}
-                          />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                ))}
+                {additionalServices &&
+                  field.state.value.map((_, i) => (
+                    <form.AppField
+                      key={i}
+                      name={`additionalService[${i}].selected`}
+                      children={(field) => {
+                        const label = form.getFieldValue(
+                          `additionalService[${i}].label`,
+                        );
+                        return (
+                          <FormItem className="items-stretch">
+                            <Label>{label}</Label>
+                            <field.RadioGroupField
+                              stretched
+                              options={[
+                                { label: "Да", value: "yes" },
+                                { label: "Нет", value: "no" },
+                              ]}
+                              ariaLabel={`Дополнительная услуга '${label}'`}
+                            />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  ))}
               </div>
             );
           }}
         />
+
+        <div className="sm:grid sm:grid-cols-3 flex flex-col gap-x-4 gap-y-2">
+          <form.AppField
+            name="cargoData.shippingPayment"
+            children={(field) => {
+              return (
+                <field.SelectField
+                  options={[
+                    {
+                      label: "Плательщик доставки",
+                      items: [
+                        { label: "Отправитель", value: "Отправитель" },
+                        { label: "Получатель", value: "Получатель" },
+                        { label: "Третье лицо", value: "Третье лицо" },
+                      ],
+                    },
+                  ]}
+                  label="Плательщик доставки"
+                  placeholder="Выберите плательщика..."
+                />
+              );
+            }}
+          />
+        </div>
 
         <form.AppField
           name="accepted"

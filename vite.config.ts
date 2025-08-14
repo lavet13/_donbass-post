@@ -55,6 +55,7 @@ export default defineConfig({
             "@radix-ui/react-tabs",
             "@radix-ui/react-radio-group",
             "@radix-ui/react-toggle",
+            "@radix-ui/react-select",
           ],
 
           // Form validation and schema

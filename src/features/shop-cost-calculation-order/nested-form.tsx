@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { getEmailErrorMessage } from "@/lib/utils";
-import ru from "react-phone-number-input/locale/ru.json";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import { usePointPostQuery } from "@/features/point/queries";
 import { X } from "lucide-react";
@@ -177,7 +176,7 @@ export const ShopCostCalculationOrderForm = withForm({
             }}
             children={(pointToField) => {
               return (
-                <pointToField.ComboboxGroupField
+                <pointToField.ComboboxField
                   label="Пункт выдачи"
                   placeholder="Выберите пункт выдачи"
                   loadingMessage="Загружаем отделения"

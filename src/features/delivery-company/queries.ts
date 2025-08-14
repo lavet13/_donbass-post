@@ -10,7 +10,13 @@ const deliveryCompanyKeys = createQueryKeys("delivery-company");
 const fetchDeliveryCompanies = async () => {
   const response =
     await workplacePostApi.get<DeliveryCompany[]>("/delivery-company");
-  return response.data.map(({ id, name }) => ({ label: name, value: id }));
+
+  return [
+    {
+      label: "Транспортные компании",
+      items: response.data.map(({ id, name }) => ({ label: name, value: id })),
+    },
+  ];
 };
 
 const useDeliveryCompaniesQuery = () =>
