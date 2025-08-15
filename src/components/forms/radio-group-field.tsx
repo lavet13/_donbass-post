@@ -34,7 +34,6 @@ const RadioGroupField: FC<RadioGroupFieldProps> = ({
   return (
     <FormItem>
       <RadioGroupRoot
-        className={cn(stretched && "flex-1")}
         name={field.name}
         aria-label={defaultAriaLabel}
         value={field.state.value}
@@ -42,7 +41,10 @@ const RadioGroupField: FC<RadioGroupFieldProps> = ({
       >
         {options.map(({ value, label }, idx) => (
           <RadioGroupItem
-            className={cn(stretched && "flex-1 inline-flex items-center justify-center")}
+            className={cn(
+              "flex-1 inline-flex items-center justify-center sm:inline-flex sm:flex-none",
+              stretched && "sm:flex-auto",
+            )}
             key={value}
             aria-invalid={!!error}
             aria-describedby={ariaDescribedBy}

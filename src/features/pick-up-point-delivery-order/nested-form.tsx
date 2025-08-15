@@ -1,7 +1,5 @@
 import { withForm } from "@/hooks/form";
 import { defaultPickUpPointDeliveryOrderOpts } from "@/features/pick-up-point-delivery-order/shared-form";
-import { useStore } from "@tanstack/react-form";
-import { Fragment } from "react/jsx-runtime";
 import { Suspend } from "@/components/suspend";
 import z from "zod";
 import { cn, getEmailErrorMessage } from "@/lib/utils";
@@ -9,23 +7,18 @@ import { useDeliveryCompaniesQuery } from "@/features/delivery-company/queries";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { FormItem } from "@/components/ui/form";
 import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { TypographyH3 } from "@/components/ui/typography/typographyH3";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
 export const PickUpPointDeliveryOrderForm = withForm({
   ...defaultPickUpPointDeliveryOrderOpts,
   render({ form }) {
-    const senderType = useStore(
-      form.store,
-      (state) => state.values.sender.type,
-    );
-    console.log({ senderType });
-
     const {
       data: points,
       isLoading: isPointsLoading,
@@ -37,7 +30,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
       isLoading: isDeliveryCompaniesLoading,
       refetch: refetchDeliveryCompanies,
     } = useDeliveryCompaniesQuery();
-    console.log({ deliveryCompanies });
 
     const {
       data: additionalServices,
@@ -45,7 +37,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
       isFetching: isAdditionalServiceFetching,
       refetch: refetchAdditionalServices,
     } = useAdditionalServicePickUpQuery();
-    console.log({ additionalServices });
 
     useEffect(() => {
       form.setFieldValue(
@@ -63,19 +54,22 @@ export const PickUpPointDeliveryOrderForm = withForm({
           form.handleSubmit();
         }}
       >
+        <TypographyH3 className="text-primary">Отправитель</TypographyH3>
         <form.AppField
           name="sender.type"
           children={(field) => {
             return (
-              <field.RadioGroupField
-                options={[
-                  { label: "Физ лицо", value: "individual" },
-                  { label: "Компания", value: "company" },
-                ]}
-                ariaLabel={
-                  "Выберите физ. лицо отправителя или компания отправителя"
-                }
-              />
+              <div className={cn(field.state.value === "" && "pb-2")}>
+                <field.RadioGroupField
+                  options={[
+                    { label: "Физ лицо", value: "individual" },
+                    { label: "Компания", value: "company" },
+                  ]}
+                  ariaLabel={
+                    "Выберите физ. лицо отправителя или компания отправителя"
+                  }
+                />
+              </div>
             );
           }}
         />
@@ -85,7 +79,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
           children={(senderType) => {
             if (senderType !== "individual") return null;
             return (
-              <Fragment>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                 <Suspend>
                   <form.AppField
                     name="sender.surnameSender"
@@ -127,38 +121,42 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     name="sender.phoneSender"
                     children={(field) => {
                       return (
-                        <field.PhoneField
-                          label="Телефон"
-                          ariaLabel="Заполните телефон физического лица"
-                          placeholder="Заполните телефон"
-                        />
+                        <div className="flex flex-col">
+                          <field.PhoneField
+                            label="Телефон"
+                            ariaLabel="Заполните телефон физического лица"
+                            placeholder="Заполните телефон"
+                          />
+                          <div className="flex flex-wrap justify-center gap-2">
+                            <form.AppField
+                              name="sender.telegramSender"
+                              children={(field) => {
+                                return (
+                                  <field.CheckboxField
+                                    className="self-center"
+                                    label="Telegram"
+                                    ariaLabel="Заполните телеграм физического лица"
+                                  />
+                                );
+                              }}
+                            />
+                            <form.AppField
+                              name="sender.whatsAppSender"
+                              children={(field) => {
+                                return (
+                                  <field.CheckboxField
+                                    className="self-center"
+                                    label="WhatsApp"
+                                    ariaLabel="Заполните ватсап физического лица"
+                                  />
+                                );
+                              }}
+                            />
+                          </div>
+                        </div>
                       );
                     }}
                   />
-                  <div className="flex justify-center gap-2">
-                    <form.AppField
-                      name="sender.telegramSender"
-                      children={(field) => {
-                        return (
-                          <field.CheckboxField
-                            label="Telegram"
-                            ariaLabel="Заполните телеграм физического лица"
-                          />
-                        );
-                      }}
-                    />
-                    <form.AppField
-                      name="sender.whatsAppSender"
-                      children={(field) => {
-                        return (
-                          <field.CheckboxField
-                            label="WhatsApp"
-                            ariaLabel="Заполните ватсап физического лица"
-                          />
-                        );
-                      }}
-                    />
-                  </div>
                   <form.AppField
                     name="sender.innSender"
                     children={(field) => {
@@ -222,7 +220,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     }}
                   />
                 </Suspend>
-              </Fragment>
+              </div>
             );
           }}
         />
@@ -232,7 +230,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
           children={(senderType) => {
             if (senderType !== "company") return null;
             return (
-              <Fragment>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                 <Suspend>
                   <form.AppField
                     name="sender.companySender"
@@ -321,24 +319,27 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     }}
                   />
                 </Suspend>
-              </Fragment>
+              </div>
             );
           }}
         />
 
+        <TypographyH3 className="text-primary">Получатель</TypographyH3>
         <form.AppField
           name="recipient.type"
           children={(field) => {
             return (
-              <field.RadioGroupField
-                options={[
-                  { label: "Физ лицо", value: "individual" },
-                  { label: "Компания", value: "company" },
-                ]}
-                ariaLabel={
-                  "Выберите физ. лицо получателя или компания получателя"
-                }
-              />
+              <div className={cn(field.state.value === "" && "pb-2")}>
+                <field.RadioGroupField
+                  options={[
+                    { label: "Физ лицо", value: "individual" },
+                    { label: "Компания", value: "company" },
+                  ]}
+                  ariaLabel={
+                    "Выберите физ. лицо получателя или компания получателя"
+                  }
+                />
+              </div>
             );
           }}
         />
@@ -348,7 +349,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
           children={(recipientType) => {
             if (recipientType !== "individual") return null;
             return (
-              <Fragment>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                 <Suspend>
                   <form.AppField
                     name="recipient.surnameRecipient"
@@ -390,38 +391,42 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     name="recipient.phoneRecipient"
                     children={(field) => {
                       return (
-                        <field.PhoneField
-                          label="Телефон"
-                          ariaLabel="Заполните телефон физического лица получателя"
-                          placeholder="Заполните телефон"
-                        />
+                        <div className="flex flex-col">
+                          <field.PhoneField
+                            label="Телефон"
+                            ariaLabel="Заполните телефон физического лица получателя"
+                            placeholder="Заполните телефон"
+                          />
+                          <div className="flex flex-wrap justify-center gap-2">
+                            <form.AppField
+                              name="recipient.telegramRecipient"
+                              children={(field) => {
+                                return (
+                                  <field.CheckboxField
+                                    className="self-center"
+                                    label="Telegram"
+                                    ariaLabel="Заполните телеграм физического лица получателя"
+                                  />
+                                );
+                              }}
+                            />
+                            <form.AppField
+                              name="recipient.whatsAppRecipient"
+                              children={(field) => {
+                                return (
+                                  <field.CheckboxField
+                                    className="self-center"
+                                    label="WhatsApp"
+                                    ariaLabel="Заполните ватсап физического лица получателя"
+                                  />
+                                );
+                              }}
+                            />
+                          </div>
+                        </div>
                       );
                     }}
                   />
-                  <div className="flex justify-center gap-2">
-                    <form.AppField
-                      name="recipient.telegramRecipient"
-                      children={(field) => {
-                        return (
-                          <field.CheckboxField
-                            label="Telegram"
-                            ariaLabel="Заполните телеграм физического лица получателя"
-                          />
-                        );
-                      }}
-                    />
-                    <form.AppField
-                      name="recipient.whatsAppRecipient"
-                      children={(field) => {
-                        return (
-                          <field.CheckboxField
-                            label="WhatsApp"
-                            ariaLabel="Заполните ватсап физического лица получателя"
-                          />
-                        );
-                      }}
-                    />
-                  </div>
                   <form.AppField
                     name="recipient.deliveryCompany"
                     children={(field) => {
@@ -453,7 +458,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     }}
                   />
                 </Suspend>
-              </Fragment>
+              </div>
             );
           }}
         />
@@ -463,7 +468,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
           children={(recipientType) => {
             if (recipientType !== "company") return null;
             return (
-              <Fragment>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                 <Suspend>
                   <form.AppField
                     name="recipient.companyRecipient"
@@ -552,7 +557,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     }}
                   />
                 </Suspend>
-              </Fragment>
+              </div>
             );
           }}
         />
@@ -561,17 +566,21 @@ export const PickUpPointDeliveryOrderForm = withForm({
           name="customer.isToggled"
           children={(field) => {
             return (
-              <Toggle
-                className={cn(
-                  buttonVariants({ variant: "ghost" }),
-                  "border-accent border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground",
-                )}
-                pressed={field.state.value}
-                onPressedChange={field.handleChange}
-              >
-                Заказчик(по выбору клиента)
-                {field.state.value ? <ChevronDown /> : <ChevronUp />}
-              </Toggle>
+              <div className={cn(!field.state.value && "py-2")}>
+                <Toggle
+                  className={cn(
+                    buttonVariants({ variant: "ghost" }),
+                    "border-accent border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground w-full sm:w-fit",
+                    "sm:rounded-bl-sm",
+                    "data-[state=on]:-mb-px data-[state=on]:rounded-bl-none data-[state=on]:rounded-br-none sm:data-[state=on]:rounded-b-sm sm:data-[state=on]:mb-0",
+                  )}
+                  pressed={field.state.value}
+                  onPressedChange={field.handleChange}
+                >
+                  <span className="truncate">Заказчик(по выбору клиента)</span>
+                  {field.state.value ? <ChevronDown /> : <ChevronUp />}
+                </Toggle>
+              </div>
             );
           }}
         />
@@ -585,15 +594,23 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 name="customer.type"
                 children={(field) => {
                   return (
-                    <field.RadioGroupField
-                      options={[
-                        { label: "Физ лицо", value: "individual" },
-                        { label: "Компания", value: "company" },
-                      ]}
-                      ariaLabel={
-                        "Выберите физ. лицо заказчика или компания заказчика"
-                      }
-                    />
+                    <div
+                      className={cn(
+                        "sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-tl-xs ",
+                        "sm:mt-2 [&_button]:first-of-type:rounded-tl-none [&_button]:last-of-type:rounded-tr-none [&_span]:group-first-of-type:rounded-tl-none [&_span]:group-last-of-type:rounded-tr-none [&_button]:last-of-type:mr-0",
+                        "sm:[&_button]:first-of-type:rounded-l-sm sm:[&_button]:last-of-type:rounded-r-sm sm:[&_span]:group-first-of-type:rounded-l-sm sm:[&_span]:group-last-of-type:rounded-r-sm sm:[&_button]:last-of-type:-mr-px",
+                      )}
+                    >
+                      <field.RadioGroupField
+                        options={[
+                          { label: "Физ лицо", value: "individual" },
+                          { label: "Компания", value: "company" },
+                        ]}
+                        ariaLabel={
+                          "Выберите физ. лицо заказчика или компания заказчика"
+                        }
+                      />
+                    </div>
                   );
                 }}
               />
@@ -610,7 +627,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (!customerIsToggled) return null;
             if (customerType !== "individual") return null;
             return (
-              <Fragment>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-bl-xs">
                 <Suspend>
                   <form.AppField
                     name="customer.surnameCustomer"
@@ -652,40 +669,44 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     name="customer.phoneCustomer"
                     children={(field) => {
                       return (
-                        <field.PhoneField
-                          label="Телефон"
-                          placeholder="Заполните телефон"
-                          ariaLabel="Заполните телефон заказчика"
-                        />
+                        <div className="flex flex-col">
+                          <field.PhoneField
+                            label="Телефон"
+                            placeholder="Заполните телефон"
+                            ariaLabel="Заполните телефон заказчика"
+                          />
+                          <div className="flex flex-wrap justify-center gap-2">
+                            <form.AppField
+                              name="customer.telegramCustomer"
+                              children={(field) => {
+                                return (
+                                  <field.CheckboxField
+                                    className="self-center"
+                                    label="Telegram"
+                                    ariaLabel="Заполните телеграм заказчика"
+                                  />
+                                );
+                              }}
+                            />
+                            <form.AppField
+                              name="customer.whatsAppCustomer"
+                              children={(field) => {
+                                return (
+                                  <field.CheckboxField
+                                    className="self-center"
+                                    label="WhatsApp"
+                                    ariaLabel="Заполните ватсап заказчика"
+                                  />
+                                );
+                              }}
+                            />
+                          </div>
+                        </div>
                       );
                     }}
                   />
-                  <div className="flex justify-center gap-2">
-                    <form.AppField
-                      name="customer.telegramCustomer"
-                      children={(field) => {
-                        return (
-                          <field.CheckboxField
-                            label="Telegram"
-                            ariaLabel="Заполните телеграм заказчика"
-                          />
-                        );
-                      }}
-                    />
-                    <form.AppField
-                      name="customer.whatsAppCustomer"
-                      children={(field) => {
-                        return (
-                          <field.CheckboxField
-                            label="WhatsApp"
-                            ariaLabel="Заполните ватсап заказчика"
-                          />
-                        );
-                      }}
-                    />
-                  </div>
                 </Suspend>
-              </Fragment>
+              </div>
             );
           }}
         />
@@ -699,7 +720,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (!customerIsToggled) return null;
             if (customerType !== "company") return null;
             return (
-              <Fragment>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-bl-xs">
                 <Suspend>
                   <form.AppField
                     name="customer.companyCustomer"
@@ -758,123 +779,183 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     }}
                   />
                 </Suspend>
-              </Fragment>
+              </div>
             );
           }}
         />
 
-        <form.AppField
-          name="cargoData.totalWeight"
-          children={(field) => {
-            return (
-              <field.NumericField
-                label="Общий вес(кг)"
-                placeholder="Общий вес в килограммах"
-                suffix=" кг"
-                decimalScale={1}
-                thousandSeparator=","
-              />
-            );
-          }}
-        />
+        <TypographyH3 className="text-primary">Данные о грузе</TypographyH3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 mt-2 mb-4">
+          <form.AppField
+            name="cargoData.totalWeight"
+            children={(field) => {
+              return (
+                <field.NumericField
+                  label="Общий вес(кг)"
+                  placeholder="Общий вес в килограммах"
+                  suffix=" кг"
+                  decimalScale={1}
+                  thousandSeparator=","
+                />
+              );
+            }}
+          />
 
-        <form.AppField
-          name="cargoData.declaredPrice"
-          children={(field) => {
-            return (
-              <field.NumericField
-                label="Заявленная стоимость(в рублях)"
-                placeholder="Заявленная стоимость в рублях"
-                suffix=" ₽"
-                thousandSeparator=" "
-              />
-            );
-          }}
-        />
+          <form.AppField
+            name="cargoData.declaredPrice"
+            children={(field) => {
+              return (
+                <field.NumericField
+                  label="Заявленная стоимость(в рублях)"
+                  placeholder="Заявленная стоимость в рублях"
+                  suffix=" ₽"
+                  thousandSeparator=" "
+                />
+              );
+            }}
+          />
 
-        <form.AppField
-          name="cargoData.weightHeaviestPosition"
-          children={(field) => {
-            return (
-              <field.NumericField
-                label="Вес самой тяжелой позиции(кг)"
-                placeholder="Вес самой тяжелой позиции в килограммах"
-                suffix=" кг"
-                decimalScale={1}
-                thousandSeparator=","
-              />
-            );
-          }}
-        />
+          <form.AppField
+            name="cargoData.weightHeaviestPosition"
+            children={(field) => {
+              return (
+                <field.NumericField
+                  label="Вес самой тяжелой позиции(кг)"
+                  placeholder="Вес самой тяжелой позиции в килограммах"
+                  suffix=" кг"
+                  decimalScale={1}
+                  thousandSeparator=","
+                />
+              );
+            }}
+          />
 
-        <form.AppField
-          name="cargoData.cubicMeter"
-          children={(field) => {
-            return (
-              <field.NumericField
-                label="Метр кубический"
-                placeholder="Метр кубический"
-                suffix=" м³"
-                decimalScale={5}
-                thousandSeparator=","
-              />
-            );
-          }}
-        />
+          <form.AppField
+            name="cargoData.cubicMeter"
+            listeners={{
+              onChange: ({ value }) => {
+                const { long, width, height } = form.state.values.cargoData;
+                const hasAllFilled = !!(long && width && height);
+                if (value <= 0 && hasAllFilled) {
+                  form.setFieldValue("cargoData.long", 0);
+                  form.setFieldValue("cargoData.width", 0);
+                  form.setFieldValue("cargoData.height", 0);
+                }
+              },
+            }}
+            validators={{
+              onChange: ({ value }) => {
+                if (value < 0) {
+                  return "Должно быть больше нуля!";
+                }
+                if (value > 25) {
+                  return "Не должен превышать 25";
+                }
+                return undefined;
+              },
+            }}
+            children={(field) => {
+              const hasAllFilled = !!(
+                form.getFieldValue("cargoData.width") &&
+                form.getFieldValue("cargoData.long") &&
+                form.getFieldValue("cargoData.height")
+              );
+              return (
+                <field.NumericField
+                  label="Метр кубический"
+                  placeholder="Метр кубический"
+                  suffix=" м³"
+                  decimalScale={5}
+                  thousandSeparator=","
+                  disabled={hasAllFilled}
+                />
+              );
+            }}
+          />
 
-        <form.AppField
-          name="cargoData.long"
-          children={(field) => {
-            return (
-              <field.NumericField
-                label="Длина(см)"
-                placeholder="Длина в сантиметрах"
-                suffix=" см"
-                decimalScale={1}
-                thousandSeparator=","
-              />
-            );
-          }}
-        />
+          <form.AppField
+            name="cargoData.long"
+            listeners={{
+              onChange: ({ value: long }) => {
+                const { width, height } = form.state.values.cargoData;
+                form.setFieldValue(
+                  "cargoData.cubicMeter",
+                  (width * height * long) / 1_000_000,
+                );
+              },
+            }}
+            children={(field) => {
+              return (
+                <field.NumericField
+                  label="Длина(см)"
+                  placeholder="Длина в сантиметрах"
+                  suffix=" см"
+                  decimalScale={1}
+                  thousandSeparator=","
+                />
+              );
+            }}
+          />
 
-        <form.AppField
-          name="cargoData.width"
-          children={(field) => {
-            return (
-              <field.NumericField
-                label="Ширина(см)"
-                placeholder="Ширина в сантиметрах"
-                suffix=" см"
-                decimalScale={1}
-                thousandSeparator=","
-              />
-            );
-          }}
-        />
+          <form.AppField
+            name="cargoData.width"
+            listeners={{
+              onChange: ({ value: width }) => {
+                const { long, height } = form.state.values.cargoData;
+                form.setFieldValue(
+                  "cargoData.cubicMeter",
+                  (width * height * long) / 1_000_000,
+                );
+              },
+            }}
+            children={(field) => {
+              return (
+                <field.NumericField
+                  label="Ширина(см)"
+                  placeholder="Ширина в сантиметрах"
+                  suffix=" см"
+                  decimalScale={1}
+                  thousandSeparator=","
+                />
+              );
+            }}
+          />
 
-        <form.AppField
-          name="cargoData.height"
-          children={(field) => {
-            return (
-              <field.NumericField
-                label="Высота(см)"
-                placeholder="Высота в сантиметрах"
-                suffix=" см"
-                decimalScale={1}
-                thousandSeparator=","
-              />
-            );
-          }}
-        />
+          <form.AppField
+            name="cargoData.height"
+            listeners={{
+              onChange: ({ value: height }) => {
+                const { long, width } = form.state.values.cargoData;
+                form.setFieldValue(
+                  "cargoData.cubicMeter",
+                  (width * height * long) / 1_000_000,
+                );
+              },
+            }}
+            children={(field) => {
+              return (
+                <field.NumericField
+                  label="Высота(см)"
+                  placeholder="Высота в сантиметрах"
+                  suffix=" см"
+                  decimalScale={1}
+                  thousandSeparator=","
+                />
+              );
+            }}
+          />
+        </div>
 
         <form.AppField
           name="cargoData.description"
           children={(field) => {
             return (
-              <field.TextareaField
-                label="Краткое описание"
-                placeholder="Краткое описание"
-              />
+              <div className="mb-4">
+                <field.TextareaField
+                  label="Краткое описание"
+                  placeholder="Краткое описание"
+                />
+              </div>
             );
           }}
         />
@@ -904,38 +985,44 @@ export const PickUpPointDeliveryOrderForm = withForm({
           mode="array"
           children={(field) => {
             return (
-              <div className="sm:grid sm:grid-cols-3 flex flex-col gap-x-4 gap-y-2">
-                {additionalServices &&
-                  field.state.value.map((_, i) => (
-                    <form.AppField
-                      key={i}
-                      name={`additionalService[${i}].selected`}
-                      children={(field) => {
-                        const label = form.getFieldValue(
-                          `additionalService[${i}].label`,
-                        );
-                        return (
-                          <FormItem className="items-stretch">
-                            <Label>{label}</Label>
-                            <field.RadioGroupField
-                              stretched
-                              options={[
-                                { label: "Да", value: "yes" },
-                                { label: "Нет", value: "no" },
-                              ]}
-                              ariaLabel={`Дополнительная услуга '${label}'`}
-                            />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  ))}
-              </div>
+              <Fragment>
+                <TypographyH3 className="text-primary">
+                  Дополнительные услуги
+                </TypographyH3>
+                <div className="sm:grid sm:grid-cols-3 flex flex-col gap-x-4 gap-y-2 mt-2 mb-4">
+                  {additionalServices &&
+                    field.state.value.map((_, i) => (
+                      <form.AppField
+                        key={i}
+                        name={`additionalService[${i}].selected`}
+                        children={(field) => {
+                          const label = form.getFieldValue(
+                            `additionalService[${i}].label`,
+                          );
+                          return (
+                            <FormItem className="items-stretch">
+                              <Label>{label}</Label>
+                              <field.RadioGroupField
+                                stretched
+                                options={[
+                                  { label: "Да", value: "yes" },
+                                  { label: "Нет", value: "no" },
+                                ]}
+                                ariaLabel={`Дополнительная услуга '${label}'`}
+                              />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                </div>
+              </Fragment>
             );
           }}
         />
 
-        <div className="sm:grid sm:grid-cols-3 flex flex-col gap-x-4 gap-y-2">
+        <TypographyH3 className="text-primary">Оплата</TypographyH3>
+        <div className="sm:grid sm:grid-cols-2 flex flex-col gap-x-4 gap-y-2 mt-2 mb-4">
           <form.AppField
             name="cargoData.shippingPayment"
             children={(field) => {

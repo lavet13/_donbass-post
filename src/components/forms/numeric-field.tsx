@@ -6,7 +6,10 @@ import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
 const NumericField: FC<
-  NumericFormatProps & { label: string; ariaLabel?: string }
+  NumericFormatProps & {
+    label: string;
+    ariaLabel?: string;
+  }
 > = ({
   label,
   className,
@@ -44,7 +47,7 @@ const NumericField: FC<
 
           return (
             typeof floatValue === "undefined" ||
-            (floatValue > 0 && floatValue <= 999_999_999)
+            (floatValue >= 0 && floatValue <= 999_999_999)
           );
         }}
         onValueChange={(values) => {

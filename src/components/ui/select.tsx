@@ -25,7 +25,7 @@ const SelectTrigger: FC<ComponentProps<typeof SelectPrimitive.Trigger>> = ({
       )}
       {...props}
     >
-      {children}
+      <span className="truncate">{children}</span>
       <SelectPrimitive.Icon asChild>
         <ChevronDownIcon />
       </SelectPrimitive.Icon>
@@ -45,7 +45,10 @@ const SelectLabel: FC<ComponentProps<typeof SelectPrimitive.Label>> = ({
 }) => {
   return (
     <SelectPrimitive.Label
-      className={cn("px-[25px] text-xs text-muted-foreground leading-[25px]", className)}
+      className={cn(
+        "px-[25px] text-xs text-muted-foreground leading-[25px]",
+        className,
+      )}
       {...props}
     />
   );
@@ -59,9 +62,9 @@ const SelectItem: FC<ComponentProps<typeof SelectPrimitive.Item>> = ({
   return (
     <SelectPrimitive.Item
       className={cn(
-        "relative select-none",
+        "group relative select-none",
         "leading-none sm:text-sm text-base text-accent-foreground rounded-sm",
-        "flex items-center h-[25px] pr-[35px] pl-[25px]",
+        "flex justify-between items-center h-[30px] sm:h-[25px] pr-4 gap-1 pl-2",
         "data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground",
         "data-[highlighted]:outline-none data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground",
         className,
@@ -69,13 +72,7 @@ const SelectItem: FC<ComponentProps<typeof SelectPrimitive.Item>> = ({
       {...props}
     >
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-      <SelectPrimitive.ItemIndicator
-        className={
-          "absolute left-0 w-[25px] inline-flex items-center justify-center"
-        }
-      >
-        <CheckIcon className="sm:size-3 size-4" />
-      </SelectPrimitive.ItemIndicator>
+      <CheckIcon className="group-data-[state=checked]:inline-flex hidden sm:size-3 size-4" />
     </SelectPrimitive.Item>
   );
 };

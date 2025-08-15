@@ -58,7 +58,7 @@ export const ShopCostCalculationOrderForm = withForm({
 
     return (
       <form
-        className="px-2 md:px-0"
+        className="w-full max-w-2xl px-2 md:px-0"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();

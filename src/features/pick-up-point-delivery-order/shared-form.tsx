@@ -3,7 +3,7 @@ import { formOptions } from "@tanstack/react-form";
 export const defaultPickUpPointDeliveryOrderOpts = formOptions({
   defaultValues: {
     sender: {
-      type: "" as "individual" | "company",
+      type: "" as "individual" | "company" | "",
       surnameSender: "",
       nameSender: "",
       patronymicSender: "",
@@ -18,7 +18,7 @@ export const defaultPickUpPointDeliveryOrderOpts = formOptions({
     },
 
     recipient: {
-      type: "" as "individual" | "company",
+      type: "" as "individual" | "company" | "",
       nameRecipient: "",
       surnameRecipient: "",
       patronymicRecipient: "",
@@ -34,7 +34,7 @@ export const defaultPickUpPointDeliveryOrderOpts = formOptions({
 
     customer: {
       isToggled: false,
-      type: "" as "individual" | "company",
+      type: "individual" as "individual" | "company" | "",
       nameCustomer: "",
       surnameCustomer: "",
       patronymicCustomer: "",

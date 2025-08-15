@@ -49,18 +49,21 @@ const RadioGroupIndicator: FC<
 
 const RadioGroupLabel: FC<ComponentProps<typeof Label>> = ({
   className,
+  children,
   ...props
 }) => {
   return (
     <Label
       className={cn(
-        "cursor-pointer relative z-0 text-accent-foreground",
+        "cursor-pointer relative text-accent-foreground",
         "group-data-[state=checked]:text-primary-foreground",
         "relative group-active:top-[1px]",
         className,
       )}
       {...props}
-    />
+    >
+      <span className="truncate">{children}</span>
+    </Label>
   );
 };
 
