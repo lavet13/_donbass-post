@@ -8,7 +8,6 @@ import { usePointPostQuery } from "@/features/point/queries";
 import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
 import { Fragment, useEffect } from "react";
-import { Label } from "@/components/ui/label";
 import { FormItem } from "@/components/ui/form";
 import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -567,6 +566,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
           children={(field) => {
             return (
               <div className={cn(!field.state.value && "py-2")}>
+                <TypographyH3 className="text-primary">Заказчик</TypographyH3>
                 <Toggle
                   className={cn(
                     buttonVariants({ variant: "ghost" }),
@@ -989,26 +989,48 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <TypographyH3 className="text-primary">
                   Дополнительные услуги
                 </TypographyH3>
-                <div className="sm:grid sm:grid-cols-3 flex flex-col gap-x-4 gap-y-2 mt-2 mb-4">
+                <div className="flex flex-wrap flex-col sm:flex-row gap-x-4 gap-y-2 mt-3 sm:mt-2 mb-4">
                   {additionalServices &&
                     field.state.value.map((_, i) => (
                       <form.AppField
                         key={i}
                         name={`additionalService[${i}].selected`}
-                        children={(field) => {
+                        children={(selectedField) => {
                           const label = form.getFieldValue(
                             `additionalService[${i}].label`,
                           );
+                          const isCashOnDelivery = label
+                            .toLowerCase()
+                            .includes("наложенный платеж");
+                          const isSelected =
+                            selectedField.state.value.includes("yes");
+
                           return (
-                            <FormItem className="items-stretch">
-                              <Label>{label}</Label>
-                              <field.RadioGroupField
+                            <FormItem className="flex-1 gap-y-1 sm:gap-y-1 items-stretch">
+                              <selectedField.RadioGroupField
+                                label={label}
                                 stretched
                                 options={[
                                   { label: "Да", value: "yes" },
                                   { label: "Нет", value: "no" },
                                 ]}
                                 ariaLabel={`Дополнительная услуга '${label}'`}
+                              />
+                              <form.AppField
+                                name="cargoData.cashOnDelivery"
+                                children={(field) => {
+                                  if (!isCashOnDelivery) return null;
+                                  if (!isSelected) return null;
+
+                                  return (
+                                    <field.NumericField
+                                      shouldFocusOnMount
+                                      placeholder="Наложенный платеж в рублях"
+                                      thousandSeparator=" "
+                                      suffix=" ₽"
+                                    />
+                                  );
+                                }}
                               />
                             </FormItem>
                           );

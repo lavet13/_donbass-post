@@ -10,7 +10,7 @@ import {
 import { Eye, EyeClosed } from "lucide-react";
 
 type PasswordFieldProps = ComponentProps<typeof PasswordToggleFieldInput> & {
-  label: string;
+  label?: string;
   ariaLabel?: string;
 };
 
@@ -34,7 +34,7 @@ const PasswordField: FC<PasswordFieldProps> = ({
 
   return (
     <FormItem>
-      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
+      {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       <PasswordToggleField>
         <PasswordToggleFieldInput
           id={formItemId}

@@ -4,7 +4,7 @@ import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
 type TextareaFieldProps = ComponentProps<typeof AutosizeTextarea> & {
-  label: string;
+  label?: string;
   ariaLabel?: string;
 };
 
@@ -28,7 +28,7 @@ const TextareaField: FC<TextareaFieldProps> = ({
 
   return (
     <FormItem>
-      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
+      {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       <AutosizeTextarea
         id={formItemId}
         name={field.name}

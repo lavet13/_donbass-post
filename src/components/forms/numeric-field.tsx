@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { useEffect, useRef, type FC } from "react";
 import { NumericFormat } from "react-number-format";
 import type { NumericFormatProps } from "react-number-format";
 import { Input } from "@/components/ui/input";
@@ -7,16 +7,19 @@ import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
 const NumericField: FC<
   NumericFormatProps & {
-    label: string;
+    label?: string;
     ariaLabel?: string;
+    shouldFocusOnMount?: boolean;
   }
 > = ({
   label,
   className,
   "aria-label": ariaLabelProp,
   ariaLabel,
+  shouldFocusOnMount = false,
   ...props
 }) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const {
     field,
     defaultAriaLabel,
@@ -29,10 +32,23 @@ const NumericField: FC<
     ariaLabel: ariaLabelProp || ariaLabel,
   });
 
+  useEffect(() => {
+    if (shouldFocusOnMount) {
+      inputRef.current?.focus();
+    }
+
+    return () => {
+      if (shouldFocusOnMount) {
+        inputRef.current?.blur();
+      }
+    };
+  }, [shouldFocusOnMount]);
+
   return (
     <FormItem>
-      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
+      {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       <NumericFormat
+        getInputRef={inputRef}
         aria-label={defaultAriaLabel}
         aria-describedby={ariaDescribedBy}
         aria-invalid={!!error}

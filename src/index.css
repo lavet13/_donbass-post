@@ -24,21 +24,29 @@
   --accent: #f0d1d1; /* Soft clay blush – warm, dusty, quiet */
   --accent-foreground: #814343; /* Dark text for contrast */
 
-  --destructive: #c75a5a; /* Balanced: soft but clear */
+  --destructive: #a54b4b; /* Muted brick red — soft but serious */
   --destructive-foreground: #ffffff;
+  --destructive-border: #faeaea; /* Light blush background */
+  --destructive-ring: #c77a7a; /* Gentle alert tone */
 
   --ring: #e6b6b6; /* Soft warm focus */
   --border: #ddd0d0; /* Very soft warm line */
   --input: #ddd0d0;
 
-  --success: #2d8c49; /* Green for positive actions */
+  --success: #5e8f70; /* Warm sage — soft, earthy, cohesive */
   --success-foreground: #ffffff;
+  --success-border: #e6f2e9; /* Very soft, warm-tinted green background */
+  --success-ring: #a3c4a8; /* Muted mid-tone — visible but gentle */
 
-  --warning: #c97c13; /* Amber for warnings */
+  --warning: #b37c3e; /* Warm sand — like sunbaked clay */
   --warning-foreground: #ffffff;
+  --warning-border: #fdf6f0; /* Barely-there warm tint */
+  --warning-ring: #d4a574; /* Soft golden highlight */
 
-  --info: #2e8bb0; /* Blue for information */
+  --info: #4a8da5; /* Muted dusty blue — like weathered ceramic */
   --info-foreground: #ffffff;
+  --info-border: #e8f2f7; /* Very soft sky-tinted background */
+  --info-ring: #7ca8bf; /* Gentle focus glow */
 }
 
 .dark {
@@ -64,22 +72,30 @@
   --accent: #3a2424; /* Slightly lighter than #2c1d1d — still deep */
   --accent-foreground: #f0c8c8; /* Soft rose instead of bright #ffa4a4 */
 
-  --destructive: #c87a7a;
+  --destructive: #c87a7a; /* Slightly lighter than light mode — stays visible */
   --destructive-foreground: #161616;
+  --destructive-border: #3a2828; /* Deep warm base */
+  --destructive-ring: #a86060; /* Subtle focus cue */
 
   --ring: #b37070; /* Dusty rose — focus only */
   --border: #665555; /* Soft warm line, visible */
   --input: #665555;
 
   /* Added semantic colors */
-  --success: #4ade80; /* Bright green for dark mode */
+  --success: #7aaf8f; /* Visually balanced in dark */
   --success-foreground: #161616;
+  --success-border: #304437; /* Stable, deep outline */
+  --success-ring: #689c7e; /* Soft focus indicator */
 
-  --warning: #fbbf24; /* Bright amber for dark mode */
+  --warning: #d9a15c; /* Lightened for visibility — gentle glow */
   --warning-foreground: #161616;
+  --warning-border: #382b1f; /* Deep warm brown base */
+  --warning-ring: #c48c5a; /* Focus ring with warmth */
 
-  --info: #60a5fa; /* Bright blue for dark mode */
+  --info: #6aa9bf; /* Lightened for visibility on dark */
   --info-foreground: #161616;
+  --info-border: #24323a; /* Deep oceanic base */
+  --info-ring: #5a94ac; /* Softer glow for focus */
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -106,9 +122,23 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-border: var(--destructive-border);
+  --color-destructive-ring: var(--destructive-ring);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-border: var(--success-border);
+  --color-success-ring: var(--success-ring);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-border: var(--warning-border);
+  --color-warning-ring: var(--warning-ring);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-border: var(--info-border);
+  --color-info-ring: var(--info-ring);
 
   /* Animations */
   --ease-slide-popover: cubic-bezier(0.16, 1, 0.3, 1);

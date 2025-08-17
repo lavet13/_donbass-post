@@ -6,11 +6,12 @@ import {
   RadioGroupLabel,
   RadioGroupRoot,
 } from "@/components/ui/radio-group";
-import { FormItem, FormMessage } from "../ui/form";
+import { FormItem, FormLabel, FormMessage } from "../ui/form";
 import { cn } from "@/lib/utils";
 
 type RadioGroupFieldProps = {
   options: { value: string; label: string }[];
+  label?: string;
   "aria-label"?: string;
   ariaLabel?: string;
   stretched?: boolean;
@@ -18,6 +19,7 @@ type RadioGroupFieldProps = {
 
 const RadioGroupField: FC<RadioGroupFieldProps> = ({
   options,
+  label,
   "aria-label": ariaLabelProp,
   ariaLabel,
   stretched = false,
@@ -33,6 +35,7 @@ const RadioGroupField: FC<RadioGroupFieldProps> = ({
 
   return (
     <FormItem>
+      {label && <FormLabel>{label}</FormLabel>}
       <RadioGroupRoot
         name={field.name}
         aria-label={defaultAriaLabel}

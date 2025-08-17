@@ -15,7 +15,7 @@ import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 type SelectFieldProps = {
   options?: { label: string; items: { value: string; label: string }[] }[];
   "aria-label"?: string;
-  label: string;
+  label?: string;
   placeholder?: string;
   ariaLabel?: string;
 };
@@ -41,7 +41,7 @@ const SelectField: FC<SelectFieldProps> = ({
 
   return (
     <FormItem>
-      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
+      {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       <Select value={field.state.value} onValueChange={field.handleChange}>
         <SelectTrigger
           id={formItemId}

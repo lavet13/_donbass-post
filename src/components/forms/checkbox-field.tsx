@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
 const CheckboxField: FC<
-  React.ComponentProps<"input"> & { label: string; ariaLabel?: string }
+  React.ComponentProps<"input"> & { label?: string; ariaLabel?: string }
 > = ({ label, ariaLabel, "aria-label": ariaLabelProp, className }) => {
   const {
     field,
@@ -36,9 +36,11 @@ const CheckboxField: FC<
           field.handleChange(booleanValue);
         }}
       />
-      <FormLabel htmlFor={formItemId} className="text-sm font-normal">
-        {label}
-      </FormLabel>
+      {label && (
+        <FormLabel htmlFor={formItemId} className="text-sm font-normal">
+          {label}
+        </FormLabel>
+      )}
       <FormMessage id={formMessageId} />
     </FormItem>
   );

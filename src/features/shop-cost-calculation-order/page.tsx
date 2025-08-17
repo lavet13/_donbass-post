@@ -3,10 +3,10 @@ import { defaultShopCostCalculationOrderOpts } from "@/features/shop-cost-calcul
 import { ShopCostCalculationOrderForm } from "@/features/shop-cost-calculation-order/nested-form";
 import { useShopCostCalculationOrderMutation } from "./mutations";
 import { isAxiosError } from "axios";
-import { transformApiErrorsToFormErrors } from "@/lib/utils";
+import { cn, transformApiErrorsToFormErrors } from "@/lib/utils";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Suspend } from "@/components/suspend";
-import type { FC } from "react";
+import { Fragment, type FC } from "react";
 
 const ShopCostCalculationOrderPage: FC = () => {
   const { mutateAsync: createShopCostCalculationOrder } =
@@ -33,11 +33,11 @@ const ShopCostCalculationOrderPage: FC = () => {
       };
 
       try {
-        await createShopCostCalculationOrder(payload);
+        // await createShopCostCalculationOrder(payload);
         formApi.reset();
 
         const entries = values || [];
-        const allEntries = entries.flatMap(([, items]) => items);
+        const allEntries = entries.flatMap(({ items }) => items);
         const selectedEntry = allEntries.find(
           (entry) => entry.value === payload.shopCostCalculationOrder.pointTo,
         )!;
@@ -45,13 +45,20 @@ const ShopCostCalculationOrderPage: FC = () => {
         meta.onSuccess?.((prev) => ({
           ...prev,
           isOpen: true,
-          options: [
-            {
-              label: "Пункт выдачи:",
-              value: `${selectedEntry.name.trim()}, по адресу: ${selectedEntry.address}`,
-            },
-          ],
           extra: [
+            <Fragment>
+              {[
+                {
+                  label: "Пункт выдачи:",
+                  value: `${selectedEntry.name.trim()}, по адресу: ${selectedEntry.address}`,
+                },
+              ].map(({ label, value }, idx, options) => (
+                <div className={cn(options.length - 1 === idx && "py-2 pb-4")} key={`${label}${value}`}>
+                  <span className="text-sm font-bold">{label}{' '}</span>
+                  <span className="text-sm">{value}</span>
+                </div>
+              ))}
+            </Fragment>,
             `Мы отправили письмо с заполненными данными на вашу почту: ${payload.shopCostCalculationOrder.email}`,
             `Это письмо сформировано автоматически службой уведомлений сайта компании.`,
             `Отвечать на него не нужно.`,

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
 type TextFieldProps = React.ComponentProps<"input"> & {
-  label: string;
+  label?: string;
   ariaLabel?: string;
 };
 
@@ -28,7 +28,7 @@ const TextField: FC<TextFieldProps> = ({
 
   return (
     <FormItem>
-      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
+      {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       <Input
         id={formItemId}
         name={field.name}

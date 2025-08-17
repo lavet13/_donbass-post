@@ -32,7 +32,7 @@ export const FormItem: FC<ComponentProps<"div">> = ({
   return (
     <div
       data-slot="form-item"
-      className={cn("flex flex-col gap-y-1.5 sm:gap-y-2", className)}
+      className={cn("flex flex-col gap-y-1 sm:gap-y-1.5", className)}
       {...props}
     />
   );

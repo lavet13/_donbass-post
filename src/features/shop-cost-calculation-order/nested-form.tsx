@@ -34,6 +34,7 @@ export const ShopCostCalculationOrderForm = withForm({
     const [successMessage, setSuccessMessage] =
       useState<AutoDimissMessageProps>({
         title: "Регистрация успешно проведена!",
+        variant: "error",
         onClose: () =>
           setSuccessMessage((prev) => ({ ...prev, isOpen: false })),
         isOpen: false,

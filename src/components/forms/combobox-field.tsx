@@ -33,7 +33,7 @@ const ComboboxGroupField: FC<
     isLoading?: boolean;
     values?: { label: string; items: EntryType[] }[];
     placeholder: string;
-    label: string;
+    label?: string;
     selectedEntryClearTooltipMessage?: string;
     loadingMessage?: string;
     refetchErrorMessage?: string;
@@ -80,7 +80,7 @@ const ComboboxGroupField: FC<
 
   return (
     <FormItem>
-      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
+      {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

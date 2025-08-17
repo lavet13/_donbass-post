@@ -6,7 +6,7 @@ import type { DefaultInputComponentProps } from "react-phone-number-input";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
 const PhoneField: FC<
-  DefaultInputComponentProps & { label: string; ariaLabel?: string }
+  DefaultInputComponentProps & { label?: string; ariaLabel?: string }
 > = ({ label, "aria-label": ariaLabelProp, ariaLabel, ...props }) => {
   const {
     field,
@@ -22,7 +22,7 @@ const PhoneField: FC<
 
   return (
     <FormItem>
-      <FormLabel htmlFor={formItemId}>{label}</FormLabel>
+      {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       <RPNInput
         id={formItemId}
         name={field.name}

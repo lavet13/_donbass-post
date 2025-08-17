@@ -72,7 +72,7 @@ const SelectItem: FC<ComponentProps<typeof SelectPrimitive.Item>> = ({
       {...props}
     >
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-      <CheckIcon className="group-data-[state=checked]:inline-flex hidden sm:size-3 size-4" />
+      <CheckIcon className="group-data-[state=checked]:inline-flex hidden size-4" />
     </SelectPrimitive.Item>
   );
 };
