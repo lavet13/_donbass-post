@@ -16,7 +16,7 @@ const UserRegistrationPage: FC = () => {
 
   const form = useAppForm({
     ...defaultUserRegistrationOpts,
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: async ({ value, formApi, meta }) => {
       const { phone, password } = value;
       try {
         const { token } = await registerUser({ phone, password });
@@ -32,6 +32,13 @@ const UserRegistrationPage: FC = () => {
 
             if (status >= 500) {
               console.error("Server is out");
+              meta.onSubmit?.((prev) => ({
+                ...prev,
+                isOpen: true,
+                extra: [
+                  'Сервер не отвечает. Попробуйте позже.',
+                ],
+              }));
             }
           } else if (error.request) {
             // The request was made but no response was received

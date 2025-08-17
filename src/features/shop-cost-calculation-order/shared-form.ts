@@ -2,13 +2,13 @@ import type { AutoDimissMessageProps } from "@/components/auto-dismiss-message";
 import { formOptions } from "@tanstack/react-form";
 
 type FormMeta = {
-  onSuccess: React.Dispatch<
+  onSubmit: React.Dispatch<
     React.SetStateAction<AutoDimissMessageProps>
   > | null;
 };
 
 const defaultMeta: FormMeta = {
-  onSuccess: null,
+  onSubmit: null,
 };
 
 export const defaultShopCostCalculationOrderOpts = formOptions({

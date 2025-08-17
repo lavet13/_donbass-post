@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export type AutoDimissMessageProps = {
-  title: string;
+  title?: string;
   variant: "success" | "warning" | "info" | "error";
   description?: string;
   extra?: (string | ReactNode)[];
@@ -90,10 +90,12 @@ export const AutoDismissMessage: FC<AutoDimissMessageProps> = ({
               "text-destructive-foreground bg-destructive border-destructive-border",
           )}
         >
-          <div className="flex items-center gap-3 pt-4 sm:pt-0">
-            <dismissMessage.icon className="size-5 shrink-0" />
-            <p className="text-base font-bold">{title}</p>
-          </div>
+          {title && (
+            <div className="flex items-center gap-3 pt-4 sm:pt-0">
+              <dismissMessage.icon className="size-5 shrink-0" />
+              <p className="text-base font-bold">{title}</p>
+            </div>
+          )}
           {description && (
             <span className="text-muted-foreground text-xs">{description}</span>
           )}

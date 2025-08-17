@@ -42,7 +42,7 @@ const ShopCostCalculationOrderPage: FC = () => {
           (entry) => entry.value === payload.shopCostCalculationOrder.pointTo,
         )!;
 
-        meta.onSuccess?.((prev) => ({
+        meta.onSubmit?.((prev) => ({
           ...prev,
           isOpen: true,
           extra: [
@@ -92,6 +92,11 @@ const ShopCostCalculationOrderPage: FC = () => {
 
             if (status >= 500) {
               console.error("Server is out");
+              meta.onSubmit?.((prev) => ({
+                ...prev,
+                isOpen: true,
+                extra: ["Сервер не отвечает. Попробуйте позже."],
+              }));
             }
           } else if (error.request) {
             // The request was made but no response was received

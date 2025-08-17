@@ -9,7 +9,7 @@
 - [] never have been used the vitest, try it, at least for testing the forms
 - [] fix the focus-visible for auth buttons
 - [] I might need to show departments outside of popover by utilizing the modal(vaul drawer)
-- [] add new stylings for autodismissMessage(info, warn, error)
+- [x] add new stylings for autodismissMessage(info, warn, error)
 - [] add sonner
 
 # Future requests

@@ -15,12 +15,12 @@ export const UserLoginForm = withForm({
   render: function ({ form }) {
     const [message, setMessage] = useState<AutoDimissMessageProps>({
       isOpen: false,
+      variant: "error",
       onClose() {
-        setMessage((prev) => ({ ...prev, isOpen: true }));
+        setMessage((prev) => ({ ...prev, isOpen: false }));
       },
-      title: "Сообщение",
+      durationMs: 10_000,
     });
-
 
     return (
       <Fragment>
@@ -30,7 +30,7 @@ export const UserLoginForm = withForm({
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            form.handleSubmit();
+            form.handleSubmit({ onSubmit: setMessage });
           }}
         >
           <form.AppField

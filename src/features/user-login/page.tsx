@@ -6,6 +6,7 @@ import { useUserLoginMutation } from "./mutations";
 import { isAxiosError } from "axios";
 import { useAuth } from "@/hooks/use-auth";
 import { useSearch } from "@tanstack/react-router";
+import { Suspend } from "@/components/suspend";
 
 const UserLoginPage: FC = () => {
   const search = useSearch({ from: "/_public/auth" });
@@ -15,7 +16,7 @@ const UserLoginPage: FC = () => {
 
   const form = useAppForm({
     ...defaultUserLoginOpts,
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: async ({ value, formApi, meta }) => {
       try {
         const { phone, password } = value;
         const { token } = await loginUser({ phone, password });
@@ -43,10 +44,20 @@ const UserLoginPage: FC = () => {
 
             if (status === 404) {
               // User not found
+              meta.onSubmit?.((prev) => ({
+                ...prev,
+                isOpen: true,
+                extra: [errorMessage],
+              }));
             }
 
             if (status >= 500) {
               console.error("Server is out");
+              meta.onSubmit?.((prev) => ({
+                ...prev,
+                isOpen: true,
+                extra: ["Сервер не отвечает. Попробуйте позже."],
+              }));
             }
           } else if (error.request) {
             // The request was made but no response was received
@@ -64,7 +75,11 @@ const UserLoginPage: FC = () => {
     },
   });
 
-  return <UserLoginForm form={form} />;
+  return (
+    <Suspend>
+      <UserLoginForm form={form} />
+    </Suspend>
+  );
 };
 
 export default UserLoginPage;
