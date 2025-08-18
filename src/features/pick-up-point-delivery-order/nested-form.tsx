@@ -9,7 +9,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
 import { Fragment, useEffect } from "react";
 import { FormItem } from "@/components/ui/form";
-import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, TriangleAlert } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography/typographyH3";
 
@@ -944,6 +944,11 @@ export const PickUpPointDeliveryOrderForm = withForm({
               );
             }}
           />
+        </div>
+
+        <div className="w-full text-primary inline-flex text-sm [&_svg]:self-start leading-none gap-2 justify-center items-center mb-3 [&_svg]:size-4.5 [&_svg]:shrink-0">
+          <TriangleAlert />
+          <p>Габариты указываются по самой большой позиции груза</p>
         </div>
 
         <form.AppField

@@ -391,7 +391,7 @@ export const ShopCostCalculationOrderForm = withForm({
                 <div className="grid sm:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
                   <Button
                     variant="ghost"
-                    className="rounded-full"
+                    className="border border-accent rounded-full"
                     type="button"
                     onClick={() =>
                       shopsField.pushValue({

@@ -15,11 +15,11 @@
   --popover-foreground: #2e2222;
   --popover-border: #ddd0d0;
 
-  --secondary: #f4d8d6;
+  --secondary: #f2d4d3;
   --secondary-foreground: #2e2222;
 
-  --muted: #fdf0f0; /* Lighter, more distinct */
-  --muted-foreground: #6b5e5e; /* Improved readability */
+  --muted: #f9f2f2;
+  --muted-foreground: #6b5e5e;
 
   --accent: #f0d1d1; /* Soft clay blush – warm, dusty, quiet */
   --accent-foreground: #814343; /* Dark text for contrast */
@@ -63,10 +63,10 @@
   --popover-foreground: #f0f0f0;
   --popover-border: #665555; /* Keep — perfect match */
 
-  --secondary: #4a3232; /* Warm, visible, harmonious */
+  --secondary: #4a3232; /* No change — perfect as-is */
   --secondary-foreground: #e0e0e0;
 
-  --muted: #362d2d;
+  --muted: #362d2d; /* No change — already harmonious */
   --muted-foreground: #b8b8b8;
 
   --accent: #3a2424; /* Slightly lighter than #2c1d1d — still deep */
