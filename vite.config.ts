@@ -67,6 +67,8 @@ export default defineConfig({
           // State management
           state: ["jotai", "immer"],
 
+          animation: ['motion'],
+
           // UI and interaction
           icons: ["lucide-react"],
           "command-ui": ["cmdk"],

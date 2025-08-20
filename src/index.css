@@ -15,6 +15,15 @@
   --popover-foreground: #2e2222;
   --popover-border: #ddd0d0;
 
+  --modal: #fdf2f2; /* Warm off-white — just a whisper of blush */
+  --modal-foreground: #2e2222; /* Consistent with card & popover */
+  --modal-backdrop: rgba(
+    46,
+    34,
+    34,
+    0.14
+  ); /* Darkened --foreground with warmth */
+
   --secondary: #f2d4d3;
   --secondary-foreground: #2e2222;
 
@@ -58,6 +67,10 @@
 
   --card: #262020;
   --card-foreground: #f0f0f0;
+
+  --modal: #2a2222; /* Warm deep clay — slightly lighter than background (#161616) */
+  --modal-foreground: #f0f0f0; /* Same as foreground — clean and readable */
+  --modal-backdrop: rgba(60, 40, 40, 0.36); /* Deep clay shadow */
 
   --popover: #2e2626; /* Warm, soft, clearly layered */
   --popover-foreground: #f0f0f0;
@@ -114,6 +127,10 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  --color-popover-border: var(--popover-border);
+  --color-modal: var(--modal);
+  --color-modal-foreground: var(--modal-foreground);
+  --color-modal-backdrop: var(--modal-backdrop);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);

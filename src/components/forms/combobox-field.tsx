@@ -21,7 +21,7 @@ import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Tooltip } from "@/components/ui/tooltip";
 import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
-import { useElementWidth } from "@/hooks/use-element-width";
+import { useMeasure } from "@/hooks/use-measure";
 
 type EntryType = { label: string; value: string | number; name?: string };
 
@@ -34,6 +34,7 @@ const ComboboxGroupField: FC<
     values?: { label: string; items: EntryType[] }[];
     placeholder: string;
     label?: string;
+    modal?: boolean;
     selectedEntryClearTooltipMessage?: string;
     loadingMessage?: string;
     refetchErrorMessage?: string;
@@ -55,6 +56,7 @@ const ComboboxGroupField: FC<
   loadingMessage = "Подождите",
   "aria-label": ariaLabelProp,
   ariaLabel,
+  modal = false,
   ...props
 }) => {
   const {
@@ -75,8 +77,7 @@ const ComboboxGroupField: FC<
     (entry) => entry.value === field.state.value,
   );
 
-  const { elementRef: buttonRef, width: popoverWidth } =
-    useElementWidth<HTMLButtonElement>({ dependencies: [open] });
+  const [buttonRef, bounds] = useMeasure<HTMLButtonElement>();
 
   return (
     <FormItem>
@@ -100,6 +101,7 @@ const ComboboxGroupField: FC<
             aria-expanded={open}
             aria-haspopup="listbox"
             aria-invalid={!!error}
+            title={selectedEntry?.label}
             {...props}
           >
             <div className="flex shrink items-center min-w-0">
@@ -147,7 +149,7 @@ const ComboboxGroupField: FC<
         <PopoverContent
           role="listbox"
           sideOffset={2}
-          style={{ width: `${popoverWidth}px` }}
+          style={{ width: `${bounds?.width}px` }}
           className={`p-0 bg-background border border-input`}
         >
           <Command>

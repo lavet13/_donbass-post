@@ -34,7 +34,7 @@ export const ModeToggle: FC = () => {
 
   return (
     <Tooltip content={content}>
-      <Button size="icon" onClick={handleToggle}>
+      <Button className="rounded-full" variant="ghost" size="icon" onClick={handleToggle}>
         <Icon />
         <span className="sr-only">Toggle theme</span>
       </Button>

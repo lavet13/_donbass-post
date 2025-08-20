@@ -11,6 +11,8 @@
 - [] I might need to show departments outside of popover by utilizing the modal(vaul drawer)
 - [x] add new stylings for autodismissMessage(info, warn, error)
 - [] add sonner
+- [] try to redirect user after deleting cookie from browser console(test)
+- [] try wrapping autodismissmessage into something that drawer vaul has implemented
 
 # Future requests
 - [] try implementing loading indicator(e.g. botfather's mini app), and basic fade in and out animation
