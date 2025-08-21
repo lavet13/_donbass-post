@@ -78,8 +78,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
           children={(senderType) => {
             if (senderType !== "individual") return null;
             return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
-                <Suspend>
+              <Suspend>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                   <form.AppField
                     name="sender.surnameSender"
                     children={(field) => {
@@ -172,6 +172,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.ComboboxField
+                          modal
                           label="Населенный пункт"
                           placeholder="Выберите населенный пункт"
                           searchEmptyMessage="Нет населенных пунктов"
@@ -218,8 +219,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       );
                     }}
                   />
-                </Suspend>
-              </div>
+                </div>
+              </Suspend>
             );
           }}
         />
@@ -229,8 +230,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
           children={(senderType) => {
             if (senderType !== "company") return null;
             return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
-                <Suspend>
+              <Suspend>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                   <form.AppField
                     name="sender.companySender"
                     children={(field) => {
@@ -281,6 +282,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.ComboboxField
+                          modal
                           searchEmptyMessage="Нет населенных пунктов"
                           aria-label="Выберите удобный по местоположению населенный пункт из списка"
                           loadingMessage="Загружаем населенные пункты"
@@ -317,8 +319,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       );
                     }}
                   />
-                </Suspend>
-              </div>
+                </div>
+              </Suspend>
             );
           }}
         />
@@ -348,8 +350,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
           children={(recipientType) => {
             if (recipientType !== "individual") return null;
             return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
-                <Suspend>
+              <Suspend>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                   <form.AppField
                     name="recipient.surnameRecipient"
                     children={(field) => {
@@ -456,8 +458,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       );
                     }}
                   />
-                </Suspend>
-              </div>
+                </div>
+              </Suspend>
             );
           }}
         />
@@ -467,8 +469,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
           children={(recipientType) => {
             if (recipientType !== "company") return null;
             return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
-                <Suspend>
+              <Suspend>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                   <form.AppField
                     name="recipient.companyRecipient"
                     children={(field) => {
@@ -555,8 +557,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       );
                     }}
                   />
-                </Suspend>
-              </div>
+                </div>
+              </Suspend>
             );
           }}
         />
@@ -627,8 +629,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (!customerIsToggled) return null;
             if (customerType !== "individual") return null;
             return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-bl-xs">
-                <Suspend>
+              <Suspend>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-bl-xs">
                   <form.AppField
                     name="customer.surnameCustomer"
                     children={(field) => {
@@ -705,8 +707,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       );
                     }}
                   />
-                </Suspend>
-              </div>
+                </div>
+              </Suspend>
             );
           }}
         />
@@ -720,8 +722,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (!customerIsToggled) return null;
             if (customerType !== "company") return null;
             return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-bl-xs">
-                <Suspend>
+              <Suspend>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-bl-xs">
                   <form.AppField
                     name="customer.companyCustomer"
                     children={(field) => {
@@ -778,8 +780,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       );
                     }}
                   />
-                </Suspend>
-              </div>
+                </div>
+              </Suspend>
             );
           }}
         />
@@ -1080,12 +1082,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
           )}
         />
 
-        <form.AppForm>
-          <form.SubscribeButton
-            loadingMessage="Оформляем заявку"
-            label="Оформить заявку"
-          />
-        </form.AppForm>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
+          <form.AppForm>
+            <form.SubscribeButton
+              loadingMessage="Оформляем заявку"
+              label="Оформить заявку"
+            />
+          </form.AppForm>
+        </div>
       </form>
     );
   },

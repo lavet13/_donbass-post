@@ -2,9 +2,10 @@ import { useControllableState } from "@/hooks/use-controllable-state";
 import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
 import { Loader2, SearchIcon, X } from "lucide-react";
-import { useRef, type ComponentProps, type FC } from "react";
+import { useEffect, useRef, type ComponentProps, type FC } from "react";
 import { Tooltip } from "@/components/ui/tooltip";
 import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
+import mergeRefs from "@/hooks/merge-refs";
 
 // https://github.com/pacocoursey/cmdk?tab=readme-ov-file
 const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
@@ -63,7 +64,7 @@ const CommandItem: FC<ComponentProps<typeof CommandPrimitive.Item>> = ({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "hover:data-[selected=true]:bg-secondary/25 dark:hover:data-[selected=true]:bg-secondary/80 dark:data-[selected=true]:bg-secondary/80 active:data-[selected=true]:bg-secondary/50 dark:active:data-[selected=true]:bg-secondary/50 data-[selected=true]:bg-secondary/25 data-[selected=true]:text-secondary-foreground",
+        "hover:data-[selected=true]:bg-primary/5 hover:data-[selected=true]:text-accent-foreground hover:data-[selected=true]:font-medium data-[selected=true]:font-medium dark:hover:data-[selected=true]:bg-secondary/80 dark:data-[selected=true]:bg-secondary/80 active:data-[selected=true]:bg-primary/20 dark:active:data-[selected=true]:bg-secondary/50 data-[selected=true]:bg-primary/5 data-[selected=true]:text-accent-foreground",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
         "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 select-none outline-hidden text-sm",
@@ -109,16 +110,22 @@ const CommandInput: FC<
   ComponentProps<typeof CommandPrimitive.Input> & {
     clearButton?: boolean;
     clearButtonTooltipMessage?: string;
+    inputContainer?: HTMLInputElement["className"];
+    shouldFocus?: boolean;
   }
 > = ({
   className,
+  ref,
   value: valueProp,
   clearButton = false,
   clearButtonTooltipMessage = "Очистить поле",
+  inputContainer,
+  shouldFocus = false,
   onValueChange,
   ...props
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+
   const [value, setValue] = useControllableState({
     prop: valueProp,
     onChange: onValueChange,
@@ -136,23 +143,34 @@ const CommandInput: FC<
     }
   };
 
+  useEffect(() => {
+    if (inputRef.current && shouldFocus) {
+      inputRef.current.focus();
+    }
+  }, [inputRef.current]);
+
   return (
-    <div className="flex h-9 items-center gap-2 border-b border-border px-3 pr-1">
+    <div
+      className={cn(
+        "sticky z-10 top-0 flex h-9 items-center gap-2 border-b border-border px-3 pr-1",
+        inputContainer,
+      )}
+    >
       <SearchIcon className="size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
-        ref={inputRef}
+        ref={mergeRefs(inputRef, ref)}
         value={value}
         onValueChange={setValue}
         className={cn(
           "flex h-10 w-full rounded-sm bg-transparent py-3 text-sm outline-hidden",
-          "placeholder:text-muted-foreground caret-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+          "placeholder:text-muted-foreground caret-primary disabled:cursor-not-allowed disabled:opacity-50",
           "text-base md:text-sm",
           className,
         )}
         {...props}
       />
       {clearButton && value && (
-        <Tooltip content={clearButtonTooltipMessage}>
+        <Tooltip className="z-50" content={clearButtonTooltipMessage}>
           <button
             className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary-foreground/10 active:bg-secondary-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
             onKeyDown={handleKeyDown}

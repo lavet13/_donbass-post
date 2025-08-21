@@ -46,7 +46,7 @@ const SelectLabel: FC<ComponentProps<typeof SelectPrimitive.Label>> = ({
   return (
     <SelectPrimitive.Label
       className={cn(
-        "px-[25px] text-xs text-muted-foreground leading-[25px]",
+        "px-[25px] text-xs text-muted-foreground leading-3 my-1",
         className,
       )}
       {...props}

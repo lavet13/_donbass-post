@@ -22,7 +22,7 @@ const DrawerContent: FC<ComponentProps<typeof DrawerPrimitive.Content>> = ({
       <DrawerPrimitive.Overlay className="fixed inset-0 z-10 bg-modal-backdrop" />
       <DrawerPrimitive.Content
         className={cn(
-          "flex flex-col mx-auto bg-modal text-modal-foreground fixed outline-none inset-0",
+          "group/drawer-content flex flex-col mx-auto bg-modal text-modal-foreground fixed outline-none inset-0 z-10",
           className,
         )}
         {...props}
@@ -35,21 +35,29 @@ const DrawerHandle: FC<ComponentProps<typeof DrawerPrimitive.Handle>> = ({
   className,
   ...props
 }) => {
-  return <DrawerPrimitive.Handle className={cn("", className)} {...props} />;
+  return <DrawerPrimitive.Handle className={cn("cursor-grab active:cursor-grabbing data-[vaul-handle]:bg-modal-foreground/20! dark:data-[vaul-handle]:bg-modal-foreground! mx-auto mt-4 hidden h-2 w-[100px] mb-1 sm:mb-0 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block", className)} {...props} />;
 };
 
 const DrawerTitle: FC<ComponentProps<typeof DrawerPrimitive.Title>> = ({
   className,
   ...props
 }) => {
-  return <DrawerPrimitive.Title className={cn("", className)} {...props} />;
+  return (
+    <DrawerPrimitive.Title
+      className={cn("font-medium mt-8", className)}
+      {...props}
+    />
+  );
 };
 
 const DrawerDescription: FC<
   ComponentProps<typeof DrawerPrimitive.Description>
 > = ({ className, ...props }) => {
   return (
-    <DrawerPrimitive.Description className={cn("", className)} {...props} />
+    <DrawerPrimitive.Description
+      className={cn("leading-6 mt-2 text-muted-foreground", className)}
+      {...props}
+    />
   );
 };
 

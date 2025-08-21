@@ -44,6 +44,7 @@ const SelectField: FC<SelectFieldProps> = ({
       {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       <Select value={field.state.value} onValueChange={field.handleChange}>
         <SelectTrigger
+          title={field.state.value || placeholder}
           id={formItemId}
           name={field.name}
           aria-invalid={!!error}

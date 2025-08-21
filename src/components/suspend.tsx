@@ -9,7 +9,7 @@ export const Suspend: FC<SuspendProps> = ({ fallback, children, ...props }) => {
     <Suspense
       fallback={
         fallback || (
-          <div className="col-span-full flex-1 flex items-center justify-center">
+          <div className="col-span-full flex-1 flex items-center justify-center my-1">
             <Loader className="animate-spin size-5" />
           </div>
         )

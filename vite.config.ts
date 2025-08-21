@@ -56,6 +56,7 @@ export default defineConfig({
             "@radix-ui/react-radio-group",
             "@radix-ui/react-toggle",
             "@radix-ui/react-select",
+            "@radix-ui/react-visually-hidden",
           ],
 
           // Form validation and schema

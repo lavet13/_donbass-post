@@ -1,4 +1,4 @@
-import { useTheme } from "@/hooks/theme";
+import { useTheme } from "@/hooks/use-theme";
 import type { FC } from "react";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
