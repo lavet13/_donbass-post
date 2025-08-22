@@ -248,7 +248,7 @@ const ComboboxGroupField: FC<
               />
               <div className="shrink-1 max-w-4xl w-full">
                 <VisuallyHidden>
-                  <DrawerTitle>Выберите населенный пункт</DrawerTitle>
+                  <DrawerTitle>{searchInputPlaceholder}</DrawerTitle>
                 </VisuallyHidden>
                 {renderContent({ shouldFocus: true })}
               </div>
@@ -256,9 +256,9 @@ const ComboboxGroupField: FC<
                 className="grow shrink cursor-pointer sticky top-0 hover:bg-secondary/10"
                 onClick={() => setOpen(false)}
               >
-                <Tooltip content="Закрыть окно">
+                <Tooltip content="Закрыть модальное окно">
                   <button
-                    className="hidden text-secondary-foreground absolute top-1 right-1 ml-auto hover:bg-secondary/30 active:bg-secondary/40 pointer-events-auto cursor-pointer shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-3.5 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                    className="hidden text-secondary-foreground absolute top-1 right-1 ml-auto pointer-events-auto cursor-pointer shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-3.5 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                     aria-label="Закрыть окно"
                     type="button"
                     onClick={() => setOpen(false)}
@@ -270,20 +270,6 @@ const ComboboxGroupField: FC<
                 </Tooltip>
               </div>
             </div>
-            {/* <div className="max-w-4xl w-full mx-auto overflow-y-auto"> */}
-            {/*   <Tooltip content="Закрыть окно"> */}
-            {/*     <button */}
-            {/*       className="hidden text-secondary-foreground absolute top-1 right-1 ml-auto pointer-events-auto cursor-default shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-3.5 hover:bg-secondary/60 active:bg-secondary/70 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" */}
-            {/*       aria-label="Закрыть окно" */}
-            {/*       type="button" */}
-            {/*       onClick={() => setOpen(false)} */}
-            {/*     > */}
-            {/*       <AccessibleIconPrimitive.Root label="Закрыть модальное окно"> */}
-            {/*         <X /> */}
-            {/*       </AccessibleIconPrimitive.Root> */}
-            {/*     </button> */}
-            {/*   </Tooltip> */}
-            {/* </div> */}
           </DrawerContent>
         </Drawer>
       ) : (

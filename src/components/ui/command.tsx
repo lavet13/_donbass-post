@@ -64,7 +64,7 @@ const CommandItem: FC<ComponentProps<typeof CommandPrimitive.Item>> = ({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "hover:data-[selected=true]:bg-primary/5 hover:data-[selected=true]:text-accent-foreground hover:data-[selected=true]:font-medium data-[selected=true]:font-medium dark:hover:data-[selected=true]:bg-secondary/80 dark:data-[selected=true]:bg-secondary/80 active:data-[selected=true]:bg-primary/20 dark:active:data-[selected=true]:bg-secondary/50 data-[selected=true]:bg-primary/5 data-[selected=true]:text-accent-foreground",
+        "hover:data-[selected=true]:bg-primary/5 hover:data-[selected=true]:text-accent-foreground dark:hover:data-[selected=true]:bg-secondary/80 dark:data-[selected=true]:bg-secondary/80 active:data-[selected=true]:bg-primary/20 dark:active:data-[selected=true]:bg-secondary/50 data-[selected=true]:bg-primary/5 data-[selected=true]:text-accent-foreground",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
         "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 select-none outline-hidden text-sm",
@@ -170,7 +170,7 @@ const CommandInput: FC<
         {...props}
       />
       {clearButton && value && (
-        <Tooltip className="z-50" content={clearButtonTooltipMessage}>
+        <Tooltip content={clearButtonTooltipMessage}>
           <button
             className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary/60 active:bg-secondary/70 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
             onKeyDown={handleKeyDown}

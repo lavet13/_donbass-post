@@ -35,7 +35,7 @@ const DrawerHandle: FC<ComponentProps<typeof DrawerPrimitive.Handle>> = ({
   className,
   ...props
 }) => {
-  return <DrawerPrimitive.Handle className={cn("cursor-grab active:cursor-grabbing data-[vaul-handle]:bg-modal-foreground/20! dark:data-[vaul-handle]:bg-modal-foreground! mx-auto mt-4 hidden h-2 w-[100px] mb-1 sm:mb-0 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block", className)} {...props} />;
+  return <DrawerPrimitive.Handle className={cn("cursor-grab active:cursor-grabbing data-[vaul-handle]:bg-modal-foreground/20! dark:data-[vaul-handle]:bg-modal-foreground! mx-auto mt-4 hidden h-2 w-[100px] mb-1 sm:mb-0 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block lg:data-[vaul-handle]:hidden!", className)} {...props} />;
 };
 
 const DrawerTitle: FC<ComponentProps<typeof DrawerPrimitive.Title>> = ({
