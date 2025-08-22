@@ -29,7 +29,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { VisuallyHidden } from '@/components/ui/visually-hidden';
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 type EntryType = { label: string; value: string | number; name?: string };
 
@@ -241,12 +241,49 @@ const ComboboxGroupField: FC<
             role="listbox"
           >
             <DrawerHandle />
-            <div className="max-w-4xl w-full mx-auto overflow-y-auto">
-              <VisuallyHidden>
-                <DrawerTitle>Выберите населенный пункт</DrawerTitle>
-              </VisuallyHidden>
-              {renderContent({ shouldFocus: true })}
+            <div className="w-full overflow-y-auto overflow-x-hidden flex flex-1">
+              <div
+                className="grow shrink sticky top-0 hover:bg-secondary/10 cursor-pointer"
+                onClick={() => setOpen(false)}
+              />
+              <div className="shrink-1 max-w-4xl w-full">
+                <VisuallyHidden>
+                  <DrawerTitle>Выберите населенный пункт</DrawerTitle>
+                </VisuallyHidden>
+                {renderContent({ shouldFocus: true })}
+              </div>
+              <div
+                className="grow shrink cursor-pointer sticky top-0 hover:bg-secondary/10"
+                onClick={() => setOpen(false)}
+              >
+                <Tooltip content="Закрыть окно">
+                  <button
+                    className="hidden text-secondary-foreground absolute top-1 right-1 ml-auto hover:bg-secondary/30 active:bg-secondary/40 pointer-events-auto cursor-pointer shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-3.5 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                    aria-label="Закрыть окно"
+                    type="button"
+                    onClick={() => setOpen(false)}
+                  >
+                    <AccessibleIconPrimitive.Root label="Закрыть модальное окно">
+                      <X />
+                    </AccessibleIconPrimitive.Root>
+                  </button>
+                </Tooltip>
+              </div>
             </div>
+            {/* <div className="max-w-4xl w-full mx-auto overflow-y-auto"> */}
+            {/*   <Tooltip content="Закрыть окно"> */}
+            {/*     <button */}
+            {/*       className="hidden text-secondary-foreground absolute top-1 right-1 ml-auto pointer-events-auto cursor-default shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-3.5 hover:bg-secondary/60 active:bg-secondary/70 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" */}
+            {/*       aria-label="Закрыть окно" */}
+            {/*       type="button" */}
+            {/*       onClick={() => setOpen(false)} */}
+            {/*     > */}
+            {/*       <AccessibleIconPrimitive.Root label="Закрыть модальное окно"> */}
+            {/*         <X /> */}
+            {/*       </AccessibleIconPrimitive.Root> */}
+            {/*     </button> */}
+            {/*   </Tooltip> */}
+            {/* </div> */}
           </DrawerContent>
         </Drawer>
       ) : (

@@ -172,7 +172,7 @@ const CommandInput: FC<
       {clearButton && value && (
         <Tooltip className="z-50" content={clearButtonTooltipMessage}>
           <button
-            className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary-foreground/10 active:bg-secondary-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+            className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary/60 active:bg-secondary/70 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
             onKeyDown={handleKeyDown}
             onClick={handleClear}
             type="button"
