@@ -237,11 +237,11 @@ const ComboboxGroupField: FC<
           <DrawerTrigger asChild>{renderTrigger()}</DrawerTrigger>
           <DrawerContent
             aria-describedby={undefined}
-            className="rounded-t-sm h-full max-h-[calc(100vh-0.75rem)] top-3 border border-input"
+            className="rounded-t-sm h-full! lg:max-h-full max-h-[calc(100vh-0.75rem)] top-3 lg:top-0 border border-input"
             role="listbox"
           >
             <DrawerHandle />
-            <div className="w-full overflow-y-auto overflow-x-hidden flex flex-1">
+            <div className="w-full overflow-y-auto flex flex-1">
               <div
                 className="grow shrink sticky top-0 hover:bg-secondary/10 cursor-pointer"
                 onClick={() => setOpen(false)}
