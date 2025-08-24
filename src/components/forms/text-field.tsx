@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { ChangeEvent, FC } from "react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
@@ -12,6 +12,7 @@ const TextField: FC<TextFieldProps> = ({
   label,
   "aria-label": ariaLabelProp,
   ariaLabel,
+  onChange: onChangeProp,
   ...props
 }) => {
   const {
@@ -26,6 +27,14 @@ const TextField: FC<TextFieldProps> = ({
     ariaLabel: ariaLabelProp || ariaLabel,
   });
 
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (onChangeProp) {
+      onChangeProp(e);
+    } else {
+      field.handleChange(e.target.value);
+    }
+  };
+
   return (
     <FormItem>
       {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
@@ -36,7 +45,7 @@ const TextField: FC<TextFieldProps> = ({
         aria-label={defaultAriaLabel}
         aria-describedby={ariaDescribedBy}
         aria-invalid={!!error}
-        onChange={(e) => field.handleChange(e.target.value)}
+        onChange={handleChange}
         {...props}
       />
       <FormMessage id={formMessageId} />

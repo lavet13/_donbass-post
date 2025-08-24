@@ -176,10 +176,9 @@ const PickUpPointDeliveryOrderPage: FC = () => {
           .filter((service) => service.selected === "yes")
           .map((service) => ({ id: service.value })),
       };
-      console.log({ payload });
 
       try {
-        // await sendPickUpPointDeliveryOrder(payload);
+        await sendPickUpPointDeliveryOrder(payload);
         formApi.reset();
         formApi.setFieldValue(
           "additionalService",

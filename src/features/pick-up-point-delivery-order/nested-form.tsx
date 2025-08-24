@@ -404,9 +404,30 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="sender.innSender"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (value.length < 10) {
+                          return "ИНН должен быть больше 10 символов";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
+                          onChange={(e) => {
+                            const isNotDigit = /[^0-9]/.test(e.target.value);
+
+                            if (isNotDigit) {
+                              return;
+                            }
+
+                            if (e.target.value.length > 12) {
+                              return;
+                            }
+
+                            field.handleChange(e.target.value);
+                          }}
                           label="ИНН"
                           placeholder="Укажите ИНН"
                         />
@@ -720,9 +741,30 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="recipient.innRecipient"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (value.length < 10) {
+                          return "ИНН должен быть больше 10 символов";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
+                          onChange={(e) => {
+                            const isNotDigit = /[^0-9]/.test(e.target.value);
+
+                            if (isNotDigit) {
+                              return;
+                            }
+
+                            if (e.target.value.length > 12) {
+                              return;
+                            }
+
+                            field.handleChange(e.target.value);
+                          }}
                           label="ИНН"
                           placeholder="Укажите ИНН"
                         />
@@ -1027,9 +1069,30 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="customer.innCustomer"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (value.length < 10) {
+                          return "ИНН должен быть больше 10 символов";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
+                          onChange={(e) => {
+                            const isNotDigit = /[^0-9]/.test(e.target.value);
+
+                            if (isNotDigit) {
+                              return;
+                            }
+
+                            if (e.target.value.length > 12) {
+                              return;
+                            }
+
+                            field.handleChange(e.target.value);
+                          }}
                           label="ИНН"
                           placeholder="Укажите ИНН"
                         />
@@ -1313,6 +1376,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                                 ]}
                                 ariaLabel={`Дополнительная услуга '${label}'`}
                               />
+
                               {isSelected && isCashOnDelivery && (
                                 <form.AppField
                                   name="cargoData.cashOnDelivery"
@@ -1325,8 +1389,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
                                     },
                                   }}
                                   children={(field) => {
-                                    if (!isCashOnDelivery) return null;
-                                    if (!isSelected) return null;
                                     return (
                                       <field.NumericField
                                         shouldFocusOnMount
