@@ -12,6 +12,7 @@ import { FormItem } from "@/components/ui/form";
 import { ChevronDown, ChevronUp, Loader2, TriangleAlert } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography/typographyH3";
+import { isPossiblePhoneNumber } from "react-phone-number-input";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -56,6 +57,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
         <TypographyH3 className="text-primary">Отправитель</TypographyH3>
         <form.AppField
           name="sender.type"
+          validators={{
+            onChange: ({ value: type }) => {
+              if (!type) {
+                return "Выберите физ лицо или компанию";
+              }
+              return undefined;
+            },
+          }}
           children={(field) => {
             return (
               <div className={cn(field.state.value === "" && "pb-2")}>
@@ -82,6 +91,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                   <form.AppField
                     name="sender.surnameSender"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Фамилия обязательна";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Фамилия не должна быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -94,6 +114,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="sender.nameSender"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Имя обязательно";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Имя не должно быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -106,6 +137,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="sender.patronymicSender"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Отчество обязательно";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Отчество не должно быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -118,6 +160,13 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="sender.phoneSender"
+                    validators={{
+                      onChange: ({ value }) => {
+                        return !isPossiblePhoneNumber(value)
+                          ? "Проверьте правильно ли ввели номер телефона"
+                          : undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <div className="flex flex-col">
@@ -157,18 +206,15 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     }}
                   />
                   <form.AppField
-                    name="sender.innSender"
-                    children={(field) => {
-                      return (
-                        <field.TextField
-                          label="ИНН"
-                          placeholder="Укажите ИНН"
-                        />
-                      );
-                    }}
-                  />
-                  <form.AppField
                     name="sender.pointFrom"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (typeof value === "string" && !value.length) {
+                          return "Выберите населенный пункт";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.ComboboxField
@@ -188,6 +234,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="sender.pickupAddress"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Адрес обязателен";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Адрес не должно быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -234,6 +291,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                   <form.AppField
                     name="sender.companySender"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Компания обязательна";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Компания не должна быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -246,6 +314,13 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="sender.phoneSender"
+                    validators={{
+                      onChange: ({ value }) => {
+                        return !isPossiblePhoneNumber(value)
+                          ? "Проверьте правильно ли ввели номер телефона"
+                          : undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.PhoneField
@@ -279,6 +354,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="sender.pointFrom"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (typeof value === "string" && !value.length) {
+                          return "Выберите населенный пункт";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.ComboboxField
@@ -298,6 +381,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="sender.pickupAddress"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Адрес обязателен";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Адрес не должно быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -328,6 +422,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
         <TypographyH3 className="text-primary">Получатель</TypographyH3>
         <form.AppField
           name="recipient.type"
+          validators={{
+            onChange: ({ value: type }) => {
+              if (!type) {
+                return "Выберите Физ лицо или Компанию";
+              }
+              return undefined;
+            },
+          }}
           children={(field) => {
             return (
               <div className={cn(field.state.value === "" && "pb-2")}>
@@ -354,6 +456,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                   <form.AppField
                     name="recipient.surnameRecipient"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Фамилия обязательна";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Фамилия не должна быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -366,6 +479,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="recipient.nameRecipient"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Имя обязательно";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Имя не должно быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -378,6 +502,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="recipient.patronymicRecipient"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Отчество обязательно";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Отчество не должно быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -390,6 +525,13 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="recipient.phoneRecipient"
+                    validators={{
+                      onChange: ({ value }) => {
+                        return !isPossiblePhoneNumber(value)
+                          ? "Проверьте правильно ли ввели номер телефона"
+                          : undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <div className="flex flex-col">
@@ -430,6 +572,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="recipient.deliveryCompany"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (typeof value === "string" && !value.length) {
+                          return "Выберите транспортную компанию";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.ComboboxField
@@ -448,6 +598,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="recipient.deliveryAddress"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Адрес обязателен";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Адрес не должно быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -473,6 +634,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
                   <form.AppField
                     name="recipient.companyRecipient"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Компания обязательна";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Компания не должна быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -485,6 +657,13 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="recipient.phoneRecipient"
+                    validators={{
+                      onChange: ({ value }) => {
+                        return !isPossiblePhoneNumber(value)
+                          ? "Проверьте правильно ли ввели номер телефона"
+                          : undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.PhoneField
@@ -518,6 +697,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="recipient.deliveryAddress"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Адрес обязателен";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Адрес не должно быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -541,6 +731,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="recipient.deliveryCompany"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (typeof value === "string" && !value.length) {
+                          return "Выберите транспортную компанию";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.ComboboxField
@@ -633,6 +831,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-bl-xs">
                   <form.AppField
                     name="customer.surnameCustomer"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Фамилия обязательна";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Фамилия не должна быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -645,6 +854,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="customer.nameCustomer"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Имя обязательно";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Имя не должно быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -657,6 +877,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="customer.patronymicCustomer"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Отчество обязательно";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Отчество не должно быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -669,6 +900,13 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="customer.phoneCustomer"
+                    validators={{
+                      onChange: ({ value }) => {
+                        return !isPossiblePhoneNumber(value)
+                          ? "Проверьте правильно ли ввели номер телефона"
+                          : undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <div className="flex flex-col">
@@ -726,6 +964,17 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-bl-xs">
                   <form.AppField
                     name="customer.companyCustomer"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (!value.length) {
+                          return "Компания обязательна";
+                        }
+                        if (value.length < 3 || value.length > 50) {
+                          return "Компания не должна быть короче 3 символов и длиннее 50";
+                        }
+                        return undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.TextField
@@ -738,6 +987,13 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   />
                   <form.AppField
                     name="customer.phoneCustomer"
+                    validators={{
+                      onChange: ({ value }) => {
+                        return !isPossiblePhoneNumber(value)
+                          ? "Проверьте правильно ли ввели номер телефона"
+                          : undefined;
+                      },
+                    }}
                     children={(field) => {
                       return (
                         <field.PhoneField
@@ -790,6 +1046,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 mt-2 mb-4">
           <form.AppField
             name="cargoData.totalWeight"
+            validators={{
+              onChange: ({ value }) => {
+                if (value <= 0) {
+                  return "Заполните общий вес";
+                }
+                return undefined;
+              },
+            }}
             children={(field) => {
               return (
                 <field.NumericField
@@ -805,6 +1069,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
 
           <form.AppField
             name="cargoData.declaredPrice"
+            validators={{
+              onChange: ({ value }) => {
+                if (value <= 0) {
+                  return "Заполните заявленную стоимость";
+                }
+                return undefined;
+              },
+            }}
             children={(field) => {
               return (
                 <field.NumericField
@@ -819,6 +1091,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
 
           <form.AppField
             name="cargoData.weightHeaviestPosition"
+            validators={{
+              onChange: ({ value }) => {
+                if (value <= 0) {
+                  return "Заполните вес самой тяжелой позиции";
+                }
+                return undefined;
+              },
+            }}
             children={(field) => {
               return (
                 <field.NumericField
@@ -847,7 +1127,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             }}
             validators={{
               onChange: ({ value }) => {
-                if (value < 0) {
+                if (value <= 0) {
                   return "Должно быть больше нуля!";
                 }
                 if (value > 25) {
@@ -867,7 +1147,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   label="Метр кубический"
                   placeholder="Метр кубический"
                   suffix=" м³"
-                  decimalScale={5}
+                  decimalScale={6}
                   thousandSeparator=","
                   disabled={hasAllFilled}
                 />
@@ -955,6 +1235,15 @@ export const PickUpPointDeliveryOrderForm = withForm({
 
         <form.AppField
           name="cargoData.description"
+          validators={{
+            onChange: ({ value }) => {
+              if (!value.length) return "Заполните краткое описание";
+              if (value.length < 3 || value.length > 50) {
+                return "Краткое описание не должно быть короче 3 символов и длиннее 50";
+              }
+              return undefined;
+            },
+          }}
           children={(field) => {
             return (
               <div className="mb-4">
@@ -1025,6 +1314,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
                               />
                               <form.AppField
                                 name="cargoData.cashOnDelivery"
+                                validators={{
+                                  onChange: ({ value }) => {
+                                    if (value <= 0) {
+                                      return "Укажите наложенный платеж";
+                                    }
+                                    return undefined;
+                                  },
+                                }}
                                 children={(field) => {
                                   if (!isCashOnDelivery) return null;
                                   if (!isSelected) return null;
@@ -1054,6 +1351,14 @@ export const PickUpPointDeliveryOrderForm = withForm({
         <div className="sm:grid sm:grid-cols-2 flex flex-col gap-x-4 gap-y-2 mt-2 mb-4">
           <form.AppField
             name="cargoData.shippingPayment"
+            validators={{
+              onChange: ({ value }) => {
+                if (!value.length) {
+                  return "Выберите плательщика доставки";
+                }
+                return undefined;
+              },
+            }}
             children={(field) => {
               return (
                 <field.SelectField

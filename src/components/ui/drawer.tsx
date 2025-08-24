@@ -22,7 +22,7 @@ const DrawerContent: FC<ComponentProps<typeof DrawerPrimitive.Content>> = ({
       <DrawerPrimitive.Overlay className="fixed inset-0 z-10 bg-modal-backdrop" />
       <DrawerPrimitive.Content
         className={cn(
-          "group/drawer-content flex flex-col mx-auto bg-modal text-modal-foreground fixed outline-none inset-0 z-50",
+          "group/drawer-content flex flex-col mx-auto bg-modal text-modal-foreground fixed outline-none inset-0 z-10",
           "overflow-hidden",
 
           // removing blur

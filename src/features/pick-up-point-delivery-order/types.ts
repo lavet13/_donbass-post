@@ -1,42 +1,8 @@
 /* This is what we sending to the endpoint /api/pick-up-point-delivery-order */
 export type PickUpPointDeliveryOrderVariables = {
-  sender: {
-    nameSender?: string;
-    surnameSender?: string;
-    patronymicSender?: string;
-    telegramSender?: boolean;
-    whatsAppSender?: boolean;
-    innSender?: string;
-    companySender?: string;
-    emailSender: string;
-    phoneSender: string;
-    pickupAddress: string;
-    pointFrom: number;
-  };
-  recipient: {
-    nameRecipient?: string;
-    surnameRecipient?: string;
-    patronymicRecipient?: string;
-    telegramRecipient?: boolean;
-    whatsAppRecipient?: boolean;
-    phoneRecipient: string;
-    deliveryAddress: string;
-    innRecipient?: string;
-    companyRecipient?: string;
-    emailRecipient?: string;
-    deliveryCompany?: number;
-  };
-  customer: {
-    nameCustomer?: string;
-    surnameCustomer?: string;
-    patronymicCustomer?: string;
-    telegramCustomer?: boolean;
-    whatsAppCustomer?: boolean;
-    phoneCustomer: string;
-    innCustomer?: string;
-    companyCustomer?: string;
-    emailCustomer?: string;
-  };
+  sender: IndividualSender | CompanySender;
+  recipient: IndividualRecipient | CompanyRecipient;
+  customer?: IndividualCustomer | CompanyCustomer;
   cargoData: {
     shippingPayment: string;
     description: string;
@@ -46,5 +12,71 @@ export type PickUpPointDeliveryOrderVariables = {
     cubicMeter: number;
     cashOnDelivery?: number;
   };
-  additionalService?: { id: string }[];
+  additionalService?: { id: number }[];
+};
+
+type IndividualSender = {
+  nameSender: string;
+  surnameSender: string;
+  patronymicSender: string;
+  phoneSender: string;
+  telegramSender: boolean;
+  whatsAppSender: boolean;
+  pointFrom: number;
+  pickupAddress: string;
+  emailSender: string;
+};
+
+type CompanySender = {
+  companySender: string;
+  phoneSender: string;
+  emailSender: string;
+  pointFrom: number;
+  pickupAddress: string;
+  innSender: string;
+};
+
+type IndividualRecipient = {
+  nameRecipient: string;
+  surnameRecipient: string;
+  patronymicRecipient: string;
+  phoneRecipient: string;
+  telegramRecipient: boolean;
+  whatsAppRecipient: boolean;
+  deliveryCompany: number;
+  deliveryAddress: string;
+};
+
+type CompanyRecipient = {
+  companyRecipient: string;
+  phoneRecipient: string;
+  emailRecipient: string;
+  deliveryAddress: string;
+  innRecipient: string;
+  deliveryCompany: number;
+};
+
+type IndividualCustomer = {
+  nameCustomer: string;
+  surnameCustomer: string;
+  patronymicCustomer: string;
+  phoneCustomer: string;
+  telegramCustomer: boolean;
+  whatsAppCustomer: boolean;
+};
+
+type CompanyCustomer = {
+  companyCustomer: string;
+  phoneCustomer: string;
+  emailCustomer: string;
+  innCustomer: string;
+};
+
+export type {
+  IndividualSender,
+  IndividualRecipient,
+  IndividualCustomer,
+  CompanySender,
+  CompanyRecipient,
+  CompanyCustomer,
 };

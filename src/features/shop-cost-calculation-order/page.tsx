@@ -7,9 +7,10 @@ import { cn, transformApiErrorsToFormErrors } from "@/lib/utils";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Suspend } from "@/components/suspend";
 import { Fragment, type FC } from "react";
+import type { ShopCostCalculationOrderVariables } from "./types";
 
 const ShopCostCalculationOrderPage: FC = () => {
-  const { mutateAsync: createShopCostCalculationOrder } =
+  const { mutateAsync: sendShopCostCalculationOrder } =
     useShopCostCalculationOrderMutation();
   const { data: values } = usePointPostQuery();
 
@@ -27,13 +28,13 @@ const ShopCostCalculationOrderPage: FC = () => {
             ...product,
           })),
         );
-      const payload = {
+      const payload: ShopCostCalculationOrderVariables = {
         shopCostCalculationOrder,
         shopCostCalculationOrderPosition,
       };
 
       try {
-        await createShopCostCalculationOrder(payload);
+        await sendShopCostCalculationOrder(payload);
         formApi.reset();
 
         const entries = values || [];

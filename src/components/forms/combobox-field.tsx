@@ -258,7 +258,7 @@ const ComboboxGroupField: FC<
               >
                 <Tooltip content="Закрыть модальное окно">
                   <button
-                    className="hidden text-secondary-foreground absolute top-1 right-1 ml-auto pointer-events-auto cursor-pointer shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-3.5 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                    className="hidden text-secondary-foreground absolute top-1 right-1 ml-auto pointer-events-auto cursor-pointer shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-4 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                     aria-label="Закрыть окно"
                     type="button"
                     onClick={() => setOpen(false)}
