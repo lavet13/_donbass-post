@@ -1047,7 +1047,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
           <form.AppField
             name="cargoData.totalWeight"
             validators={{
-              onChange: ({ value }) => {
+              onSubmit: ({ value }) => {
                 if (value <= 0) {
                   return "Заполните общий вес";
                 }
@@ -1070,7 +1070,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
           <form.AppField
             name="cargoData.declaredPrice"
             validators={{
-              onChange: ({ value }) => {
+              onSubmit: ({ value }) => {
                 if (value <= 0) {
                   return "Заполните заявленную стоимость";
                 }
@@ -1092,7 +1092,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
           <form.AppField
             name="cargoData.weightHeaviestPosition"
             validators={{
-              onChange: ({ value }) => {
+              onSubmit: ({ value }) => {
                 if (value <= 0) {
                   return "Заполните вес самой тяжелой позиции";
                 }
@@ -1126,7 +1126,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               },
             }}
             validators={{
-              onChange: ({ value }) => {
+              onSubmit: ({ value }) => {
                 if (value <= 0) {
                   return "Должно быть больше нуля!";
                 }
@@ -1276,6 +1276,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             </Button>
           </div>
         )}
+
         <form.AppField
           name="additionalService"
           mode="array"
@@ -1312,30 +1313,31 @@ export const PickUpPointDeliveryOrderForm = withForm({
                                 ]}
                                 ariaLabel={`Дополнительная услуга '${label}'`}
                               />
-                              <form.AppField
-                                name="cargoData.cashOnDelivery"
-                                validators={{
-                                  onChange: ({ value }) => {
-                                    if (value <= 0) {
-                                      return "Укажите наложенный платеж";
-                                    }
-                                    return undefined;
-                                  },
-                                }}
-                                children={(field) => {
-                                  if (!isCashOnDelivery) return null;
-                                  if (!isSelected) return null;
-
-                                  return (
-                                    <field.NumericField
-                                      shouldFocusOnMount
-                                      placeholder="Наложенный платеж в рублях"
-                                      thousandSeparator=" "
-                                      suffix=" ₽"
-                                    />
-                                  );
-                                }}
-                              />
+                              {isSelected && isCashOnDelivery && (
+                                <form.AppField
+                                  name="cargoData.cashOnDelivery"
+                                  validators={{
+                                    onSubmit: ({ value }) => {
+                                      if (value <= 0) {
+                                        return "Укажите наложенный платеж";
+                                      }
+                                      return undefined;
+                                    },
+                                  }}
+                                  children={(field) => {
+                                    if (!isCashOnDelivery) return null;
+                                    if (!isSelected) return null;
+                                    return (
+                                      <field.NumericField
+                                        shouldFocusOnMount
+                                        placeholder="Наложенный платеж в рублях"
+                                        thousandSeparator=" "
+                                        suffix=" ₽"
+                                      />
+                                    );
+                                  }}
+                                />
+                              )}
                             </FormItem>
                           );
                         }}
