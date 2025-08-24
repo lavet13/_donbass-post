@@ -34,7 +34,7 @@ const ShopCostCalculationOrderPage: FC = () => {
       };
 
       try {
-        // await sendShopCostCalculationOrder(payload);
+        await sendShopCostCalculationOrder(payload);
         formApi.reset();
 
         const entries = values || [];

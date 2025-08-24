@@ -7,12 +7,14 @@ import { useDeliveryCompaniesQuery } from "@/features/delivery-company/queries";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { FormItem } from "@/components/ui/form";
 import { ChevronDown, ChevronUp, Loader2, TriangleAlert } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography/typographyH3";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
+import { useStore } from "@tanstack/react-form";
+import { useBlocker } from "@tanstack/react-router";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -38,12 +40,21 @@ export const PickUpPointDeliveryOrderForm = withForm({
       refetch: refetchAdditionalServices,
     } = useAdditionalServicePickUpQuery();
 
-    useEffect(() => {
-      form.setFieldValue(
-        "additionalService",
-        additionalServices?.map((s) => ({ ...s, selected: "no" })) ?? [],
-      );
-    }, [additionalServices]);
+    const isDefaultValue = useStore(
+      form.store,
+      (state) => state.isDefaultValue,
+    );
+
+    useBlocker({
+      shouldBlockFn: () => {
+        if (isDefaultValue) return false;
+
+        const shouldLeave = confirm(
+          "Вы действительно хотите покинуть страницу? Форма была заполнена!",
+        );
+        return !shouldLeave;
+      },
+    });
 
     return (
       <form

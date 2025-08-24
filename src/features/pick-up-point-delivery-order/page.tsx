@@ -17,12 +17,22 @@ import type {
 } from "@/features/pick-up-point-delivery-order/types";
 
 const PickUpPointDeliveryOrderPage: FC = () => {
-  const { data: additionalServices } = useAdditionalServicePickUpQuery();
   const { mutateAsync: sendPickUpPointDeliveryOrder } =
     usePickUpPointDeliveryOrderMutation();
 
+  const { data: additionalServices } = useAdditionalServicePickUpQuery();
+
+  const { defaultValues, ...restDefaults } =
+    defaultPickUpPointDeliveryOrderOpts;
+
   const form = useAppForm({
-    ...defaultPickUpPointDeliveryOrderOpts,
+    ...restDefaults,
+    // as suggested to use type assertion here: https://github.com/TanStack/form/issues/1175#issuecomment-2681350658
+    defaultValues: {
+      ...defaultValues,
+      additionalService:
+        additionalServices?.map((s) => ({ ...s, selected: "no" })) ?? [],
+    } as typeof defaultPickUpPointDeliveryOrderOpts['defaultValues'],
     onSubmit: async ({ value, formApi }) => {
       const { type: senderType, ...senderRest } = value.sender;
 
@@ -99,9 +109,9 @@ const PickUpPointDeliveryOrderPage: FC = () => {
           phoneRecipient,
           telegramRecipient,
           whatsAppRecipient,
-          deliveryCompany: ((deliveryCompany
+          deliveryCompany: (deliveryCompany
             ? Number.parseInt(deliveryCompany, 10)
-            : undefined) as number),
+            : undefined) as number,
           deliveryAddress,
         } satisfies IndividualRecipient;
       }
@@ -123,9 +133,9 @@ const PickUpPointDeliveryOrderPage: FC = () => {
           emailRecipient,
           deliveryAddress,
           innRecipient,
-          deliveryCompany: ((deliveryCompany
+          deliveryCompany: (deliveryCompany
             ? Number.parseInt(deliveryCompany, 10)
-            : undefined) as number),
+            : undefined) as number,
         } satisfies CompanyRecipient;
       }
 
@@ -176,14 +186,11 @@ const PickUpPointDeliveryOrderPage: FC = () => {
           .filter((service) => service.selected === "yes")
           .map((service) => ({ id: service.value })),
       };
+      console.log({ payload });
 
       try {
         await sendPickUpPointDeliveryOrder(payload);
         formApi.reset();
-        formApi.setFieldValue(
-          "additionalService",
-          additionalServices?.map((s) => ({ ...s, selected: "no" })) ?? [],
-        );
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {
