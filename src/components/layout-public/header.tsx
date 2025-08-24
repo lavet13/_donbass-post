@@ -22,7 +22,7 @@ export const Header: FC = () => {
       </div>
       {!isAuthenticated ? (
         <Button className="ml-auto" asChild>
-          <Link to="/auth">Авторизоваться</Link>
+          <Link to="/auth">Личный кабинет</Link>
         </Button>
       ) : (
         <Button className="ml-auto" onClick={logout}>Выйти</Button>

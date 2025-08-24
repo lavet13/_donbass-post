@@ -223,7 +223,7 @@ export const ShopCostCalculationOrderForm = withForm({
                         key={shopIndex}
                         name={`shopCostCalculationOrderPosition[${shopIndex}].shop`}
                         validators={{
-                          onChange: ({ value }) => {
+                          onSubmit: ({ value }) => {
                             if (!value.length) {
                               return "Магазин обязателен";
                             }
@@ -285,7 +285,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                           <form.AppField
                                             name={`shopCostCalculationOrderPosition[${shopIndex}].products[${productIndex}].link`}
                                             validators={{
-                                              onChange: ({ value }) => {
+                                              onSubmit: ({ value }) => {
                                                 if (!value.length) {
                                                   return "Ссылка обязательна";
                                                 }
@@ -318,7 +318,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                           <form.AppField
                                             name={`shopCostCalculationOrderPosition[${shopIndex}].products[${productIndex}].description`}
                                             validators={{
-                                              onChange: ({ value }) => {
+                                              onSubmit: ({ value }) => {
                                                 if (!value.length) {
                                                   return "Описание обязательно";
                                                 }
