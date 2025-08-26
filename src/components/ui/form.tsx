@@ -53,7 +53,7 @@ export const FormMessage: FC<ComponentProps<"p">> = ({
   return (
     <p
       data-slot="form-message"
-      className={cn("text-destructive text-sm sm:text-xs", className)}
+      className={cn("text-center sm:text-start text-destructive text-sm sm:text-xs", className)}
       {...props}
     >
       {errors.join(", ")}

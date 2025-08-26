@@ -95,6 +95,7 @@ const ShopCostCalculationOrderPage: FC = () => {
               console.error("Server is out");
               meta.onSubmit?.((prev) => ({
                 ...prev,
+                variant: "error",
                 isOpen: true,
                 extra: ["Сервер не отвечает. Попробуйте позже."],
               }));

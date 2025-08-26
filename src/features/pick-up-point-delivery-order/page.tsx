@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { type FC } from "react";
 import { PickUpPointDeliveryOrderForm } from "@/features/pick-up-point-delivery-order/nested-form";
 import { useAppForm } from "@/hooks/form";
 import { defaultPickUpPointDeliveryOrderOpts } from "@/features/pick-up-point-delivery-order/shared-form";
@@ -27,16 +27,19 @@ const PickUpPointDeliveryOrderPage: FC = () => {
 
   const form = useAppForm({
     ...restDefaults,
+
     // as suggested to use type assertion here: https://github.com/TanStack/form/issues/1175#issuecomment-2681350658
     defaultValues: {
       ...defaultValues,
       additionalService:
         additionalServices?.map((s) => ({ ...s, selected: "no" })) ?? [],
-    } as typeof defaultPickUpPointDeliveryOrderOpts['defaultValues'],
-    onSubmit: async ({ value, formApi }) => {
+    } as (typeof defaultPickUpPointDeliveryOrderOpts)["defaultValues"],
+
+    onSubmit: async ({ value, formApi, meta }) => {
       const { type: senderType, ...senderRest } = value.sender;
 
-      let sender!: IndividualSender | CompanySender;
+      let sender: IndividualSender | undefined;
+      let companySender: CompanySender | undefined;
 
       if (senderType === "individual") {
         const {
@@ -67,7 +70,7 @@ const PickUpPointDeliveryOrderPage: FC = () => {
 
       if (senderType === "company") {
         const {
-          companySender,
+          companySender: companySenderField,
           phoneSender,
           emailSender,
           pointFrom,
@@ -75,8 +78,8 @@ const PickUpPointDeliveryOrderPage: FC = () => {
           innSender,
         } = senderRest;
 
-        sender = {
-          companySender,
+        companySender = {
+          companySender: companySenderField,
           phoneSender,
           emailSender,
           pointFrom: (pointFrom
@@ -88,7 +91,8 @@ const PickUpPointDeliveryOrderPage: FC = () => {
       }
 
       const { type: recipientType, ...recipientRest } = value.recipient;
-      let recipient!: IndividualRecipient | CompanyRecipient;
+      let recipient: IndividualRecipient | undefined;
+      let companyRecipient: CompanyRecipient | undefined;
 
       if (recipientType === "individual") {
         const {
@@ -118,7 +122,7 @@ const PickUpPointDeliveryOrderPage: FC = () => {
 
       if (recipientType === "company") {
         const {
-          companyRecipient,
+          companyRecipient: companyRecipientField,
           phoneRecipient,
           emailRecipient,
           deliveryAddress,
@@ -127,8 +131,8 @@ const PickUpPointDeliveryOrderPage: FC = () => {
         } = recipientRest;
         console.log({ deliveryCompany });
 
-        recipient = {
-          companyRecipient,
+        companyRecipient = {
+          companyRecipient: companyRecipientField,
           phoneRecipient,
           emailRecipient,
           deliveryAddress,
@@ -139,7 +143,8 @@ const PickUpPointDeliveryOrderPage: FC = () => {
         } satisfies CompanyRecipient;
       }
 
-      let customer!: IndividualCustomer | CompanyCustomer;
+      let customer: IndividualCustomer | undefined;
+      let companyCustomer: CompanyCustomer | undefined;
       const { type: customerType, isToggled, ...customerRest } = value.customer;
 
       if (customerType === "individual") {
@@ -163,11 +168,15 @@ const PickUpPointDeliveryOrderPage: FC = () => {
       }
 
       if (customerType === "company") {
-        const { companyCustomer, phoneCustomer, emailCustomer, innCustomer } =
-          customerRest;
+        const {
+          companyCustomer: companyCustomerField,
+          phoneCustomer,
+          emailCustomer,
+          innCustomer,
+        } = customerRest;
 
-        customer = {
-          companyCustomer,
+        companyCustomer = {
+          companyCustomer: companyCustomerField,
           phoneCustomer,
           emailCustomer,
           innCustomer,
@@ -175,9 +184,15 @@ const PickUpPointDeliveryOrderPage: FC = () => {
       }
 
       const payload: PickUpPointDeliveryOrderVariables = {
-        sender,
-        recipient,
-        ...(isToggled ? customer : {}),
+        ...(senderType === "individual" ? { sender } : { companySender }),
+        ...(recipientType === "individual"
+          ? { recipient }
+          : { companyRecipient }),
+        ...(isToggled
+          ? customerType === "individual"
+            ? { customer }
+            : { companyCustomer }
+          : {}),
         cargoData: {
           ...value.cargoData,
           cashOnDelivery: value.cargoData.cashOnDelivery || undefined,
@@ -186,7 +201,6 @@ const PickUpPointDeliveryOrderPage: FC = () => {
           .filter((service) => service.selected === "yes")
           .map((service) => ({ id: service.value })),
       };
-      console.log({ payload });
 
       try {
         await sendPickUpPointDeliveryOrder(payload);
@@ -213,11 +227,12 @@ const PickUpPointDeliveryOrderPage: FC = () => {
 
             if (status >= 500) {
               console.error("Server is out");
-              // meta.onSubmit?.((prev) => ({
-              //   ...prev,
-              //   isOpen: true,
-              //   extra: ["Сервер не отвечает. Попробуйте позже."],
-              // }));
+              meta.onSubmit?.((prev) => ({
+                ...prev,
+                variant: "error",
+                isOpen: true,
+                extra: ["Сервер не отвечает. Попробуйте позже."],
+              }));
             }
           } else if (error.request) {
             // The request was made but no response was received

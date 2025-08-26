@@ -31,12 +31,12 @@ export const ShopCostCalculationOrderForm = withForm({
       refetch: refetchPoints,
     } = usePointPostQuery();
 
-    const [successMessage, setSuccessMessage] =
+    const [message, setMessage] =
       useState<AutoDimissMessageProps>({
         title: "Регистрация успешно проведена!",
         variant: "success",
         onClose: () =>
-          setSuccessMessage((prev) => ({ ...prev, isOpen: false })),
+          setMessage((prev) => ({ ...prev, isOpen: false })),
         isOpen: false,
         durationMs: 60_000,
       });
@@ -63,10 +63,10 @@ export const ShopCostCalculationOrderForm = withForm({
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          void form.handleSubmit({ onSubmit: setSuccessMessage });
+          void form.handleSubmit({ onSubmit: setMessage });
         }}
       >
-        <AutoDismissMessage {...successMessage} />
+        <AutoDismissMessage {...message} />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
           {/* Получатель */}
           <form.AppField

@@ -21,27 +21,29 @@ const CheckboxField: FC<
 
   return (
     <FormItem
-      className={cn("flex flex-row items-center my-2 gap-2", className)}
+      className={cn("flex flex-col justify-center items-center my-2 gap-y-0.5 sm:gap-y-1", className)}
     >
-      <Checkbox
-        className="self-start mt-0.5"
-        id={formItemId}
-        name={field.name}
-        aria-label={defaultAriaLabel}
-        aria-describedby={ariaDescribedBy}
-        aria-invalid={!!error}
-        checked={field.state.value}
-        onCheckedChange={(checked) => {
-          const booleanValue = checked === true;
-          field.handleChange(booleanValue);
-        }}
-      />
-      {label && (
-        <FormLabel htmlFor={formItemId} className="text-sm font-normal">
-          {label}
-        </FormLabel>
-      )}
-      <FormMessage id={formMessageId} />
+      <div className="flex-1 flex items-center gap-2">
+        <Checkbox
+          className="self-start mt-0.5"
+          id={formItemId}
+          name={field.name}
+          aria-label={defaultAriaLabel}
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={!!error}
+          checked={field.state.value}
+          onCheckedChange={(checked) => {
+            const booleanValue = checked === true;
+            field.handleChange(booleanValue);
+          }}
+        />
+        {label && (
+          <FormLabel htmlFor={formItemId} className="text-sm font-normal">
+            {label}
+          </FormLabel>
+        )}
+      </div>
+      <FormMessage className="text-center" id={formMessageId} />
     </FormItem>
   );
 };

@@ -7,7 +7,7 @@ import { useDeliveryCompaniesQuery } from "@/features/delivery-company/queries";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { FormItem } from "@/components/ui/form";
 import { ChevronDown, ChevronUp, Loader2, TriangleAlert } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { TypographyH3 } from "@/components/ui/typography/typographyH3";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import { useStore } from "@tanstack/react-form";
 import { useBlocker } from "@tanstack/react-router";
+import { AutoDismissMessage, type AutoDimissMessageProps } from "@/components/auto-dismiss-message";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -56,15 +57,26 @@ export const PickUpPointDeliveryOrderForm = withForm({
       },
     });
 
+    const [message, setMessage] =
+      useState<AutoDimissMessageProps>({
+        title: "Регистрация успешно проведена!",
+        variant: "success",
+        onClose: () =>
+          setMessage((prev) => ({ ...prev, isOpen: false })),
+        isOpen: false,
+        durationMs: 60_000,
+      });
+
     return (
       <form
         className="w-full max-w-2xl px-2 md:px-0"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          form.handleSubmit();
+          form.handleSubmit({ onSubmit: setMessage });
         }}
       >
+        <AutoDismissMessage {...message} />
         <TypographyH3 className="text-primary">Отправитель</TypographyH3>
         <form.AppField
           name="sender.type"

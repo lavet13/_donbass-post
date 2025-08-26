@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 
 export type AutoDimissMessageProps = {
   title?: string;
-  variant: "success" | "warning" | "info" | "error";
+  variant?: "success" | "warning" | "info" | "error";
   description?: string;
   extra?: (string | ReactNode)[];
   isOpen: boolean;
@@ -51,7 +51,7 @@ export const AutoDismissMessage: FC<AutoDimissMessageProps> = ({
   });
 
   const dismissMessageType: Record<
-    AutoDimissMessageProps["variant"],
+    typeof variant,
     {
       icon: ForwardRefExoticComponent<
         Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>

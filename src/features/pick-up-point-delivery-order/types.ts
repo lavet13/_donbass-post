@@ -1,8 +1,11 @@
 /* This is what we sending to the endpoint /api/pick-up-point-delivery-order */
 export type PickUpPointDeliveryOrderVariables = {
-  sender: IndividualSender | CompanySender;
-  recipient: IndividualRecipient | CompanyRecipient;
-  customer?: IndividualCustomer | CompanyCustomer;
+  sender?: IndividualSender;
+  companySender?: CompanySender;
+  recipient?: IndividualRecipient;
+  companyRecipient?: CompanyRecipient;
+  customer?: IndividualCustomer;
+  companyCustomer?: CompanyCustomer;
   cargoData: {
     shippingPayment: string;
     description: string;

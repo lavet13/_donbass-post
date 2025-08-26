@@ -30,6 +30,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 type EntryType = { label: string; value: string | number; name?: string };
 
@@ -85,7 +86,14 @@ const ComboboxGroupField: FC<
     (entry) => entry.value === field.state.value,
   );
 
-  const [buttonRef, bounds] = useMeasure<HTMLButtonElement>();
+  const styles = getComputedStyle(document.documentElement);
+  const sm = styles.getPropertyValue("--breakpoint-sm"); // 64rem
+  const isMobile = useMediaQuery(`(max-width: ${sm})`);
+  modal = modal || isMobile;
+
+  const [buttonRef, bounds] = useMeasure<HTMLButtonElement>({
+    dependencies: [isMobile],
+  });
 
   const renderTrigger = () => {
     return (

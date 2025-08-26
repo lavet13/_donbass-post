@@ -6,7 +6,14 @@ import { DefaultNotFoundComponent } from "@/components/default-not-found-compone
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 
 function createRouter() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 2 * 60 * 1000,
+        retry: 2,
+      },
+    },
+  });
 
   return reactRouter({
     context: {

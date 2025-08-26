@@ -59,10 +59,6 @@ const usePointPostQuery = () =>
     queryKey: pointKeys.post.queryKey,
     queryFn: pointsPost,
 
-    // Prevents unnecessary background refetches by keeping server data fresh
-    // indefinitely
-    // (see: https://tkdodo.eu/blog/practical-react-query#keep-server-and-client-state-separate)
-    staleTime: Infinity,
     retry: false,
   });
 

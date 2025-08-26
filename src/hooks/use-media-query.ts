@@ -6,8 +6,6 @@ export const useMediaQuery = (query: string): boolean => {
 
   useEffect(() => {
     const onChange = (event: MediaQueryListEvent) => {
-      console.log({ media: event.media });
-
       setIsMatched(event.matches);
     };
 
