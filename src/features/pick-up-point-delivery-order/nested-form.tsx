@@ -20,6 +20,7 @@ import {
   type AutoDimissMessageProps,
 } from "@/components/auto-dismiss-message";
 import { useCalculateGlobalMutation } from "@/features/delivery-rate/mutations";
+import { isAxiosError } from "axios";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -48,8 +49,11 @@ export const PickUpPointDeliveryOrderForm = withForm({
     const {
       data: calculateDeliveryResult,
       mutateAsync: calculateDelivery,
+      isError,
+      error,
       isPending,
     } = useCalculateGlobalMutation();
+    console.log({ error });
 
     const handleCalculation = async () => {
       const pointFrom = Number.parseInt(form.state.values.sender.pointFrom, 10);
@@ -72,7 +76,28 @@ export const PickUpPointDeliveryOrderForm = withForm({
           deliveryRateGroup: 4,
         });
       } catch (error) {
-        // @TODO: make sure we show the user what should be filled in case of an error
+        if (isAxiosError(error)) {
+          if (error.response) {
+            const status = error.response.status;
+            const errors = error.response?.data.message[0] as Record<
+              string,
+              string
+            >;
+
+            if (status === 400) {
+              // validation error
+              form.setErrorMap({
+                onChange: {
+                  fields: {
+                    "sender.pointFrom": errors["pointFrom"],
+                    "recipient.pointTo": errors["pointTo"],
+                    "recipient.deliveryCompany": errors["deliveryCompany"],
+                  },
+                },
+              });
+            }
+          }
+        }
       }
     };
 
@@ -1571,7 +1596,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <>Узнать примерную стоимость</>
               )}
             </Button>
-            {calculateDeliveryResult && (
+            {calculateDeliveryResult && !isError && (
               <div className="flex py-2 text-3xl justify-center items-center bg-primary text-primary-foreground rounded-md font-bold">
                 {calculateDeliveryResult.price +
                   (form.state.values.additionalService
@@ -1582,6 +1607,11 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     )
                     .reduce((acc, { price }) => acc + price, 0) ?? 0)}{" "}
                 ₽
+              </div>
+            )}
+            {error && error.response && error.response.status === 404 && (
+              <div className="flex py-2 text-3xl justify-center items-center bg-primary text-primary-foreground rounded-md font-bold">
+                {error.response.data.message}
               </div>
             )}
           </div>
