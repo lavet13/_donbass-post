@@ -417,7 +417,7 @@ export const ShopCostCalculationOrderForm = withForm({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
           <form.AppForm>
-            <form.SubscribeButton label="Зарегистрировать" />
+            <form.SubmitButton label="Зарегистрировать" />
           </form.AppForm>
         </div>
       </form>

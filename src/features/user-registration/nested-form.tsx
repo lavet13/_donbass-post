@@ -81,7 +81,7 @@ export const UserRegistrationForm = withForm({
           />
 
           <form.AppForm>
-            <form.SubscribeButton
+            <form.SubmitButton
               label="Зарегистрироваться"
               loadingMessage="Регистрируем"
             />

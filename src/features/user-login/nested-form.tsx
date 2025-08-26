@@ -69,7 +69,7 @@ export const UserLoginForm = withForm({
           />
 
           <form.AppForm>
-            <form.SubscribeButton
+            <form.SubmitButton
               label="Войти в аккаунт"
               loadingMessage="Входим в аккаунт"
             />

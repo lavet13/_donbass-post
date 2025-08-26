@@ -15,7 +15,11 @@ import { TypographyH3 } from "@/components/ui/typography/typographyH3";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import { useStore } from "@tanstack/react-form";
 import { useBlocker } from "@tanstack/react-router";
-import { AutoDismissMessage, type AutoDimissMessageProps } from "@/components/auto-dismiss-message";
+import {
+  AutoDismissMessage,
+  type AutoDimissMessageProps,
+} from "@/components/auto-dismiss-message";
+import { useCalculateGlobalMutation } from "@/features/delivery-rate/mutations";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -41,6 +45,37 @@ export const PickUpPointDeliveryOrderForm = withForm({
       refetch: refetchAdditionalServices,
     } = useAdditionalServicePickUpQuery();
 
+    const {
+      data: calculateDeliveryResult,
+      mutateAsync: calculateDelivery,
+      isPending,
+    } = useCalculateGlobalMutation();
+
+    const handleCalculation = async () => {
+      const pointFrom = Number.parseInt(form.state.values.sender.pointFrom, 10);
+      const pointTo = Number.parseInt(form.state.values.recipient.pointTo, 10);
+      const deliveryCompany = Number.parseInt(
+        form.state.values.recipient.deliveryCompany,
+        10,
+      );
+      const { totalWeight, cubicMeter } = form.state.values.cargoData;
+
+      try {
+        await calculateDelivery({
+          weight: totalWeight,
+          cubicMeter: cubicMeter,
+          pointFrom,
+          pointTo,
+          deliveryCompany,
+          isHomeDelivery: false,
+          deliveryType: 3,
+          deliveryRateGroup: 4,
+        });
+      } catch (error) {
+        // @TODO: make sure we show the user what should be filled in case of an error
+      }
+    };
+
     const isDefaultValue = useStore(
       form.store,
       (state) => state.isDefaultValue,
@@ -57,15 +92,13 @@ export const PickUpPointDeliveryOrderForm = withForm({
       },
     });
 
-    const [message, setMessage] =
-      useState<AutoDimissMessageProps>({
-        title: "Регистрация успешно проведена!",
-        variant: "success",
-        onClose: () =>
-          setMessage((prev) => ({ ...prev, isOpen: false })),
-        isOpen: false,
-        durationMs: 60_000,
-      });
+    const [message, setMessage] = useState<AutoDimissMessageProps>({
+      title: "Регистрация успешно проведена!",
+      variant: "success",
+      onClose: () => setMessage((prev) => ({ ...prev, isOpen: false })),
+      isOpen: false,
+      durationMs: 60_000,
+    });
 
     return (
       <form
@@ -615,15 +648,34 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     }}
                   />
                   <form.AppField
-                    name="recipient.deliveryCompany"
+                    name="recipient.pointTo"
                     validators={{
                       onChange: ({ value }) => {
                         if (typeof value === "string" && !value.length) {
-                          return "Выберите транспортную компанию";
+                          return "Выберите населенный пункт";
                         }
                         return undefined;
                       },
                     }}
+                    children={(field) => {
+                      return (
+                        <field.ComboboxField
+                          modal
+                          label="Населенный пункт"
+                          placeholder="Выберите населенный пункт"
+                          searchEmptyMessage="Нет населенных пунктов"
+                          aria-label="Выберите удобный по местоположению населенный пункт из списка"
+                          loadingMessage="Загружаем населенные пункты"
+                          searchInputPlaceholder="Найти населенный пункт..."
+                          refetch={refetchPoints}
+                          isLoading={isPointsLoading}
+                          values={points}
+                        />
+                      );
+                    }}
+                  />
+                  <form.AppField
+                    name="recipient.deliveryCompany"
                     children={(field) => {
                       return (
                         <field.ComboboxField
@@ -790,6 +842,33 @@ export const PickUpPointDeliveryOrderForm = withForm({
                           }}
                           label="ИНН"
                           placeholder="Укажите ИНН"
+                        />
+                      );
+                    }}
+                  />
+                  <form.AppField
+                    name="recipient.pointTo"
+                    validators={{
+                      onChange: ({ value }) => {
+                        if (typeof value === "string" && !value.length) {
+                          return "Выберите населенный пункт";
+                        }
+                        return undefined;
+                      },
+                    }}
+                    children={(field) => {
+                      return (
+                        <field.ComboboxField
+                          modal
+                          label="Населенный пункт"
+                          placeholder="Выберите населенный пункт"
+                          searchEmptyMessage="Нет населенных пунктов"
+                          aria-label="Выберите удобный по местоположению населенный пункт из списка"
+                          loadingMessage="Загружаем населенные пункты"
+                          searchInputPlaceholder="Найти населенный пункт..."
+                          refetch={refetchPoints}
+                          isLoading={isPointsLoading}
+                          values={points}
                         />
                       );
                     }}
@@ -1476,11 +1555,36 @@ export const PickUpPointDeliveryOrderForm = withForm({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
           <form.AppForm>
-            <form.SubscribeButton
+            <form.SubmitButton
               loadingMessage="Оформляем заявку"
               label="Оформить заявку"
             />
           </form.AppForm>
+          <div className="flex flex-col gap-1.5">
+            <Button type="button" onClick={handleCalculation}>
+              {isPending ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  Просчёт...
+                </>
+              ) : (
+                <>Узнать примерную стоимость</>
+              )}
+            </Button>
+            {calculateDeliveryResult && (
+              <div className="flex py-2 text-3xl justify-center items-center bg-primary text-primary-foreground rounded-md font-bold">
+                {calculateDeliveryResult.price +
+                  (form.state.values.additionalService
+                    .filter(
+                      ({ selected, label }) =>
+                        selected === "yes" &&
+                        !label.toLowerCase().includes("наложенный платеж"),
+                    )
+                    .reduce((acc, { price }) => acc + price, 0) ?? 0)}{" "}
+                ₽
+              </div>
+            )}
+          </div>
         </div>
       </form>
     );

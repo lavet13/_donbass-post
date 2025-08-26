@@ -13,8 +13,8 @@ const RadioGroupField = lazy(
 );
 const TextareaField = lazy(() => import("@/components/forms/textarea-field"));
 const SelectField = lazy(() => import("@/components/forms/select-field"));
-const SubscribeButton = lazy(
-  () => import("@/components/forms/subscribe-button"),
+const SubmitButton = lazy(
+  () => import("@/components/forms/submit-button"),
 );
 
 // https://tanstack.com/form/latest/docs/framework/react/guides/form-composition
@@ -33,6 +33,6 @@ export const { useAppForm, withForm } = createFormHook({
     SelectField,
   },
   formComponents: {
-    SubscribeButton,
+    SubmitButton,
   },
 });

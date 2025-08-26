@@ -40,6 +40,7 @@ export const defaultPickUpPointDeliveryOrderOpts = formOptions({
       companyRecipient: "",
       emailRecipient: "",
       deliveryCompany: "",
+      pointTo: "",
     },
 
     customer: {
@@ -75,6 +76,7 @@ export const defaultPickUpPointDeliveryOrderOpts = formOptions({
       {
         label: "",
         value: 0,
+        price: 0,
         selected: "no" as "yes" | "no",
       },
     ],

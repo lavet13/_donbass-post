@@ -11,7 +11,7 @@ const pointKeys = createQueryKeys("point", {
 });
 
 async function fetchAllPointsPost() {
-  let { data: points } =
+  const { data: points } =
     await workplacePostApi.get<DeliveryPoint[]>("/point/post");
 
   return points.map((point) => ({

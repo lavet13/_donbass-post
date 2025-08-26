@@ -4,7 +4,7 @@ import type { ComponentProps, FC } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-const SubscribeButton: FC<
+const SubmitButton: FC<
   ComponentProps<"button"> & { label: string; loadingMessage?: string }
 > = ({ className, label, loadingMessage = "Подтверждается", ...props }) => {
   const form = useFormContext();
@@ -38,4 +38,4 @@ const SubscribeButton: FC<
   );
 };
 
-export default SubscribeButton;
+export default SubmitButton;
