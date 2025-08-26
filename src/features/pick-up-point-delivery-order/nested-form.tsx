@@ -1597,7 +1597,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               )}
             </Button>
             {calculateDeliveryResult && !isError && (
-              <div className="flex py-2 text-3xl justify-center items-center bg-primary text-primary-foreground rounded-md font-bold">
+              <div className="flex py-2 text-3xl justify-center items-center bg-accent text-accent-foreground rounded-md font-bold">
                 {calculateDeliveryResult.price +
                   (form.state.values.additionalService
                     .filter(
@@ -1610,7 +1610,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               </div>
             )}
             {error && error.response && error.response.status === 404 && (
-              <div className="flex py-2 text-3xl justify-center items-center bg-primary text-primary-foreground rounded-md font-bold">
+              <div className="flex py-2 text-3xl text-center justify-center items-center bg-primary text-primary-foreground rounded-md font-bold">
                 {error.response.data.message}
               </div>
             )}

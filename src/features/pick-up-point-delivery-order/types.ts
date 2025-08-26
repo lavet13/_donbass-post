@@ -18,7 +18,7 @@ export type PickUpPointDeliveryOrderVariables = {
   additionalService?: { id: number }[];
 };
 
-type IndividualSender = {
+export type IndividualSender = {
   nameSender: string;
   surnameSender: string;
   patronymicSender: string;
@@ -30,7 +30,7 @@ type IndividualSender = {
   emailSender: string;
 };
 
-type CompanySender = {
+export type CompanySender = {
   companySender: string;
   phoneSender: string;
   emailSender: string;
@@ -39,27 +39,29 @@ type CompanySender = {
   innSender: string;
 };
 
-type IndividualRecipient = {
+export type IndividualRecipient = {
   nameRecipient: string;
   surnameRecipient: string;
   patronymicRecipient: string;
   phoneRecipient: string;
   telegramRecipient: boolean;
   whatsAppRecipient: boolean;
-  deliveryCompany: number;
+  deliveryCompany?: number;
   deliveryAddress: string;
+  pointTo: number;
 };
 
-type CompanyRecipient = {
+export type CompanyRecipient = {
   companyRecipient: string;
   phoneRecipient: string;
   emailRecipient: string;
   deliveryAddress: string;
   innRecipient: string;
-  deliveryCompany: number;
+  deliveryCompany?: number;
+  pointTo: number;
 };
 
-type IndividualCustomer = {
+export type IndividualCustomer = {
   nameCustomer: string;
   surnameCustomer: string;
   patronymicCustomer: string;
@@ -68,18 +70,9 @@ type IndividualCustomer = {
   whatsAppCustomer: boolean;
 };
 
-type CompanyCustomer = {
+export type CompanyCustomer = {
   companyCustomer: string;
   phoneCustomer: string;
   emailCustomer: string;
   innCustomer: string;
-};
-
-export type {
-  IndividualSender,
-  IndividualRecipient,
-  IndividualCustomer,
-  CompanySender,
-  CompanyRecipient,
-  CompanyCustomer,
 };

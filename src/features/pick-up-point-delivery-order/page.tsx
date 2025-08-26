@@ -104,6 +104,7 @@ const PickUpPointDeliveryOrderPage: FC = () => {
           whatsAppRecipient,
           deliveryCompany,
           deliveryAddress,
+          pointTo,
         } = recipientRest;
 
         recipient = {
@@ -117,6 +118,9 @@ const PickUpPointDeliveryOrderPage: FC = () => {
             ? Number.parseInt(deliveryCompany, 10)
             : undefined) as number,
           deliveryAddress,
+          pointTo: (pointTo
+            ? Number.parseInt(pointTo, 10)
+            : undefined) as number,
         } satisfies IndividualRecipient;
       }
 
@@ -128,6 +132,7 @@ const PickUpPointDeliveryOrderPage: FC = () => {
           deliveryAddress,
           innRecipient,
           deliveryCompany,
+          pointTo,
         } = recipientRest;
         console.log({ deliveryCompany });
 
@@ -139,6 +144,9 @@ const PickUpPointDeliveryOrderPage: FC = () => {
           innRecipient,
           deliveryCompany: (deliveryCompany
             ? Number.parseInt(deliveryCompany, 10)
+            : undefined) as number,
+          pointTo: (pointTo
+            ? Number.parseInt(pointTo, 10)
             : undefined) as number,
         } satisfies CompanyRecipient;
       }
