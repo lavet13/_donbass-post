@@ -704,7 +704,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.ComboboxField
-                          label="Транспортная компания"
+                          label="Транспортная компания(опционально)"
                           placeholder="Выберите транспортную компанию"
                           values={deliveryCompanies}
                           refetch={refetchDeliveryCompanies}
@@ -911,7 +911,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.ComboboxField
-                          label="Транспортная компания"
+                          label="Транспортная компания(опционально)"
                           placeholder="Выберите транспортную компанию"
                           values={deliveryCompanies}
                           refetch={refetchDeliveryCompanies}
@@ -1586,7 +1586,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             />
           </form.AppForm>
           <div className="flex flex-col gap-1.5">
-            <Button type="button" onClick={handleCalculation}>
+            <Button disabled={isPending} type="button" onClick={handleCalculation}>
               {isPending ? (
                 <>
                   <Loader2 className="animate-spin" />

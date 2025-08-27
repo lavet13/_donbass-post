@@ -67,7 +67,7 @@ export default defineConfig({
           styling: ["class-variance-authority", "tailwind-merge", "clsx"],
 
           // State management
-          state: ["jotai", "immer"],
+          state: ["jotai"],
 
           animation: ["motion"],
 
@@ -76,6 +76,8 @@ export default defineConfig({
           "command-ui": ["cmdk"],
           "number-input": ["react-number-format"],
           "phone-input": ["react-phone-number-input"],
+
+          misc: ["react-device-detect", "immer"],
 
           // Network and API
           network: ["axios"],
