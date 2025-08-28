@@ -13,4 +13,5 @@ export type ShopCostCalculationOrderVariables = {
     price: number;
     link: string;
   }[];
+  userId?: string | number;
 };

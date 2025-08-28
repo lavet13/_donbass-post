@@ -19,6 +19,15 @@
   --modal-foreground: #2e2222; /* Consistent with card & popover */
   --modal-backdrop: rgba(214, 106, 106, 0.16); /* Warm soft veil */
 
+  --sidebar: #f9f2f2;
+  --sidebar-foreground: #2e2222;
+  --sidebar-primary: #f2d4d3;
+  --sidebar-primary-foreground: #2e2222;
+  --sidebar-accent: #e6b6b6;
+  --sidebar-accent-foreground: #2e2222;
+  --sidebar-border: #ddd0d0;
+  --sidebar-ring: #e6b6b6;
+
   --secondary: #f2d4d3;
   --secondary-foreground: #2e2222;
 
@@ -66,6 +75,15 @@
   --modal: #2a2222; /* Warm deep clay — slightly lighter than background (#161616) */
   --modal-foreground: #f0f0f0; /* Same as foreground — clean and readable */
   --modal-backdrop: rgba(60, 40, 40, 0.36); /* Deep clay shadow */
+
+  --sidebar: #221c1c;
+  --sidebar-foreground: #e0e0e0;
+  --sidebar-primary: #4a3232;
+  --sidebar-primary-foreground: #f0f0f0;
+  --sidebar-accent: #665555;
+  --sidebar-accent-foreground: #f0f0f0;
+  --sidebar-border: #665555;
+  --sidebar-ring: #b37070;
 
   --popover: #2e2626; /* Warm, soft, clearly layered */
   --popover-foreground: #f0f0f0;
@@ -126,6 +144,14 @@
   --color-modal: var(--modal);
   --color-modal-foreground: var(--modal-foreground);
   --color-modal-backdrop: var(--modal-backdrop);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);

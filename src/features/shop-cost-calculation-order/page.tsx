@@ -8,11 +8,13 @@ import { usePointPostQuery } from "@/features/point/queries";
 import { Suspend } from "@/components/suspend";
 import { Fragment, type FC } from "react";
 import type { ShopCostCalculationOrderVariables } from "./types";
+import { useAuth } from "@/hooks/use-auth";
 
 const ShopCostCalculationOrderPage: FC = () => {
   const { mutateAsync: sendShopCostCalculationOrder } =
     useShopCostCalculationOrderMutation();
   const { data: values } = usePointPostQuery();
+  const { user } = useAuth();
 
   const form = useAppForm({
     ...defaultShopCostCalculationOrderOpts,
@@ -31,6 +33,7 @@ const ShopCostCalculationOrderPage: FC = () => {
       const payload: ShopCostCalculationOrderVariables = {
         shopCostCalculationOrder,
         shopCostCalculationOrderPosition,
+        userId: user ? user.id : undefined,
       };
 
       try {
@@ -54,8 +57,11 @@ const ShopCostCalculationOrderPage: FC = () => {
                   value: `${selectedEntry.name.trim()}, по адресу: ${selectedEntry.address}`,
                 },
               ].map(({ label, value }, idx, options) => (
-                <div className={cn(options.length - 1 === idx && "py-2 pb-4")} key={`${label}${value}`}>
-                  <span className="text-sm font-bold">{label}{' '}</span>
+                <div
+                  className={cn(options.length - 1 === idx && "py-2 pb-4")}
+                  key={`${label}${value}`}
+                >
+                  <span className="text-sm font-bold">{label} </span>
                   <span className="text-sm">{value}</span>
                 </div>
               ))}

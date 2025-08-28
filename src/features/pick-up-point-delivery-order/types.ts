@@ -16,6 +16,7 @@ export type PickUpPointDeliveryOrderVariables = {
     cashOnDelivery?: number;
   };
   additionalService?: { id: number }[];
+  userId?: string | number;
 };
 
 export type IndividualSender = {

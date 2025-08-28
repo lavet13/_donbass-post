@@ -44,8 +44,8 @@ export default defineConfig({
             "@tanstack/react-router-devtools",
           ],
 
-          // Radix UI component library
-          "radix-ui": [
+          // UI components
+          "UI": [
             "@radix-ui/react-password-toggle-field",
             "@radix-ui/react-accessible-icon",
             "@radix-ui/react-checkbox",
@@ -58,6 +58,7 @@ export default defineConfig({
             "@radix-ui/react-select",
             "@radix-ui/react-visually-hidden",
             "vaul",
+            "react-resizable-panels",
           ],
 
           // Form validation and schema

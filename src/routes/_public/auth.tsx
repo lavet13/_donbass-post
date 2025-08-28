@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_public/auth")({
   validateSearch: (search): TabsSearch => {
     return {
       tab: isValidTab(search.tab) ? search.tab : "login",
-      redirect: (search.redirect as string) || "/",
+      redirect: (search.redirect as string) || "/dashboard",
     };
   },
   beforeLoad({ context, search }) {
