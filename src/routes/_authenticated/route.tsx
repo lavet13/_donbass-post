@@ -38,12 +38,13 @@ const navItems = linkOptions([
 
 function AuthenticatedLayout() {
   const styles = getComputedStyle(document.documentElement);
-  const smallBreakpoint = styles.getPropertyValue("--breakpoint-sm");
+  const midBreakpoint = styles.getPropertyValue("--breakpoint-md");
 
-  const isMobile = useMediaQuery(`(max-width: ${smallBreakpoint})`);
-  console.log({ isMobile });
+  const isTablet = useMediaQuery(`(max-width: ${midBreakpoint})`);
+  console.log({ isTablet });
 
-  const collapsedSizePercent = isMobile ? 0 : 6;
+  const collapsedSizePercent = isTablet ? 0 : 6;
+  const minimalSizePercent = collapsedSizePercent + (isTablet ? 6 : 0);
   const expandedSizePercent = 15;
 
   return (
@@ -53,8 +54,8 @@ function AuthenticatedLayout() {
           collapsedSize={collapsedSizePercent}
           collapsible
           defaultSize={expandedSizePercent}
-          maxSize={expandedSizePercent}
-          minSize={collapsedSizePercent}
+          maxSize={expandedSizePercent + (isTablet ? 4 : 0)}
+          minSize={minimalSizePercent}
         >
           <div className="@container flex-1 flex flex-col h-full">
             <div className="flex gap-1 items-center"></div>

@@ -30,17 +30,23 @@ const ResizableHandle: FC<
   return (
     <ResizablePrimitive.PanelResizeHandle
       className={cn(
-        "group focus-visible:ring-ring focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:outline-hidden duration-100 ease-linear transition-colors",
-        "relative w-0.5 bg-sidebar-border hover:bg-primary/80 data-[resize-handle-active]:bg-primary outline-none pointer-coarse:w-1.5",
-        "data-[panel-group-direction=vertical]:w-full data-[panel-group-direction=vertical]:h-0.5 data-[panel-group-direction=vertical]:pointer-coarse:h-1.5",
+        "focus-visible:ring-ring focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:outline-hidden duration-100 ease-linear transition-colors",
+        "relative w-0.5 bg-sidebar-border hover:bg-primary/80 data-[resize-handle-active]:bg-primary outline-none pointer-coarse:w-1",
+        "data-[panel-group-direction=vertical]:w-full data-[panel-group-direction=vertical]:h-0.5 data-[panel-group-direction=vertical]:pointer-coarse:h-1",
+
+        withHandle && [
+          "after:content-['']",
+          "after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2",
+          "after:h-8 after:w-2 after:bg-sidebar-border after:rounded",
+          "after:transition-colors after:duration-100 after:ease-linear",
+          "hover:after:bg-primary",
+          "data-[resize-handle-active]:after:opacity-100 data-[resize-handle-active]:after:bg-primary",
+          "after:pointer-coarse:w-2 after:pl-2",
+        ],
         className,
       )}
       {...props}
-    >
-      {withHandle && (
-        <div className="opacity-0 group-hover:opacity-100 group-hover:bg-primary group-data-[resize-handle-active]:opacity-100 group-data-[resize-handle-active]:bg-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-2 pointer-coarse:w-3 flex justify-center items-center bg-sidebar-border rounded" />
-      )}
-    </ResizablePrimitive.PanelResizeHandle>
+    />
   );
 };
 
