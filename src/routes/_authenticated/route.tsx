@@ -38,23 +38,66 @@ const navItems = linkOptions([
 
 function AuthenticatedLayout() {
   const styles = getComputedStyle(document.documentElement);
-  const midBreakpoint = styles.getPropertyValue("--breakpoint-md");
+  const middleBreakpoint = styles.getPropertyValue("--breakpoint-md");
+  const _2xlBreakpoint = styles.getPropertyValue("--breakpoint-2xl");
 
-  const isTablet = useMediaQuery(`(max-width: ${midBreakpoint})`);
-  console.log({ isTablet });
+  const isTabletMax = useMediaQuery(`(max-width: ${middleBreakpoint})`);
+  const isFullHDMin = useMediaQuery(`(min-width: ${_2xlBreakpoint})`);
 
-  const collapsedSizePercent = isTablet ? 0 : 6;
-  const minimalSizePercent = collapsedSizePercent + (isTablet ? 6 : 0);
-  const expandedSizePercent = 15;
+  // @TODO: add persistence! link: https://github.com/bvaughn/react-resizable-panels/blob/main/packages/react-resizable-panels-website/src/routes/examples/ExternalPersistence.tsx
+  /*
+    const sidebarStorageItem = localStorage.getItem(
+      "react-resizable-panels:sidebar",
+    );
+
+    if (sidebarStorageItem) {
+      const sidebarPersister = JSON.parse(sidebarStorageItem);
+
+      const sidebarValues = Object.keys(sidebarPersister).map((sidebarValue) => {
+        sidebarValue = sidebarValue.replace(/[{}]/g, "");
+        const matchedValues = sidebarValue.match(/(.+?):(.+?)(?=,)/g)!;
+        const result = [];
+
+        for (const matchedValue of matchedValues) {
+          const key = matchedValue.match(/\"(.*?)\"/)![1];
+          let value = matchedValue.match(/\:(.*)/)![1];
+
+          // @ts-ignore
+          if (!isNaN(value)) {
+            // @ts-ignore
+            value = Number.parseFloat(value);
+          } else if (value.includes("true")) {
+            // @ts-ignore
+            value = true;
+          } else if (value.includes("false")) {
+            // @ts-ignore
+            value = false;
+          }
+
+          result.push([key, value]);
+        }
+
+        return Object.fromEntries(result);
+      });
+
+      console.log({ sidebarValues });
+    }
+  */
+
+  const collapsedSizePercent = isTabletMax ? 0 : isFullHDMin ? 3 : 6;
+  const minimalSizePercent = collapsedSizePercent + 6;
+  const maximumSizePercent = 15 + (isTabletMax ? 4 : 0);
+  const defaultSizePercent = isTabletMax ? 15 : 12;
 
   return (
     <Fragment>
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel
+          className="bg-sidebar"
           collapsedSize={collapsedSizePercent}
           collapsible
-          defaultSize={expandedSizePercent}
-          maxSize={expandedSizePercent + (isTablet ? 4 : 0)}
+          defaultSize={defaultSizePercent}
+          maxSize={maximumSizePercent}
           minSize={minimalSizePercent}
         >
           <div className="@container flex-1 flex flex-col h-full">
@@ -62,7 +105,7 @@ function AuthenticatedLayout() {
             <div className="pt-2 flex-1 flex flex-col">
               {navItems.map(({ label, to, Icon }) => (
                 <Button
-                  className="not-last:border-b border-sidebar-border"
+                  className="not-last:border-b border-primary/40"
                   key={to}
                   title={label}
                   variant="sidebar"

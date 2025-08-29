@@ -8,7 +8,7 @@ const ResizablePanelGroup: FC<
   return (
     <ResizablePrimitive.PanelGroup
       className={cn(
-        "bg-sidebar flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
+        "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
         className,
       )}
       {...props}
@@ -35,13 +35,12 @@ const ResizableHandle: FC<
         "data-[panel-group-direction=vertical]:w-full data-[panel-group-direction=vertical]:h-0.5 data-[panel-group-direction=vertical]:pointer-coarse:h-1",
 
         withHandle && [
-          "after:content-['']",
           "after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2",
           "after:h-8 after:w-2 after:bg-sidebar-border after:rounded",
           "after:transition-colors after:duration-100 after:ease-linear",
           "hover:after:bg-primary",
           "data-[resize-handle-active]:after:opacity-100 data-[resize-handle-active]:after:bg-primary",
-          "after:pointer-coarse:w-2 after:pl-2",
+          "after:pointer-coarse:w-3 after:pointer-coarse:h-9 after:pl-2",
         ],
         className,
       )}
