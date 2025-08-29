@@ -1,3 +1,6 @@
+import type { inferQueryKeys } from "@lukemorales/query-key-factory";
+import type { shopCostCalculationOrderKeys } from "./queries";
+
 export type ShopCostCalculationOrderVariables = {
   shopCostCalculationOrder: {
     name: string;
@@ -13,5 +16,5 @@ export type ShopCostCalculationOrderVariables = {
     price: number;
     link: string;
   }[];
-  userId?: string | number;
 };
+export type ShopCostCalculationOrderKeys = inferQueryKeys<typeof shopCostCalculationOrderKeys>;

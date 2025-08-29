@@ -250,10 +250,7 @@ const ComboboxGroupField: FC<
           >
             <DrawerHandle />
             <div className="w-full overflow-y-auto flex flex-1">
-              <div
-                className="grow shrink sticky top-0 hover:bg-secondary/10 cursor-pointer"
-                onClick={() => setOpen(false)}
-              />
+              <div className="grow shrink sticky top-0" />
               <div className="shrink-1 max-w-4xl w-full">
                 <VisuallyHidden>
                   <DrawerTitle>{searchInputPlaceholder}</DrawerTitle>
@@ -266,7 +263,7 @@ const ComboboxGroupField: FC<
               >
                 <Tooltip content="Закрыть модальное окно">
                   <button
-                    className="hidden text-secondary-foreground absolute top-1 right-1 ml-auto pointer-events-auto cursor-pointer shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-4 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                    className="hidden text-secondary-foreground absolute top-1 left-1 ml-auto pointer-events-auto cursor-pointer shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-4 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                     aria-label="Закрыть окно"
                     type="button"
                     onClick={() => setOpen(false)}

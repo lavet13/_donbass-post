@@ -8,13 +8,11 @@ import { usePointPostQuery } from "@/features/point/queries";
 import { Suspend } from "@/components/suspend";
 import { Fragment, type FC } from "react";
 import type { ShopCostCalculationOrderVariables } from "./types";
-import { useAuth } from "@/hooks/use-auth";
 
 const ShopCostCalculationOrderPage: FC = () => {
   const { mutateAsync: sendShopCostCalculationOrder } =
     useShopCostCalculationOrderMutation();
   const { data: values } = usePointPostQuery();
-  const { user } = useAuth();
 
   const form = useAppForm({
     ...defaultShopCostCalculationOrderOpts,
@@ -33,7 +31,6 @@ const ShopCostCalculationOrderPage: FC = () => {
       const payload: ShopCostCalculationOrderVariables = {
         shopCostCalculationOrder,
         shopCostCalculationOrderPosition,
-        userId: user ? user.id : undefined,
       };
 
       try {

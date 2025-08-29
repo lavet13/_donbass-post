@@ -1,12 +1,10 @@
 import { workplacePostApi } from "@/axios";
 import { createQueryKeys } from "@lukemorales/query-key-factory";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import type { DeliveryCompany } from "@/features/delivery-company/types";
 
-// Query Keys
 const deliveryCompanyKeys = createQueryKeys("delivery-company");
 
-// Query functions
 const fetchDeliveryCompanies = async () => {
   const response =
     await workplacePostApi.get<DeliveryCompany[]>("/delivery-company");
@@ -19,12 +17,20 @@ const fetchDeliveryCompanies = async () => {
   ];
 };
 
-const useDeliveryCompaniesQuery = () =>
-  useQuery({
+type UseDeliveryCompaniesQueryProps = {
+  options?: UseQueryOptions;
+};
+
+const useDeliveryCompaniesQuery = (
+  props: UseDeliveryCompaniesQueryProps = {},
+) => {
+  const { options = {} } = props;
+
+  return useQuery({
     queryKey: deliveryCompanyKeys._def,
     queryFn: fetchDeliveryCompanies,
-
-    retry: false,
+    ...options,
   });
+};
 
 export { useDeliveryCompaniesQuery, deliveryCompanyKeys };

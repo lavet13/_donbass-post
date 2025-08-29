@@ -10,7 +10,7 @@ function createRouter() {
     defaultOptions: {
       queries: {
         staleTime: 2 * 60 * 1000,
-        retry: 2,
+        retry: 1,
       },
     },
   });

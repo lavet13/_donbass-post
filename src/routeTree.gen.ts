@@ -15,7 +15,8 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicShopCostCalculationOrderRouteImport } from './routes/_public/shop-cost-calculation-order'
 import { Route as PublicPickUpPointDeliveryOrderRouteImport } from './routes/_public/pick-up-point-delivery-order'
 import { Route as PublicAuthRouteImport } from './routes/_public/auth'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDashboardRouteRouteImport } from './routes/_authenticated/dashboard/route'
+import { Route as AuthenticatedDashboardRequestsRouteImport } from './routes/_authenticated/dashboard/requests'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -47,35 +48,45 @@ const PublicAuthRoute = PublicAuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
+const AuthenticatedDashboardRouteRoute =
+  AuthenticatedDashboardRouteRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDashboardRequestsRoute =
+  AuthenticatedDashboardRequestsRouteImport.update({
+    id: '/requests',
+    path: '/requests',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/auth': typeof PublicAuthRoute
   '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
+  '/dashboard/requests': typeof AuthenticatedDashboardRequestsRoute
 }
 export interface FileRoutesByTo {
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/auth': typeof PublicAuthRoute
   '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
+  '/dashboard/requests': typeof AuthenticatedDashboardRequestsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/_public/auth': typeof PublicAuthRoute
   '/_public/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/_public/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/_public/': typeof PublicIndexRoute
+  '/_authenticated/dashboard/requests': typeof AuthenticatedDashboardRequestsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -85,6 +96,7 @@ export interface FileRouteTypes {
     | '/pick-up-point-delivery-order'
     | '/shop-cost-calculation-order'
     | '/'
+    | '/dashboard/requests'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/dashboard'
@@ -92,6 +104,7 @@ export interface FileRouteTypes {
     | '/pick-up-point-delivery-order'
     | '/shop-cost-calculation-order'
     | '/'
+    | '/dashboard/requests'
   id:
     | '__root__'
     | '/_authenticated'
@@ -101,6 +114,7 @@ export interface FileRouteTypes {
     | '/_public/pick-up-point-delivery-order'
     | '/_public/shop-cost-calculation-order'
     | '/_public/'
+    | '/_authenticated/dashboard/requests'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -156,18 +170,40 @@ declare module '@tanstack/react-router' {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      preLoaderRoute: typeof AuthenticatedDashboardRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard/requests': {
+      id: '/_authenticated/dashboard/requests'
+      path: '/requests'
+      fullPath: '/dashboard/requests'
+      preLoaderRoute: typeof AuthenticatedDashboardRequestsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
   }
 }
 
+interface AuthenticatedDashboardRouteRouteChildren {
+  AuthenticatedDashboardRequestsRoute: typeof AuthenticatedDashboardRequestsRoute
+}
+
+const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRouteChildren =
+  {
+    AuthenticatedDashboardRequestsRoute: AuthenticatedDashboardRequestsRoute,
+  }
+
+const AuthenticatedDashboardRouteRouteWithChildren =
+  AuthenticatedDashboardRouteRoute._addFileChildren(
+    AuthenticatedDashboardRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDashboardRouteRoute: typeof AuthenticatedDashboardRouteRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDashboardRouteRoute:
+    AuthenticatedDashboardRouteRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =

@@ -1,6 +1,6 @@
 import { workplacePostApi } from "@/axios";
 import { createQueryKeys } from "@lukemorales/query-key-factory";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import type { AdditionalServicePickUp } from "@/features/additional-service/types";
 
 const additionalServiceKeys = createQueryKeys("additional-service", {
@@ -18,12 +18,18 @@ const fetchAdditionalServicePickUp = async () => {
     .map(({ id, name, price }) => ({ label: name, value: id, price }));
 };
 
-const useAdditionalServicePickUpQuery = () =>
-  useQuery({
+type UseAdditionalServicePickUpQueryProps = {
+  options?: UseQueryOptions;
+};
+
+const useAdditionalServicePickUpQuery = (props: UseAdditionalServicePickUpQueryProps = {}) => {
+  const { options = {} } = props;
+
+  return useQuery({
     queryKey: additionalServiceKeys["pick-up"].queryKey,
     queryFn: fetchAdditionalServicePickUp,
-
-    retry: false,
+    ...options,
   });
+}
 
 export { additionalServiceKeys, useAdditionalServicePickUpQuery };

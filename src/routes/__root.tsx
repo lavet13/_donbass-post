@@ -25,7 +25,7 @@ function RootComponent() {
       <HeadContent />
       <Outlet />
       <Scripts />
-      <TanStackRouterDevtools initialIsOpen={false} />
+      <TanStackRouterDevtools position="bottom-right" initialIsOpen={false} />
       <ReactQueryDevtools initialIsOpen={false} />
     </React.Fragment>
   );

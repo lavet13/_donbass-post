@@ -1,3 +1,6 @@
+import type { inferQueryKeys } from "@lukemorales/query-key-factory";
+import type { pickUpPointDeliveryOrderKeys } from "./queries";
+
 /* This is what we sending to the endpoint /api/pick-up-point-delivery-order */
 export type PickUpPointDeliveryOrderVariables = {
   sender?: IndividualSender;
@@ -16,7 +19,6 @@ export type PickUpPointDeliveryOrderVariables = {
     cashOnDelivery?: number;
   };
   additionalService?: { id: number }[];
-  userId?: string | number;
 };
 
 export type IndividualSender = {
@@ -77,3 +79,7 @@ export type CompanyCustomer = {
   emailCustomer: string;
   innCustomer: string;
 };
+
+export type PickUpPointDeliveryOrderKeys = inferQueryKeys<
+  typeof pickUpPointDeliveryOrderKeys
+>;

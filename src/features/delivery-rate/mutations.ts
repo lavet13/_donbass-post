@@ -32,4 +32,4 @@ const useCalculateGlobalMutation = (
   });
 };
 
-export { useCalculateGlobalMutation, type CalculateGlobalParams };
+export { useCalculateGlobalMutation };

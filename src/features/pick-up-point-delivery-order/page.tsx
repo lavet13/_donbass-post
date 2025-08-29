@@ -15,7 +15,6 @@ import type {
   IndividualSender,
   PickUpPointDeliveryOrderVariables,
 } from "@/features/pick-up-point-delivery-order/types";
-import { useAuth } from "@/hooks/use-auth";
 
 const PickUpPointDeliveryOrderPage: FC = () => {
   const { mutateAsync: sendPickUpPointDeliveryOrder } =
@@ -25,8 +24,6 @@ const PickUpPointDeliveryOrderPage: FC = () => {
 
   const { defaultValues, ...restDefaults } =
     defaultPickUpPointDeliveryOrderOpts;
-
-  const { user } = useAuth();
 
   const form = useAppForm({
     ...restDefaults,
@@ -211,7 +208,6 @@ const PickUpPointDeliveryOrderPage: FC = () => {
         additionalService: value.additionalService
           .filter((service) => service.selected === "yes")
           .map((service) => ({ id: service.value })),
-        userId: user ? user.id : undefined,
       };
 
       try {

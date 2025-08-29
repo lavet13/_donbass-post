@@ -1,9 +1,8 @@
 import { workplacePostApi } from "@/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { createQueryKeys } from "@lukemorales/query-key-factory";
 import type { DeliveryPoint } from "@/features/point/types";
 
-// Query Keys
 const pointKeys = createQueryKeys("point", {
   post: {
     queryKey: null,
@@ -22,7 +21,6 @@ async function fetchAllPointsPost() {
   }));
 }
 
-// Query Functions
 async function pointsPost() {
   const points = await fetchAllPointsPost();
 
@@ -54,12 +52,18 @@ async function pointsPost() {
   ];
 }
 
-const usePointPostQuery = () =>
-  useQuery({
+type UsePointPostQueryProps = {
+  options?: UseQueryOptions;
+};
+
+const usePointPostQuery = (props: UsePointPostQueryProps = {}) => {
+  const { options = {} } = props;
+
+  return useQuery({
     queryKey: pointKeys.post.queryKey,
     queryFn: pointsPost,
-
-    retry: false,
+    ...options,
   });
+}
 
 export { usePointPostQuery, pointKeys };
