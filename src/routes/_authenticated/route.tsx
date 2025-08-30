@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/resizable";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TypographyH2 } from "@/components/ui/typography/typographyH2";
-import { TypographyH4 } from "@/components/ui/typography/typographyH4";
 import { useContainerQuery } from "@/hooks/use-container-query";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
@@ -92,14 +91,13 @@ function AuthenticatedLayout() {
   */
 
   const collapsedSizePercent = isTabletMax ? 0 : isFullHDMin ? 3 : 6;
-  const minimalSizePercent = collapsedSizePercent + 6;
+  const minimalSizePercent = collapsedSizePercent + (isTabletMax ? 6 : 12);
   const maximumSizePercent = 19;
-  const defaultSizePercent = 15;
+  const defaultSizePercent = isTabletMax ? 15 : 18;
 
   const panelRef = useRef<ImperativePanelHandle>(null);
   const { ref, isMatched } =
     useContainerQuery<HTMLDivElement>("max-width: 130px");
-  console.log({ isMatched });
 
   return (
     <Fragment>
@@ -116,7 +114,7 @@ function AuthenticatedLayout() {
           <div ref={ref} className="@container flex-1 flex flex-col h-full">
             <div className="@max-[130px]:text-center flex @max-[130px]:justify-center justify-between gap-1 items-center mt-1 px-2 @max-[130px]:px-0">
               <div className="flex-1 shrink @max-[130px]:hidden">
-                <TypographyH2 className="sm:leading-none text-md @max-[130px]:hidden">
+                <TypographyH2 className="text-accent-foreground sm:leading-none text-md @max-[130px]:hidden">
                   Личный кабинет
                 </TypographyH2>
               </div>

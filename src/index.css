@@ -132,6 +132,7 @@
     sans-serif;
 
   /* Reference the CSS variables */
+  --color-*: initial;
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-background: var(--background);
