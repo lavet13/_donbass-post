@@ -5,6 +5,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { Tooltip } from "@/components/ui/tooltip";
+import { useContainerQuery } from "@/hooks/use-container-query";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import {
@@ -89,6 +91,10 @@ function AuthenticatedLayout() {
   const maximumSizePercent = 15 + (isTabletMax ? 4 : 0);
   const defaultSizePercent = isTabletMax ? 15 : 12;
 
+  const { ref, isMatched } =
+    useContainerQuery<HTMLDivElement>("max-width: 130px");
+  console.log({ isMatched });
+
   return (
     <Fragment>
       <ResizablePanelGroup direction="horizontal">
@@ -100,33 +106,46 @@ function AuthenticatedLayout() {
           maxSize={maximumSizePercent}
           minSize={minimalSizePercent}
         >
-          <div className="@container flex-1 flex flex-col h-full">
+          <div ref={ref} className="@container flex-1 flex flex-col h-full">
             <div className="flex gap-1 items-center"></div>
             <div className="pt-2 flex-1 flex flex-col">
-              {navItems.map(({ label, to, Icon }) => (
-                <Button
-                  className="not-last:border-b border-primary/40"
-                  key={to}
-                  title={label}
-                  variant="sidebar"
-                  asChild
-                >
-                  <Link
-                    activeProps={{
-                      className: cn(
-                        "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
-                        "data-[status=active]:hover:bg-primary/95 data-[status=active]:active:bg-primary/90",
-                      ),
-                    }}
-                    to={to}
+              {navItems.map(({ label, to, Icon }) => {
+                const renderLink = () => (
+                  <Button
+                    className="not-last:border-b border-primary/40"
+                    key={to}
+                    title={label}
+                    variant="sidebar"
+                    asChild
                   >
-                    <Icon />
-                    <span className="truncate @max-[150px]:hidden">
-                      {label}
-                    </span>
-                  </Link>
-                </Button>
-              ))}
+                    <Link
+                      activeProps={{
+                        className: cn(
+                          "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
+                          "data-[status=active]:hover:bg-primary/95 data-[status=active]:active:bg-primary/90",
+                        ),
+                      }}
+                      to={to}
+                    >
+                      <Icon />
+                      {/* <span className={cn("truncate @max-[130px]:hidden")}> */}
+                      <span className={cn("truncate", isMatched && "hidden")}>
+                        {label}
+                      </span>
+                    </Link>
+                  </Button>
+                );
+
+                if (isMatched) {
+                  return (
+                    <Tooltip key={to} side="right" content={label}>
+                      {renderLink()}
+                    </Tooltip>
+                  );
+                }
+
+                return renderLink();
+              })}
             </div>
             <div className="pb-2 flex justify-center">
               <ModeToggle className="w-full rounded-none" />
