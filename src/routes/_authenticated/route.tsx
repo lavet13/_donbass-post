@@ -6,6 +6,8 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Tooltip } from "@/components/ui/tooltip";
+import { TypographyH2 } from "@/components/ui/typography/typographyH2";
+import { TypographyH4 } from "@/components/ui/typography/typographyH4";
 import { useContainerQuery } from "@/hooks/use-container-query";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
@@ -16,7 +18,9 @@ import {
   Outlet,
   redirect,
 } from "@tanstack/react-router";
-import { FileText } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText } from "lucide-react";
+import { useRef } from "react";
+import type { ImperativePanelHandle } from "react-resizable-panels";
 import { Fragment } from "react/jsx-runtime";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -45,6 +49,7 @@ function AuthenticatedLayout() {
 
   const isTabletMax = useMediaQuery(`(max-width: ${middleBreakpoint})`);
   const isFullHDMin = useMediaQuery(`(min-width: ${_2xlBreakpoint})`);
+  console.log({ isTabletMax });
 
   // @TODO: add persistence! link: https://github.com/bvaughn/react-resizable-panels/blob/main/packages/react-resizable-panels-website/src/routes/examples/ExternalPersistence.tsx
   /*
@@ -88,9 +93,10 @@ function AuthenticatedLayout() {
 
   const collapsedSizePercent = isTabletMax ? 0 : isFullHDMin ? 3 : 6;
   const minimalSizePercent = collapsedSizePercent + 6;
-  const maximumSizePercent = 15 + (isTabletMax ? 4 : 0);
-  const defaultSizePercent = isTabletMax ? 15 : 12;
+  const maximumSizePercent = 19;
+  const defaultSizePercent = 15;
 
+  const panelRef = useRef<ImperativePanelHandle>(null);
   const { ref, isMatched } =
     useContainerQuery<HTMLDivElement>("max-width: 130px");
   console.log({ isMatched });
@@ -99,6 +105,7 @@ function AuthenticatedLayout() {
     <Fragment>
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel
+          ref={panelRef}
           className="bg-sidebar"
           collapsedSize={collapsedSizePercent}
           collapsible
@@ -107,7 +114,44 @@ function AuthenticatedLayout() {
           minSize={minimalSizePercent}
         >
           <div ref={ref} className="@container flex-1 flex flex-col h-full">
-            <div className="flex gap-1 items-center"></div>
+            <div className="@max-[130px]:text-center flex @max-[130px]:justify-center justify-between gap-1 items-center mt-1 px-2 @max-[130px]:px-0">
+              <div className="flex-1 shrink @max-[130px]:hidden">
+                <TypographyH2 className="sm:leading-none text-md @max-[130px]:hidden">
+                  Личный кабинет
+                </TypographyH2>
+              </div>
+              <div className="grow-0 @max-[130px]:flex-1">
+                <Tooltip
+                  side="right"
+                  content={
+                    panelRef.current?.isExpanded()
+                      ? "Свернуть панель"
+                      : "Открыть панель"
+                  }
+                >
+                  <Button
+                    className="ml-auto rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-none"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (panelRef.current) {
+                        if (panelRef.current.isCollapsed()) {
+                          panelRef.current.expand();
+                        } else {
+                          panelRef.current.collapse();
+                        }
+                      }
+                    }}
+                  >
+                    {panelRef.current?.isCollapsed() ? (
+                      <ArrowRight />
+                    ) : (
+                      <ArrowLeft />
+                    )}
+                  </Button>
+                </Tooltip>
+              </div>
+            </div>
             <div className="pt-2 flex-1 flex flex-col">
               {navItems.map(({ label, to, Icon }) => {
                 const renderLink = () => (
