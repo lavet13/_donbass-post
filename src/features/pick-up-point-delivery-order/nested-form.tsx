@@ -12,7 +12,6 @@ import { FormItem } from "@/components/ui/form";
 import {
   ChevronDown,
   ChevronUp,
-  Info,
   Loader2,
   TriangleAlert,
 } from "lucide-react";
@@ -27,12 +26,6 @@ import {
 } from "@/components/auto-dismiss-message";
 import { useCalculateGlobalMutation } from "@/features/delivery-rate/mutations";
 import { isAxiosError } from "axios";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-} from "@/components/ui/popover";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
