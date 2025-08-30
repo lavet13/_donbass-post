@@ -284,7 +284,7 @@ const ComboboxGroupField: FC<
             role="listbox"
             sideOffset={2}
             style={{ width: `${bounds?.width}px` }}
-            className={`p-0 bg-background border border-input`}
+            className={`p-0 bg-background`}
           >
             {renderContent()}
           </PopoverContent>

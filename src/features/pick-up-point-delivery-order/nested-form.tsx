@@ -9,7 +9,13 @@ import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
 import { Fragment, useState } from "react";
 import { FormItem } from "@/components/ui/form";
-import { ChevronDown, ChevronUp, Loader2, TriangleAlert } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Info,
+  Loader2,
+  TriangleAlert,
+} from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography/typographyH3";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
@@ -21,6 +27,12 @@ import {
 } from "@/components/auto-dismiss-message";
 import { useCalculateGlobalMutation } from "@/features/delivery-rate/mutations";
 import { isAxiosError } from "axios";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+} from "@/components/ui/popover";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -329,6 +341,11 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.TextField
+                          hint={
+                            <p className="text-base sm:text-sm">
+                              Забор груза отправителя
+                            </p>
+                          }
                           label="Адрес"
                           placeholder="Адрес"
                           aria-label="Запишите адрес физического лица"
@@ -722,10 +739,10 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     validators={{
                       onChange: ({ value }) => {
                         if (!value.length) {
-                          return "Адрес обязателен";
+                          return "Адрес получателя или ТК обязателен";
                         }
                         if (value.length < 3 || value.length > 50) {
-                          return "Адрес не должно быть короче 3 символов и длиннее 50";
+                          return "Адрес получателя или ТК не должно быть короче 3 символов и длиннее 50";
                         }
                         return undefined;
                       },
@@ -733,8 +750,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.TextField
-                          label="Адрес"
-                          placeholder="Адрес"
+                          label="Адрес получателя или ТК"
+                          placeholder="Адрес получателя или ТК"
                           aria-label="Запишите адрес физического лица"
                         />
                       );
@@ -1334,6 +1351,12 @@ export const PickUpPointDeliveryOrderForm = withForm({
               );
               return (
                 <field.NumericField
+                  hint={
+                    <p className="text-base sm:text-sm">
+                      Если не знаете объем груза, заполните габариты ниже
+                      (длина, ширина, высота)
+                    </p>
+                  }
                   label="Метр кубический"
                   placeholder="Метр кубический"
                   suffix=" м³"
@@ -1586,7 +1609,11 @@ export const PickUpPointDeliveryOrderForm = withForm({
             />
           </form.AppForm>
           <div className="flex flex-col gap-1.5">
-            <Button disabled={isPending} type="button" onClick={handleCalculation}>
+            <Button
+              disabled={isPending}
+              type="button"
+              onClick={handleCalculation}
+            >
               {isPending ? (
                 <>
                   <Loader2 className="animate-spin" />

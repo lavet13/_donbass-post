@@ -23,6 +23,7 @@ const TooltipContent: FC<ComponentProps<typeof TooltipPrimitive.Content>> = ({
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         className={cn(
+          "border border-border",
           "data-[state=delayed-open]:data-[side=top]:animate-slide-down-and-fade",
           "data-[state=delayed-open]:data-[side=right]:animate-slide-left-and-fade",
           "data-[state=delayed-open]:data-[side=bottom]:animate-slide-up-and-fade",
@@ -47,7 +48,7 @@ const TooltipArrow: FC<ComponentProps<typeof TooltipPrimitive.Arrow>> = ({
 }) => {
   return (
     <TooltipPrimitive.Arrow
-      className={cn("fill-popover", className)}
+      className={cn("fill-popover stroke-border", className)}
       {...props}
     />
   );
