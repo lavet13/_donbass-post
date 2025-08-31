@@ -11,7 +11,7 @@ function RouteComponent() {
   console.log({ data, isPending });
 
   return (
-    <div className="min-h-[110vh]">
+    <div>
       Заявки
     </div>
   );

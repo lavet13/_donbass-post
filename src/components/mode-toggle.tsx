@@ -1,13 +1,17 @@
 import { useTheme } from "@/hooks/use-theme";
-import type { ComponentProps, FC } from "react";
-import { Tooltip } from "@/components/ui/tooltip";
+import type { ComponentProps, FC, MouseEvent } from "react";
 import { SunIcon, MoonIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 type ModeToggleProps = ComponentProps<"button">;
 
-export const ModeToggle: FC<ModeToggleProps> = ({ className, ...props }) => {
+export const ModeToggle: FC<ModeToggleProps> = ({
+  className,
+  onClick: onClickProp,
+  children,
+  ...props
+}) => {
   const { theme, setTheme } = useTheme();
 
   let Icon = null;
@@ -20,10 +24,11 @@ export const ModeToggle: FC<ModeToggleProps> = ({ className, ...props }) => {
     Icon = isDark ? MoonIcon : SunIcon;
   }
 
-  const handleToggle = () => {
+  const handleToggle = (e: MouseEvent<HTMLButtonElement>) => {
     let newTheme = theme;
     newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
+    onClickProp?.(e);
   };
 
   let content = "";
@@ -36,17 +41,19 @@ export const ModeToggle: FC<ModeToggleProps> = ({ className, ...props }) => {
   }
 
   return (
-    <Tooltip content={content}>
-      <Button
-        className={cn("rounded-full", className)}
-        variant="ghost"
-        size="icon"
-        onClick={handleToggle}
-        {...props}
-      >
-        <Icon />
-        <span className="sr-only">Toggle theme</span>
-      </Button>
-    </Tooltip>
+    <Button
+      className={cn("rounded-full", className)}
+      variant="ghost"
+      size="icon"
+      onClick={handleToggle}
+      {...props}
+    >
+      <Icon />
+      {children ? (
+        <span className="truncate">{children}</span>
+      ) : (
+        <span className="sr-only">{content}</span>
+      )}
+    </Button>
   );
 };

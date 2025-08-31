@@ -9,6 +9,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { TypographyH2 } from "@/components/ui/typography/typographyH2";
 import { useContainerQuery } from "@/hooks/use-container-query";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 import {
   createFileRoute,
@@ -17,7 +18,12 @@ import {
   Outlet,
   redirect,
 } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, FileText } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  FileText,
+  SquareArrowOutUpRight,
+} from "lucide-react";
 import { useRef } from "react";
 import type { ImperativePanelHandle } from "react-resizable-panels";
 import { Fragment } from "react/jsx-runtime";
@@ -90,10 +96,10 @@ function AuthenticatedLayout() {
     }
   */
 
-  const collapsedSizePercent = isTabletMax ? 0 : isFullHDMin ? 3 : 6;
-  const minimalSizePercent = collapsedSizePercent + (isTabletMax ? 12 : 12);
-  const maximumSizePercent = isTabletMax ? 12 : 20;
-  const defaultSizePercent = isTabletMax ? 12 : 18;
+  const collapsedSizePercent = isTabletMax ? 0 : isFullHDMin ? 2.5 : 7;
+  const minimalSizePercent = collapsedSizePercent + 16;
+  const maximumSizePercent = isTabletMax ? 16 : 23;
+  const defaultSizePercent = isTabletMax ? 16 : 23;
 
   const panelRef = useRef<ImperativePanelHandle>(null);
   const { ref, isMatched } = useContainerQuery<HTMLDivElement>(
@@ -117,9 +123,9 @@ function AuthenticatedLayout() {
             className="h-full @container flex flex-col overflow-y-auto min-h-screen"
           >
             {/* Sticky header */}
-            <div className="sticky top-0 z-10 @max-[130px]:text-center flex @max-[130px]:justify-center justify-between gap-1 items-center mt-1 px-2 @max-[130px]:px-0">
+            <div className="sticky top-0 z-10 @max-[130px]:text-center flex @max-[130px]:justify-center justify-between gap-1 items-center mt-1 pl-1 lg:pl-3 pr-0.5 @max-[130px]:px-0">
               <div className="flex-1 shrink @max-[130px]:hidden">
-                <TypographyH2 className="text-accent-foreground sm:leading-none text-md @max-[130px]:hidden">
+                <TypographyH2 className="text-accent-foreground sm:leading-none text-sm @max-[130px]:hidden">
                   Личный кабинет
                 </TypographyH2>
               </div>
@@ -157,6 +163,7 @@ function AuthenticatedLayout() {
             </div>
 
             {/* Navigation */}
+            {/* @TODO: making subnav items  */}
             <div className="pt-2 flex-1 flex flex-col min-h-0">
               {navItems.map(({ label, to, Icon }) => {
                 const renderLink = () => (
@@ -197,8 +204,73 @@ function AuthenticatedLayout() {
             </div>
 
             {/* Sticky footer */}
-            <div className="sticky bottom-0 z-10 pb-2 flex justify-center">
-              <ModeToggle className="w-full rounded-none" />
+            <div className="sticky bottom-0 z-10 pb-2 flex flex-col justify-center">
+              {(() => {
+                const { theme } = useTheme();
+
+                let content = "";
+                const isDark = window.matchMedia(
+                  "(prefers-color-scheme: dark)",
+                ).matches;
+                if (theme === "dark") {
+                  content = "Изменить на светлую тему";
+                } else if (theme === "light") {
+                  content = "Изменить на темную тему";
+                } else {
+                  content = isDark
+                    ? "Изменить на светлую тему"
+                    : "Изменить на темную тему";
+                }
+
+                if (isMatched) {
+                  return (
+                    <>
+                      <Tooltip side="right" content="Вернуться на сайт">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="w-full rounded-none px-1"
+                          asChild
+                        >
+                          <Link to="/">
+                            <SquareArrowOutUpRight />
+                            <span
+                              className={cn("truncate", isMatched && "hidden")}
+                            >
+                              Вернуться на сайт
+                            </span>
+                          </Link>
+                        </Button>
+                      </Tooltip>
+                      <Tooltip side="right" content={content}>
+                        <ModeToggle className="px-1 w-full rounded-none" />
+                      </Tooltip>
+                    </>
+                  );
+                }
+
+                return (
+                  <>
+                    <Button
+                      title="Вернуться на сайт"
+                      size="icon"
+                      variant="ghost"
+                      className="w-full rounded-none px-1"
+                      asChild
+                    >
+                      <Link to="/">
+                        <SquareArrowOutUpRight />
+                        <span className={cn("truncate", isMatched && "hidden")}>
+                          Вернуться на сайт
+                        </span>
+                      </Link>
+                    </Button>
+                    <ModeToggle title={content} className="px-1 w-full rounded-none">
+                      {content}
+                    </ModeToggle>
+                  </>
+                );
+              })()}
             </div>
           </div>
         </ResizablePanel>
@@ -207,42 +279,42 @@ function AuthenticatedLayout() {
 
         <ResizablePanel>
           <main className="h-full flex flex-col grow shrink-0 overflow-y-auto">
-            <div className="flex-1 flex flex-col">
-              <div className="max-h-screen overflow-y-auto">
-                {panelRef.current?.isCollapsed() && isTabletMax && (
-                  <div className="sticky top-0">
-                    <Tooltip
-                      side="right"
-                      content={
-                        panelRef.current?.isExpanded()
-                          ? "Свернуть панель"
-                          : "Открыть панель"
-                      }
-                    >
-                      <Button
-                        className="rounded-full mt-0.5 ml-0.5"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          if (panelRef.current) {
-                            if (panelRef.current.isCollapsed()) {
-                              panelRef.current.expand();
-                            } else {
-                              panelRef.current.collapse();
-                            }
+            <div className="flex-1 flex flex-col max-h-screen overflow-y-auto">
+              {panelRef.current?.isCollapsed() && isTabletMax && (
+                <div className="container sticky top-0.5 mt-1">
+                  <Tooltip
+                    side="right"
+                    content={
+                      panelRef.current?.isExpanded()
+                        ? "Свернуть панель"
+                        : "Открыть панель"
+                    }
+                  >
+                    <Button
+                      className="text-accent-foreground rounded-full"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        if (panelRef.current) {
+                          if (panelRef.current.isCollapsed()) {
+                            panelRef.current.expand();
+                          } else {
+                            panelRef.current.collapse();
                           }
-                        }}
-                      >
-                        {panelRef.current?.isCollapsed() ? (
-                          <ArrowRight />
-                        ) : (
-                          <ArrowLeft />
-                        )}
-                      </Button>
-                    </Tooltip>
-                  </div>
-                )}
+                        }
+                      }}
+                    >
+                      {panelRef.current?.isCollapsed() ? (
+                        <ArrowRight />
+                      ) : (
+                        <ArrowLeft />
+                      )}
+                    </Button>
+                  </Tooltip>
+                </div>
+              )}
 
+              <div className="container">
                 <Outlet />
               </div>
             </div>
