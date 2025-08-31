@@ -17,9 +17,15 @@ const ResizablePanelGroup: FC<
 };
 
 const ResizablePanel: FC<ComponentProps<typeof ResizablePrimitive.Panel>> = ({
+  className,
   ...props
 }) => {
-  return <ResizablePrimitive.Panel {...props} />;
+  return (
+    <ResizablePrimitive.Panel
+      className={cn("relative overflow-hidden", className)}
+      {...props}
+    />
+  );
 };
 
 const ResizableHandle: FC<

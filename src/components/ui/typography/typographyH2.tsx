@@ -8,7 +8,7 @@ export const TypographyH2: FC<ComponentProps<"h2">> = ({
   return (
     <h3
       className={cn(
-        "scroll-m-20 text-3xl leading-none mb-1 sm:mb-0 sm:leading-8 font-semibold tracking-tight",
+        "scroll-m-20 text-3xl leading-8 mb-1 sm:mb-0 font-semibold tracking-tight",
         className,
       )}
       {...props}

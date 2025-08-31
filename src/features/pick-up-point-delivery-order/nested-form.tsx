@@ -714,7 +714,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.ComboboxField
-                          label="Транспортная компания(опционально)"
+                          label="Отправить ч/з транспортную компанию"
                           placeholder="Выберите транспортную компанию"
                           values={deliveryCompanies}
                           refetch={refetchDeliveryCompanies}
