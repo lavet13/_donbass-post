@@ -28,7 +28,7 @@ const TooltipContent: FC<ComponentProps<typeof TooltipPrimitive.Content>> = ({
           "data-[state=delayed-open]:data-[side=right]:animate-slide-left-and-fade",
           "data-[state=delayed-open]:data-[side=bottom]:animate-slide-up-and-fade",
           "data-[state=delayed-open]:data-[side=left]:animate-slide-right-and-fade",
-          "rounded-sm px-[15px] py-[10px] text-base md:text-sm leading-none bg-popover text-popover-foreground shadow-md select-none z-10",
+          "rounded-lg px-[15px] py-[10px] text-base md:text-sm leading-none bg-popover text-popover-foreground shadow-md select-none z-10",
 
           // removing blur
           "transform-gpu backface-hidden will-change-auto",

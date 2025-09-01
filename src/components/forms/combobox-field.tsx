@@ -245,7 +245,7 @@ const ComboboxGroupField: FC<
           <DrawerTrigger asChild>{renderTrigger()}</DrawerTrigger>
           <DrawerContent
             aria-describedby={undefined}
-            className="rounded-t-sm h-full! lg:max-h-full max-h-[calc(100vh-0.75rem)] top-3 lg:top-0 border border-input"
+            className="rounded-t-lg h-full! lg:max-h-full max-h-[calc(100vh-0.75rem)] top-3 lg:top-0 border border-input"
             role="listbox"
           >
             <DrawerHandle />

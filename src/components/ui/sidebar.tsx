@@ -29,6 +29,7 @@ import {
 import { Link, linkOptions, Outlet } from "@tanstack/react-router";
 import { useTheme } from "@/hooks/use-theme";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Slot } from "@radix-ui/react-slot";
 
 type SidebarContextProps = {
   panelRef: React.RefObject<ImperativePanelHandle | null>;
@@ -58,7 +59,6 @@ const SidebarProvider: FC<ComponentProps<"div">> = ({ children }) => {
 
   const desktopBreakpoint = styles.getPropertyValue("--breakpoint-xl");
   const isDesktop = useMediaQuery(`(min-width: ${desktopBreakpoint})`);
-  console.log({ isDesktop });
 
   const fullHDBreakpoint = styles.getPropertyValue("--breakpoint-2xl");
   const isFullHD = useMediaQuery(`(min-width: ${fullHDBreakpoint})`);
@@ -163,7 +163,65 @@ const SidebarFooter: FC<ComponentProps<"div">> = ({ className, ...props }) => {
   );
 };
 
-const Sidebar: FC<ComponentProps<"div">> = (props) => {
+const SidebarContent: FC<ComponentProps<"div">> = ({ className, ...props }) => {
+  return (
+    <div
+      className={cn(
+        "pt-2 flex-1 flex flex-col min-h-0 overflow-auto",
+        className,
+      )}
+      {...props}
+    />
+  );
+};
+
+const MainContent: FC<ComponentProps<"div">> = (props) => {
+  return (
+    <main className="h-full flex flex-col grow shrink-0 overflow-y-auto">
+      <div
+        className="flex-1 flex flex-col max-h-screen overflow-y-auto"
+        {...props}
+      />
+    </main>
+  );
+};
+
+const SidebarMenuGroup: FC<ComponentProps<"div">> = ({
+  className,
+  ...props
+}) => {
+  return (
+    <div
+      className={cn(
+        "flex w-full min-w-0 flex-col shrink-0 py-[2px] px-[0.5rem]",
+        className,
+      )}
+      {...props}
+    />
+  );
+};
+
+const SidebarMenu: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
+  return (
+    <ul
+      className={cn(
+        "flex w-full min-w-0 flex-col cursor-default gap-px",
+        className,
+      )}
+      {...props}
+    />
+  );
+};
+
+const SidebarMenuButton: FC<
+  ComponentProps<"button"> & { asChild?: boolean }
+> = ({ className, asChild, ...props }) => {
+  const Comp = asChild ? Slot : "button";
+
+  return <Comp {...props} />;
+};
+
+const Sidebar: FC<ComponentProps<"div">> = () => {
   const {
     expandedSize,
     containerRef,
@@ -228,7 +286,7 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
             </SidebarHeader>
 
             {/* Navigation */}
-            <div className="pt-2 flex-1 flex flex-col min-h-0 overflow-auto">
+            <SidebarContent>
               {navItems.map(({ label, to, Icon }) => {
                 const renderLink = () => (
                   <Button
@@ -247,36 +305,32 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
                       to={to}
                     >
                       <Icon />
-                      <span className={cn("truncate", isCollapsed && "hidden")}>
-                        {label}
-                      </span>
+                      {!isCollapsed && (
+                        <span className={cn("truncate")}>{label}</span>
+                      )}
                     </Link>
                   </Button>
                 );
 
                 if (isCollapsed) {
                   return (
-                    <div
-                      key={to}
-                      className="flex flex-col shrink-0 w-full min-w-0 py-[2px] px-[0.5rem]"
-                    >
-                      <Tooltip side="right" content={label}>
-                        {renderLink()}
-                      </Tooltip>
-                    </div>
+                    <SidebarMenuGroup key={to}>
+                      <SidebarMenu>
+                        <Tooltip side="right" content={label}>
+                          {renderLink()}
+                        </Tooltip>
+                      </SidebarMenu>
+                    </SidebarMenuGroup>
                   );
                 }
 
                 return (
-                  <div
-                    key={to}
-                    className="flex flex-col shrink-0 w-full min-w-0 py-[2px] px-[0.5rem]"
-                  >
-                    {renderLink()}
-                  </div>
+                  <SidebarMenuGroup key={to}>
+                    <SidebarMenu>{renderLink()}</SidebarMenu>
+                  </SidebarMenuGroup>
                 );
               })}
-            </div>
+            </SidebarContent>
 
             {/* Sticky footer */}
             <SidebarFooter>
@@ -309,14 +363,11 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
                         >
                           <Link to="/">
                             <SquareArrowOutUpRight />
-                            <span
-                              className={cn(
-                                "truncate",
-                                isCollapsed && "hidden",
-                              )}
-                            >
-                              Вернуться на сайт
-                            </span>
+                            {!isCollapsed && (
+                              <span className={cn("truncate")}>
+                                Вернуться на сайт
+                              </span>
+                            )}
                           </Link>
                         </Button>
                       </Tooltip>
@@ -338,11 +389,11 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
                     >
                       <Link to="/">
                         <SquareArrowOutUpRight />
-                        <span
-                          className={cn("truncate", isCollapsed && "hidden")}
-                        >
-                          Вернуться на сайт
-                        </span>
+                        {!isCollapsed && (
+                          <span className={cn("truncate")}>
+                            Вернуться на сайт
+                          </span>
+                        )}
                       </Link>
                     </Button>
                     <ModeToggle
@@ -361,48 +412,55 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
         <ResizableHandle />
 
         <ResizablePanel>
-          <main className="h-full flex flex-col grow shrink-0 overflow-y-auto">
-            <div className="flex-1 flex flex-col max-h-screen overflow-y-auto">
-              {panelRef.current?.isCollapsed() && (
-                <div
-                  className={cn(
-                    "container sticky top-0.5 mt-1",
-                    !isMobile && "hidden",
-                  )}
+          <MainContent>
+            {panelRef.current?.isCollapsed() && (
+              <div
+                className={cn(
+                  "container sticky top-0.5 mt-1",
+                  !isMobile && "hidden",
+                )}
+              >
+                <Tooltip
+                  side="right"
+                  content={
+                    panelRef.current?.isExpanded()
+                      ? "Свернуть панель"
+                      : "Открыть панель"
+                  }
                 >
-                  <Tooltip
-                    side="right"
-                    content={
-                      panelRef.current?.isExpanded()
-                        ? "Свернуть панель"
-                        : "Открыть панель"
-                    }
+                  <Button
+                    className="text-accent-foreground rounded-full"
+                    variant="outline"
+                    size="icon"
+                    onClick={toggleSidebar}
                   >
-                    <Button
-                      className="text-accent-foreground rounded-full"
-                      variant="outline"
-                      size="icon"
-                      onClick={toggleSidebar}
-                    >
-                      {panelRef.current?.isCollapsed() ? (
-                        <PanelLeftOpen />
-                      ) : (
-                        <PanelLeftClose />
-                      )}
-                    </Button>
-                  </Tooltip>
-                </div>
-              )}
-
-              <div className="container">
-                <Outlet />
+                    {panelRef.current?.isCollapsed() ? (
+                      <PanelLeftOpen />
+                    ) : (
+                      <PanelLeftClose />
+                    )}
+                  </Button>
+                </Tooltip>
               </div>
+            )}
+
+            <div className="container">
+              <Outlet />
             </div>
-          </main>
+          </MainContent>
         </ResizablePanel>
       </ResizablePanelGroup>
     </Fragment>
   );
 };
 
-export { Sidebar, SidebarProvider, SidebarHeader, SidebarFooter };
+export {
+  Sidebar,
+  SidebarProvider,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarContent,
+  SidebarMenuGroup,
+  SidebarMenu,
+  SidebarMenuButton,
+};
