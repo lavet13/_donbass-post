@@ -13,7 +13,8 @@
 - [] add sonner
 - [] try to redirect user after deleting cookie from browser console(test)
 - [] try wrapping autodismissmessage into something that drawer vaul has implemented(compound component)
-- [] add the calculator for "Забор груза", endpoint: 'https://workplace-post.ru/api/delivery-rate/calculate-global',
+- [x] add the calculator for "Забор груза", endpoint: 'https://workplace-post.ru/api/delivery-rate/calculate-global',
+- [] destructure the SidebarMenuSub for more flexibility
 
 
 # Future requests
