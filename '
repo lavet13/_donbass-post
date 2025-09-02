@@ -237,7 +237,6 @@ const SidebarMenuItem: FC<ComponentProps<"li">> = ({
   children,
   ...props
 }) => {
-  const { isCollapsed } = useSidebar();
   const [open, setOpen] = useState(false);
 
   const toggleMenu = () => setOpen(!open);
@@ -253,9 +252,6 @@ const SidebarMenuItem: FC<ComponentProps<"li">> = ({
   );
   console.log({ sidebarMenuSub });
 
-  if (isCollapsed) {
-  }
-
   return (
     <SidebarMenuContext value={contextValue}>
       <li
@@ -266,9 +262,7 @@ const SidebarMenuItem: FC<ComponentProps<"li">> = ({
         )}
         {...props}
       >
-        {Children.map(children, (child) =>
-          isValidElement(child) && child.type === SidebarMenuSub ? null : child,
-        )}
+        {children}
       </li>
     </SidebarMenuContext>
   );

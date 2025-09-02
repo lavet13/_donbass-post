@@ -7,6 +7,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuGroup,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
   SidebarModeToggle,
   SidebarProvider,
   useSidebar,
@@ -68,11 +71,7 @@ function AuthenticatedLayout() {
         <div className="grow-0 @max-[130px]:flex-1 @max-[130px]:px-[0.5rem]">
           <Tooltip
             side="right"
-            content={
-              !isCollapsed
-                ? "Свернуть панель"
-                : "Открыть панель"
-            }
+            content={!isCollapsed ? "Свернуть панель" : "Открыть панель"}
           >
             <Button
               className="ml-auto rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
@@ -80,11 +79,7 @@ function AuthenticatedLayout() {
               size="icon"
               onClick={toggleSidebar}
             >
-              {isCollapsed ? (
-                <PanelLeftOpen />
-              ) : (
-                <PanelLeftClose />
-              )}
+              {isCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
             </Button>
           </Tooltip>
         </div>
@@ -95,27 +90,46 @@ function AuthenticatedLayout() {
           return (
             <SidebarMenuGroup key={to}>
               <SidebarMenu>
-                <SidebarMenuButton
-                  content={label}
-                  title={label}
-                  variant="sidebar"
-                  asChild
-                >
-                  <Link
-                    activeProps={{
-                      className: cn(
-                        "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
-                        "data-[status=active]:hover:bg-primary/95 data-[status=active]:active:bg-primary/90",
-                      ),
-                    }}
-                    to={to}
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    leftElement={<Icon />}
+                    content={label}
+                    title={label}
+                    variant="sidebar"
+                    asChild
                   >
-                    <Icon />
-                    {!isCollapsed && (
-                      <span className={cn("truncate")}>{label}</span>
-                    )}
-                  </Link>
-                </SidebarMenuButton>
+                    <Link
+                      activeProps={{
+                        className: cn(
+                          "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
+                          "data-[status=active]:hover:bg-primary/95 data-[status=active]:active:bg-primary/90",
+                        ),
+                      }}
+                      to={to}
+                    >
+                      {!isCollapsed && (
+                        <span className={cn("truncate")}>{label}</span>
+                      )}
+                    </Link>
+                  </SidebarMenuButton>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuButton>
+                        <span className="truncate">Test</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuButton>
+                        <span className="truncate">Test</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuButton>
+                        <span className="truncate">Test</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarMenuGroup>
           );
@@ -123,20 +137,24 @@ function AuthenticatedLayout() {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarMenuButton
-          size="icon"
-          variant="ghost"
-          content="Вернуться на сайт"
-          asChild
-        >
-          <Link to="/">
-            <SquareArrowOutUpRight />
-            {!isCollapsed && (
-              <span className={cn("truncate")}>Вернуться на сайт</span>
-            )}
-          </Link>
-        </SidebarMenuButton>
-        <SidebarModeToggle />
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            size="icon"
+            variant="ghost"
+            content="Вернуться на сайт"
+            asChild
+          >
+            <Link to="/">
+              <SquareArrowOutUpRight />
+              {!isCollapsed && (
+                <span className={cn("truncate")}>Вернуться на сайт</span>
+              )}
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarModeToggle />
+        </SidebarMenuItem>
       </SidebarFooter>
     </Sidebar>
   );

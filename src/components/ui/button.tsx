@@ -12,10 +12,12 @@ const buttonVariants = cva(
           "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/85",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/75",
-        ghost: "text-accent-foreground dark:hover:bg-accent/40 dark:active:bg-accent/80 hover:bg-accent/30 active:bg-accent/70",
+        ghost:
+          "text-accent-foreground dark:hover:bg-accent/40 dark:active:bg-accent/80 hover:bg-accent/30 active:bg-accent/70",
         outline:
           "bg-background text-secondary-foreground border border-secondary hover:bg-secondary/20 active:bg-secondary/70",
-        sidebar: "bg-transparent text-primary min-h-9 hover:bg-primary hover:text-primary-foreground rounded-lg active:bg-primary/90",
+        sidebar:
+          "justify-start bg-transparent text-primary min-h-9 hover:bg-accent/30 active:bg-accent/70 rounded-lg",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
