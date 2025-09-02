@@ -25,18 +25,13 @@ const PopoverContent: React.FC<
   React.ComponentProps<typeof PopoverPrimitive.Content>
 > = ({ className, children, align = "center", sideOffset = 5, ...props }) => {
   return (
-    <PopoverPrimitive.Portal>
+    <PopoverPrimitive.Portal data-slot="popover-portal">
       <PopoverPrimitive.Content
         data-slot="popover-content"
         className={cn(
           "bg-popover text-popover-foreground rounded-lg p-3 w-72 shadow-md border border-border",
           "data-[state=open]:data-[side=top]:animate-slide-down-and-fade data-[state=open]:data-[side=right]:animate-slide-left-and-fade data-[state=open]:data-[side=bottom]:animate-slide-up-and-fade data-[state=open]:data-[side=left]:animate-slide-right-and-fade",
           "outline-hidden z-50",
-
-          // removing blur
-          "transform-gpu backface-hidden will-change-auto",
-          "[font-smoothing:subpixel-antialiased] [text-rendering:optimizeLegibility]",
-          "[-webkit-font-smoothing:subpixel-antialiased]",
           className,
         )}
         align={align}

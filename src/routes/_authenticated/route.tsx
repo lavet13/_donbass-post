@@ -90,7 +90,7 @@ function AuthenticatedLayout() {
           return (
             <SidebarMenuGroup key={to}>
               <SidebarMenu>
-                <SidebarMenuItem>
+                <SidebarMenuItem hoverCard>
                   <SidebarMenuButton
                     leftElement={<Icon />}
                     content={label}
@@ -102,7 +102,7 @@ function AuthenticatedLayout() {
                       activeProps={{
                         className: cn(
                           "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
-                          "data-[status=active]:hover:bg-primary/95 data-[status=active]:active:bg-primary/90",
+                          "group-hover/menu-item:data-[status=active]:bg-primary/95 group-active/menu-item:data-[status=active]:bg-primary/90",
                         ),
                       }}
                       to={to}
@@ -112,6 +112,7 @@ function AuthenticatedLayout() {
                       )}
                     </Link>
                   </SidebarMenuButton>
+
                   <SidebarMenuSub>
                     <SidebarMenuSubItem>
                       <SidebarMenuButton>

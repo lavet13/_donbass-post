@@ -3,7 +3,6 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import {
   Children,
-  cloneElement,
   createContext,
   Fragment,
   isValidElement,
@@ -29,6 +28,11 @@ import { Outlet } from "@tanstack/react-router";
 import { ModeToggle } from "../mode-toggle";
 import { useTheme } from "@/hooks/use-theme";
 import { Slottable } from "@radix-ui/react-slot";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 type SidebarContextProps = {
   panelRef: React.RefObject<ImperativePanelHandle | null>;
@@ -218,6 +222,7 @@ type SidebarMenuContextProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   toggleMenu: () => void;
+  hoverCard: boolean;
 };
 
 const SidebarMenuContext = createContext<SidebarMenuContextProps | null>(null);
@@ -232,9 +237,10 @@ const useSidebarMenu = () => {
   return context;
 };
 
-const SidebarMenuItem: FC<ComponentProps<"li">> = ({
+const SidebarMenuItem: FC<ComponentProps<"li"> & { hoverCard?: boolean }> = ({
   className,
   children,
+  hoverCard = false,
   ...props
 }) => {
   const { isCollapsed } = useSidebar();
@@ -246,15 +252,40 @@ const SidebarMenuItem: FC<ComponentProps<"li">> = ({
     open,
     setOpen,
     toggleMenu,
+    hoverCard,
   };
 
-  const sidebarMenuSub = Children.toArray(children).find(
-    (child) => isValidElement(child) && child.type === SidebarMenuSub,
-  );
-  console.log({ sidebarMenuSub });
+  // const sidebarMenuSub = Children.toArray(children).find(
+  //   (child) => isValidElement(child) && child.type === SidebarMenuSub,
+  // );
+  // const sidebarMenuButton = Children.toArray(children).find(
+  //   (child) => isValidElement(child) && child.type === SidebarMenuButton,
+  // );
 
-  if (isCollapsed) {
+  if (isCollapsed && hoverCard) {
+    return (
+      <SidebarMenuContext value={contextValue}>
+        <li
+          data-sidebar="menu-item"
+          className={cn(
+            "group/menu-item relative flex flex-col list-none gap-px",
+            className,
+          )}
+          {...props}
+        >
+        {Children.map(children, (child) =>
+          isValidElement(child) && child.type === SidebarMenuSub ? null : child,
+        )}
+        </li>
+      </SidebarMenuContext>
+    );
   }
+          {/* <HoverCard openDelay={0} closeDelay={0}> */}
+          {/*   <HoverCardTrigger asChild>{sidebarMenuButton}</HoverCardTrigger> */}
+          {/*   <HoverCardContent align="start" side="right"> */}
+          {/*     {sidebarMenuSub} */}
+          {/*   </HoverCardContent> */}
+          {/* </HoverCard> */}
 
   return (
     <SidebarMenuContext value={contextValue}>
@@ -266,9 +297,7 @@ const SidebarMenuItem: FC<ComponentProps<"li">> = ({
         )}
         {...props}
       >
-        {Children.map(children, (child) =>
-          isValidElement(child) && child.type === SidebarMenuSub ? null : child,
-        )}
+        {children}
       </li>
     </SidebarMenuContext>
   );
@@ -290,27 +319,34 @@ const SidebarMenuButton: FC<
   side = "right",
   ...props
 }) => {
-  const { open, toggleMenu } = useSidebarMenu();
+  const { open, toggleMenu, hoverCard } = useSidebarMenu();
   const [isHovered, setIsHovered] = useState(false);
   const { isCollapsed } = useSidebar();
 
+  const renderButton = () => (
+    <Button
+      variant={variant}
+      data-sidebar="menu-button"
+      className={cn(
+        "group/menu-button peer/menu-button w-full rounded-lg",
+        isCollapsed && "justify-center",
+        className,
+      )}
+      {...props}
+    >
+      {leftElement}
+      <Slottable>{children}</Slottable>
+      {rightElement}
+    </Button>
+  );
+
   if (isCollapsed) {
+    if (hoverCard) {
+      return renderButton();
+    }
     return (
       <Tooltip side={side} content={content}>
-        <Button
-          variant={variant}
-          data-sidebar="menu-button"
-          className={cn(
-            "peer/menu-button w-full rounded-lg",
-            isCollapsed && "justify-center",
-            className,
-          )}
-          {...props}
-        >
-          {leftElement}
-          <Slottable>{children}</Slottable>
-          {rightElement}
-        </Button>
+        {renderButton()}
       </Tooltip>
     );
   }
@@ -356,7 +392,11 @@ const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
   const { isCollapsed } = useSidebar();
   const { open, toggleMenu } = useSidebarMenu();
 
-  if (isCollapsed || !open) {
+  if (isCollapsed) {
+    return null;
+  }
+
+  if (!open) {
     return null;
   }
 
