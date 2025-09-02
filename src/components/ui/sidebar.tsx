@@ -16,20 +16,13 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { TypographyH2 } from "@/components/ui/typography/typographyH2";
 import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  FileText,
-  PanelLeftClose,
-  PanelLeftOpen,
-  SquareArrowOutUpRight,
-} from "lucide-react";
-import { Link, linkOptions, Outlet } from "@tanstack/react-router";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Outlet } from "@tanstack/react-router";
+import { ModeToggle } from "../mode-toggle";
 import { useTheme } from "@/hooks/use-theme";
-import { ModeToggle } from "@/components/mode-toggle";
-import { Slot } from "@radix-ui/react-slot";
 
 type SidebarContextProps = {
   panelRef: React.RefObject<ImperativePanelHandle | null>;
@@ -213,19 +206,73 @@ const SidebarMenu: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
   );
 };
 
-const SidebarMenuButton: FC<
-  ComponentProps<"button"> & { asChild?: boolean }
-> = ({ className, asChild, ...props }) => {
-  const Comp = asChild ? Slot : "button";
+const SidebarModeToggle: FC<
+  ComponentProps<typeof ModeToggle> & ComponentProps<typeof Tooltip>
+> = ({ className, side = "right", ...props }) => {
+  const { isCollapsed } = useSidebar();
+  const { theme } = useTheme();
 
-  return <Comp {...props} />;
+  let content = "";
+  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if (theme === "dark") {
+    content = "Изменить на светлую тему";
+  } else if (theme === "light") {
+    content = "Изменить на темную тему";
+  } else {
+    content = isDark ? "Изменить на светлую тему" : "Изменить на темную тему";
+  }
+
+  if (isCollapsed) {
+    return (
+      <Tooltip side={side} content={content}>
+        <ModeToggle
+          className={cn("w-full rounded-lg", className)}
+          {...props}
+        />
+      </Tooltip>
+    );
+  }
+
+  return (
+    <ModeToggle
+      title={content}
+      className={cn("w-full rounded-lg", className)}
+      {...props}
+    >
+      {content}
+    </ModeToggle>
+  );
 };
 
-const Sidebar: FC<ComponentProps<"div">> = () => {
+const SidebarMenuButton: FC<
+  ComponentProps<typeof Button> & ComponentProps<typeof Tooltip>
+> = ({ className, content, side = "right", ...props }) => {
+  const { isCollapsed } = useSidebar();
+
+  if (isCollapsed) {
+    return (
+      <Tooltip side={side} content={content}>
+        <Button
+          className={cn("w-full rounded-lg", className)}
+          {...props}
+        />
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Button
+      title={content}
+      className={cn("w-full rounded-lg", className)}
+      {...props}
+    />
+  );
+};
+
+const Sidebar: FC<ComponentProps<"div">> = (props) => {
   const {
     expandedSize,
     containerRef,
-    isCollapsed,
     panelRef,
     minimalSize,
     collapsedSize,
@@ -233,16 +280,12 @@ const Sidebar: FC<ComponentProps<"div">> = () => {
     toggleSidebar,
   } = useSidebar();
 
-  const navItems = linkOptions([
-    { label: "Мои заявки", to: "/dashboard/requests", Icon: FileText },
-  ]);
-
   return (
     <Fragment>
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel
           ref={panelRef}
-          className="bg-sidebar"
+          className="bg-sidebar text-sidebar-foreground has-[~[data-resize-handle-active]]:duration-100 transition-[flex]"
           collapsedSize={collapsedSize}
           collapsible
           defaultSize={expandedSize}
@@ -252,161 +295,8 @@ const Sidebar: FC<ComponentProps<"div">> = () => {
           <div
             ref={containerRef}
             className="h-full @container flex flex-col overflow-y-auto min-h-screen"
-          >
-            {/* Sticky header */}
-            <SidebarHeader>
-              <div className="flex-1 shrink @max-[130px]:hidden">
-                <TypographyH2 className="text-accent-foreground sm:leading-none text-sm @max-[130px]:hidden">
-                  Личный кабинет
-                </TypographyH2>
-              </div>
-              <div className="grow-0 @max-[130px]:flex-1 @max-[130px]:px-[0.5rem]">
-                <Tooltip
-                  side="right"
-                  content={
-                    panelRef.current?.isExpanded()
-                      ? "Свернуть панель"
-                      : "Открыть панель"
-                  }
-                >
-                  <Button
-                    className="ml-auto rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggleSidebar}
-                  >
-                    {panelRef.current?.isCollapsed() ? (
-                      <PanelLeftOpen />
-                    ) : (
-                      <PanelLeftClose />
-                    )}
-                  </Button>
-                </Tooltip>
-              </div>
-            </SidebarHeader>
-
-            {/* Navigation */}
-            <SidebarContent>
-              {navItems.map(({ label, to, Icon }) => {
-                const renderLink = () => (
-                  <Button
-                    className="flex-1 not-last:border-b border-primary/40"
-                    title={label}
-                    variant="sidebar"
-                    asChild
-                  >
-                    <Link
-                      activeProps={{
-                        className: cn(
-                          "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
-                          "data-[status=active]:hover:bg-primary/95 data-[status=active]:active:bg-primary/90",
-                        ),
-                      }}
-                      to={to}
-                    >
-                      <Icon />
-                      {!isCollapsed && (
-                        <span className={cn("truncate")}>{label}</span>
-                      )}
-                    </Link>
-                  </Button>
-                );
-
-                if (isCollapsed) {
-                  return (
-                    <SidebarMenuGroup key={to}>
-                      <SidebarMenu>
-                        <Tooltip side="right" content={label}>
-                          {renderLink()}
-                        </Tooltip>
-                      </SidebarMenu>
-                    </SidebarMenuGroup>
-                  );
-                }
-
-                return (
-                  <SidebarMenuGroup key={to}>
-                    <SidebarMenu>{renderLink()}</SidebarMenu>
-                  </SidebarMenuGroup>
-                );
-              })}
-            </SidebarContent>
-
-            {/* Sticky footer */}
-            <SidebarFooter>
-              {(() => {
-                const { theme } = useTheme();
-
-                let content = "";
-                const isDark = window.matchMedia(
-                  "(prefers-color-scheme: dark)",
-                ).matches;
-                if (theme === "dark") {
-                  content = "Изменить на светлую тему";
-                } else if (theme === "light") {
-                  content = "Изменить на темную тему";
-                } else {
-                  content = isDark
-                    ? "Изменить на светлую тему"
-                    : "Изменить на темную тему";
-                }
-
-                if (isCollapsed) {
-                  return (
-                    <>
-                      <Tooltip side="right" content="Вернуться на сайт">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="w-full rounded-lg px-1"
-                          asChild
-                        >
-                          <Link to="/">
-                            <SquareArrowOutUpRight />
-                            {!isCollapsed && (
-                              <span className={cn("truncate")}>
-                                Вернуться на сайт
-                              </span>
-                            )}
-                          </Link>
-                        </Button>
-                      </Tooltip>
-                      <Tooltip side="right" content={content}>
-                        <ModeToggle className="px-1 w-full rounded-lg" />
-                      </Tooltip>
-                    </>
-                  );
-                }
-
-                return (
-                  <>
-                    <Button
-                      title="Вернуться на сайт"
-                      size="icon"
-                      variant="ghost"
-                      className="w-full rounded-lg px-1"
-                      asChild
-                    >
-                      <Link to="/">
-                        <SquareArrowOutUpRight />
-                        {!isCollapsed && (
-                          <span className={cn("truncate")}>
-                            Вернуться на сайт
-                          </span>
-                        )}
-                      </Link>
-                    </Button>
-                    <ModeToggle
-                      title={content}
-                      className="px-1 w-full rounded-lg"
-                    >
-                      {content}
-                    </ModeToggle>
-                  </>
-                );
-              })()}
-            </SidebarFooter>
-          </div>
+            {...props}
+          />
         </ResizablePanel>
 
         <ResizableHandle />
@@ -462,5 +352,7 @@ export {
   SidebarContent,
   SidebarMenuGroup,
   SidebarMenu,
+  SidebarModeToggle,
   SidebarMenuButton,
+  useSidebar,
 };

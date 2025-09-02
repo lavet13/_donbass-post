@@ -1,11 +1,38 @@
-import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuGroup,
+  SidebarModeToggle,
+  SidebarProvider,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { Tooltip } from "@/components/ui/tooltip";
+import { TypographyH2 } from "@/components/ui/typography/typographyH2";
+import { cn } from "@/lib/utils";
 import {
   createFileRoute,
+  Link,
+  linkOptions,
   redirect,
 } from "@tanstack/react-router";
+import {
+  FileText,
+  PanelLeftClose,
+  PanelLeftOpen,
+  SquareArrowOutUpRight,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
-  component: AuthenticatedLayout,
+  component: () => (
+    <SidebarProvider>
+      <AuthenticatedLayout />
+    </SidebarProvider>
+  ),
   beforeLoad({ context, location }) {
     if (!context.auth.isAuthenticated) {
       throw redirect({
@@ -20,10 +47,98 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AuthenticatedLayout() {
+  const { isCollapsed, toggleSidebar } = useSidebar();
+
+  const navItems = linkOptions([
+    { label: "Мои заявки", to: "/dashboard/requests", Icon: FileText },
+  ]);
+
   return (
-    <SidebarProvider>
-      <Sidebar></Sidebar>
-    </SidebarProvider>
+    <Sidebar>
+      <SidebarHeader>
+        <div className="flex-1 shrink @max-[130px]:hidden">
+          <TypographyH2
+            className={cn(
+              "text-accent-foreground sm:leading-none text-sm @max-[130px]:hidden",
+            )}
+          >
+            Личный кабинет
+          </TypographyH2>
+        </div>
+        <div className="grow-0 @max-[130px]:flex-1 @max-[130px]:px-[0.5rem]">
+          <Tooltip
+            side="right"
+            content={
+              !isCollapsed
+                ? "Свернуть панель"
+                : "Открыть панель"
+            }
+          >
+            <Button
+              className="ml-auto rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+            >
+              {isCollapsed ? (
+                <PanelLeftOpen />
+              ) : (
+                <PanelLeftClose />
+              )}
+            </Button>
+          </Tooltip>
+        </div>
+      </SidebarHeader>
+
+      <SidebarContent>
+        {navItems.map(({ label, to, Icon }) => {
+          return (
+            <SidebarMenuGroup key={to}>
+              <SidebarMenu>
+                <SidebarMenuButton
+                  content={label}
+                  title={label}
+                  variant="sidebar"
+                  asChild
+                >
+                  <Link
+                    activeProps={{
+                      className: cn(
+                        "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
+                        "data-[status=active]:hover:bg-primary/95 data-[status=active]:active:bg-primary/90",
+                      ),
+                    }}
+                    to={to}
+                  >
+                    <Icon />
+                    {!isCollapsed && (
+                      <span className={cn("truncate")}>{label}</span>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenu>
+            </SidebarMenuGroup>
+          );
+        })}
+      </SidebarContent>
+
+      <SidebarFooter>
+        <SidebarMenuButton
+          size="icon"
+          variant="ghost"
+          content="Вернуться на сайт"
+          asChild
+        >
+          <Link to="/">
+            <SquareArrowOutUpRight />
+            {!isCollapsed && (
+              <span className={cn("truncate")}>Вернуться на сайт</span>
+            )}
+          </Link>
+        </SidebarMenuButton>
+        <SidebarModeToggle />
+      </SidebarFooter>
+    </Sidebar>
   );
 }
 

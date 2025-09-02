@@ -373,7 +373,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
                                   <Button
                                     variant="outline"
-                                    className="rounded-full"
+                                    className="rounded-xl"
                                     type="button"
                                     onClick={() =>
                                       productsField.pushValue({
@@ -397,7 +397,7 @@ export const ShopCostCalculationOrderForm = withForm({
                   <div className="grid sm:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
                     <Button
                       variant="ghost"
-                      className="border border-accent rounded-full"
+                      className="border border-accent rounded-xl"
                       type="button"
                       onClick={() =>
                         shopsField.pushValue({
