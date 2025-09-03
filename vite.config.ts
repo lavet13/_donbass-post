@@ -58,6 +58,7 @@ export default defineConfig({
             "@radix-ui/react-select",
             "@radix-ui/react-visually-hidden",
             "@radix-ui/react-hover-card",
+            "@radix-ui/react-collapsible",
             "vaul",
             "react-resizable-panels",
           ],

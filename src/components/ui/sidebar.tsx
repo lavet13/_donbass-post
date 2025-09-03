@@ -33,6 +33,11 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 type SidebarContextProps = {
   panelRef: React.RefObject<ImperativePanelHandle | null>;
@@ -197,7 +202,7 @@ const SidebarMenuGroup: FC<ComponentProps<"div">> = ({
     <div
       data-sidebar="group"
       className={cn(
-        "flex w-full min-w-0 flex-col shrink-0 py-[2px] px-[0.5rem] transition-[width,transform,opacity] duration-200",
+        "flex w-full min-w-0 flex-col shrink-0 py-[2px] px-[0.5rem]",
         className,
       )}
       {...props}
@@ -267,39 +272,49 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { hoverCard?: boolean }> = ({
       <SidebarMenuContext value={contextValue}>
         <li
           data-sidebar="menu-item"
-          className={cn(
-            "group/menu-item relative flex flex-col list-none gap-px",
-            className,
-          )}
+          className={cn("relative flex flex-col list-none gap-px", className)}
           {...props}
         >
-        {Children.map(children, (child) =>
-          isValidElement(child) && child.type === SidebarMenuSub ? null : child,
-        )}
+          {Children.map(children, (child) =>
+            isValidElement(child) && child.type === SidebarMenuSub
+              ? null
+              : child,
+          )}
         </li>
       </SidebarMenuContext>
     );
   }
-          {/* <HoverCard openDelay={0} closeDelay={0}> */}
-          {/*   <HoverCardTrigger asChild>{sidebarMenuButton}</HoverCardTrigger> */}
-          {/*   <HoverCardContent align="start" side="right"> */}
-          {/*     {sidebarMenuSub} */}
-          {/*   </HoverCardContent> */}
-          {/* </HoverCard> */}
+  {
+    /* <HoverCard openDelay={0} closeDelay={0}> */
+  }
+  {
+    /*   <HoverCardTrigger asChild>{sidebarMenuButton}</HoverCardTrigger> */
+  }
+  {
+    /*   <HoverCardContent align="start" side="right"> */
+  }
+  {
+    /*     {sidebarMenuSub} */
+  }
+  {
+    /*   </HoverCardContent> */
+  }
+  {
+    /* </HoverCard> */
+  }
 
   return (
-    <SidebarMenuContext value={contextValue}>
-      <li
-        data-sidebar="menu-item"
-        className={cn(
-          "group/menu-item relative flex flex-col list-none gap-px",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </li>
-    </SidebarMenuContext>
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <SidebarMenuContext value={contextValue}>
+        <li
+          data-sidebar="menu-item"
+          className={cn("relative flex flex-col list-none gap-px", className)}
+          {...props}
+        >
+          {children}
+        </li>
+      </SidebarMenuContext>
+    </Collapsible>
   );
 };
 
@@ -328,7 +343,7 @@ const SidebarMenuButton: FC<
       variant={variant}
       data-sidebar="menu-button"
       className={cn(
-        "group/menu-button peer/menu-button w-full rounded-lg",
+        "peer/menu-button w-full rounded-lg",
         isCollapsed && "justify-center",
         className,
       )}
@@ -352,56 +367,58 @@ const SidebarMenuButton: FC<
   }
 
   return (
-    <Button
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      data-sidebar="menu-button"
-      title={content}
-      variant={variant}
-      className={cn(
-        "peer/menu-button w-full rounded-lg px-3!",
-        isCollapsed && "justify-center",
-        className,
-      )}
-      {...props}
-    >
-      {isHovered && leftElement ? (
-        <Button
-          onClick={toggleMenu}
-          variant="ghost"
-          size="icon"
-          className="text-sidebar size-4 pointer-events-auto"
-        >
-          <ChevronRight
-            className={cn(
-              open ? "rotate-90" : "rotate-0",
-              "transition-transform",
-            )}
-          />
-        </Button>
-      ) : (
-        leftElement
-      )}
-      <Slottable>{children}</Slottable>
-      {rightElement}
-    </Button>
+    <CollapsibleTrigger asChild>
+      <Button
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        data-sidebar="menu-button"
+        title={content}
+        variant={variant}
+        className={cn(
+          "w-full rounded-lg px-3!",
+          isCollapsed && "justify-center",
+          className,
+        )}
+        {...props}
+      >
+        {isHovered && leftElement ? (
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              toggleMenu();
+            }}
+            variant="ghost"
+            size="icon"
+            className="z-0 text-sidebar size-4 pointer-events-auto"
+          >
+            <ChevronRight
+              className={cn(
+                open ? "rotate-90" : "rotate-0",
+                "transition-all duration-200",
+              )}
+            />
+          </Button>
+        ) : (
+          leftElement
+        )}
+        <Slottable>{children}</Slottable>
+        {rightElement}
+      </Button>
+    </CollapsibleTrigger>
   );
 };
 
 const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
   const { isCollapsed } = useSidebar();
-  const { open, toggleMenu } = useSidebarMenu();
+  const { toggleMenu } = useSidebarMenu();
 
   if (isCollapsed) {
     return null;
   }
 
-  if (!open) {
-    return null;
-  }
-
   return (
-    <div className="overflow-hidden h-auto opacity-100">
+    <CollapsibleContent>
       <div className="flex flex-row gap-px mx-1">
         <div
           onClick={toggleMenu}
@@ -416,7 +433,7 @@ const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
           {...props}
         />
       </div>
-    </div>
+    </CollapsibleContent>
   );
 };
 
@@ -427,7 +444,7 @@ const SidebarMenuSubItem: FC<ComponentProps<"li">> = ({
   return (
     <li
       data-sidebar="menu-sub-item"
-      className={cn("group/menu-sub-item relative list-none", className)}
+      className={cn("relative list-none", className)}
       {...props}
     />
   );
