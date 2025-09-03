@@ -79,7 +79,7 @@ export const AutoDismissMessage: FC<AutoDimissMessageProps> = ({
       {isOpen && (
         <div
           className={cn(
-            "relative flex flex-col border border-input rounded-sm gap-y-1 p-3 mb-2",
+            "relative flex flex-col border border-input rounded-lg gap-y-1 p-3 mb-2",
             variant === "success" &&
               "text-success-foreground bg-success border-success-border",
             variant === "info" &&

@@ -101,7 +101,7 @@ const ComboboxGroupField: FC<
         variant="outline"
         ref={buttonRef}
         className={cn(
-          "dark:bg-input/30 dark:hover:bg-input/40 dark:active:bg-input/50",
+          "dark:bg-input/30 dark:hover:bg-input/40 dark:active:bg-input/50 border border-input",
           `justify-between`,
           open && "bg-secondary/90 dark:bg-input/50",
           className,

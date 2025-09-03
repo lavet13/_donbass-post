@@ -162,7 +162,7 @@ const CommandInput: FC<
         value={value}
         onValueChange={setValue}
         className={cn(
-          "flex h-10 w-full rounded-sm bg-transparent py-3 text-sm outline-hidden",
+          "flex h-10 w-full rounded-lg bg-transparent py-3 text-sm outline-hidden",
           "placeholder:text-muted-foreground caret-primary disabled:cursor-not-allowed disabled:opacity-50",
           "text-base md:text-sm",
           className,

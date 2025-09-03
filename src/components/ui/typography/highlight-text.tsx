@@ -12,7 +12,7 @@ export const HighlightText: FC<
     <span className={containerStyles}>
       <span
         className={cn(
-          "selection:bg-primary-foreground selection:text-primary relative inline-block before:absolute before:-top-[1px] before:-bottom-1.5 mx-2 sm:mx-0 before:-inset-x-1 before:block before:rounded-sm before:-skew-y-2 before:-skew-x-10 before:bg-primary before:-z-1",
+          "selection:bg-primary-foreground selection:text-primary relative inline-block before:absolute before:-top-[1px] before:-bottom-1.5 mx-2 sm:mx-0 before:-inset-x-1 before:block before:rounded-lg before:-skew-y-0.5 before:-skew-x-4 before:bg-primary before:-z-1",
           outerStyles,
         )}
       >

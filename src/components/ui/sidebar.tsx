@@ -33,11 +33,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 
 type SidebarContextProps = {
   panelRef: React.RefObject<ImperativePanelHandle | null>;
@@ -227,7 +223,7 @@ type SidebarMenuContextProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   toggleMenu: () => void;
-  hoverCard: boolean;
+  hasSidebarSubMenu: boolean;
 };
 
 const SidebarMenuContext = createContext<SidebarMenuContextProps | null>(null);
@@ -242,10 +238,9 @@ const useSidebarMenu = () => {
   return context;
 };
 
-const SidebarMenuItem: FC<ComponentProps<"li"> & { hoverCard?: boolean }> = ({
+const SidebarMenuItem: FC<ComponentProps<"li">> = ({
   className,
   children,
-  hoverCard = false,
   ...props
 }) => {
   const { isCollapsed } = useSidebar();
@@ -253,21 +248,21 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { hoverCard?: boolean }> = ({
 
   const toggleMenu = () => setOpen(!open);
 
+  const sidebarMenuSub = Children.toArray(children).find(
+    (child) => isValidElement(child) && child.type === SidebarMenuSub,
+  );
+
+  const hasSidebarSubMenu = !!sidebarMenuSub;
+  console.log({ hasSidebarSubMenu });
+
   const contextValue: SidebarMenuContextProps = {
     open,
     setOpen,
     toggleMenu,
-    hoverCard,
+    hasSidebarSubMenu,
   };
 
-  // const sidebarMenuSub = Children.toArray(children).find(
-  //   (child) => isValidElement(child) && child.type === SidebarMenuSub,
-  // );
-  // const sidebarMenuButton = Children.toArray(children).find(
-  //   (child) => isValidElement(child) && child.type === SidebarMenuButton,
-  // );
-
-  if (isCollapsed && hoverCard) {
+  if (isCollapsed && hasSidebarSubMenu) {
     return (
       <SidebarMenuContext value={contextValue}>
         <li
@@ -334,7 +329,8 @@ const SidebarMenuButton: FC<
   side = "right",
   ...props
 }) => {
-  const { open, toggleMenu, hoverCard } = useSidebarMenu();
+  const { open, toggleMenu, hasSidebarSubMenu } = useSidebarMenu();
+  const { isInSubmenu } = useSidebarMenuSub();
   const [isHovered, setIsHovered] = useState(false);
   const { isCollapsed } = useSidebar();
 
@@ -343,7 +339,7 @@ const SidebarMenuButton: FC<
       variant={variant}
       data-sidebar="menu-button"
       className={cn(
-        "peer/menu-button w-full rounded-lg",
+        "group/menu-button peer/menu-button w-full rounded-lg",
         isCollapsed && "justify-center",
         className,
       )}
@@ -356,7 +352,7 @@ const SidebarMenuButton: FC<
   );
 
   if (isCollapsed) {
-    if (hoverCard) {
+    if (hasSidebarSubMenu) {
       return renderButton();
     }
     return (
@@ -373,28 +369,34 @@ const SidebarMenuButton: FC<
       data-sidebar="menu-button"
       title={content}
       variant={variant}
+      type="button"
       className={cn(
-        "w-full rounded-lg px-3!",
+        "group/menu-button w-full rounded-lg px-3!",
         isCollapsed && "justify-center",
         className,
       )}
       {...props}
     >
-      {isHovered && leftElement ? (
+      {isHovered && hasSidebarSubMenu && !isInSubmenu ? (
         <Button
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
             toggleMenu();
           }}
+          type="button"
           variant="ghost"
           size="icon"
-          className="z-0 text-sidebar size-4 pointer-events-auto"
+          className={cn(
+            "text-sidebar size-4",
+            "dark:hover:bg-accent-foreground/10",
+            "dark:active:bg-accent-foreground/20",
+          )}
         >
           <ChevronRight
             className={cn(
               open ? "rotate-90" : "rotate-0",
-              "transition-all duration-200",
+              "transition-transform duration-200",
             )}
           />
         </Button>
@@ -406,6 +408,17 @@ const SidebarMenuButton: FC<
     </Button>
   );
 };
+
+type SidebarMenuSubContextProps = {
+  isInSubmenu: boolean;
+};
+
+// Add a new context for submenu
+const SidebarMenuSubContext = createContext<SidebarMenuSubContextProps>({
+  isInSubmenu: false,
+});
+
+const useSidebarMenuSub = () => useContext(SidebarMenuSubContext);
 
 const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
   const { isCollapsed } = useSidebar();
@@ -425,11 +438,13 @@ const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
           <div className="border-l border-border h-full ms-[10px] me-[4px]" />
         </div>
 
-        <ul
-          data-sidebar="menu-sub"
-          className={cn("flex flex-col gap-px w-full min-w-0", className)}
-          {...props}
-        />
+        <SidebarMenuSubContext value={{ isInSubmenu: true }}>
+          <ul
+            data-sidebar="menu-sub"
+            className={cn("flex flex-col gap-px w-full min-w-0", className)}
+            {...props}
+          />
+        </SidebarMenuSubContext>
       </div>
     </CollapsibleContent>
   );

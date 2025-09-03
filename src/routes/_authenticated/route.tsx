@@ -53,7 +53,12 @@ function AuthenticatedLayout() {
   const { isCollapsed, toggleSidebar } = useSidebar();
 
   const navItems = linkOptions([
-    { label: "Мои заявки", to: "/dashboard/requests", Icon: FileText },
+    {
+      label: "Мои заявки",
+      to: "/dashboard/requests",
+      Icon: FileText,
+      items: linkOptions([{ label: "Главная", to: "/" }]),
+    },
   ]);
 
   return (
@@ -86,11 +91,11 @@ function AuthenticatedLayout() {
       </SidebarHeader>
 
       <SidebarContent>
-        {navItems.map(({ label, to, Icon }) => {
+        {navItems.map(({ label, to, Icon, items }) => {
           return (
             <SidebarMenuGroup key={to}>
               <SidebarMenu>
-                <SidebarMenuItem hoverCard>
+                <SidebarMenuItem>
                   <SidebarMenuButton
                     leftElement={<Icon />}
                     content={label}
@@ -102,7 +107,7 @@ function AuthenticatedLayout() {
                       activeProps={{
                         className: cn(
                           "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
-                          "group-hover/menu-item:data-[status=active]:bg-primary/95 group-active/menu-item:data-[status=active]:bg-primary/90",
+                          "hover:data-[status=active]:bg-primary/95 active:data-[status=active]:bg-primary/90",
                         ),
                       }}
                       to={to}
@@ -113,23 +118,33 @@ function AuthenticatedLayout() {
                     </Link>
                   </SidebarMenuButton>
 
-                  <SidebarMenuSub>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuButton>
-                        <span className="truncate">Test</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuButton>
-                        <span className="truncate">Test</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuButton>
-                        <span className="truncate">Test</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuSubItem>
-                  </SidebarMenuSub>
+                  {items.length > 0 && (
+                    <SidebarMenuSub>
+                      {items.map(({ label, to }) => (
+                        <SidebarMenuSubItem key={to}>
+                          <SidebarMenuButton
+                            content={label}
+                            title={label}
+                            asChild
+                          >
+                            <Link
+                              activeProps={{
+                                className: cn(
+                                  "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
+                                  "hover:data-[status=active]:bg-primary/95 active:data-[status=active]:bg-primary/90",
+                                ),
+                              }}
+                              to={to}
+                            >
+                              {!isCollapsed && (
+                                <span className={cn("truncate")}>{label}</span>
+                              )}
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  )}
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarMenuGroup>

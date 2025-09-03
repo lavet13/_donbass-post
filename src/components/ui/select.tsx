@@ -19,7 +19,7 @@ const SelectTrigger: FC<ComponentProps<typeof SelectPrimitive.Trigger>> = ({
         "disabled:cursor-not-allowed disabled:opacity-50",
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         "inline-flex items-center justify-between gap-1",
-        "px-[15px] h-[35px] sm:text-sm text-base whitespace-nowrap leading-none rounded-sm border border-accent bg-transparent hover:bg-accent/40 text-accent-foreground",
+        "px-[15px] h-[35px] sm:text-sm text-base whitespace-nowrap leading-none rounded-lg border border-accent bg-transparent hover:bg-accent/40 text-accent-foreground",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-accent-foreground",
         className,
       )}
@@ -63,7 +63,7 @@ const SelectItem: FC<ComponentProps<typeof SelectPrimitive.Item>> = ({
     <SelectPrimitive.Item
       className={cn(
         "group relative select-none",
-        "leading-none sm:text-sm text-base text-accent-foreground rounded-sm",
+        "leading-none sm:text-sm text-base text-accent-foreground rounded-lg",
         "flex justify-between items-center h-[30px] sm:h-[25px] pr-4 gap-1 pl-2",
         "data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground",
         "data-[highlighted]:outline-none data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground",
@@ -93,7 +93,7 @@ const SelectContent: FC<ComponentProps<typeof SelectPrimitive.Content>> = ({
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         className={cn(
-          "overflow-hidden rounded-sm bg-background shadow-md",
+          "overflow-hidden rounded-lg bg-background shadow-md border border-input",
           className,
         )}
         {...props}
