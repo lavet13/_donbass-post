@@ -367,45 +367,43 @@ const SidebarMenuButton: FC<
   }
 
   return (
-    <CollapsibleTrigger asChild>
-      <Button
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        data-sidebar="menu-button"
-        title={content}
-        variant={variant}
-        className={cn(
-          "w-full rounded-lg px-3!",
-          isCollapsed && "justify-center",
-          className,
-        )}
-        {...props}
-      >
-        {isHovered && leftElement ? (
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              toggleMenu();
-            }}
-            variant="ghost"
-            size="icon"
-            className="z-0 text-sidebar size-4 pointer-events-auto"
-          >
-            <ChevronRight
-              className={cn(
-                open ? "rotate-90" : "rotate-0",
-                "transition-all duration-200",
-              )}
-            />
-          </Button>
-        ) : (
-          leftElement
-        )}
-        <Slottable>{children}</Slottable>
-        {rightElement}
-      </Button>
-    </CollapsibleTrigger>
+    <Button
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      data-sidebar="menu-button"
+      title={content}
+      variant={variant}
+      className={cn(
+        "w-full rounded-lg px-3!",
+        isCollapsed && "justify-center",
+        className,
+      )}
+      {...props}
+    >
+      {isHovered && leftElement ? (
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            toggleMenu();
+          }}
+          variant="ghost"
+          size="icon"
+          className="z-0 text-sidebar size-4 pointer-events-auto"
+        >
+          <ChevronRight
+            className={cn(
+              open ? "rotate-90" : "rotate-0",
+              "transition-all duration-200",
+            )}
+          />
+        </Button>
+      ) : (
+        leftElement
+      )}
+      <Slottable>{children}</Slottable>
+      {rightElement}
+    </Button>
   );
 };
 

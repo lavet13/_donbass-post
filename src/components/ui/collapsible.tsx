@@ -26,7 +26,12 @@ const CollapsibleContent: FC<
   return (
     <CollapsiblePrimitive.Content
       data-slot="collapsible-content"
-      className={cn("", className)}
+      className={cn(
+        "overflow-hidden",
+        "data-[state=open]:animate-collapsible-slide-down",
+        "data-[state=closed]:animate-collapsible-slide-up",
+        className,
+      )}
       {...props}
     />
   );
