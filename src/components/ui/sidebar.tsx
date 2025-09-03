@@ -238,9 +238,10 @@ const useSidebarMenu = () => {
   return context;
 };
 
-const SidebarMenuItem: FC<ComponentProps<"li">> = ({
+const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
   className,
   children,
+  label,
   ...props
 }) => {
   const { isCollapsed } = useSidebar();
@@ -277,7 +278,8 @@ const SidebarMenuItem: FC<ComponentProps<"li">> = ({
         >
           <HoverCard>
             <HoverCardTrigger asChild>{sidebarMenuButton}</HoverCardTrigger>
-            <HoverCardContent align="start" side="right">
+            <HoverCardContent className="group/hover-card" align="start" side="right">
+              <span className="px-4 text-sm leading-3 my-1">{label}</span>
               {sidebarMenuSub}
             </HoverCardContent>
           </HoverCard>
@@ -354,6 +356,7 @@ const SidebarMenuButton: FC<
       className={cn(
         "group/menu-button peer/menu-button w-full rounded-lg",
         isCollapsed && "justify-center",
+        "[[data-slot='hover-card-content']_&]:justify-start",
         className,
       )}
       {...props}

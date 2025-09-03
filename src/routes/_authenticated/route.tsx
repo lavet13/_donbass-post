@@ -58,7 +58,10 @@ function AuthenticatedLayout() {
       label: "Мои заявки",
       to: "/dashboard/requests",
       Icon: FileText,
-      items: linkOptions([{ label: "Главная", to: "/" }]),
+      items: linkOptions([
+        { label: "Заявка ИМ", to: "/shop-cost-calculation-order" },
+        { label: "Забор груза", to: "/pick-up-point-delivery-order" },
+      ]),
     },
   ]);
 
@@ -96,13 +99,12 @@ function AuthenticatedLayout() {
           return (
             <SidebarMenuGroup key={to}>
               <SidebarMenu>
-                <SidebarMenuItem>
+                <SidebarMenuItem label={label}>
                   <SidebarMenuLink
                     to={to}
                     leftElement={<Icon />}
                     content={label}
                     title={label}
-                    variant="sidebar"
                   >
                     {label}
                   </SidebarMenuLink>
