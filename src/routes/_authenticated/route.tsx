@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuGroup,
   SidebarMenuItem,
+  SidebarMenuLink,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarModeToggle,
@@ -96,51 +97,27 @@ function AuthenticatedLayout() {
             <SidebarMenuGroup key={to}>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton
+                  <SidebarMenuLink
+                    to={to}
                     leftElement={<Icon />}
                     content={label}
                     title={label}
                     variant="sidebar"
-                    asChild
                   >
-                    <Link
-                      activeProps={{
-                        className: cn(
-                          "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
-                          "hover:data-[status=active]:bg-primary/95 active:data-[status=active]:bg-primary/90",
-                        ),
-                      }}
-                      to={to}
-                    >
-                      {!isCollapsed && (
-                        <span className={cn("truncate")}>{label}</span>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
+                    {label}
+                  </SidebarMenuLink>
 
                   {items.length > 0 && (
                     <SidebarMenuSub>
                       {items.map(({ label, to }) => (
                         <SidebarMenuSubItem key={to}>
-                          <SidebarMenuButton
+                          <SidebarMenuLink
+                            to={to}
                             content={label}
                             title={label}
-                            asChild
                           >
-                            <Link
-                              activeProps={{
-                                className: cn(
-                                  "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
-                                  "hover:data-[status=active]:bg-primary/95 active:data-[status=active]:bg-primary/90",
-                                ),
-                              }}
-                              to={to}
-                            >
-                              {!isCollapsed && (
-                                <span className={cn("truncate")}>{label}</span>
-                              )}
-                            </Link>
-                          </SidebarMenuButton>
+                            {label}
+                          </SidebarMenuLink>
                         </SidebarMenuSubItem>
                       ))}
                     </SidebarMenuSub>

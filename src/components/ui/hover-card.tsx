@@ -31,7 +31,7 @@ const HoverCardTrigger: FC<
 
 const HoverCardContent: FC<
   ComponentProps<typeof HoverCardPrimitive.Content>
-> = ({ className, align = "start", sideOffset = 0, ...props }) => {
+> = ({ className, side = "right", align = "start", sideOffset = 0, ...props }) => {
   return (
     <HoverCardPrimitive.Portal data-slot="hover-card-portal">
       <HoverCardPrimitive.Content
@@ -42,6 +42,7 @@ const HoverCardContent: FC<
           "outline-hidden z-50",
           className,
         )}
+        side={side}
         align={align}
         sideOffset={sideOffset}
         {...props}

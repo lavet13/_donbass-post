@@ -24,7 +24,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { Outlet } from "@tanstack/react-router";
+import { Link, Outlet, type LinkComponentProps } from "@tanstack/react-router";
 import { ModeToggle } from "../mode-toggle";
 import { useTheme } from "@/hooks/use-theme";
 import { Slottable } from "@radix-ui/react-slot";
@@ -248,12 +248,17 @@ const SidebarMenuItem: FC<ComponentProps<"li">> = ({
 
   const toggleMenu = () => setOpen(!open);
 
+  const sidebarMenuButton = Children.toArray(children).find(
+    (child) =>
+      isValidElement(child) &&
+      (child.type === SidebarMenuLink || child.type === SidebarMenuButton),
+  );
+
   const sidebarMenuSub = Children.toArray(children).find(
     (child) => isValidElement(child) && child.type === SidebarMenuSub,
   );
 
   const hasSidebarSubMenu = !!sidebarMenuSub;
-  console.log({ hasSidebarSubMenu });
 
   const contextValue: SidebarMenuContextProps = {
     open,
@@ -270,32 +275,15 @@ const SidebarMenuItem: FC<ComponentProps<"li">> = ({
           className={cn("relative flex flex-col list-none gap-px", className)}
           {...props}
         >
-          {Children.map(children, (child) =>
-            isValidElement(child) && child.type === SidebarMenuSub
-              ? null
-              : child,
-          )}
+          <HoverCard>
+            <HoverCardTrigger asChild>{sidebarMenuButton}</HoverCardTrigger>
+            <HoverCardContent align="start" side="right">
+              {sidebarMenuSub}
+            </HoverCardContent>
+          </HoverCard>
         </li>
       </SidebarMenuContext>
     );
-  }
-  {
-    /* <HoverCard openDelay={0} closeDelay={0}> */
-  }
-  {
-    /*   <HoverCardTrigger asChild>{sidebarMenuButton}</HoverCardTrigger> */
-  }
-  {
-    /*   <HoverCardContent align="start" side="right"> */
-  }
-  {
-    /*     {sidebarMenuSub} */
-  }
-  {
-    /*   </HoverCardContent> */
-  }
-  {
-    /* </HoverCard> */
   }
 
   return (
@@ -310,6 +298,31 @@ const SidebarMenuItem: FC<ComponentProps<"li">> = ({
         </li>
       </SidebarMenuContext>
     </Collapsible>
+  );
+};
+
+const SidebarMenuLink: FC<
+  ComponentProps<typeof SidebarMenuButton> & { to: LinkComponentProps["to"] }
+> = ({ to, children, ...props }) => {
+  const { isInSubmenu } = useSidebarMenuSub();
+  const { isCollapsed } = useSidebar();
+
+  return (
+    <SidebarMenuButton asChild {...props}>
+      <Link
+        activeProps={{
+          className: cn(
+            "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
+            "hover:data-[status=active]:bg-primary/95 active:data-[status=active]:bg-primary/90",
+          ),
+        }}
+        to={to}
+      >
+        {(!isCollapsed || isInSubmenu) && (
+          <span className={cn("truncate")}>{children}</span>
+        )}
+      </Link>
+    </SidebarMenuButton>
   );
 };
 
@@ -372,7 +385,7 @@ const SidebarMenuButton: FC<
       type="button"
       className={cn(
         "group/menu-button w-full rounded-lg px-3!",
-        isCollapsed && "justify-center",
+        isCollapsed && !isInSubmenu && "justify-center",
         className,
       )}
       {...props}
@@ -425,7 +438,15 @@ const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
   const { toggleMenu } = useSidebarMenu();
 
   if (isCollapsed) {
-    return null;
+    return (
+      <SidebarMenuSubContext value={{ isInSubmenu: true }}>
+        <ul
+          data-sidebar="menu-sub"
+          className={cn("flex flex-col gap-px w-full min-w-0", className)}
+          {...props}
+        />
+      </SidebarMenuSubContext>
+    );
   }
 
   return (
@@ -583,6 +604,7 @@ export {
   SidebarMenu,
   SidebarModeToggle,
   SidebarMenuButton,
+  SidebarMenuLink,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
