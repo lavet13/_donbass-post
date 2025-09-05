@@ -24,8 +24,8 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { Link, Outlet, type LinkComponentProps } from "@tanstack/react-router";
-import { ModeToggle } from "../mode-toggle";
+import { Link, Outlet } from "@tanstack/react-router";
+import { ModeToggle } from "@/components/mode-toggle";
 import { useTheme } from "@/hooks/use-theme";
 import { Slottable } from "@radix-ui/react-slot";
 import {
@@ -103,28 +103,39 @@ const SidebarProvider: FC<ComponentProps<"div">> = ({ children }) => {
     }
   };
 
-  const contextValue = useMemo<SidebarContextProps>(
-    () => ({
-      expandedSize: expandedSizePercent,
-      collapsedSize: collapsedSizePercent,
-      minimalSize: minimalSizePercent,
-      panelRef,
-      isCollapsed,
-      containerRef,
-      isMobile,
-      toggleSidebar,
-    }),
-    [
-      expandedSizePercent,
-      collapsedSizePercent,
-      minimalSizePercent,
-      panelRef.current,
-      isCollapsed,
-      containerRef.current,
-      isMobile,
-      toggleSidebar,
-    ],
-  );
+  // const contextValue = useMemo<SidebarContextProps>(
+  //   () => ({
+  //     expandedSize: expandedSizePercent,
+  //     collapsedSize: collapsedSizePercent,
+  //     minimalSize: minimalSizePercent,
+  //     panelRef,
+  //     isCollapsed,
+  //     containerRef,
+  //     isMobile,
+  //     toggleSidebar,
+  //   }),
+  //   [
+  //     expandedSizePercent,
+  //     collapsedSizePercent,
+  //     minimalSizePercent,
+  //     panelRef.current,
+  //     isCollapsed,
+  //     containerRef.current,
+  //     isMobile,
+  //     toggleSidebar,
+  //   ],
+  // );
+
+  const contextValue: SidebarContextProps = {
+    expandedSize: expandedSizePercent,
+    collapsedSize: collapsedSizePercent,
+    minimalSize: minimalSizePercent,
+    panelRef,
+    isCollapsed,
+    containerRef,
+    isMobile,
+    toggleSidebar,
+  };
 
   return (
     <SidebarContext value={contextValue}>
@@ -146,6 +157,8 @@ const useSidebar = () => {
 const SidebarHeader: FC<ComponentProps<"div">> = ({ className, ...props }) => {
   return (
     <div
+      data-slot="sidebar-header"
+      data-sidebar="header"
       className={cn(
         "sticky top-0 z-10 @max-[130px]:text-center flex @max-[130px]:justify-center justify-between gap-1 items-center mt-1 lg:pl-3 px-[0.5rem] @max-[130px]:px-0",
         className,
@@ -158,6 +171,8 @@ const SidebarHeader: FC<ComponentProps<"div">> = ({ className, ...props }) => {
 const SidebarFooter: FC<ComponentProps<"div">> = ({ className, ...props }) => {
   return (
     <div
+      data-sidebar="footer"
+      data-slot="sidebar-footer"
       className={cn(
         "sticky bottom-0 z-10 pb-2 flex flex-col justify-center px-[0.5rem]",
         className,
@@ -170,6 +185,8 @@ const SidebarFooter: FC<ComponentProps<"div">> = ({ className, ...props }) => {
 const SidebarContent: FC<ComponentProps<"div">> = ({ className, ...props }) => {
   return (
     <div
+      data-sidebar="content"
+      data-slot="sidebar-content"
       className={cn(
         "pt-2 flex-1 flex flex-col min-h-0 overflow-auto",
         className,
@@ -209,6 +226,7 @@ const SidebarMenuGroup: FC<ComponentProps<"div">> = ({
 const SidebarMenu: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
   return (
     <ul
+      data-slot="sidebar-menu"
       data-sidebar="menu"
       className={cn(
         "flex w-full min-w-0 flex-col cursor-default gap-px",
@@ -272,13 +290,14 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
     return (
       <SidebarMenuContext value={contextValue}>
         <li
+          data-slot="sidebar-menu-item"
           data-sidebar="menu-item"
           className={cn("relative flex flex-col list-none gap-px", className)}
           {...props}
         >
           <HoverCard>
             <HoverCardTrigger asChild>{sidebarMenuButton}</HoverCardTrigger>
-            <HoverCardContent className="group/hover-card" align="start" side="right">
+            <HoverCardContent className="w-[240px]">
               <span className="px-4 text-sm leading-3 my-1">{label}</span>
               {sidebarMenuSub}
             </HoverCardContent>
@@ -292,6 +311,7 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
     <Collapsible open={open} onOpenChange={setOpen}>
       <SidebarMenuContext value={contextValue}>
         <li
+          data-slot="sidebar-menu-item"
           data-sidebar="menu-item"
           className={cn("relative flex flex-col list-none gap-px", className)}
           {...props}
@@ -304,14 +324,15 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
 };
 
 const SidebarMenuLink: FC<
-  ComponentProps<typeof SidebarMenuButton> & { to: LinkComponentProps["to"] }
-> = ({ to, children, ...props }) => {
+  ComponentProps<typeof SidebarMenuButton> & ComponentProps<typeof Link>
+> = ({ to, children, activeOptions, ...props }) => {
   const { isInSubmenu } = useSidebarMenuSub();
   const { isCollapsed } = useSidebar();
 
   return (
     <SidebarMenuButton asChild {...props}>
       <Link
+        activeOptions={activeOptions}
         activeProps={{
           className: cn(
             "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
@@ -352,6 +373,7 @@ const SidebarMenuButton: FC<
   const renderButton = () => (
     <Button
       variant={variant}
+      data-slot="sidebar-menu-button"
       data-sidebar="menu-button"
       className={cn(
         "group/menu-button peer/menu-button w-full rounded-lg",
@@ -382,6 +404,7 @@ const SidebarMenuButton: FC<
     <Button
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      data-slot="sidebar-menu-button"
       data-sidebar="menu-button"
       title={content}
       variant={variant}
@@ -400,6 +423,8 @@ const SidebarMenuButton: FC<
             e.preventDefault();
             toggleMenu();
           }}
+          data-slot="sidebar-collapsible-button"
+          data-sidebar="collapsible-button"
           type="button"
           variant="ghost"
           size="icon"
@@ -407,6 +432,7 @@ const SidebarMenuButton: FC<
             "text-sidebar size-4",
             "dark:hover:bg-accent-foreground/10",
             "dark:active:bg-accent-foreground/20",
+            "text-primary [[data-status=active]_&]:text-primary-foreground",
           )}
         >
           <ChevronRight
@@ -444,6 +470,7 @@ const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
     return (
       <SidebarMenuSubContext value={{ isInSubmenu: true }}>
         <ul
+          data-slot="sidebar-menu-sub"
           data-sidebar="menu-sub"
           className={cn("flex flex-col gap-px w-full min-w-0", className)}
           {...props}
@@ -464,6 +491,7 @@ const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
 
         <SidebarMenuSubContext value={{ isInSubmenu: true }}>
           <ul
+            data-slot="sidebar-menu-sub"
             data-sidebar="menu-sub"
             className={cn("flex flex-col gap-px w-full min-w-0", className)}
             {...props}
@@ -480,6 +508,7 @@ const SidebarMenuSubItem: FC<ComponentProps<"li">> = ({
 }) => {
   return (
     <li
+      data-slot="sidebar-menu-sub-item"
       data-sidebar="menu-sub-item"
       className={cn("relative list-none", className)}
       {...props}
@@ -506,13 +535,20 @@ const SidebarModeToggle: FC<
   if (isCollapsed) {
     return (
       <Tooltip side={side} content={content}>
-        <ModeToggle className={cn("w-full rounded-lg", className)} {...props} />
+        <ModeToggle
+          data-sidebar="menu-toggle"
+          data-slot="sidebar-menu-toggle"
+          className={cn("w-full rounded-lg", className)}
+          {...props}
+        />
       </Tooltip>
     );
   }
 
   return (
     <ModeToggle
+      data-sidebar="menu-toggle"
+      data-slot="sidebar-menu-toggle"
       title={content}
       className={cn("w-full rounded-lg", className)}
       {...props}
@@ -572,6 +608,8 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
                   }
                 >
                   <Button
+                    data-sidebar="trigger"
+                    data-slot="sidebar-trigger"
                     className="text-accent-foreground rounded-full"
                     variant="outline"
                     size="icon"

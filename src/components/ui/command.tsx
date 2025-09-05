@@ -83,6 +83,7 @@ const CommandLoading: FC<ComponentProps<typeof CommandPrimitive.Loading>> = ({
 }) => {
   return (
     <CommandPrimitive.Loading
+      data-slot="command-loading"
       className={cn("text-muted-foreground py-8", className)}
       {...props}
     >
@@ -158,6 +159,7 @@ const CommandInput: FC<
     >
       <SearchIcon className="size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
+        data-slot="command-input"
         ref={mergeRefs(inputRef, ref)}
         value={value}
         onValueChange={setValue}
@@ -172,6 +174,7 @@ const CommandInput: FC<
       {clearButton && value && (
         <Tooltip content={clearButtonTooltipMessage}>
           <button
+            data-slot="command-input-clear"
             className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary/60 active:bg-secondary/70 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
             onKeyDown={handleKeyDown}
             onClick={handleClear}
@@ -194,6 +197,7 @@ const CommandEmpty: FC<ComponentProps<typeof CommandPrimitive.Empty>> = ({
 }) => {
   return (
     <CommandPrimitive.Empty
+      data-slot="command-empty"
       className={cn("text-sm text-center py-6", className)}
       {...props}
     />
@@ -206,6 +210,7 @@ const CommandShortcut: FC<ComponentProps<"span">> = ({
 }) => {
   return (
     <span
+      data-slot="command-shortcut"
       className={cn(
         "text-muted-foreground ml-auto text-xs tracking-widest",
         className,

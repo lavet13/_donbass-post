@@ -14,8 +14,8 @@ const PopoverTrigger: React.FC<
 > = ({ className, ...props }) => {
   return (
     <PopoverPrimitive.Trigger
-      className={cn("", className)}
       data-slot="popover-trigger"
+      className={cn("", className)}
       {...props}
     />
   );
@@ -29,7 +29,7 @@ const PopoverContent: React.FC<
       <PopoverPrimitive.Content
         data-slot="popover-content"
         className={cn(
-          "bg-popover text-popover-foreground rounded-lg p-3 w-72 shadow-md border border-border",
+          "bg-popover text-popover-foreground rounded-lg p-3 w-72 max-h-[var(--radix-popover-content-available-height)] shadow-md border border-border",
           "data-[state=open]:data-[side=top]:animate-slide-down-and-fade data-[state=open]:data-[side=right]:animate-slide-left-and-fade data-[state=open]:data-[side=bottom]:animate-slide-up-and-fade data-[state=open]:data-[side=left]:animate-slide-right-and-fade",
           "outline-hidden z-50",
           className,

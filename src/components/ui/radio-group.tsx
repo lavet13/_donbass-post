@@ -3,12 +3,12 @@ import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import type { ComponentProps, FC } from "react";
 import { Label } from "@/components/ui/label";
 
-const RadioGroupRoot: FC<ComponentProps<typeof RadioGroupPrimitive.Root>> = ({
+const RadioGroup: FC<ComponentProps<typeof RadioGroupPrimitive.Root>> = ({
   className,
   ...props
 }) => {
   return (
-    <RadioGroupPrimitive.Root className={cn("flex", className)} {...props} />
+    <RadioGroupPrimitive.Root data-slot="radio-group" className={cn("flex", className)} {...props} />
   );
 };
 
@@ -67,4 +67,4 @@ const RadioGroupLabel: FC<ComponentProps<typeof Label>> = ({
   );
 };
 
-export { RadioGroupRoot, RadioGroupItem, RadioGroupIndicator, RadioGroupLabel };
+export { RadioGroup, RadioGroupItem, RadioGroupIndicator, RadioGroupLabel };

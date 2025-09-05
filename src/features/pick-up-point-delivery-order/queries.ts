@@ -1,31 +1,50 @@
 import { workplacePostApi } from "@/axios";
 import { createQueryKeys } from "@lukemorales/query-key-factory";
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import {
+  queryOptions,
+  useQuery,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
 
 type UsePickUpPointDeliveryOrderUserQueryProps = {
   options?: UseQueryOptions;
 };
 
-const pickUpPointDeliveryOrderKeys = createQueryKeys('pick-up-point-delivery-order', {
-  user: {
-    queryKey: null,
+const pickUpPointDeliveryOrderKeys = createQueryKeys(
+  "pick-up-point-delivery-order",
+  {
+    user: {
+      queryKey: null,
+    },
   },
-});
+);
 
 const fetchPickUpPointDeliveryOrderUser = async () => {
-  const response = await workplacePostApi.get('pick-up-point-delivery-order/user');
+  const response = await workplacePostApi.get(
+    "pick-up-point-delivery-order/user",
+  );
 
   return response.data;
 };
 
-const usePickUpPointDeliveryOrderUserQuery = (props: UsePickUpPointDeliveryOrderUserQueryProps = {}) => {
-  const { options = {}} = props;
+const pickUpPointDeliveryOrderUserQueryOptions = queryOptions({
+  queryKey: pickUpPointDeliveryOrderKeys.user.queryKey,
+  queryFn: fetchPickUpPointDeliveryOrderUser,
+});
+
+const usePickUpPointDeliveryOrderUserQuery = (
+  props: UsePickUpPointDeliveryOrderUserQueryProps = {},
+) => {
+  const { options = {} } = props;
 
   return useQuery({
-    queryKey: pickUpPointDeliveryOrderKeys.user.queryKey,
-    queryFn: fetchPickUpPointDeliveryOrderUser,
+    ...pickUpPointDeliveryOrderUserQueryOptions,
     ...options,
   });
 };
 
-export { usePickUpPointDeliveryOrderUserQuery, pickUpPointDeliveryOrderKeys };
+export {
+  usePickUpPointDeliveryOrderUserQuery,
+  pickUpPointDeliveryOrderKeys,
+  pickUpPointDeliveryOrderUserQueryOptions,
+};

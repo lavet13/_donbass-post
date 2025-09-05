@@ -26,7 +26,10 @@ function createRouter() {
     defaultPreload: "intent",
     defaultErrorComponent: DefaultErrorComponent,
     defaultNotFoundComponent: DefaultNotFoundComponent,
+
+    // This will ensure that the loader is always called when the route is preloaded or visited
     defaultPreloadStaleTime: 0, // @see (link: https://tanstack.com/router/latest/docs/framework/react/guide/preloading#preloading-with-external-libraries)
+
     basepath: "/user", // @see (link: https://tanstack.com/router/v1/docs/framework/react/api/router/RouterOptionsType#basepath-property)
 
     // Optionally, we can use `Wrap` to wrap our router in the loader client provider

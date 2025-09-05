@@ -79,7 +79,6 @@ export const getEmailErrorMessage = (email: string) => {
     return "Доменная часть должна заканчиваться доменной зоной из минимум 2 букв (например, .com, .ru)";
   }
 
-
   // Убираем доменную зону и проверяем остальную часть
   const domainWithoutZone = domainPart.slice(
     0,
@@ -116,4 +115,31 @@ export const isPasswordValid = (password: string) => {
     return [false, "Хотя бы две цифры"];
   }
   return [true];
+};
+
+type StatusCode = 401 | 403 | 404 | 500;
+
+export const createMockAxiosError = (
+  status: StatusCode,
+  message = "Mock error",
+) => {
+  const getStatusText = (status: StatusCode) => {
+    const statusTexts = {
+      401: "Unauthorized",
+      403: "Forbidden",
+      404: "Not Found",
+      500: "Internal Server Error",
+    };
+    return statusTexts[status] || "Unknown Error";
+  };
+
+  return {
+    response: {
+      status,
+      statusText: getStatusText(status),
+      data: { message },
+    },
+    isAxiosError: true,
+    message: `Request failed with status code ${status}`,
+  };
 };

@@ -975,9 +975,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   return (
                     <div
                       className={cn(
-                        "sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-tl-xs ",
+                        "sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-tl-xs",
                         "sm:mt-2 [&_button]:first-of-type:rounded-tl-none [&_button]:last-of-type:rounded-tr-none [&_span]:group-first-of-type:rounded-tl-none [&_span]:group-last-of-type:rounded-tr-none [&_button]:last-of-type:mr-0",
-                        "sm:[&_button]:first-of-type:rounded-l-sm sm:[&_button]:last-of-type:rounded-r-sm sm:[&_span]:group-first-of-type:rounded-l-sm sm:[&_span]:group-last-of-type:rounded-r-sm sm:[&_button]:last-of-type:-mr-px",
+                        "sm:[&_button]:first-of-type:rounded-l-lg sm:[&_button]:last-of-type:rounded-r-lg sm:[&_span]:group-first-of-type:rounded-l-lg sm:[&_span]:group-last-of-type:rounded-r-lg sm:[&_button]:last-of-type:-mr-px",
                       )}
                     >
                       <field.RadioGroupField

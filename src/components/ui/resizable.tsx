@@ -7,6 +7,7 @@ const ResizablePanelGroup: FC<
 > = ({ className, ...props }) => {
   return (
     <ResizablePrimitive.PanelGroup
+      data-slot="resizable-panel-group"
       className={cn(
         "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
         className,
@@ -22,6 +23,7 @@ const ResizablePanel: FC<ComponentProps<typeof ResizablePrimitive.Panel>> = ({
 }) => {
   return (
     <ResizablePrimitive.Panel
+      data-slot="resizable-panel"
       className={cn("relative overflow-hidden", className)}
       {...props}
     />
@@ -35,6 +37,7 @@ const ResizableHandle: FC<
 > = ({ className, withHandle, ...props }) => {
   return (
     <ResizablePrimitive.PanelResizeHandle
+      data-slot="resizable-handle"
       className={cn(
         "focus-visible:ring-ring focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:outline-hidden duration-100 ease-linear transition-colors",
         "relative w-0.5 bg-sidebar-border hover:bg-primary/60 data-[resize-handle-active]:bg-primary outline-none pointer-coarse:w-1",

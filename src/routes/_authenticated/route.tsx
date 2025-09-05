@@ -57,10 +57,11 @@ function AuthenticatedLayout() {
     {
       label: "Мои заявки",
       to: "/dashboard/requests",
+      activeOptions: { exact: true },
       Icon: FileText,
       items: linkOptions([
-        { label: "Заявка ИМ", to: "/shop-cost-calculation-order" },
-        { label: "Забор груза", to: "/pick-up-point-delivery-order" },
+        { label: "Заявка ИМ", to: "/dashboard/requests/shop-cost-calculation-order" },
+        { label: "Забор груза", to: "/dashboard/requests/pick-up-point-delivery-order" }
       ]),
     },
   ]);
@@ -95,12 +96,13 @@ function AuthenticatedLayout() {
       </SidebarHeader>
 
       <SidebarContent>
-        {navItems.map(({ label, to, Icon, items }) => {
+        {navItems.map(({ label, to, activeOptions, Icon, items }) => {
           return (
             <SidebarMenuGroup key={to}>
               <SidebarMenu>
                 <SidebarMenuItem label={label}>
                   <SidebarMenuLink
+                    activeOptions={activeOptions}
                     to={to}
                     leftElement={<Icon />}
                     content={label}

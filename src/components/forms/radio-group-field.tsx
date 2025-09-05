@@ -4,7 +4,7 @@ import {
   RadioGroupIndicator,
   RadioGroupItem,
   RadioGroupLabel,
-  RadioGroupRoot,
+  RadioGroup,
 } from "@/components/ui/radio-group";
 import { FormItem, FormLabel, FormMessage } from "../ui/form";
 import { cn } from "@/lib/utils";
@@ -36,7 +36,7 @@ const RadioGroupField: FC<RadioGroupFieldProps> = ({
   return (
     <FormItem>
       {label && <FormLabel>{label}</FormLabel>}
-      <RadioGroupRoot
+      <RadioGroup
         name={field.name}
         aria-label={defaultAriaLabel}
         value={field.state.value}
@@ -60,7 +60,7 @@ const RadioGroupField: FC<RadioGroupFieldProps> = ({
             </RadioGroupLabel>
           </RadioGroupItem>
         ))}
-      </RadioGroupRoot>
+      </RadioGroup>
       <FormMessage id={formMessageId} />
     </FormItem>
   );

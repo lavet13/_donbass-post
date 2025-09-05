@@ -45,7 +45,7 @@ export default defineConfig({
           ],
 
           // UI components
-          "UI": [
+          UI: [
             "@radix-ui/react-password-toggle-field",
             "@radix-ui/react-accessible-icon",
             "@radix-ui/react-checkbox",
@@ -59,6 +59,7 @@ export default defineConfig({
             "@radix-ui/react-visually-hidden",
             "@radix-ui/react-hover-card",
             "@radix-ui/react-collapsible",
+            "@radix-ui/react-dropdown-menu",
             "vaul",
             "react-resizable-panels",
           ],

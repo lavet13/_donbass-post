@@ -12,7 +12,13 @@ const TooltipTrigger: FC<ComponentProps<typeof TooltipPrimitive.Trigger>> = ({
   className,
   ...props
 }) => {
-  return <TooltipPrimitive.Trigger className={cn("", className)} {...props} />;
+  return (
+    <TooltipPrimitive.Trigger
+      data-slot="tooltip-trigger"
+      className={cn("", className)}
+      {...props}
+    />
+  );
 };
 
 const TooltipContent: FC<ComponentProps<typeof TooltipPrimitive.Content>> = ({
@@ -22,6 +28,7 @@ const TooltipContent: FC<ComponentProps<typeof TooltipPrimitive.Content>> = ({
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
+        data-slot="tooltip-content"
         className={cn(
           "border border-border",
           "data-[state=delayed-open]:data-[side=top]:animate-slide-down-and-fade",
@@ -48,6 +55,7 @@ const TooltipArrow: FC<ComponentProps<typeof TooltipPrimitive.Arrow>> = ({
 }) => {
   return (
     <TooltipPrimitive.Arrow
+      data-slot="tooltip-arrow"
       className={cn("fill-popover stroke-border", className)}
       {...props}
     />
@@ -61,7 +69,6 @@ const Tooltip: FC<
       "open" | "defaultOpen" | "onOpenChange"
     >
 > = ({ open, onOpenChange, defaultOpen, children, content, ...props }) => {
-
   return (
     <TooltipRoot
       open={open}

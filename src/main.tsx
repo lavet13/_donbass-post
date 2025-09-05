@@ -5,7 +5,6 @@ import { router } from "@/router";
 import { useAuth } from "@/hooks/use-auth";
 import "@/index.css";
 
-
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
   interface Register {

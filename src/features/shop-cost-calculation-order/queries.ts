@@ -1,6 +1,10 @@
 import { workplacePostApi } from "@/axios";
 import { createQueryKeys } from "@lukemorales/query-key-factory";
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import {
+  queryOptions,
+  useQuery,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
 
 type UseShopCostCalculationOrderUserQueryProps = {
   options?: UseQueryOptions;
@@ -16,10 +20,17 @@ const shopCostCalculationOrderKeys = createQueryKeys(
 );
 
 const fetchShopCostCalculationOrderUser = async () => {
-  const response = await workplacePostApi.get("shop-cost-calculation-order/user");
+  const response = await workplacePostApi.get(
+    "shop-cost-calculation-order/user",
+  );
 
   return response.data;
 };
+
+const shopCostCalculationOrderUserQueryOptions = queryOptions({
+  queryKey: shopCostCalculationOrderKeys.user.queryKey,
+  queryFn: fetchShopCostCalculationOrderUser,
+});
 
 const useShopCostCalculationOrderUserQuery = (
   props: UseShopCostCalculationOrderUserQueryProps = {},
@@ -27,10 +38,13 @@ const useShopCostCalculationOrderUserQuery = (
   const { options = {} } = props;
 
   return useQuery({
-    queryKey: shopCostCalculationOrderKeys.user.queryKey,
-    queryFn: fetchShopCostCalculationOrderUser,
+    ...shopCostCalculationOrderUserQueryOptions,
     ...options,
   });
 };
 
-export { useShopCostCalculationOrderUserQuery, shopCostCalculationOrderKeys };
+export {
+  useShopCostCalculationOrderUserQuery,
+  shopCostCalculationOrderKeys,
+  shopCostCalculationOrderUserQueryOptions,
+};

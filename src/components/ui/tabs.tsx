@@ -15,6 +15,7 @@ const Tabs: FC<ComponentProps<typeof TabsPrimitive.Root>> = ({
 }) => {
   return (
     <TabsPrimitive.Root
+      data-slot="tabs"
       className={cn("flex flex-col max-w-[300px] w-full", className)}
       {...props}
     />
@@ -100,6 +101,7 @@ const TabsList: FC<ComponentProps<typeof TabsPrimitive.List>> = ({
 
   return (
     <TabsPrimitive.List
+      data-slot="tabs-list"
       className={cn("relative shrink-0 flex border-b border-input", className)}
       ref={listRef}
       {...(isMobile
@@ -148,6 +150,7 @@ const TabsTrigger: FC<
 
   return (
     <TabsPrimitive.Trigger
+      data-slot="tabs-trigger"
       ref={triggerRef}
       className={cn(
         "relative flex-1 flex items-center justify-center px-5 h-[45px] text-sm outline-none",
@@ -182,6 +185,7 @@ const TabsContent: FC<ComponentProps<typeof TabsPrimitive.Content>> = ({
 }) => {
   return (
     <TabsPrimitive.Content
+      data-slot="tabs-content"
       className={cn(
         "grow p-5 bg-popover outline-none focus-visible:[box-shadow:0_0_0_2px_var(--color-primary)]",
         "rounded-bl-md rounded-br-md",

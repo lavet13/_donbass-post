@@ -20,7 +20,12 @@ const PasswordToggleFieldInput: FC<
   ComponentProps<typeof PasswordToggleFieldPrimitive.Input>
 > = ({ className, ...props }) => {
   return (
-    <Input className={cn("pr-[30px]", className)} {...props} asChild>
+    <Input
+      data-slot="password-toggle-field-input"
+      className={cn("pr-[30px]", className)}
+      {...props}
+      asChild
+    >
       <PasswordToggleFieldPrimitive.Input />
     </Input>
   );
@@ -31,6 +36,7 @@ const PasswordToggleFieldToggle: FC<
 > = ({ className, id, ...props }) => {
   return (
     <PasswordToggleFieldPrimitive.Toggle
+      data-slot="password-toggle-field-toggle"
       className={cn(
         "flex items-center justify-center aspect-[1] rounded-lg [&_svg]:size-5",
         "focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
@@ -47,7 +53,12 @@ const PasswordToggleFieldToggle: FC<
 const PasswordToggleFieldIcon: FC<
   ComponentProps<typeof PasswordToggleFieldPrimitive.Icon>
 > = (props) => {
-  return <PasswordToggleFieldPrimitive.Icon {...props} />;
+  return (
+    <PasswordToggleFieldPrimitive.Icon
+      data-slot="password-toggle-field-icon"
+      {...props}
+    />
+  );
 };
 
 export {

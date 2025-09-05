@@ -16,7 +16,9 @@ import { Route as PublicShopCostCalculationOrderRouteImport } from './routes/_pu
 import { Route as PublicPickUpPointDeliveryOrderRouteImport } from './routes/_public/pick-up-point-delivery-order'
 import { Route as PublicAuthRouteImport } from './routes/_public/auth'
 import { Route as AuthenticatedDashboardRouteRouteImport } from './routes/_authenticated/dashboard/route'
-import { Route as AuthenticatedDashboardRequestsRouteImport } from './routes/_authenticated/dashboard/requests'
+import { Route as AuthenticatedDashboardRequestsIndexRouteImport } from './routes/_authenticated/dashboard/requests/index'
+import { Route as AuthenticatedDashboardRequestsShopCostCalculationOrderRouteImport } from './routes/_authenticated/dashboard/requests/shop-cost-calculation-order'
+import { Route as AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRouteImport } from './routes/_authenticated/dashboard/requests/pick-up-point-delivery-order'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -54,10 +56,22 @@ const AuthenticatedDashboardRouteRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedDashboardRequestsRoute =
-  AuthenticatedDashboardRequestsRouteImport.update({
-    id: '/requests',
-    path: '/requests',
+const AuthenticatedDashboardRequestsIndexRoute =
+  AuthenticatedDashboardRequestsIndexRouteImport.update({
+    id: '/requests/',
+    path: '/requests/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+const AuthenticatedDashboardRequestsShopCostCalculationOrderRoute =
+  AuthenticatedDashboardRequestsShopCostCalculationOrderRouteImport.update({
+    id: '/requests/shop-cost-calculation-order',
+    path: '/requests/shop-cost-calculation-order',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+const AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute =
+  AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRouteImport.update({
+    id: '/requests/pick-up-point-delivery-order',
+    path: '/requests/pick-up-point-delivery-order',
     getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
 
@@ -67,7 +81,9 @@ export interface FileRoutesByFullPath {
   '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
-  '/dashboard/requests': typeof AuthenticatedDashboardRequestsRoute
+  '/dashboard/requests/pick-up-point-delivery-order': typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute
+  '/dashboard/requests/shop-cost-calculation-order': typeof AuthenticatedDashboardRequestsShopCostCalculationOrderRoute
+  '/dashboard/requests': typeof AuthenticatedDashboardRequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
@@ -75,7 +91,9 @@ export interface FileRoutesByTo {
   '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
-  '/dashboard/requests': typeof AuthenticatedDashboardRequestsRoute
+  '/dashboard/requests/pick-up-point-delivery-order': typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute
+  '/dashboard/requests/shop-cost-calculation-order': typeof AuthenticatedDashboardRequestsShopCostCalculationOrderRoute
+  '/dashboard/requests': typeof AuthenticatedDashboardRequestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,7 +104,9 @@ export interface FileRoutesById {
   '/_public/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/_public/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/_public/': typeof PublicIndexRoute
-  '/_authenticated/dashboard/requests': typeof AuthenticatedDashboardRequestsRoute
+  '/_authenticated/dashboard/requests/pick-up-point-delivery-order': typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute
+  '/_authenticated/dashboard/requests/shop-cost-calculation-order': typeof AuthenticatedDashboardRequestsShopCostCalculationOrderRoute
+  '/_authenticated/dashboard/requests/': typeof AuthenticatedDashboardRequestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -96,6 +116,8 @@ export interface FileRouteTypes {
     | '/pick-up-point-delivery-order'
     | '/shop-cost-calculation-order'
     | '/'
+    | '/dashboard/requests/pick-up-point-delivery-order'
+    | '/dashboard/requests/shop-cost-calculation-order'
     | '/dashboard/requests'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -104,6 +126,8 @@ export interface FileRouteTypes {
     | '/pick-up-point-delivery-order'
     | '/shop-cost-calculation-order'
     | '/'
+    | '/dashboard/requests/pick-up-point-delivery-order'
+    | '/dashboard/requests/shop-cost-calculation-order'
     | '/dashboard/requests'
   id:
     | '__root__'
@@ -114,7 +138,9 @@ export interface FileRouteTypes {
     | '/_public/pick-up-point-delivery-order'
     | '/_public/shop-cost-calculation-order'
     | '/_public/'
-    | '/_authenticated/dashboard/requests'
+    | '/_authenticated/dashboard/requests/pick-up-point-delivery-order'
+    | '/_authenticated/dashboard/requests/shop-cost-calculation-order'
+    | '/_authenticated/dashboard/requests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -173,23 +199,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/dashboard/requests': {
-      id: '/_authenticated/dashboard/requests'
+    '/_authenticated/dashboard/requests/': {
+      id: '/_authenticated/dashboard/requests/'
       path: '/requests'
       fullPath: '/dashboard/requests'
-      preLoaderRoute: typeof AuthenticatedDashboardRequestsRouteImport
+      preLoaderRoute: typeof AuthenticatedDashboardRequestsIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/requests/shop-cost-calculation-order': {
+      id: '/_authenticated/dashboard/requests/shop-cost-calculation-order'
+      path: '/requests/shop-cost-calculation-order'
+      fullPath: '/dashboard/requests/shop-cost-calculation-order'
+      preLoaderRoute: typeof AuthenticatedDashboardRequestsShopCostCalculationOrderRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/requests/pick-up-point-delivery-order': {
+      id: '/_authenticated/dashboard/requests/pick-up-point-delivery-order'
+      path: '/requests/pick-up-point-delivery-order'
+      fullPath: '/dashboard/requests/pick-up-point-delivery-order'
+      preLoaderRoute: typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRouteImport
       parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
   }
 }
 
 interface AuthenticatedDashboardRouteRouteChildren {
-  AuthenticatedDashboardRequestsRoute: typeof AuthenticatedDashboardRequestsRoute
+  AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute: typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute
+  AuthenticatedDashboardRequestsShopCostCalculationOrderRoute: typeof AuthenticatedDashboardRequestsShopCostCalculationOrderRoute
+  AuthenticatedDashboardRequestsIndexRoute: typeof AuthenticatedDashboardRequestsIndexRoute
 }
 
 const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRouteChildren =
   {
-    AuthenticatedDashboardRequestsRoute: AuthenticatedDashboardRequestsRoute,
+    AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute:
+      AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute,
+    AuthenticatedDashboardRequestsShopCostCalculationOrderRoute:
+      AuthenticatedDashboardRequestsShopCostCalculationOrderRoute,
+    AuthenticatedDashboardRequestsIndexRoute:
+      AuthenticatedDashboardRequestsIndexRoute,
   }
 
 const AuthenticatedDashboardRouteRouteWithChildren =

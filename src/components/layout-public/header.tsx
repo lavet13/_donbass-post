@@ -28,7 +28,10 @@ export const Header: FC = () => {
           </Link>
         </Button>
         <Button variant="secondary" asChild>
-          <Link to="/shop-cost-calculation-order">Заявка ИМ</Link>
+          <Link to="/shop-cost-calculation-order">Выкуп менеджером ИМ</Link>
+        </Button>
+        <Button variant="secondary" asChild>
+          <Link to="/pick-up-point-delivery-order">Забор груза</Link>
         </Button>
       </div>
       <div className="ml-auto flex items-center gap-1">

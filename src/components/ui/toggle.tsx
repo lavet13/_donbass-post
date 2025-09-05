@@ -8,7 +8,7 @@ const Toggle: FC<ComponentProps<typeof TogglePrimitive.Root>> = ({
   ...props
 }) => {
   return (
-    <TogglePrimitive.Root className={cn("group", className)} {...props}>
+    <TogglePrimitive.Root data-slot="toggle" className={cn("group", className)} {...props}>
       <span className="relative group-active:top-[1px] inline-flex items-center gap-2 truncate">
         {children}
       </span>
