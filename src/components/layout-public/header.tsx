@@ -1,10 +1,28 @@
 import { Link } from "@tanstack/react-router";
-import type { FC } from "react";
+import type { ComponentProps, FC } from "react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 import { Tooltip } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+
+const NavButton: FC<
+  ComponentProps<typeof Button> & ComponentProps<typeof Link>
+> = ({ className, to, activeOptions, ...props }) => {
+  return (
+    <Button
+      className={cn(
+        "data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground data-[status=active]:font-medium",
+        "bg-background text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground",
+        className,
+      )}
+      asChild
+    >
+      <Link {...props} to={to} />
+    </Button>
+  );
+};
 
 export const Header: FC = () => {
   const { isAuthenticated } = useAuth();
@@ -22,17 +40,13 @@ export const Header: FC = () => {
   return (
     <header className="container max-w-6xl px-2 h-14 flex items-center">
       <div className="flex items-center gap-1">
-        <Button variant="ghost" asChild>
-          <Link to="/" activeOptions={{ exact: true }}>
-            Главная
-          </Link>
-        </Button>
-        <Button variant="secondary" asChild>
-          <Link to="/shop-cost-calculation-order">Выкуп менеджером ИМ</Link>
-        </Button>
-        <Button variant="secondary" asChild>
-          <Link to="/pick-up-point-delivery-order">Забор груза</Link>
-        </Button>
+        <NavButton to="/" activeOptions={{ exact: true }}>
+          Главная
+        </NavButton>
+        <NavButton to="/shop-cost-calculation-order">
+          Выкуп менеджером ИМ
+        </NavButton>
+        <NavButton to="/pick-up-point-delivery-order">Забор груза</NavButton>
       </div>
       <div className="ml-auto flex items-center gap-1">
         <Tooltip content={content}>

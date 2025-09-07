@@ -78,8 +78,8 @@
 
 .dark {
   /* --- PRIMARY (warmer, more vibrant) --- */
-  --primary: #e67070; /* Warmer than #e08484 — closer to light mode #ef3728 */
-  --primary-foreground: #161616;
+  --primary: #b35a5a; /* Warmer than #e08484 — closer to light mode #ef3728 */
+  --primary-foreground: #ffffff;
 
   /* --- BACKGROUND & FOREGROUND --- */
   --background: #161616;

@@ -16,8 +16,6 @@ const buttonVariants = cva(
           "text-accent-foreground dark:hover:bg-accent/40 dark:active:bg-accent/80 hover:bg-accent/30 active:bg-accent/70",
         outline:
           "bg-background text-secondary-foreground border border-secondary hover:bg-secondary/20 active:bg-secondary/70",
-        sidebar:
-          "justify-start bg-transparent text-primary min-h-9 hover:bg-accent/30 active:bg-accent/70 rounded-lg",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
