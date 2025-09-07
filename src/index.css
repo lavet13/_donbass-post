@@ -2,126 +2,150 @@
 @import "tw-animate-css";
 
 :root {
-  --primary: #d66a6a;
-  --primary-foreground: #ffffff;
+  /* --- PRIMARY (now vibrant warm red) --- */
+  --primary: #ef3728; /* Strong, warm red – energetic yet grounded */
+  --primary-foreground: #ffffff; /* White for contrast */
 
-  --background: #fdf7f7; /* Lighter, cleaner background */
-  --foreground: #2e2222;
+  /* --- BACKGROUND & FOREGROUND --- */
+  --background: #fffaf9; /* Very warm off-white – complements red softly */
+  --foreground: #2a1e1e; /* Deep warm charcoal – better contrast than before */
 
-  --card: #ffffff;
-  --card-foreground: #2e2222; /* Darker for better readability */
+  /* --- SURFACES: Card, Popover, Modal --- */
+  --card: #ffffff; /* Clean white for purity */
+  --card-foreground: #2a1e1e;
 
   --popover: #ffffff;
-  --popover-foreground: #2e2222;
-  --popover-border: #ddd0d0;
+  --popover-foreground: #2a1e1e;
+  --popover-border: #f0d3d0; /* Soft red blush border */
 
-  --modal: #fdf2f2; /* Warm off-white — just a whisper of blush */
-  --modal-foreground: #2e2222; /* Consistent with card & popover */
-  --modal-backdrop: rgba(214, 106, 106, 0.16); /* Warm soft veil */
+  --modal: #fff5f4; /* Warm blush modal background – subtle */
+  --modal-foreground: #2a1e1e;
+  --modal-backdrop: rgba(
+    239,
+    55,
+    40,
+    0.2
+  ); /* Soft red veil – more present than before */
 
-  --sidebar: #f9f2f2;
-  --sidebar-foreground: #2e2222;
-  --sidebar-primary: #f2d4d3;
-  --sidebar-primary-foreground: #2e2222;
-  --sidebar-accent: #e6b6b6;
-  --sidebar-accent-foreground: #2e2222;
-  --sidebar-border: #ddd0d0;
-  --sidebar-ring: #e6b6b6;
+  --sidebar: #fde8e6; /* Warm blush base — clearly red-tinged, but soft */
+  --sidebar-foreground: #2a1e1e;
 
-  --secondary: #f2d4d3;
-  --secondary-foreground: #2e2222;
+  --sidebar-primary: #f6b3af; /* Deeper coral — active/hover state with presence */
+  --sidebar-primary-foreground: #1e1414;
 
-  --muted: #f9f2f2;
-  --muted-foreground: #6b5e5e;
+  --sidebar-accent: #ef3728; /* Your primary red — now used for badges, icons */
+  --sidebar-accent-foreground: #ffffff;
 
-  --accent: #f0d1d1; /* Soft clay blush – warm, dusty, quiet */
-  --accent-foreground: #814343; /* Dark text for contrast */
+  --sidebar-border: #edd0ce; /* Warm line — subtle but defined */
+  --sidebar-ring: #ef3728; /* Same as accent — creates focus unity */
 
-  --destructive: #a54b4b; /* Muted brick red — soft but serious */
+  --secondary: #f8d0ce;
+  --secondary-foreground: #2a1e1e;
+
+  --muted: #f9dbd9; /* Slightly stronger red-tinted layer */
+  --muted-foreground: #7a504d;
+
+  --accent: #f6b3af; /* Now matches --sidebar-primary */
+  --accent-foreground: #1e1414;
+
+  --destructive: #c12e22;
   --destructive-foreground: #ffffff;
-  --destructive-border: #faeaea; /* Light blush background */
-  --destructive-ring: #c77a7a; /* Gentle alert tone */
+  --destructive-border: #ffebeb;
+  --destructive-ring: #ef9a95;
 
-  --ring: #e6b6b6; /* Soft warm focus */
-  --border: #ddd0d0; /* Very soft warm line */
-  --input: #ddd0d0;
+  --border: #edd0ce;
+  --input: #edd0ce;
+  --ring: #ef3728;
 
-  --success: #5e8f70; /* Warm sage — soft, earthy, cohesive */
+  /* --- SUCCESS (now earthy green that complements red) --- */
+  --success: #5a8b6c; /* Warm sage – harmonizes with red (complementary) */
   --success-foreground: #ffffff;
-  --success-border: #e6f2e9; /* Very soft, warm-tinted green background */
-  --success-ring: #a3c4a8; /* Muted mid-tone — visible but gentle */
+  --success-border: #ecf5ed;
+  --success-ring: #a1c2a6;
 
-  --warning: #b37c3e; /* Warm sand — like sunbaked clay */
+  /* --- WARNING (warm sand – contrasts gently) --- */
+  --warning: #b47b3f; /* Warm golden sand – complements red */
   --warning-foreground: #ffffff;
-  --warning-border: #fdf6f0; /* Barely-there warm tint */
-  --warning-ring: #d4a574; /* Soft golden highlight */
+  --warning-border: #fdf6f0;
+  --warning-ring: #d5a675;
 
-  --info: #4a8da5; /* Muted dusty blue — like weathered ceramic */
+  /* --- INFO (dusty blue – triadic harmony) --- */
+  --info: #4a7b9d; /* Muted blue – balances red warmth */
   --info-foreground: #ffffff;
-  --info-border: #e8f2f7; /* Very soft sky-tinted background */
-  --info-ring: #7ca8bf; /* Gentle focus glow */
+  --info-border: #e7f1fa;
+  --info-ring: #8ca9bf;
 }
 
 .dark {
-  --primary: #e08484;
+  /* --- PRIMARY (warmer, more vibrant) --- */
+  --primary: #e67070; /* Warmer than #e08484 — closer to light mode #ef3728 */
   --primary-foreground: #161616;
 
+  /* --- BACKGROUND & FOREGROUND --- */
   --background: #161616;
   --foreground: #f0f0f0;
 
+  /* --- SURFACES --- */
   --card: #262020;
   --card-foreground: #f0f0f0;
 
-  --modal: #2a2222; /* Warm deep clay — slightly lighter than background (#161616) */
-  --modal-foreground: #f0f0f0; /* Same as foreground — clean and readable */
-  --modal-backdrop: rgba(60, 40, 40, 0.36); /* Deep clay shadow */
-
-  --sidebar: #221c1c;
-  --sidebar-foreground: #e0e0e0;
-  --sidebar-primary: #4a3232;
-  --sidebar-primary-foreground: #f0f0f0;
-  --sidebar-accent: #665555;
-  --sidebar-accent-foreground: #f0f0f0;
-  --sidebar-border: #665555;
-  --sidebar-ring: #b37070;
-
-  --popover: #2e2626; /* Warm, soft, clearly layered */
+  --popover: #2e2626;
   --popover-foreground: #f0f0f0;
-  --popover-border: #665555; /* Keep — perfect match */
+  --popover-border: #665555;
 
-  --secondary: #4a3232; /* No change — perfect as-is */
+  --modal: #2a2222;
+  --modal-foreground: #f0f0f0;
+  --modal-backdrop: rgba(60, 40, 40, 0.36);
+
+  /* --- SIDEBAR (now stronger, red-rooted) --- */
+  --sidebar: #241d1d; /* Slightly richer than #221c1c — feels grounded */
+  --sidebar-foreground: #e0e0e0;
+  --sidebar-primary: #4f3434; /* Warmer, deeper coral — active/hover */
+  --sidebar-primary-foreground: #f0f0f0;
+  --sidebar-accent: #b35a5a; /* Warm rose — accent with presence */
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #665555;
+  --sidebar-ring: #b35a5a; /* Matches accent — focus feels intentional */
+
+  /* --- SECONDARY & MUTED --- */
+  --secondary: #4a3232;
   --secondary-foreground: #e0e0e0;
 
-  --muted: #362d2d; /* No change — already harmonious */
+  --muted: #362d2d;
   --muted-foreground: #b8b8b8;
 
-  --accent: #3a2424; /* Slightly lighter than #2c1d1d — still deep */
-  --accent-foreground: #f0c8c8; /* Soft rose instead of bright #ffa4a4 */
+  /* --- ACCENT (now harmonized) --- */
+  --accent: #442a2a; /* Warm deep clay — richer than #3a2424 */
+  --accent-foreground: #f0c8c8; /* Soft rose text — elegant */
 
-  --destructive: #c87a7a; /* Slightly lighter than light mode — stays visible */
+  /* --- DESTRUCTIVE (refined warmth) --- */
+  --destructive: #c87a7a;
   --destructive-foreground: #161616;
-  --destructive-border: #3a2828; /* Deep warm base */
-  --destructive-ring: #a86060; /* Subtle focus cue */
+  --destructive-border: #3a2828;
+  --destructive-ring: #a86060;
 
-  --ring: #b37070; /* Dusty rose — focus only */
-  --border: #665555; /* Soft warm line, visible */
+  /* --- BORDERS & INPUTS --- */
+  --ring: #b35a5a; /* Unified warm rose — was #b37070, now warmer */
+  --border: #665555;
   --input: #665555;
 
-  /* Added semantic colors */
-  --success: #7aaf8f; /* Visually balanced in dark */
+  /* --- SUCCESS (warmer green) --- */
+  --success: #7aaf8f;
   --success-foreground: #161616;
-  --success-border: #304437; /* Stable, deep outline */
-  --success-ring: #689c7e; /* Soft focus indicator */
+  --success-border: #304437;
+  --success-ring: #689c7e;
 
-  --warning: #d9a15c; /* Lightened for visibility — gentle glow */
+  /* --- WARNING (golden warmth) --- */
+  --warning: #d9a15c;
   --warning-foreground: #161616;
-  --warning-border: #382b1f; /* Deep warm brown base */
-  --warning-ring: #c48c5a; /* Focus ring with warmth */
+  --warning-border: #382b1f;
+  --warning-ring: #c48c5a;
 
-  --info: #6aa9bf; /* Lightened for visibility on dark */
+  /* --- INFO (dusty blue, balanced) --- */
+  --info: #6aa9bf;
   --info-foreground: #161616;
-  --info-border: #24323a; /* Deep oceanic base */
-  --info-ring: #5a94ac; /* Softer glow for focus */
+  --info-border: #24323a;
+  --info-ring: #5a94ac;
 }
 
 @custom-variant dark (&:is(.dark *));

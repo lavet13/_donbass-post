@@ -7,7 +7,6 @@ import {
   Fragment,
   isValidElement,
   useContext,
-  useMemo,
   useRef,
   useState,
   type ComponentProps,
@@ -27,13 +26,14 @@ import { ChevronRight, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Link, Outlet } from "@tanstack/react-router";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useTheme } from "@/hooks/use-theme";
-import { Slottable } from "@radix-ui/react-slot";
+import { Slot, Slottable } from "@radix-ui/react-slot";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { cva, type VariantProps } from "class-variance-authority";
 
 type SidebarContextProps = {
   panelRef: React.RefObject<ImperativePanelHandle | null>;
@@ -323,6 +323,20 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
   );
 };
 
+// const SidebarSeparator: FC<ComponentProps<typeof Separator>> = ({
+//   className,
+//   ...props
+// }) {
+//   return (
+//     <Separator
+//       data-slot="sidebar-separator"
+//       data-sidebar="separator"
+//       className={cn("bg-sidebar-border mx-2 w-auto", className)}
+//       {...props}
+//     />
+//   );
+// }
+
 const SidebarMenuLink: FC<
   ComponentProps<typeof SidebarMenuButton> & ComponentProps<typeof Link>
 > = ({ to, children, activeOptions, ...props }) => {
@@ -331,54 +345,70 @@ const SidebarMenuLink: FC<
 
   return (
     <SidebarMenuButton asChild {...props}>
-      <Link
-        activeOptions={activeOptions}
-        activeProps={{
-          className: cn(
-            "data-[status=active]:bg-primary data-[status=active]:text-primary-foreground",
-            "hover:data-[status=active]:bg-primary/95 active:data-[status=active]:bg-primary/90",
-          ),
-        }}
-        to={to}
-      >
-        {(!isCollapsed || isInSubmenu) && (
-          <span className={cn("truncate")}>{children}</span>
-        )}
+      <Link activeOptions={activeOptions} to={to}>
+        {(!isCollapsed || isInSubmenu) && <span>{children}</span>}
       </Link>
     </SidebarMenuButton>
   );
 };
 
+const sidebarMenuButtonVariants = cva(
+  cn(
+    "peer/menu-button flex w-full items-center justify-start gap-2 overflow-hidden rounded-lg px-3 text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground",
+    "disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50",
+    "data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground data-[status=active]:font-medium",
+    "[&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+    "[[data-slot='hover-card-content']_&]:justify-start",
+  ),
+  {
+    variants: {
+      variant: {
+        default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+      },
+      size: {
+        default: "h-9 text-sm",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  },
+);
+
 const SidebarMenuButton: FC<
-  ComponentProps<typeof Button> &
+  ComponentProps<"button"> & { asChild?: boolean } & VariantProps<
+      typeof sidebarMenuButtonVariants
+    > &
     ComponentProps<typeof Tooltip> & {
       leftElement?: ReactNode;
       rightElement?: ReactNode;
     }
 > = ({
+  asChild = false,
+  variant = "default",
+  size = "default",
   className,
   content,
   leftElement,
   rightElement,
-  variant = "sidebar",
   children,
   side = "right",
   ...props
 }) => {
+  const Comp = asChild ? Slot : "button";
   const { open, toggleMenu, hasSidebarSubMenu } = useSidebarMenu();
   const { isInSubmenu } = useSidebarMenuSub();
   const [isHovered, setIsHovered] = useState(false);
   const { isCollapsed } = useSidebar();
 
   const renderButton = () => (
-    <Button
-      variant={variant}
+    <Comp
       data-slot="sidebar-menu-button"
       data-sidebar="menu-button"
       className={cn(
-        "group/menu-button peer/menu-button w-full rounded-lg",
+        sidebarMenuButtonVariants({ variant, size }),
         isCollapsed && "justify-center",
-        "[[data-slot='hover-card-content']_&]:justify-start",
         className,
       )}
       {...props}
@@ -386,7 +416,7 @@ const SidebarMenuButton: FC<
       {leftElement}
       <Slottable>{children}</Slottable>
       {rightElement}
-    </Button>
+    </Comp>
   );
 
   if (isCollapsed) {
@@ -401,16 +431,14 @@ const SidebarMenuButton: FC<
   }
 
   return (
-    <Button
+    <Comp
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       data-slot="sidebar-menu-button"
       data-sidebar="menu-button"
       title={content}
-      variant={variant}
-      type="button"
       className={cn(
-        "group/menu-button w-full rounded-lg px-3!",
+        sidebarMenuButtonVariants({ variant, size }),
         isCollapsed && !isInSubmenu && "justify-center",
         className,
       )}
@@ -429,10 +457,11 @@ const SidebarMenuButton: FC<
           variant="ghost"
           size="icon"
           className={cn(
-            "text-sidebar size-4",
-            "dark:hover:bg-accent-foreground/10",
-            "dark:active:bg-accent-foreground/20",
-            "text-primary [[data-status=active]_&]:text-primary-foreground",
+            "size-4",
+            "[&[data-sidebar='collapsible-button']]:text-sidebar-accent-foreground!",
+            "[&[data-sidebar='collapsible-button']]:hover:bg-sidebar-accent-foreground/10",
+            "[&[data-sidebar='collapsible-button']]:active:bg-sidebar-accent-foreground/20",
+            "[[data-status=active]_&]:text-sidebar-accent-foreground!",
           )}
         >
           <ChevronRight
@@ -447,7 +476,7 @@ const SidebarMenuButton: FC<
       )}
       <Slottable>{children}</Slottable>
       {rightElement}
-    </Button>
+    </Comp>
   );
 };
 
@@ -538,7 +567,12 @@ const SidebarModeToggle: FC<
         <ModeToggle
           data-sidebar="menu-toggle"
           data-slot="sidebar-menu-toggle"
-          className={cn("w-full rounded-lg", className)}
+          className={cn(
+            "text-sidebar-foreground w-full rounded-lg justify-center",
+            "[&[data-sidebar='menu-toggle']]:hover:bg-sidebar-accent [&[data-sidebar='menu-toggle']]:hover:text-sidebar-accent-foreground",
+            "[&[data-sidebar='menu-toggle']]:active:bg-sidebar-accent [&[data-sidebar='menu-toggle']]:active:text-sidebar-accent-foreground",
+            className,
+          )}
           {...props}
         />
       </Tooltip>
@@ -550,7 +584,12 @@ const SidebarModeToggle: FC<
       data-sidebar="menu-toggle"
       data-slot="sidebar-menu-toggle"
       title={content}
-      className={cn("w-full rounded-lg", className)}
+      className={cn(
+        "text-sidebar-foreground w-full rounded-lg justify-start px-3 font-normal",
+        "[&[data-sidebar='menu-toggle']]:hover:bg-sidebar-accent [&[data-sidebar='menu-toggle']]:hover:text-sidebar-accent-foreground",
+        "[&[data-sidebar='menu-toggle']]:active:bg-sidebar-accent [&[data-sidebar='menu-toggle']]:active:text-sidebar-accent-foreground",
+        className,
+      )}
       {...props}
     >
       {content}

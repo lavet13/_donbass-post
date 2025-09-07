@@ -17,15 +17,18 @@ import {
 } from "@/components/ui/sidebar";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TypographyH2 } from "@/components/ui/typography/typographyH2";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import {
   createFileRoute,
   Link,
   linkOptions,
   redirect,
+  useLocation,
 } from "@tanstack/react-router";
 import {
   FileText,
+  LogOut,
   PanelLeftClose,
   PanelLeftOpen,
   SquareArrowOutUpRight,
@@ -52,6 +55,8 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedLayout() {
   const { isCollapsed, toggleSidebar } = useSidebar();
+  const { logout } = useAuth();
+  const pathname = useLocation({ select: ({ pathname }) => pathname });
 
   const navItems = linkOptions([
     {
@@ -60,8 +65,14 @@ function AuthenticatedLayout() {
       activeOptions: { exact: true },
       Icon: FileText,
       items: linkOptions([
-        { label: "Заявка ИМ", to: "/dashboard/requests/shop-cost-calculation-order" },
-        { label: "Забор груза", to: "/dashboard/requests/pick-up-point-delivery-order" }
+        {
+          label: "Заявка ИМ",
+          to: "/dashboard/requests/shop-cost-calculation-order",
+        },
+        {
+          label: "Забор груза",
+          to: "/dashboard/requests/pick-up-point-delivery-order",
+        },
       ]),
     },
   ]);
@@ -87,7 +98,11 @@ function AuthenticatedLayout() {
               className="ml-auto rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
               variant="ghost"
               size="icon"
-              onClick={toggleSidebar}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleSidebar();
+              }}
             >
               {isCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
             </Button>
@@ -135,22 +150,27 @@ function AuthenticatedLayout() {
 
       <SidebarFooter>
         <SidebarMenuItem>
-          <SidebarMenuButton
-            size="icon"
-            variant="ghost"
+          <SidebarMenuLink
+            leftElement={<SquareArrowOutUpRight />}
+            to="/"
             content="Вернуться на сайт"
-            asChild
           >
-            <Link to="/">
-              <SquareArrowOutUpRight />
-              {!isCollapsed && (
-                <span className={cn("truncate")}>Вернуться на сайт</span>
-              )}
-            </Link>
-          </SidebarMenuButton>
+            Вернуться на сайт
+          </SidebarMenuLink>
         </SidebarMenuItem>
         <SidebarMenuItem>
           <SidebarModeToggle />
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            content="Выйти из аккаунта"
+            onClick={() => logout({ redirect: pathname })}
+          >
+            <LogOut />
+            {!isCollapsed && (
+              <span className="truncate">Выйти из аккаунта</span>
+            )}
+          </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarFooter>
     </Sidebar>

@@ -1,4 +1,9 @@
-import { setAuthTokenAtom, isAuthenticatedAtom, jwtPayloadAtom, isManagerAtom } from "@/atoms";
+import {
+  setAuthTokenAtom,
+  isAuthenticatedAtom,
+  jwtPayloadAtom,
+  isManagerAtom,
+} from "@/atoms";
 import { useAtomValue, useSetAtom } from "jotai";
 import { router } from "@/router";
 
@@ -15,10 +20,10 @@ export const useAuth = () => {
     await router.navigate({ to: search.redirect });
   };
 
-  const logout = async () => {
+  const logout = async (search?: { redirect?: string }) => {
     setToken(null);
     await router.invalidate();
-    await router.navigate({ to: "/auth" });
+    await router.navigate({ to: "/auth", search });
   };
 
   return {

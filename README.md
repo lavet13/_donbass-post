@@ -14,9 +14,9 @@
 - [] try to redirect user after deleting cookie from browser console(test)
 - [] try wrapping autodismissmessage into something that drawer vaul has implemented(compound component)
 - [x] add the calculator for "Забор груза", endpoint: 'https://workplace-post.ru/api/delivery-rate/calculate-global',
-- [] useContext for field-accessibility
 - [] queryClient.ensureQueryData in loader to preload of course
 - [] making nav-user
+- [x] add sidebar-button variants
 
 
 # Future requests
