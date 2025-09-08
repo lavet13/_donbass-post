@@ -103,7 +103,7 @@ const ComboboxGroupField: FC<
         className={cn(
           "dark:bg-input/30 dark:hover:bg-input/40 dark:active:bg-input/50 border border-input",
           `justify-between`,
-          open && "bg-secondary/90 dark:bg-input/50",
+          open && "bg-primary/5 dark:bg-input/50",
           className,
         )}
         id={formItemId}
@@ -119,7 +119,7 @@ const ComboboxGroupField: FC<
       >
         <div className="flex shrink items-center min-w-0">
           {!selectedEntry ? (
-            <span className="dark:text-muted-foreground truncate text-base md:text-sm">
+            <span className="text-muted-foreground truncate text-base md:text-sm">
               {placeholder}
             </span>
           ) : (
@@ -134,7 +134,7 @@ const ComboboxGroupField: FC<
           <Tooltip content={selectedEntryClearTooltipMessage}>
             <span
               tabIndex={0}
-              className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+              className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-4.5! hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
               aria-label={selectedEntryClearTooltipMessage}
               onClick={(e) => {
                 e.preventDefault();
@@ -191,7 +191,10 @@ const ComboboxGroupField: FC<
                       title={label}
                       className={cn(
                         value === field.state.value &&
-                          "dark:bg-primary dark:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:text-primary-foreground dark:active:data-[selected=true]:bg-primary/80 dark:text-primary-foreground bg-primary data-[selected=true]:bg-primary/90 hover:data-[selected=true]:bg-primary/90 active:data-[selected=true]:bg-primary/80 text-primary-foreground hover:data-[selected=true]:text-primary-foreground data-[selected=true]:text-primary-foreground",
+                          cn(
+                            "dark:bg-primary dark:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:text-primary-foreground dark:active:data-[selected=true]:bg-primary/80 dark:text-primary-foreground",
+                            "bg-primary data-[selected=true]:bg-primary/90 hover:data-[selected=true]:bg-primary/90 active:data-[selected=true]:bg-primary/80 text-primary-foreground hover:data-[selected=true]:text-primary-foreground data-[selected=true]:text-primary-foreground",
+                          ),
                       )}
                       key={value}
                       value={value as string}

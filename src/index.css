@@ -27,17 +27,18 @@
     0.2
   ); /* Soft red veil – more present than before */
 
-  --sidebar: #fde8e6; /* Warm blush base — clearly red-tinged, but soft */
+  /* --- SIDEBAR (now matches background — defined by borders & interaction) --- */
+  --sidebar: var(--background); /* = #fffaf9 — seamless with page */
   --sidebar-foreground: #2a1e1e;
 
-  --sidebar-primary: #f6b3af; /* Deeper coral — active/hover state with presence */
+  --sidebar-primary: #f48c85; /* Keep vibrant coral for hover/active */
   --sidebar-primary-foreground: #1e1414;
 
-  --sidebar-accent: #ef3728; /* Your primary red — now used for badges, icons */
+  --sidebar-accent: #ef3728; /* Primary red — for icons/badges */
   --sidebar-accent-foreground: #ffffff;
 
-  --sidebar-border: #edd0ce; /* Warm line — subtle but defined */
-  --sidebar-ring: #ef3728; /* Same as accent — creates focus unity */
+  --sidebar-border: #f5b0aa; /* Stronger coral-tinted border — now critical for definition */
+  --sidebar-ring: #ef3728;
 
   --secondary: #f8d0ce;
   --secondary-foreground: #2a1e1e;
@@ -97,15 +98,18 @@
   --modal-foreground: #f0f0f0;
   --modal-backdrop: rgba(60, 40, 40, 0.36);
 
-  /* --- SIDEBAR (now stronger, red-rooted) --- */
-  --sidebar: #241d1d; /* Slightly richer than #221c1c — feels grounded */
-  --sidebar-foreground: #e0e0e0;
-  --sidebar-primary: #4f3434; /* Warmer, deeper coral — active/hover */
-  --sidebar-primary-foreground: #f0f0f0;
-  --sidebar-accent: #b35a5a; /* Warm rose — accent with presence */
+  /* --- SIDEBAR (now matches dark background — defined by borders & interaction) --- */
+  --sidebar: var(--background); /* = #161616 — full integration */
+  --sidebar-foreground: #f0f0f0;
+
+  --sidebar-primary: #7a4242; /* Warm, clear hover state */
+  --sidebar-primary-foreground: #ffffff;
+
+  --sidebar-accent: #b35a5a; /* Your dark primary — pops nicely */
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #665555;
-  --sidebar-ring: #b35a5a; /* Matches accent — focus feels intentional */
+
+  --sidebar-border: #7a5555; /* More present border — essential for structure */
+  --sidebar-ring: #b35a5a;
 
   /* --- SECONDARY & MUTED --- */
   --secondary: #4a3232;

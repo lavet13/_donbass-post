@@ -21,7 +21,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import {
   createFileRoute,
-  Link,
   linkOptions,
   redirect,
   useLocation,

@@ -9,12 +9,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
 import { Fragment, useState } from "react";
 import { FormItem } from "@/components/ui/form";
-import {
-  ChevronDown,
-  ChevronUp,
-  Loader2,
-  TriangleAlert,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, TriangleAlert } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography/typographyH3";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
@@ -304,10 +299,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.ComboboxField
-                          modal
                           label="Населенный пункт"
                           placeholder="Выберите населенный пункт"
-                          searchEmptyMessage="Нет населенных пунктов"
+                          searchEmptyMessage="Таких населенных пунктов нет"
                           aria-label="Выберите удобный по местоположению населенный пункт из списка"
                           loadingMessage="Загружаем населенные пункты"
                           searchInputPlaceholder="Найти населенный пункт..."
@@ -456,8 +450,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.ComboboxField
-                          modal
-                          searchEmptyMessage="Нет населенных пунктов"
+                          searchEmptyMessage="Таких населенных пунктов нет"
                           aria-label="Выберите удобный по местоположению населенный пункт из списка"
                           loadingMessage="Загружаем населенные пункты"
                           searchInputPlaceholder="Найти населенный пункт..."
@@ -695,10 +688,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.ComboboxField
-                          modal
                           label="Населенный пункт"
                           placeholder="Выберите населенный пункт"
-                          searchEmptyMessage="Нет населенных пунктов"
+                          searchEmptyMessage="Таких населенных пунктов нет"
                           aria-label="Выберите удобный по местоположению населенный пункт из списка"
                           loadingMessage="Загружаем населенные пункты"
                           searchInputPlaceholder="Найти населенный пункт..."
@@ -719,7 +711,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                           values={deliveryCompanies}
                           refetch={refetchDeliveryCompanies}
                           isLoading={isDeliveryCompaniesLoading}
-                          searchEmptyMessage="Нет транспортных компаний"
+                          searchEmptyMessage="Таких транспортных компаний нет"
                           aria-label="Выберите транспортную компанию"
                           loadingMessage="Загружаем транспортные компании"
                           searchInputPlaceholder="Найти транспортную компанию..."
@@ -894,10 +886,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.ComboboxField
-                          modal
                           label="Населенный пункт"
                           placeholder="Выберите населенный пункт"
-                          searchEmptyMessage="Нет населенных пунктов"
+                          searchEmptyMessage="Таких населенных пунктов нет"
                           aria-label="Выберите удобный по местоположению населенный пункт из списка"
                           loadingMessage="Загружаем населенные пункты"
                           searchInputPlaceholder="Найти населенный пункт..."
@@ -926,7 +917,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                           values={deliveryCompanies}
                           refetch={refetchDeliveryCompanies}
                           isLoading={isDeliveryCompaniesLoading}
-                          searchEmptyMessage="Нет транспортных компаний"
+                          searchEmptyMessage="Таких транспортных компаний нет"
                           aria-label="Выберите транспортную компанию"
                           loadingMessage="Загружаем транспортные компании"
                           searchInputPlaceholder="Найти транспортную компанию..."
@@ -1362,30 +1353,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
           />
 
           <form.AppField
-            name="cargoData.long"
-            listeners={{
-              onChange: ({ value: long }) => {
-                const { width, height } = form.state.values.cargoData;
-                form.setFieldValue(
-                  "cargoData.cubicMeter",
-                  (width * height * long) / 1_000_000,
-                );
-              },
-            }}
-            children={(field) => {
-              return (
-                <field.NumericField
-                  label="Длина(см)"
-                  placeholder="Длина в сантиметрах"
-                  suffix=" см"
-                  decimalScale={1}
-                  thousandSeparator=","
-                />
-              );
-            }}
-          />
-
-          <form.AppField
             name="cargoData.width"
             listeners={{
               onChange: ({ value: width }) => {
@@ -1425,6 +1392,30 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <field.NumericField
                   label="Высота(см)"
                   placeholder="Высота в сантиметрах"
+                  suffix=" см"
+                  decimalScale={1}
+                  thousandSeparator=","
+                />
+              );
+            }}
+          />
+
+          <form.AppField
+            name="cargoData.long"
+            listeners={{
+              onChange: ({ value: long }) => {
+                const { width, height } = form.state.values.cargoData;
+                form.setFieldValue(
+                  "cargoData.cubicMeter",
+                  (width * height * long) / 1_000_000,
+                );
+              },
+            }}
+            children={(field) => {
+              return (
+                <field.NumericField
+                  label="Длина(см)"
+                  placeholder="Длина в сантиметрах"
                   suffix=" см"
                   decimalScale={1}
                   thousandSeparator=","

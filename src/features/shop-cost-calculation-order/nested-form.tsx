@@ -257,7 +257,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                   (_, productIndex) => {
                                     return (
                                       <React.Fragment key={productIndex}>
-                                        <div className="relative flex flex-col gap-1 mt-2 px-2 py-1 ml-1 border-l-3 border-ring rounded-l-xs rounded-r-lg bg-accent/10">
+                                        <div className="relative flex flex-col gap-1 mt-2 px-2 py-1 ml-1 border-l-3 border-ring rounded-l-xs rounded-r-lg bg-primary/2">
                                           {productIndex === 0 && (
                                             <h3 className="font-medium text-sm">
                                               Товар № {productIndex + 1}

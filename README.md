@@ -14,11 +14,8 @@
 - [] try to redirect user after deleting cookie from browser console(test)
 - [] try wrapping autodismissmessage into something that drawer vaul has implemented(compound component)
 - [x] add the calculator for "Забор груза", endpoint: 'https://workplace-post.ru/api/delivery-rate/calculate-global',
-- [] queryClient.ensureQueryData in loader to preload of course
+- [x] queryClient.ensureQueryData in loader to preload of course
 - [] making nav-user
 - [x] add sidebar-button variants
-
-
-# Future requests
+- [] view transition in tanstack router
 - [] try implementing loading indicator(e.g. botfather's mini app), and basic fade in and out animation
-
