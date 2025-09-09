@@ -1,4 +1,5 @@
 # Ideas:
+
 - [x] pick colors and define them in tailwind
 - [x] react query query key generator(GET requests)
 - [x] try and implement form with TanStack Form(newly released package). UPD: it's as good as react-hook-form, even better than I expected
@@ -21,4 +22,5 @@
 - [] create schedules
 - [] setup telegram-mini-app
 - [] view transition in tanstack router
+- [] finish styling the sidebar and add second version of sidebar(drawer/vaul) for mobile viewport
 - [x] try implementing loading indicator(e.g. botfather's mini app), and basic fade in and out animation

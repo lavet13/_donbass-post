@@ -664,7 +664,7 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
               </div>
             )}
 
-            <div className="container">
+            <div className="container px-4">
               <Outlet />
             </div>
           </MainContent>
