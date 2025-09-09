@@ -11,7 +11,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import type { useAuth } from "@/hooks/use-auth";
 import NProgress from "nprogress";
 import { Fragment } from "react/jsx-runtime";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 type MyRouterContext = {
   queryClient: QueryClient;

@@ -17,5 +17,8 @@
 - [x] queryClient.ensureQueryData in loader to preload of course
 - [] making nav-user
 - [x] add sidebar-button variants
+- [] rethink about the way we define our components per page -components folder inside /routes
+- [] create schedules
+- [] setup telegram-mini-app
 - [] view transition in tanstack router
-- [] try implementing loading indicator(e.g. botfather's mini app), and basic fade in and out animation
+- [x] try implementing loading indicator(e.g. botfather's mini app), and basic fade in and out animation
