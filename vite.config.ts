@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/user",
+  base: "/user/",
   plugins: [
     tailwindcss(),
     tanstackRouter({
@@ -81,7 +81,7 @@ export default defineConfig({
           "number-input": ["react-number-format"],
           "phone-input": ["react-phone-number-input"],
 
-          misc: ["react-device-detect", "immer"],
+          misc: ["react-device-detect", "immer", "nprogress"],
 
           // Network and API
           network: ["axios"],
