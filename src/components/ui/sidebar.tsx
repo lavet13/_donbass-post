@@ -457,7 +457,7 @@ const SidebarMenuButton: FC<
           variant="ghost"
           size="icon"
           className={cn(
-            "size-4",
+            "size-4 rounded-sm",
             "[&[data-sidebar='collapsible-button']]:text-sidebar-accent-foreground!",
             "[&[data-sidebar='collapsible-button']]:hover:bg-sidebar-accent-foreground/10",
             "[&[data-sidebar='collapsible-button']]:active:bg-sidebar-accent-foreground/20",
