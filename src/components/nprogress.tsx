@@ -62,9 +62,9 @@ type UseNProgressProps = Parameters<typeof useNProgress>[0];
 
 const Progress: FC<UseNProgressProps> = (props) => {
   const {
-    animationDuration = 150,
+    animationDuration = 100,
     minimum = 0.08,
-    incrementDuration = 400,
+    incrementDuration = 800,
     isAnimating = false,
   } = props || {};
 
