@@ -2,7 +2,7 @@ import { useFormContext } from "@/hooks/form-context";
 import { cn } from "@/lib/utils";
 import type { ComponentProps, FC } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Icons } from "@/components/icons";
 
 const SubmitButton: FC<
   ComponentProps<"button"> & { label: string; loadingMessage?: string }
@@ -26,7 +26,7 @@ const SubmitButton: FC<
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="animate-spin" />
+              <Icons.spinner className="text-primary-foreground size-4" />
               {loadingMessage}
             </>
           ) : (

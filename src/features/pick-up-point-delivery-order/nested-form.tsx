@@ -9,7 +9,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
 import { Fragment, useState } from "react";
 import { FormItem } from "@/components/ui/form";
-import { ChevronDown, ChevronUp, Loader2, TriangleAlert } from "lucide-react";
+import { ChevronDown, ChevronUp, TriangleAlert } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { TypographyH3 } from "@/components/ui/typography/typographyH3";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
@@ -21,6 +21,7 @@ import {
 } from "@/components/auto-dismiss-message";
 import { useCalculateGlobalMutation } from "@/features/delivery-rate/mutations";
 import { isAxiosError } from "axios";
+import { Icons } from "@/components/icons";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -1454,21 +1455,24 @@ export const PickUpPointDeliveryOrderForm = withForm({
         />
 
         {isAdditionalServiceLoading && (
-          <div className="flex items-center justify-center py-1.5">
-            <Loader2 className="text-primary animate-spin" />
+          <div className="flex gap-2 items-center justify-center py-1.5 text-primary">
+            <Icons.spinner />
+            Загружаем доп. услуги
           </div>
         )}
         {!additionalServices && !isAdditionalServiceLoading && (
           <div className="py-2 w-full flex flex-col gap-2 items-center justify-center">
             Не удалось загрузить дополнительные услуги
             <Button
-              onClick={() => refetchAdditionalServices()}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                refetchAdditionalServices();
+              }}
               size="sm"
-              variant="secondary"
+              variant="outline"
             >
-              {isAdditionalServiceFetching && (
-                <Loader2 className={"animate-spin"} />
-              )}
+              {isAdditionalServiceFetching && <Icons.spinner />}
               Попробовать еще раз
             </Button>
           </div>
@@ -1600,7 +1604,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             >
               {isPending ? (
                 <>
-                  <Loader2 className="animate-spin" />
+                  <Icons.spinner className="size-4 text-primary-foreground" />
                   Просчёт...
                 </>
               ) : (

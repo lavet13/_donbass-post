@@ -1,11 +1,12 @@
 import { useControllableState } from "@/hooks/use-controllable-state";
 import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
-import { Loader2, SearchIcon, X } from "lucide-react";
+import { SearchIcon, X } from "lucide-react";
 import { useEffect, useRef, type ComponentProps, type FC } from "react";
 import { Tooltip } from "@/components/ui/tooltip";
 import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
 import mergeRefs from "@/hooks/merge-refs";
+import { Icons } from "../icons";
 
 // https://github.com/pacocoursey/cmdk?tab=readme-ov-file
 const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
@@ -68,7 +69,7 @@ const CommandItem: FC<ComponentProps<typeof CommandPrimitive.Item>> = ({
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-primary-foreground",
         "relative flex cursor-default items-center gap-2 rounded-lg px-2 py-1.5 select-none outline-hidden text-sm",
-        "md:text-sm text-base",
+        "md:text-sm text-base md:leading-4 leading-5 not-first:mt-0.5",
         className,
       )}
       {...props}
@@ -87,8 +88,8 @@ const CommandLoading: FC<ComponentProps<typeof CommandPrimitive.Loading>> = ({
       className={cn("text-muted-foreground py-8", className)}
       {...props}
     >
-      <div className={"flex gap-2 items-center justify-center"}>
-        <Loader2 className="size-4 animate-spin" />
+      <div className={"flex text-sm gap-2 items-center justify-center"}>
+        <Icons.spinner className="size-4" />
         {children}
       </div>
     </CommandPrimitive.Loading>
