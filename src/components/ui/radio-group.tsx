@@ -8,7 +8,11 @@ const RadioGroup: FC<ComponentProps<typeof RadioGroupPrimitive.Root>> = ({
   ...props
 }) => {
   return (
-    <RadioGroupPrimitive.Root data-slot="radio-group" className={cn("flex", className)} {...props} />
+    <RadioGroupPrimitive.Root
+      data-slot="radio-group"
+      className={cn("flex", className)}
+      {...props}
+    />
   );
 };
 

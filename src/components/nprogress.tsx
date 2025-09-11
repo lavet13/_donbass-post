@@ -63,7 +63,7 @@ type UseNProgressProps = Parameters<typeof useNProgress>[0];
 const Progress: FC<UseNProgressProps> = (props) => {
   const {
     animationDuration = 100,
-    minimum = 0.08,
+    minimum = 0.1,
     incrementDuration = 800,
     isAnimating = false,
   } = props || {};
@@ -77,7 +77,11 @@ const Progress: FC<UseNProgressProps> = (props) => {
 
   return (
     <Container animationDuration={animationDuration} isFinished={isFinished}>
-      <Bar animationDuration={animationDuration} progress={progress} isFinished={isFinished} />
+      <Bar
+        animationDuration={animationDuration}
+        progress={progress}
+        isFinished={isFinished}
+      />
     </Container>
   );
 };

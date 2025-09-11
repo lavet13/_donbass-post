@@ -211,7 +211,7 @@ export const ShopCostCalculationOrderForm = withForm({
                           <div className="flex justify-between items-center mt-2">
                             <Tooltip content="Удалить магазин и товары">
                               <button
-                                className="text-secondary-foreground relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary/60 active:bg-secondary/70 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                                className="relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-accent/10 active:bg-accent/25 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                                 aria-label="Удалить магазин и товары"
                                 type="button"
                                 onClick={() =>
@@ -270,7 +270,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                               </h3>
                                               <Tooltip content="Удалить товар">
                                                 <button
-                                                  className="text-secondary-foreground relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary/60 active:bg-secondary/70 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                                                  className="text-foreground relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-accent/10 active:bg-accent/25 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                                                   aria-label="Удалить товар"
                                                   type="button"
                                                   onClick={() =>

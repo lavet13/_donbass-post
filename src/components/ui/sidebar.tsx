@@ -649,7 +649,7 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
                   <Button
                     data-sidebar="trigger"
                     data-slot="sidebar-trigger"
-                    className="text-accent-foreground rounded-full"
+                    className="text-foreground rounded-full"
                     variant="outline"
                     size="icon"
                     onClick={toggleSidebar}

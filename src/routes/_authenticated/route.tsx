@@ -82,7 +82,7 @@ function AuthenticatedLayout() {
         <div className="flex-1 shrink @max-[130px]:hidden">
           <TypographyH2
             className={cn(
-              "text-accent-foreground sm:leading-none text-sm @max-[130px]:hidden",
+              "text-foreground sm:leading-none text-sm @max-[130px]:hidden",
             )}
           >
             Личный кабинет
@@ -94,7 +94,7 @@ function AuthenticatedLayout() {
             content={!isCollapsed ? "Свернуть панель" : "Открыть панель"}
           >
             <Button
-              className="ml-auto rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
+              className="text-foreground ml-auto rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
               variant="ghost"
               size="icon"
               onClick={(e) => {
