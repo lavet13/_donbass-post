@@ -9,15 +9,10 @@ export const Route = createFileRoute(
   "/_authenticated/dashboard/requests/pick-up-point-delivery-order",
 )({
   component: RouteComponent,
-  async loader({ context }) {
-    const userData = await context.queryClient.ensureQueryData(
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(
       pickUpPointDeliveryOrderUserQueryOptions,
-    );
-
-    // console.log({ userData });
-
-    return userData;
-  },
+    ),
   errorComponent({ error, reset }) {
     const pathname = useLocation({
       select: (location) => location.pathname,

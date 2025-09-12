@@ -9,15 +9,10 @@ export const Route = createFileRoute(
   "/_authenticated/dashboard/requests/shop-cost-calculation-order",
 )({
   component: RouteComponent,
-  async loader({ context }) {
-    const userData = await context.queryClient.ensureQueryData(
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(
       shopCostCalculationOrderUserQueryOptions,
-    );
-
-    // console.log({ userData });
-
-    return userData;
-  },
+    ),
   errorComponent({ error, reset }) {
     const pathname = useLocation({
       select: (location) => location.pathname,

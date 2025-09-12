@@ -53,7 +53,7 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AuthenticatedLayout() {
-  const { isCollapsed, toggleSidebar } = useSidebar();
+  const { toggleSidebar, isCollapsed, isMobile } = useSidebar();
   const { logout } = useAuth();
   const pathname = useLocation({ select: ({ pathname }) => pathname });
 
@@ -76,6 +76,21 @@ function AuthenticatedLayout() {
     },
   ]);
 
+  let collapsedButton = (
+    <Button
+      className="text-foreground ml-auto rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
+      variant="ghost"
+      size="icon"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSidebar();
+      }}
+    >
+      {isCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+    </Button>
+  );
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -89,23 +104,16 @@ function AuthenticatedLayout() {
           </TypographyH2>
         </div>
         <div className="grow-0 @max-[130px]:flex-1 @max-[130px]:px-[0.5rem]">
-          <Tooltip
-            side="right"
-            content={!isCollapsed ? "Свернуть панель" : "Открыть панель"}
-          >
-            <Button
-              className="text-foreground ml-auto rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
-              variant="ghost"
-              size="icon"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleSidebar();
-              }}
+          {isMobile ? (
+            collapsedButton
+          ) : (
+            <Tooltip
+              side="right"
+              content={!isCollapsed ? "Свернуть панель" : "Открыть панель"}
             >
-              {isCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
-            </Button>
-          </Tooltip>
+              {collapsedButton}
+            </Tooltip>
+          )}
         </div>
       </SidebarHeader>
 

@@ -1,4 +1,3 @@
-import { useContainerQuery } from "@/hooks/use-container-query";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import {
@@ -22,7 +21,7 @@ import {
 import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { ChevronRight, Menu } from "lucide-react";
 import { Link, Outlet } from "@tanstack/react-router";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useTheme } from "@/hooks/use-theme";
@@ -34,16 +33,23 @@ import {
 } from "@/components/ui/hover-card";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { cva, type VariantProps } from "class-variance-authority";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 type SidebarContextProps = {
   panelRef: React.RefObject<ImperativePanelHandle | null>;
-  containerRef: React.RefObject<HTMLDivElement | null>;
-  isCollapsed: boolean;
   collapsedSize: number;
   minimalSize: number;
   expandedSize: number;
   isMobile: boolean;
+  isCollapsed: boolean;
   toggleSidebar: () => void;
+  handleResize: (size: number) => void;
 };
 
 const SidebarContext = createContext<SidebarContextProps | null>(null);
@@ -89,52 +95,45 @@ const SidebarProvider: FC<ComponentProps<"div">> = ({ children }) => {
           ? 40
           : 16;
 
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const panelRef = useRef<ImperativePanelHandle>(null);
-  const { ref: containerRef, isMatched: isCollapsed } =
-    useContainerQuery<HTMLDivElement>("min-width: 1px and max-width: 130px");
 
   const toggleSidebar = () => {
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+
     if (panelRef.current) {
-      if (panelRef.current.isCollapsed()) {
-        panelRef.current.expand();
+      if (newCollapsedState) {
+        panelRef.current.resize(collapsedSizePercent);
       } else {
-        panelRef.current.collapse();
+        panelRef.current.resize(expandedSizePercent);
       }
     }
   };
 
-  // const contextValue = useMemo<SidebarContextProps>(
-  //   () => ({
-  //     expandedSize: expandedSizePercent,
-  //     collapsedSize: collapsedSizePercent,
-  //     minimalSize: minimalSizePercent,
-  //     panelRef,
-  //     isCollapsed,
-  //     containerRef,
-  //     isMobile,
-  //     toggleSidebar,
-  //   }),
-  //   [
-  //     expandedSizePercent,
-  //     collapsedSizePercent,
-  //     minimalSizePercent,
-  //     panelRef.current,
-  //     isCollapsed,
-  //     containerRef.current,
-  //     isMobile,
-  //     toggleSidebar,
-  //   ],
-  // );
+  const handleResize = (size: number) => {
+    if (size <= collapsedSizePercent && !isCollapsed) {
+      setIsCollapsed(true);
+      if (panelRef.current) {
+        panelRef.current.resize(collapsedSizePercent);
+      }
+    } else if (size > collapsedSizePercent && isCollapsed) {
+      setIsCollapsed(false);
+      if (panelRef.current) {
+        panelRef.current.resize(expandedSizePercent);
+      }
+    }
+  };
 
   const contextValue: SidebarContextProps = {
     expandedSize: expandedSizePercent,
     collapsedSize: collapsedSizePercent,
     minimalSize: minimalSizePercent,
-    panelRef,
     isCollapsed,
-    containerRef,
+    panelRef,
     isMobile,
     toggleSidebar,
+    handleResize,
   };
 
   return (
@@ -207,6 +206,14 @@ const MainContent: FC<ComponentProps<"div">> = (props) => {
   );
 };
 
+const SidebarOutlet: FC = () => {
+  return (
+    <div className="container px-4">
+      <Outlet />
+    </div>
+  );
+};
+
 const SidebarMenuGroup: FC<ComponentProps<"div">> = ({
   className,
   ...props
@@ -262,7 +269,7 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
   label,
   ...props
 }) => {
-  const { isCollapsed } = useSidebar();
+  const { isCollapsed, isMobile } = useSidebar();
   const [open, setOpen] = useState(false);
 
   const toggleMenu = () => setOpen(!open);
@@ -308,7 +315,7 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
   }
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen}>
+    <Collapsible open={isMobile || open} onOpenChange={setOpen}>
       <SidebarMenuContext value={contextValue}>
         <li
           data-slot="sidebar-menu-item"
@@ -400,7 +407,7 @@ const SidebarMenuButton: FC<
   const { open, toggleMenu, hasSidebarSubMenu } = useSidebarMenu();
   const { isInSubmenu } = useSidebarMenuSub();
   const [isHovered, setIsHovered] = useState(false);
-  const { isCollapsed } = useSidebar();
+  const { isCollapsed, isMobile } = useSidebar();
 
   const renderButton = () => (
     <Comp
@@ -444,7 +451,7 @@ const SidebarMenuButton: FC<
       )}
       {...props}
     >
-      {isHovered && hasSidebarSubMenu && !isInSubmenu ? (
+      {isHovered && hasSidebarSubMenu && !isInSubmenu && !isMobile ? (
         <Button
           onClick={(e) => {
             e.stopPropagation();
@@ -600,13 +607,58 @@ const SidebarModeToggle: FC<
 const Sidebar: FC<ComponentProps<"div">> = (props) => {
   const {
     expandedSize,
-    containerRef,
     panelRef,
     minimalSize,
     collapsedSize,
     isMobile,
+    isCollapsed,
     toggleSidebar,
+    handleResize,
   } = useSidebar();
+
+  if (isMobile) {
+    return (
+      <MainContent>
+        <Drawer
+          open={!isCollapsed}
+          onOpenChange={() => toggleSidebar()}
+          direction="left"
+        >
+          <div className="sticky top-0 mx-1 mt-1">
+            <DrawerTrigger asChild>
+              <Button
+                className="text-foreground rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleSidebar();
+                }}
+              >
+                <Menu />
+              </Button>
+            </DrawerTrigger>
+          </div>
+          <DrawerContent
+            aria-describedby={undefined}
+            className="left-1 top-1 bottom-1 border border-sidebar-border/40 rounded-[16px] max-w-[300px] w-full"
+          >
+            <VisuallyHidden>
+              <DrawerTitle>
+                Личный кабинет пользователя ТК "Наша Почта"
+              </DrawerTitle>
+            </VisuallyHidden>
+            <div
+              className="grow h-full w-full pt-1 flex flex-col bg-sidebar rounded-[16px]"
+              {...props}
+            />
+          </DrawerContent>
+        </Drawer>
+        <SidebarOutlet />
+      </MainContent>
+    );
+  }
 
   return (
     <Fragment>
@@ -619,9 +671,9 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
           defaultSize={expandedSize}
           maxSize={expandedSize}
           minSize={minimalSize}
+          onResize={handleResize}
         >
           <div
-            ref={containerRef}
             className="h-full @container flex flex-col overflow-y-auto min-h-screen"
             {...props}
           />
@@ -631,42 +683,7 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
 
         <ResizablePanel>
           <MainContent>
-            {panelRef.current?.isCollapsed() && (
-              <div
-                className={cn(
-                  "container sticky top-0.5 mt-1",
-                  !isMobile && "hidden",
-                )}
-              >
-                <Tooltip
-                  side="right"
-                  content={
-                    panelRef.current?.isExpanded()
-                      ? "Свернуть панель"
-                      : "Открыть панель"
-                  }
-                >
-                  <Button
-                    data-sidebar="trigger"
-                    data-slot="sidebar-trigger"
-                    className="text-foreground rounded-full"
-                    variant="outline"
-                    size="icon"
-                    onClick={toggleSidebar}
-                  >
-                    {panelRef.current?.isCollapsed() ? (
-                      <PanelLeftOpen />
-                    ) : (
-                      <PanelLeftClose />
-                    )}
-                  </Button>
-                </Tooltip>
-              </div>
-            )}
-
-            <div className="container px-4">
-              <Outlet />
-            </div>
+            <SidebarOutlet />
           </MainContent>
         </ResizablePanel>
       </ResizablePanelGroup>

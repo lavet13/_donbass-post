@@ -9,8 +9,9 @@ export const Suspend: FC<SuspendProps> = ({ fallback, children, ...props }) => {
     <Suspense
       fallback={
         fallback || (
-          <div className="col-span-full flex-1 flex items-center justify-center my-1 text-primary">
+          <div className="col-span-full flex-1 flex items-center justify-center gap-2 my-1 text-primary">
             <Icons.spinner />
+            Загрузка...
           </div>
         )
       }
