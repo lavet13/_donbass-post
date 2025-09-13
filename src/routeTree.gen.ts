@@ -13,6 +13,7 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicShopCostCalculationOrderRouteImport } from './routes/_public/shop-cost-calculation-order'
+import { Route as PublicSchedulesRouteImport } from './routes/_public/schedules'
 import { Route as PublicPickUpPointDeliveryOrderRouteImport } from './routes/_public/pick-up-point-delivery-order'
 import { Route as PublicAuthRouteImport } from './routes/_public/auth'
 import { Route as AuthenticatedDashboardRouteRouteImport } from './routes/_authenticated/dashboard/route'
@@ -39,6 +40,11 @@ const PublicShopCostCalculationOrderRoute =
     path: '/shop-cost-calculation-order',
     getParentRoute: () => PublicRouteRoute,
   } as any)
+const PublicSchedulesRoute = PublicSchedulesRouteImport.update({
+  id: '/schedules',
+  path: '/schedules',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
 const PublicPickUpPointDeliveryOrderRoute =
   PublicPickUpPointDeliveryOrderRouteImport.update({
     id: '/pick-up-point-delivery-order',
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/auth': typeof PublicAuthRoute
   '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
+  '/schedules': typeof PublicSchedulesRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
   '/dashboard/requests/pick-up-point-delivery-order': typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/auth': typeof PublicAuthRoute
   '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
+  '/schedules': typeof PublicSchedulesRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/': typeof PublicIndexRoute
   '/dashboard/requests/pick-up-point-delivery-order': typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/_public/auth': typeof PublicAuthRoute
   '/_public/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
+  '/_public/schedules': typeof PublicSchedulesRoute
   '/_public/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
   '/_public/': typeof PublicIndexRoute
   '/_authenticated/dashboard/requests/pick-up-point-delivery-order': typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/auth'
     | '/pick-up-point-delivery-order'
+    | '/schedules'
     | '/shop-cost-calculation-order'
     | '/'
     | '/dashboard/requests/pick-up-point-delivery-order'
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/auth'
     | '/pick-up-point-delivery-order'
+    | '/schedules'
     | '/shop-cost-calculation-order'
     | '/'
     | '/dashboard/requests/pick-up-point-delivery-order'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_public/auth'
     | '/_public/pick-up-point-delivery-order'
+    | '/_public/schedules'
     | '/_public/shop-cost-calculation-order'
     | '/_public/'
     | '/_authenticated/dashboard/requests/pick-up-point-delivery-order'
@@ -176,6 +188,13 @@ declare module '@tanstack/react-router' {
       path: '/shop-cost-calculation-order'
       fullPath: '/shop-cost-calculation-order'
       preLoaderRoute: typeof PublicShopCostCalculationOrderRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/schedules': {
+      id: '/_public/schedules'
+      path: '/schedules'
+      fullPath: '/schedules'
+      preLoaderRoute: typeof PublicSchedulesRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/pick-up-point-delivery-order': {
@@ -259,6 +278,7 @@ const AuthenticatedRouteRouteWithChildren =
 interface PublicRouteRouteChildren {
   PublicAuthRoute: typeof PublicAuthRoute
   PublicPickUpPointDeliveryOrderRoute: typeof PublicPickUpPointDeliveryOrderRoute
+  PublicSchedulesRoute: typeof PublicSchedulesRoute
   PublicShopCostCalculationOrderRoute: typeof PublicShopCostCalculationOrderRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
@@ -266,6 +286,7 @@ interface PublicRouteRouteChildren {
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicAuthRoute: PublicAuthRoute,
   PublicPickUpPointDeliveryOrderRoute: PublicPickUpPointDeliveryOrderRoute,
+  PublicSchedulesRoute: PublicSchedulesRoute,
   PublicShopCostCalculationOrderRoute: PublicShopCostCalculationOrderRoute,
   PublicIndexRoute: PublicIndexRoute,
 }

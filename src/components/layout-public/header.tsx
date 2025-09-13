@@ -47,6 +47,7 @@ export const Header: FC = () => {
           Выкуп менеджером ИМ
         </NavButton>
         <NavButton to="/pick-up-point-delivery-order">Забор груза</NavButton>
+        <NavButton to="/schedules">Расписание</NavButton>
       </div>
       <div className="ml-auto flex items-center gap-1">
         <Tooltip content={content}>

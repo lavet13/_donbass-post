@@ -5,10 +5,19 @@ import {
   type UseQueryOptions,
 } from "@tanstack/react-query";
 import { createQueryKeys } from "@lukemorales/query-key-factory";
-import type { DeliveryPoint } from "@/features/point/types";
+import type {
+  DeliveryPoint,
+  DeliveryPointSchedule,
+} from "@/features/point/types";
 
 const pointKeys = createQueryKeys("point", {
+  // Информация об отделениях
   post: {
+    queryKey: null,
+  },
+
+  // Расписания отделений
+  list: {
     queryKey: null,
   },
 });
@@ -56,6 +65,25 @@ async function pointsPost() {
   ];
 }
 
+async function fetchPointsList() {
+  const { data: points } =
+    await workplacePostApi.get<DeliveryPointSchedule[]>("/point/list");
+
+  const mobilePoints = points.filter((point) => point.mobilePoint);
+  const staticPoints = points.filter((point) => !point.mobilePoint);
+
+  return [
+    {
+      label: "Стационарные отделения",
+      items: staticPoints,
+    },
+    {
+      label: "Мобильные отделения",
+      items: mobilePoints,
+    },
+  ];
+}
+
 type UsePointPostQueryProps = {
   options?: UseQueryOptions;
 };
@@ -74,4 +102,28 @@ const usePointPostQuery = (props: UsePointPostQueryProps = {}) => {
   });
 };
 
-export { usePointPostQuery, pointKeys, pointPostQueryOptions };
+type UsePointListQueryProps = {
+  options?: UseQueryOptions;
+};
+
+const pointListQueryOptions = queryOptions({
+  queryKey: pointKeys.list.queryKey,
+  queryFn: fetchPointsList,
+});
+
+const usePointListQuery = (props: UsePointListQueryProps = {}) => {
+  const { options = {} } = props;
+
+  return useQuery({
+    ...pointListQueryOptions,
+    ...options,
+  });
+};
+
+export {
+  pointKeys,
+  usePointPostQuery,
+  pointPostQueryOptions,
+  usePointListQuery,
+  pointListQueryOptions,
+};

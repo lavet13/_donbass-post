@@ -18,3 +18,26 @@ export type DeliveryPoint = {
   };
   fullName: string;
 };
+
+export type DeliveryPointSchedule = {
+  id: string | number;
+  name: string;
+  shortName: string | null;
+  address: string;
+  active: boolean;
+  apiActive: boolean;
+  mobilePoint: boolean;
+  mondayWorkTime: string | null;
+  tuesdayWorkTime: string | null;
+  wednesdayWorkTime: string | null;
+  thursdayWorkTime: string | null;
+  fridayWorkTime: string | null;
+  saturdayWorkTime: string | null;
+  sundayWorkTime: string | null;
+  image: string;
+  map: string;
+  temporarilyClosed: boolean;
+  message: string;
+  city: { id: number; name: string };
+  deliveryCompany: { name: string };
+};

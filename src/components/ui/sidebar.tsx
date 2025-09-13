@@ -633,7 +633,7 @@ const SidebarMobile: FC<ComponentProps<"div">> = (props) => {
         </div>
         <DrawerContent
           aria-describedby={undefined}
-          className="text-sidebar-foreground left-1 top-1 bottom-1 border border-sidebar-border/40 rounded-[16px] max-w-[300px] w-full"
+          className="text-sidebar-foreground bg-sidebar left-0 top-0 bottom-0 border-r-2 border-sidebar-border/40 max-w-[300px] w-full"
         >
           <VisuallyHidden>
             <DrawerTitle>
@@ -641,7 +641,7 @@ const SidebarMobile: FC<ComponentProps<"div">> = (props) => {
             </DrawerTitle>
           </VisuallyHidden>
           <div
-            className="grow h-full w-full pt-1 flex flex-col bg-sidebar rounded-[16px]"
+            className="grow h-full w-full pt-1 flex flex-col bg-sidebar"
             {...props}
           />
         </DrawerContent>
