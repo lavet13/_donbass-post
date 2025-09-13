@@ -76,9 +76,9 @@ function AuthenticatedLayout() {
     },
   ]);
 
-  let collapsedButton = (
+  const collapsedButton = (
     <Button
-      className="text-foreground ml-auto rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
+      className="ml-auto rounded-xl @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
       variant="ghost"
       size="icon"
       onClick={(e) => {
@@ -87,7 +87,7 @@ function AuthenticatedLayout() {
         toggleSidebar();
       }}
     >
-      {isCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+      {isCollapsed && !isMobile ? <PanelLeftOpen /> : <PanelLeftClose />}
     </Button>
   );
 
@@ -170,11 +170,11 @@ function AuthenticatedLayout() {
         </SidebarMenuItem>
         <SidebarMenuItem>
           <SidebarMenuButton
+            leftElement={<LogOut />}
             content="Выйти из аккаунта"
             onClick={() => logout({ redirect: pathname })}
           >
-            <LogOut />
-            {!isCollapsed && (
+            {(!isCollapsed || isMobile) && (
               <span className="truncate">Выйти из аккаунта</span>
             )}
           </SidebarMenuButton>

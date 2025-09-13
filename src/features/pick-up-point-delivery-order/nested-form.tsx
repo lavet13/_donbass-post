@@ -940,7 +940,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <TypographyH3 className="text-primary">Заказчик</TypographyH3>
                 <Toggle
                   className={cn(
-                    buttonVariants({ variant: "ghost" }),
+                    buttonVariants({ variant: "outline" }),
                     "border-accent border data-[state=on]:bg-primary dark:data-[state=on]:bg-primary data-[state=on]:text-primary-foreground w-full sm:w-fit",
                     "sm:rounded-bl-lg",
                     "data-[state=on]:-mb-px data-[state=on]:rounded-bl-none data-[state=on]:rounded-br-none sm:data-[state=on]:rounded-b-lg sm:data-[state=on]:mb-0",

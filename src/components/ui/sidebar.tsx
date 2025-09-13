@@ -40,6 +40,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { isMobile as isMobileDevice } from 'react-device-detect';
 
 type SidebarContextProps = {
   panelRef: React.RefObject<ImperativePanelHandle | null>;
@@ -60,7 +61,7 @@ const SidebarProvider: FC<ComponentProps<"div">> = ({ children }) => {
   const middleBreakpoint = styles.getPropertyValue("--breakpoint-md");
   const isMobile = useMediaQuery(
     `(max-width: calc(${middleBreakpoint} - 1px))`,
-  );
+  ) || isMobileDevice;
 
   const isPreMobile = useMediaQuery(`(min-width: ${middleBreakpoint})`);
 
@@ -293,7 +294,7 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
     hasSidebarSubMenu,
   };
 
-  if (isCollapsed && hasSidebarSubMenu) {
+  if (isCollapsed && !isMobile && hasSidebarSubMenu) {
     return (
       <SidebarMenuContext value={contextValue}>
         <li
@@ -348,12 +349,12 @@ const SidebarMenuLink: FC<
   ComponentProps<typeof SidebarMenuButton> & ComponentProps<typeof Link>
 > = ({ to, children, activeOptions, ...props }) => {
   const { isInSubmenu } = useSidebarMenuSub();
-  const { isCollapsed } = useSidebar();
+  const { isCollapsed, isMobile } = useSidebar();
 
   return (
     <SidebarMenuButton asChild {...props}>
       <Link activeOptions={activeOptions} to={to}>
-        {(!isCollapsed || isInSubmenu) && <span>{children}</span>}
+        {(!isCollapsed || isInSubmenu || isMobile) && <span>{children}</span>}
       </Link>
     </SidebarMenuButton>
   );
@@ -415,7 +416,7 @@ const SidebarMenuButton: FC<
       data-sidebar="menu-button"
       className={cn(
         sidebarMenuButtonVariants({ variant, size }),
-        isCollapsed && "justify-center",
+        (isCollapsed && !isMobile) && "justify-center",
         className,
       )}
       {...props}
@@ -426,7 +427,7 @@ const SidebarMenuButton: FC<
     </Comp>
   );
 
-  if (isCollapsed) {
+  if (isCollapsed && !isMobile) {
     if (hasSidebarSubMenu) {
       return renderButton();
     }
@@ -446,7 +447,7 @@ const SidebarMenuButton: FC<
       title={content}
       className={cn(
         sidebarMenuButtonVariants({ variant, size }),
-        isCollapsed && !isInSubmenu && "justify-center",
+        isCollapsed && !isMobile && !isInSubmenu && "justify-center",
         className,
       )}
       {...props}
@@ -499,10 +500,10 @@ const SidebarMenuSubContext = createContext<SidebarMenuSubContextProps>({
 const useSidebarMenuSub = () => useContext(SidebarMenuSubContext);
 
 const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
-  const { isCollapsed } = useSidebar();
+  const { isCollapsed, isMobile } = useSidebar();
   const { toggleMenu } = useSidebarMenu();
 
-  if (isCollapsed) {
+  if (isCollapsed && !isMobile) {
     return (
       <SidebarMenuSubContext value={{ isInSubmenu: true }}>
         <ul
@@ -555,7 +556,7 @@ const SidebarMenuSubItem: FC<ComponentProps<"li">> = ({
 const SidebarModeToggle: FC<
   ComponentProps<typeof ModeToggle> & ComponentProps<typeof Tooltip>
 > = ({ className, side = "right", ...props }) => {
-  const { isCollapsed } = useSidebar();
+  const { isCollapsed, isMobile } = useSidebar();
   const { theme } = useTheme();
 
   let content = "";
@@ -568,7 +569,7 @@ const SidebarModeToggle: FC<
     content = isDark ? "Изменить на светлую тему" : "Изменить на темную тему";
   }
 
-  if (isCollapsed) {
+  if (isCollapsed && !isMobile) {
     return (
       <Tooltip side={side} content={content}>
         <ModeToggle
@@ -604,6 +605,52 @@ const SidebarModeToggle: FC<
   );
 };
 
+const SidebarMobile: FC<ComponentProps<"div">> = (props) => {
+  const { toggleSidebar, isCollapsed } = useSidebar();
+
+  return (
+    <MainContent>
+      <Drawer
+        open={isCollapsed}
+        onOpenChange={toggleSidebar}
+        direction="left"
+      >
+        <div className="sticky top-0 mx-1 mt-1">
+          <DrawerTrigger asChild>
+            <Button
+              className="rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
+              variant="default"
+              size="icon"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleSidebar();
+              }}
+            >
+              <Menu className="size-[19px]" />
+            </Button>
+          </DrawerTrigger>
+        </div>
+        <DrawerContent
+          aria-describedby={undefined}
+          className="text-sidebar-foreground left-1 top-1 bottom-1 border border-sidebar-border/40 rounded-[16px] max-w-[300px] w-full"
+        >
+          <VisuallyHidden>
+            <DrawerTitle>
+              Личный кабинет пользователя ТК "Наша Почта"
+            </DrawerTitle>
+          </VisuallyHidden>
+          <div
+            className="grow h-full w-full pt-1 flex flex-col bg-sidebar rounded-[16px]"
+            {...props}
+          />
+        </DrawerContent>
+      </Drawer>
+      <SidebarOutlet />
+    </MainContent>
+  );
+};
+
 const Sidebar: FC<ComponentProps<"div">> = (props) => {
   const {
     expandedSize,
@@ -611,53 +658,11 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
     minimalSize,
     collapsedSize,
     isMobile,
-    isCollapsed,
-    toggleSidebar,
     handleResize,
   } = useSidebar();
 
   if (isMobile) {
-    return (
-      <MainContent>
-        <Drawer
-          open={!isCollapsed}
-          onOpenChange={() => toggleSidebar()}
-          direction="left"
-        >
-          <div className="sticky top-0 mx-1 mt-1">
-            <DrawerTrigger asChild>
-              <Button
-                className="text-foreground rounded-full @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
-                variant="ghost"
-                size="icon"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  toggleSidebar();
-                }}
-              >
-                <Menu />
-              </Button>
-            </DrawerTrigger>
-          </div>
-          <DrawerContent
-            aria-describedby={undefined}
-            className="left-1 top-1 bottom-1 border border-sidebar-border/40 rounded-[16px] max-w-[300px] w-full"
-          >
-            <VisuallyHidden>
-              <DrawerTitle>
-                Личный кабинет пользователя ТК "Наша Почта"
-              </DrawerTitle>
-            </VisuallyHidden>
-            <div
-              className="grow h-full w-full pt-1 flex flex-col bg-sidebar rounded-[16px]"
-              {...props}
-            />
-          </DrawerContent>
-        </Drawer>
-        <SidebarOutlet />
-      </MainContent>
-    );
+    return <SidebarMobile {...props} />;
   }
 
   return (

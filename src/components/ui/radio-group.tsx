@@ -25,7 +25,7 @@ const RadioGroupItem: FC<ComponentProps<typeof RadioGroupPrimitive.Item>> = ({
       className={cn(
         "group relative cursor-pointer md:text-sm text-base leading-none text-center py-2 px-4 -mr-px",
         "hover:cursor-pointer first-of-type:rounded-l-lg last-of-type:rounded-r-lg overflow-hidden",
-        "data-[state=unchecked]:hover:bg-accent/80 data-[state=unchecked]:active:bg-accent/95",
+        "data-[state=unchecked]:hover:bg-secondary/20 data-[state=unchecked]:active:bg-secondary/70",
         "data-[state=unchecked]:border data-[state=unchecked]:border-accent",
         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
         className,
@@ -59,8 +59,8 @@ const RadioGroupLabel: FC<ComponentProps<typeof Label>> = ({
   return (
     <Label
       className={cn(
-        "cursor-pointer relative text-accent-foreground",
-        "group-data-[state=checked]:text-primary-foreground",
+        "cursor-pointer relative text-accent-foreground dark:text-accent-foreground",
+        "group-data-[state=checked]:text-primary-foreground dark:group-data-[state=checked]:text-primary-foreground",
         "relative group-active:top-[1px]",
         className,
       )}

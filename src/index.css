@@ -28,7 +28,7 @@
   ); /* Soft red veil – more present than before */
 
   /* --- SIDEBAR (now matches background — defined by borders & interaction) --- */
-  --sidebar: var(--background); /* = #fffaf9 — seamless with page */
+  --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: #2a1e1e;
 
   --sidebar-primary: #f48c85; /* Keep vibrant coral for hover/active */
@@ -99,7 +99,7 @@
   --modal-backdrop: rgba(60, 40, 40, 0.36);
 
   /* --- SIDEBAR (now matches dark background — defined by borders & interaction) --- */
-  --sidebar: var(--background); /* = #161616 — full integration */
+  --sidebar: oklch(0.21 0.006 285.885);
   --sidebar-foreground: #f0f0f0;
 
   --sidebar-primary: #7a4242; /* Warm, clear hover state */
