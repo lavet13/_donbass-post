@@ -38,7 +38,7 @@ export const Header: FC = () => {
   }
 
   return (
-    <header className="container max-w-6xl px-2 h-14 flex items-center">
+    <header className="container sticky top-0 w-full max-w-6xl h-14 flex items-center z-20 bg-background">
       <div className="flex items-center gap-1">
         <NavButton to="/" activeOptions={{ exact: true }}>
           Главная

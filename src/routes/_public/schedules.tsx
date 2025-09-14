@@ -47,10 +47,11 @@ const Search: FC = () => {
   });
   console.log({ departmentId });
 
-  const query = useSearch({
-    from: Route.id,
-    select: (search) => search.q,
-  }) ?? "";
+  const query =
+    useSearch({
+      from: Route.id,
+      select: (search) => search.q,
+    }) ?? "";
 
   const navigate = useNavigate({ from: Route.fullPath });
 
@@ -58,6 +59,7 @@ const Search: FC = () => {
     navigate({
       search: (prev) => ({ ...prev, q: query }),
       replace: true,
+      resetScroll: false,
     });
   };
 
@@ -66,8 +68,8 @@ const Search: FC = () => {
       id: departmentId ?? ("" as string | number),
     },
     onSubmit: async ({ value }) => {
-      console.log({ value });
       navigate({
+        resetScroll: false,
         search: (prev) => {
           return {
             ...prev,
@@ -87,100 +89,104 @@ const Search: FC = () => {
   });
 
   return (
-    <Fragment>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void form.handleSubmit();
-        }}
-      >
-        <form.AppField
-          name="id"
-          children={(field) => {
-            return (
-              <Command className="flex-1">
-                <CommandInput
-                  inputContainer="bg-popover rounded-t-lg"
-                  value={query}
-                  onValueChange={handleSearchQuery}
-                  clearButton
-                  placeholder={"Найти отделение..."}
-                />
-                <CommandList className="min-h-min h-full">
-                  {isPending ? (
-                    <CommandLoading label={"Загружаем отделения..."}>
-                      Загружаем отделения...
-                    </CommandLoading>
-                  ) : (
-                    <CommandEmpty>Не найдено</CommandEmpty>
-                  )}
-                  {!isPending &&
-                    data?.length !== 0 &&
-                    data?.map(({ label, items }, valuesIdx, entries) => (
-                      <Fragment key={valuesIdx}>
-                        <CommandGroup heading={label}>
-                          {items.map(({ id, name }) => (
-                            <CommandItem
-                              title={name}
-                              role="option"
-                              aria-selected={id === field.state.value}
-                              className={cn(
-                                id === field.state.value &&
-                                  cn(
-                                    "dark:bg-primary dark:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:text-primary-foreground dark:active:data-[selected=true]:bg-primary/80 dark:text-primary-foreground",
-                                    "bg-primary data-[selected=true]:bg-primary/90 hover:data-[selected=true]:bg-primary/90 active:data-[selected=true]:bg-primary/80 text-primary-foreground hover:data-[selected=true]:text-primary-foreground data-[selected=true]:text-primary-foreground",
-                                  ),
-                              )}
-                              value={id as string}
-                              key={id}
-                              onSelect={() => {
-                                field.handleChange(id);
-                              }}
-                            >
-                              <span
-                                className={cn(
-                                  id === field.state.value && "font-bold",
-                                )}
-                              >
-                                {name}
-                              </span>
-                              <CheckIcon
-                                className={cn(
-                                  "ml-auto size-4 text-primary-foreground dark:text-primary-foreground",
-                                  id === field.state.value
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                        {valuesIdx !== entries.length - 1 && (
-                          <CommandSeparator />
-                        )}
-                      </Fragment>
-                    ))}
-
-                  {!data?.length && !isPending && refetch && (
-                    <p className="flex flex-col items-center justify-center py-2 text-center text-sm text-muted-foreground">
-                      Не удалось загрузить отделения
-                      <Button
-                        variant="secondary"
-                        size="xs"
-                        onClick={refetch as () => void}
-                      >
-                        Повторить запрос
-                      </Button>
-                    </p>
-                  )}
-                </CommandList>
-              </Command>
-            );
+    <div className="flex-1 flex min-h-min items-start w-full">
+      <div className="flex flex-col sticky top-[calc(3.5rem+1px)] h-[calc(100svh-3.5rem)]">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            void form.handleSubmit();
           }}
-        />
-      </form>
-    </Fragment>
+          className="flex-1 w-full overflow-y-auto"
+        >
+          <form.AppField
+            name="id"
+            children={(field) => {
+              return (
+                <Command>
+                  <CommandInput
+                    inputContainer="bg-background"
+                    value={query}
+                    onValueChange={handleSearchQuery}
+                    clearButton
+                    placeholder={"Найти отделение..."}
+                  />
+                  <CommandList className="h-auto max-h-max min-h-0">
+                    {isPending ? (
+                      <CommandLoading label={"Загружаем отделения..."}>
+                        Загружаем отделения...
+                      </CommandLoading>
+                    ) : (
+                      <CommandEmpty>Не найдено</CommandEmpty>
+                    )}
+                    {!isPending &&
+                      data?.length !== 0 &&
+                      data?.map(({ label, items }, valuesIdx, entries) => (
+                        <Fragment key={valuesIdx}>
+                          <CommandGroup heading={label}>
+                            {items.map(({ id, name }) => (
+                              <CommandItem
+                                title={name}
+                                role="option"
+                                aria-selected={id === field.state.value}
+                                className={cn(
+                                  id === field.state.value &&
+                                    cn(
+                                      "dark:bg-primary dark:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:text-primary-foreground dark:active:data-[selected=true]:bg-primary/80 dark:text-primary-foreground",
+                                      "bg-primary data-[selected=true]:bg-primary/90 hover:data-[selected=true]:bg-primary/90 active:data-[selected=true]:bg-primary/80 text-primary-foreground hover:data-[selected=true]:text-primary-foreground data-[selected=true]:text-primary-foreground",
+                                    ),
+                                )}
+                                value={id as string}
+                                key={id}
+                                onSelect={() => {
+                                  field.handleChange(id);
+                                }}
+                              >
+                                <span
+                                  className={cn(
+                                    id === field.state.value && "font-bold",
+                                  )}
+                                >
+                                  {name}
+                                </span>
+                                <CheckIcon
+                                  className={cn(
+                                    "ml-auto size-4 text-primary-foreground dark:text-primary-foreground",
+                                    id === field.state.value
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                          {valuesIdx !== entries.length - 1 && (
+                            <CommandSeparator />
+                          )}
+                        </Fragment>
+                      ))}
+
+                    {!data?.length && !isPending && refetch && (
+                      <p className="flex flex-col items-center justify-center py-2 text-center text-sm text-muted-foreground">
+                        Не удалось загрузить отделения
+                        <Button
+                          variant="secondary"
+                          size="xs"
+                          onClick={refetch as () => void}
+                        >
+                          Повторить запрос
+                        </Button>
+                      </p>
+                    )}
+                  </CommandList>
+                </Command>
+              );
+            }}
+          />
+        </form>
+      </div>
+      <div className="flex-1 flex flex-col w-full h-full min-h-[120vh]">content</div>
+    </div>
   );
 };
 

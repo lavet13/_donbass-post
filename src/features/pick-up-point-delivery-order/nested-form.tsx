@@ -128,7 +128,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
 
     return (
       <form
-        className="w-full max-w-2xl px-2 md:px-0"
+        className="mx-auto w-full max-w-2xl"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
