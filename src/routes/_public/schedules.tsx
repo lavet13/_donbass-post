@@ -52,7 +52,6 @@ export const Route = createFileRoute("/_public/schedules")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(pointListQueryOptions),
   validateSearch: (search): ScheduleSearch => {
-    console.log({ pic: search.pic });
     return {
       q: (search.q as string) || undefined,
       dId: !isNaN(search.dId as number) ? (search.dId as number) : undefined,
@@ -70,10 +69,11 @@ const SearchPage: FC = () => {
     select: (search) => search.dId,
   });
 
-  const isPicOpen = useSearch({
-    from: Route.id,
-    select: (search) => search.pic,
-  }) || false;
+  const isPicOpen =
+    useSearch({
+      from: Route.id,
+      select: (search) => search.pic,
+    }) || false;
 
   const selectedDepartment = useMemo(
     () =>

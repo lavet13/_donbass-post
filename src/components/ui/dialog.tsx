@@ -93,7 +93,7 @@ const DialogClose: FC<ComponentProps<typeof DialogPrimitive.Close>> = ({
     <DialogPrimitive.Close
       data-slot="dialog-close"
       className={cn(
-        "hover:bg-primary/80 size-8 flex items-center justify-center data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xl transition-colors text-accent-foreground bg-accent/80 dark:text-foreground hover:text-primary-foreground focus:outline-hidden ring-ring active:ring-2 disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
+        "focus:ring-ring absolute top-4 right-4 text-foreground transition-colors focus:ring-2 focus:outline-none disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 size-6 flex justify-center items-center hover:text-background active:text-background hover:bg-primary/80 focus:bg-primary/90 focus:text-background rounded-lg",
         className,
       )}
       {...props}
