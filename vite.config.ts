@@ -60,6 +60,7 @@ export default defineConfig({
             "@radix-ui/react-hover-card",
             "@radix-ui/react-collapsible",
             "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-dialog",
             "vaul",
             "react-resizable-panels",
           ],

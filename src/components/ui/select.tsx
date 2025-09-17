@@ -20,7 +20,7 @@ const SelectTrigger: FC<ComponentProps<typeof SelectPrimitive.Trigger>> = ({
         "disabled:cursor-not-allowed disabled:opacity-50",
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         "inline-flex items-center justify-between gap-1",
-        "px-[15px] h-[35px] sm:text-sm text-base whitespace-nowrap leading-none rounded-lg border border-accent bg-transparent hover:bg-accent/40 text-accent-foreground",
+        "px-[15px] h-[35px] sm:text-sm text-base whitespace-nowrap leading-5 rounded-lg border border-accent bg-transparent hover:bg-accent/40 font-medium data-[placeholder]:font-normal text-accent-foreground",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-accent-foreground",
         className,
       )}
@@ -66,7 +66,7 @@ const SelectItem: FC<ComponentProps<typeof SelectPrimitive.Item>> = ({
       data-slot="select-item"
       className={cn(
         "group relative select-none",
-        "leading-none sm:text-sm text-base text-accent-foreground rounded-lg",
+        "leading-5 sm:text-sm text-base text-accent-foreground rounded-lg",
         "flex justify-between items-center h-[30px] sm:h-[25px] pr-4 gap-1 pl-2",
         "data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground",
         "data-[highlighted]:outline-none data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground",
@@ -121,7 +121,7 @@ const SelectSeparator: FC<ComponentProps<typeof SelectPrimitive.Separator>> = ({
   return (
     <SelectPrimitive.Separator
       data-slot="select-separator"
-      className={cn("h-[1px] bg-primary m-[5px]", className)}
+      className={cn("h-[1px] bg-border m-[5px]", className)}
       {...props}
     />
   );

@@ -41,35 +41,37 @@ function AuthComponent() {
   });
 
   return (
-    <Tabs value={tab}>
-      <TabsList aria-label="Вход и регистрация">
-        <TabsTrigger value="login" asChild>
-          <Link
-            from={Route.fullPath}
-            search={(prev) => ({ ...prev, tab: "login" })}
-          >
-            Войти
-          </Link>
-        </TabsTrigger>
-        <TabsTrigger value="sign-in" asChild>
-          <Link
-            from={Route.fullPath}
-            search={(prev) => ({ ...prev, tab: "sign-in" })}
-          >
-            Зарегистрироваться
-          </Link>
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="login">
-        <Suspend>
-          <UserLoginPage />
-        </Suspend>
-      </TabsContent>
-      <TabsContent value="sign-in">
-        <Suspend>
-          <UserRegistrationPage />
-        </Suspend>
-      </TabsContent>
-    </Tabs>
+    <div className="mx-auto flex-1 max-w-2xl w-full flex flex-col justify-center items-center">
+      <Tabs value={tab}>
+        <TabsList aria-label="Вход и регистрация">
+          <TabsTrigger value="login" asChild>
+            <Link
+              from={Route.fullPath}
+              search={(prev) => ({ ...prev, tab: "login" })}
+            >
+              Войти
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger value="sign-in" asChild>
+            <Link
+              from={Route.fullPath}
+              search={(prev) => ({ ...prev, tab: "sign-in" })}
+            >
+              Зарегистрироваться
+            </Link>
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="login">
+          <Suspend>
+            <UserLoginPage />
+          </Suspend>
+        </TabsContent>
+        <TabsContent value="sign-in">
+          <Suspend>
+            <UserRegistrationPage />
+          </Suspend>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

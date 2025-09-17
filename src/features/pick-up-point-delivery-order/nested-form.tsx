@@ -54,7 +54,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
       error,
       isPending,
     } = useCalculateGlobalMutation();
-    console.log({ error });
 
     const handleCalculation = async () => {
       const pointFrom = Number.parseInt(form.state.values.sender.pointFrom, 10);

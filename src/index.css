@@ -28,7 +28,7 @@
   ); /* Soft red veil – more present than before */
 
   /* --- SIDEBAR (now matches background — defined by borders & interaction) --- */
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: #fdf2ef; /* Warmer, silkier, more inviting — soft peach cream */
   --sidebar-foreground: #2a1e1e;
 
   --sidebar-primary: #f48c85; /* Keep vibrant coral for hover/active */
@@ -37,7 +37,7 @@
   --sidebar-accent: #ef3728; /* Primary red — for icons/badges */
   --sidebar-accent-foreground: #ffffff;
 
-  --sidebar-border: #f5b0aa; /* Stronger coral-tinted border — now critical for definition */
+  --sidebar-border: #f7c9c4; /* Softer coral blush — harmonizes with new background */
   --sidebar-ring: #ef3728;
 
   --secondary: #f8d0ce;
@@ -99,7 +99,7 @@
   --modal-backdrop: rgba(60, 40, 40, 0.36);
 
   /* --- SIDEBAR (now matches dark background — defined by borders & interaction) --- */
-  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar: #221b1a; /* Warm dark brown instead of neutral gray */
   --sidebar-foreground: #f0f0f0;
 
   --sidebar-primary: #7a4242; /* Warm, clear hover state */
@@ -280,6 +280,17 @@
       height: 0;
     }
   }
+
+  --animate-overlay-show: overlayShow 150ms var(--ease-slide-popover);
+
+  @keyframes overlayShow {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
 
 @layer base {
@@ -314,6 +325,7 @@
   body {
     @apply font-inter bg-background text-foreground;
     @apply selection:bg-primary selection:text-primary-foreground;
+    @apply lg:[--top-spacing:calc(var(--spacing)*4)];
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
     ::-webkit-scrollbar {
