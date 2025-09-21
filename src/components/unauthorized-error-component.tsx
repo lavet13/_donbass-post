@@ -7,7 +7,7 @@ export const UnauthorizedErrorComponent: FC<{ pathname: string }> = ({
   pathname,
 }) => {
   return (
-    <main className="flex flex-col items-center justify-start grow shrink-0 min-h-[calc(100svh-3.5rem)] my-1">
+    <main className="flex flex-col items-center justify-start grow shrink-0 my-1">
       <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center rounded-xl border border-border">
         <div className="bg-destructive-border rounded-full p-4 mb-6">
           <Lock size={32} className="text-destructive" />

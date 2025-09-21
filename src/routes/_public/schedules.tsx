@@ -128,7 +128,7 @@ const SearchPage: FC = () => {
 
   return (
     <div className="flex-1 flex min-h-min items-start w-full">
-      <div className="flex flex-col w-[24rem] sticky top-[calc(3.5rem+1px)] h-[calc(100svh-3.5rem)]">
+      <div className="flex flex-col w-[24rem] sticky top-[calc(var(--header-height)+1px)] h-[calc(100svh-var(--header-height))]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -307,12 +307,12 @@ const SearchPage: FC = () => {
                           </DialogTrigger>
                           <DialogContent
                             aria-describedby={undefined}
-                            className="w-full h-full md:max-w-max md:max-h-[95svh] p-0 overflow-hidden bg-modal/50 backdrop-blur-sm"
+                            className="w-full h-full md:max-w-max md:max-h-max p-0 overflow-hidden bg-background rounded-none"
                             showCloseButton={true}
                           >
-                            <VisuallyHidden>
+                            <VisuallyHidden asChild>
                               <DialogTitle>
-                                Изображение во весь экран
+                                Изображение отделения во весь экран
                               </DialogTitle>
                             </VisuallyHidden>
                             <div className="relative w-full h-full flex items-center justify-center">
@@ -481,7 +481,7 @@ const SearchPage: FC = () => {
                           <div
                             key={key}
                             className={cn(
-                              "flex items-center justify-between py-3 px-4 rounded-xl transition-colors",
+                              "flex items-center justify-between py-2 px-4 rounded-md transition-colors",
                               isToday &&
                                 "bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-accent dark:border-accent-foreground/20",
                               !isToday && "bg-muted/30",
@@ -554,7 +554,7 @@ const SearchPage: FC = () => {
               )}
             </div>
           </div>
-          <div className="sticky hidden top-[calc(3.5rem+1px)] ml-auto h-[calc(100svh-3.5rem)] w-72 flex-col gap-4 overflow-hidden pb-8" />
+          <div className="sticky hidden top-[calc(var(--header-height)+1px)] ml-auto h-[calc(100svh-var(--header-height))] w-72 flex-col gap-4 overflow-hidden pb-8" />
         </div>
       </div>
     </div>

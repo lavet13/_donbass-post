@@ -21,7 +21,7 @@ export const DefaultErrorComponent: ErrorRouteComponent = ({ error }) => {
   }, [queryErrorResetBoundary]);
 
   return (
-    <main className="flex flex-col grow shrink-0 min-h-[calc(100svh-3.5rem)]">
+    <main className="flex flex-col grow shrink-0 min-h-[calc(100svh-var(--header-height))]">
       <div className="flex-1 flex flex-col items-center">
         <Collapsible open={open} onOpenChange={setOpen}>
           <div

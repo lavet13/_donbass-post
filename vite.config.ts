@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -14,6 +15,10 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
+    topLevelAwait({
+      promiseExportName: "__tla",
+      promiseImportName: (i) => `__tla_${i}`,
+    }),
   ],
   resolve: {
     alias: {
@@ -89,6 +94,8 @@ export default defineConfig({
 
           // Browser utilities
           JWT: ["js-cookie", "jose"],
+
+          ymaps3: ["ymap3-components"],
         },
       },
     },

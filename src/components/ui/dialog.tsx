@@ -25,7 +25,7 @@ const DialogContent: FC<
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed md:rounded-2xl top-1/2 outline-none left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background z-20 grid gap-4 data-[state=open]:animate-slide-up-and-fade duration-200",
+          "fixed top-1/2 outline-none left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background z-20 grid gap-4 data-[state=open]:animate-slide-up-and-fade duration-200",
           className,
         )}
         {...props}
@@ -93,7 +93,7 @@ const DialogClose: FC<ComponentProps<typeof DialogPrimitive.Close>> = ({
     <DialogPrimitive.Close
       data-slot="dialog-close"
       className={cn(
-        "focus:ring-ring absolute top-4 right-4 text-foreground transition-colors focus:ring-2 focus:outline-none disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 size-6 flex justify-center items-center hover:text-background active:text-background hover:bg-primary/80 focus:bg-primary/90 focus:text-background rounded-lg",
+        "focus:ring-ring absolute top-4 right-4 text-foreground bg-background/80 dark:text-foreground transition-colors focus:ring-2 focus:outline-none disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 size-6 flex justify-center items-center hover:text-background dark:hover:text-foreground active:text-background dark:hover:bg-primary/80 dark:bg-background/20 hover:bg-primary/80 dark:focus:bg-primary focus:bg-primary/90 focus:text-background dark:focus:text-foreground rounded-full",
         className,
       )}
       {...props}

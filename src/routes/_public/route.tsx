@@ -13,7 +13,7 @@ function PublicLayout() {
       <div className="flex flex-col min-h-svh">
         <Header />
         <main className="flex-1 flex flex-col">
-          <div className="flex-1 flex flex-col container w-full max-w-6xl mx-auto min-h-[calc(100svh-3.5rem)]">
+          <div className="flex-1 flex flex-col container w-full max-w-6xl mx-auto min-h-[calc(100svh-var(--header-height))]">
             <Outlet />
           </div>
         </main>

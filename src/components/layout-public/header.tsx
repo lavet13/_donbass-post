@@ -38,30 +38,32 @@ export const Header: FC = () => {
   }
 
   return (
-    <header className="container sticky top-0 w-full max-w-6xl h-14 flex items-center z-20 bg-background/90 backdrop-blur-sm">
-      <div className="flex items-center gap-1">
-        <NavButton to="/" activeOptions={{ exact: true }}>
-          Главная
-        </NavButton>
-        <NavButton to="/shop-cost-calculation-order">
-          Выкуп менеджером ИМ
-        </NavButton>
-        <NavButton to="/pick-up-point-delivery-order">Забор груза</NavButton>
-        <NavButton to="/schedules">Расписание</NavButton>
-      </div>
-      <div className="ml-auto flex items-center gap-1">
-        <Tooltip content={content}>
-          <ModeToggle className="dark:text-accent-foreground" />
-        </Tooltip>
-        {!isAuthenticated ? (
-          <Button asChild>
-            <Link to="/auth">Личный кабинет</Link>
-          </Button>
-        ) : (
-          <Button asChild>
-            <Link to="/dashboard">Мой кабинет</Link>
-          </Button>
-        )}
+    <header className="sticky top-0 w-full h-14 flex z-20 bg-background border-b border-input">
+      <div className="container flex items-center w-full max-w-6xl ">
+        <div className="flex items-center gap-1">
+          <NavButton to="/" activeOptions={{ exact: true }}>
+            Главная
+          </NavButton>
+          <NavButton to="/shop-cost-calculation-order">
+            Выкуп менеджером ИМ
+          </NavButton>
+          <NavButton to="/pick-up-point-delivery-order">Забор груза</NavButton>
+          <NavButton to="/schedules">Расписание</NavButton>
+        </div>
+        <div className="ml-auto flex items-center gap-1">
+          <Tooltip content={content}>
+            <ModeToggle className="dark:text-accent-foreground" />
+          </Tooltip>
+          {!isAuthenticated ? (
+            <Button asChild>
+              <Link to="/auth">Личный кабинет</Link>
+            </Button>
+          ) : (
+            <Button asChild>
+              <Link to="/dashboard">Мой кабинет</Link>
+            </Button>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -940,9 +940,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 <Toggle
                   className={cn(
                     buttonVariants({ variant: "outline" }),
-                    "border-accent border data-[state=on]:bg-primary dark:data-[state=on]:bg-primary data-[state=on]:text-primary-foreground w-full sm:w-fit",
-                    "sm:rounded-bl-lg",
-                    "data-[state=on]:-mb-px data-[state=on]:rounded-bl-none data-[state=on]:rounded-br-none sm:data-[state=on]:rounded-b-lg sm:data-[state=on]:mb-0",
+                    "data-[state=on]:bg-primary data-[state=on]:[box-shadow:none] dark:data-[state=on]:bg-primary data-[state=on]:text-primary-foreground w-full sm:w-fit",
+                    "sm:rounded-bl-sm",
+                    "data-[state=on]:-mb-px data-[state=on]:rounded-bl-none data-[state=on]:rounded-br-none sm:data-[state=on]:rounded-b-sm sm:data-[state=on]:mb-0",
                   )}
                   pressed={field.state.value}
                   onPressedChange={field.handleChange}
@@ -968,7 +968,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       className={cn(
                         "sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-tl-xs",
                         "sm:mt-2 [&_button]:first-of-type:rounded-tl-none [&_button]:last-of-type:rounded-tr-none [&_span]:group-first-of-type:rounded-tl-none [&_span]:group-last-of-type:rounded-tr-none [&_button]:last-of-type:mr-0",
-                        "sm:[&_button]:first-of-type:rounded-l-lg sm:[&_button]:last-of-type:rounded-r-lg sm:[&_span]:group-first-of-type:rounded-l-lg sm:[&_span]:group-last-of-type:rounded-r-lg sm:[&_button]:last-of-type:-mr-px",
+                        "sm:[&_button]:first-of-type:rounded-l-sm sm:[&_button]:last-of-type:rounded-r-sm sm:[&_span]:group-first-of-type:rounded-l-sm sm:[&_span]:group-last-of-type:rounded-r-sm sm:[&_button]:last-of-type:-mr-px",
                       )}
                     >
                       <field.RadioGroupField

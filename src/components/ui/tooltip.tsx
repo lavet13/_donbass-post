@@ -30,12 +30,11 @@ const TooltipContent: FC<ComponentProps<typeof TooltipPrimitive.Content>> = ({
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         className={cn(
-          "border border-border",
           "data-[state=delayed-open]:data-[side=top]:animate-slide-down-and-fade",
           "data-[state=delayed-open]:data-[side=right]:animate-slide-left-and-fade",
           "data-[state=delayed-open]:data-[side=bottom]:animate-slide-up-and-fade",
           "data-[state=delayed-open]:data-[side=left]:animate-slide-right-and-fade",
-          "rounded-lg px-[15px] py-[10px] text-base md:text-sm leading-none bg-popover text-popover-foreground shadow-md select-none z-50",
+          "rounded-sm px-[12px] py-[7px] text-base md:text-sm leading-none bg-foreground text-background shadow-md select-none z-50",
 
           // removing blur
           "transform-gpu backface-hidden will-change-auto",
@@ -56,7 +55,7 @@ const TooltipArrow: FC<ComponentProps<typeof TooltipPrimitive.Arrow>> = ({
   return (
     <TooltipPrimitive.Arrow
       data-slot="tooltip-arrow"
-      className={cn("fill-popover stroke-border", className)}
+      className={cn("fill-foreground", className)}
       {...props}
     />
   );

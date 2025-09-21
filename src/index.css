@@ -8,7 +8,7 @@
 
   /* --- BACKGROUND & FOREGROUND --- */
   --background: #fffaf9; /* Very warm off-white – complements red softly */
-  --foreground: #2a1e1e; /* Deep warm charcoal – better contrast than before */
+  --foreground: #301918; /* Deep warm charcoal – better contrast than before */
 
   /* --- SURFACES: Card, Popover, Modal --- */
   --card: #ffffff; /* Clean white for purity */
@@ -21,10 +21,10 @@
   --modal: #fff5f4; /* Warm blush modal background – subtle */
   --modal-foreground: #2a1e1e;
   --modal-backdrop: rgba(
-    239,
-    55,
-    40,
-    0.2
+    0,
+    0,
+    0,
+    0.5
   ); /* Soft red veil – more present than before */
 
   /* --- SIDEBAR (now matches background — defined by borders & interaction) --- */
@@ -56,7 +56,7 @@
 
   --border: #edd0ce;
   --input: #edd0ce;
-  --ring: #ef3728;
+  --ring: #ec8f86;
 
   /* --- SUCCESS (now earthy green that complements red) --- */
   --success: #5a8b6c; /* Warm sage – harmonizes with red (complementary) */
@@ -96,7 +96,7 @@
 
   --modal: #2a2222;
   --modal-foreground: #f0f0f0;
-  --modal-backdrop: rgba(60, 40, 40, 0.36);
+  --modal-backdrop: rgba(0, 0, 0, 0.5);
 
   /* --- SIDEBAR (now matches dark background — defined by borders & interaction) --- */
   --sidebar: #221b1a; /* Warm dark brown instead of neutral gray */
@@ -155,11 +155,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --header-height: 3.5rem;
+
   --font-inter:
     Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     sans-serif;
 
-  /* Reference the CSS variables */
   --color-*: initial;
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);

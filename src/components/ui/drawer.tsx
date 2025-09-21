@@ -29,7 +29,7 @@ const DrawerContent: FC<ComponentProps<typeof DrawerPrimitive.Content>> = ({
       <DrawerPrimitive.Content
         data-slot="drawer-content"
         className={cn(
-          "group/drawer-content flex text-modal-foreground fixed outline-none z-50",
+          "group/drawer-content flex flex-col text-modal-foreground fixed outline-none z-50",
 
           // removing blur
           "transform-gpu backface-hidden will-change-auto",

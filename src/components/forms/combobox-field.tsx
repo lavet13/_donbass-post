@@ -101,9 +101,9 @@ const ComboboxGroupField: FC<
         variant="outline"
         ref={buttonRef}
         className={cn(
-          "dark:bg-input/30 dark:hover:bg-input/40 dark:active:bg-input/50 border border-input",
+          "dark:bg-input/30 dark:hover:bg-input/40 dark:active:bg-input/50",
           `justify-between`,
-          open && "bg-primary/5 dark:bg-input/50",
+          open && "bg-primary/5 dark:bg-input/50 [box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))]",
           className,
         )}
         id={formItemId}
@@ -134,7 +134,7 @@ const ComboboxGroupField: FC<
           <Tooltip content={selectedEntryClearTooltipMessage}>
             <span
               tabIndex={0}
-              className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-4.5! hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+              className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-5.5 rounded-full [&_svg]:size-4! hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
               aria-label={selectedEntryClearTooltipMessage}
               onClick={(e) => {
                 e.preventDefault();
@@ -248,7 +248,7 @@ const ComboboxGroupField: FC<
           <DrawerTrigger asChild>{renderTrigger()}</DrawerTrigger>
           <DrawerContent
             aria-describedby={undefined}
-            className="rounded-t-lg h-full! lg:max-h-full max-h-[calc(100vh-0.75rem)] top-3 lg:top-0 border border-input"
+            className="bg-modal rounded-t-lg h-full! lg:max-h-full max-h-[calc(100vh-0.75rem)] top-3 lg:top-0 border border-input"
             role="listbox"
           >
             <DrawerHandle />

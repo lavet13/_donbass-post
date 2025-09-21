@@ -42,7 +42,7 @@ export const ModeToggle: FC<ModeToggleProps> = ({
 
   return (
     <Button
-      className={cn("rounded-full hover:text-primary active:text-primary", className)}
+      className={cn("rounded-full", className)}
       variant="ghost"
       size="icon"
       onClick={handleToggle}
