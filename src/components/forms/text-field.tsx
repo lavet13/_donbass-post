@@ -54,9 +54,9 @@ const TextField: FC<TextFieldProps> = ({
               <PopoverTrigger className="[&_svg]:size-3 hover:text-accent-foreground rounded-md data-[state=open]:text-accent-foreground">
                 <Info />
               </PopoverTrigger>
-              <PopoverContent className="p-3">
+              <PopoverContent className="bg-foreground text-background p-2">
                 {hint}
-                <PopoverArrow />
+                <PopoverArrow className="fill-foreground" />
               </PopoverContent>
             </Popover>
           )}

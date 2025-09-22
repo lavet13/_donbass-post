@@ -20,8 +20,8 @@ const SelectTrigger: FC<ComponentProps<typeof SelectPrimitive.Trigger>> = ({
         "disabled:cursor-not-allowed disabled:opacity-50",
         "aria-invalid:[box-shadow:inset_0_0_0_1px_var(--destructive)] hover:aria-invalid:[box-shadow:inset_0_0_0_1px_rgb(from_var(--destructive)_calc(r*1.2)_calc(g*1.1)_calc(b*1.1))]",
         "inline-flex items-center justify-between gap-1",
-        "px-[15px] h-8 sm:text-sm text-base whitespace-nowrap leading-5 rounded-sm [box-shadow:inset_0_0_0_1px_var(--border)] hover:[box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))] active:bg-ring/30 active:[box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))] bg-transparent font-medium data-[placeholder]:font-normal text-accent-foreground",
-        "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-accent-foreground",
+        "px-[15px] h-8 sm:text-sm text-base whitespace-nowrap leading-5 rounded-sm [box-shadow:inset_0_0_0_1px_var(--border)] hover:[box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))] active:bg-ring/30 active:[box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))] bg-transparent font-medium data-[placeholder]:text-muted-foreground data-[placeholder]:font-normal text-foreground",
+        "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-foreground",
         className,
       )}
       {...props}
@@ -66,7 +66,7 @@ const SelectItem: FC<ComponentProps<typeof SelectPrimitive.Item>> = ({
       data-slot="select-item"
       className={cn(
         "group relative select-none",
-        "leading-5 sm:text-sm text-base text-accent-foreground rounded-sm",
+        "leading-5 sm:text-sm text-base text-foreground rounded-sm",
         "flex justify-between items-center h-8 sm:h-[25px] pr-4 gap-1 pl-2",
         "data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground",
         "data-[highlighted]:outline-none data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground",
@@ -97,7 +97,7 @@ const SelectContent: FC<ComponentProps<typeof SelectPrimitive.Content>> = ({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          "overflow-hidden rounded-sm bg-background shadow-md border border-input",
+          "overflow-hidden rounded-sm bg-background [box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))]",
           className,
         )}
         {...props}

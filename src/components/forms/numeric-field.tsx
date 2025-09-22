@@ -63,9 +63,9 @@ const NumericField: FC<
               <PopoverTrigger className="[&_svg]:size-3 hover:text-accent-foreground rounded-md data-[state=open]:text-accent-foreground">
                 <Info />
               </PopoverTrigger>
-              <PopoverContent className="p-3">
+              <PopoverContent className="p-2 bg-foreground text-background">
                 {hint}
-                <PopoverArrow />
+                <PopoverArrow className="fill-foreground" />
               </PopoverContent>
             </Popover>
           )}

@@ -103,7 +103,8 @@ const ComboboxGroupField: FC<
         className={cn(
           "dark:bg-input/30 dark:hover:bg-input/40 dark:active:bg-input/50",
           `justify-between`,
-          open && "bg-primary/5 dark:bg-input/50 [box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))]",
+          open &&
+            "bg-primary/5 dark:bg-input/50 [box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))]",
           className,
         )}
         id={formItemId}
@@ -287,7 +288,7 @@ const ComboboxGroupField: FC<
             role="listbox"
             sideOffset={2}
             style={{ width: `${bounds?.width}px` }}
-            className={`p-0 bg-background`}
+            className={`p-0 bg-background [box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))]`}
           >
             {renderContent()}
           </PopoverContent>
