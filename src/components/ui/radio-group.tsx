@@ -58,7 +58,7 @@ const RadioGroupLabel: FC<ComponentProps<typeof Label>> = ({
   return (
     <Label
       className={cn(
-        "cursor-pointer relative group-hover:text-accentA-11 group-active:text-accentA-11 group-data-[state=checked]:text-accentA-11 text-grayA-11 font-regular",
+        "cursor-pointer relative group-hover:text-accentA-11 group-active:text-accentA-11 group-data-[state=checked]:text-accent-11 text-grayA-11 font-regular",
         "relative group-active:top-[1px]",
         className,
       )}

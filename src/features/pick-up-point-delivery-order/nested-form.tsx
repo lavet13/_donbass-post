@@ -186,7 +186,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (senderType !== "individual") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-accentA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
                   <form.AppField
                     name="sender.surnameSender"
                     validators={{
@@ -352,7 +352,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                                   <IconButton
                                     color="gray"
                                     type="button"
-                                    className="[&_svg]:size-4"
+                                    className="[&_svg]:size-3.5"
                                     size="2"
                                     variant="ghost"
                                   >
@@ -411,7 +411,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (senderType !== "company") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-accentA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
                   <form.AppField
                     name="sender.companySender"
                     validators={{
@@ -595,7 +595,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (recipientType !== "individual") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-accentA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
                   <form.AppField
                     name="recipient.surnameRecipient"
                     validators={{
@@ -791,7 +791,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (recipientType !== "company") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-accentA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
                   <form.AppField
                     name="recipient.companyRecipient"
                     validators={{
@@ -1036,7 +1036,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (customerType !== "individual") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-bl-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-accentA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-bl-xs">
                   <form.AppField
                     name="customer.surnameCustomer"
                     validators={{
@@ -1169,7 +1169,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (customerType !== "company") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-bl-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-accentA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-bl-xs">
                   <form.AppField
                     name="customer.companyCustomer"
                     validators={{
@@ -1382,7 +1382,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                           <IconButton
                             color="gray"
                             type="button"
-                            className="[&_svg]:size-4"
+                            className="[&_svg]:size-3.5"
                             size="2"
                             variant="ghost"
                           >
@@ -1482,7 +1482,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
           />
         </div>
 
-        <div className="w-full text-primary inline-flex text-sm [&_svg]:self-start leading-none gap-2 justify-center items-center mb-3 [&_svg]:size-4.5 [&_svg]:shrink-0">
+        <div className="w-full text-accentA-11 inline-flex text-sm [&_svg]:self-start leading-none gap-2 justify-center items-center mb-3 [&_svg]:size-4.5 [&_svg]:shrink-0">
           <TriangleAlert />
           <p>Габариты указываются по самой большой позиции груза</p>
         </div>
@@ -1548,7 +1548,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 return (
                   <Fragment>
                     <TypographyH3>Дополнительные услуги</TypographyH3>
-                    <div className="flex flex-wrap flex-col sm:flex-row gap-x-4 gap-y-2 pt-3 sm:pt-4 pb-3 my-2 sm:border-l-4 sm:rounded-l-none border-accentA-6 bg-accentA-2 px-1 pl-2 rounded-sm [&_label[data-slot='form-label']]:text-accentA-12!">
+                    <div className="flex flex-wrap flex-col sm:flex-row gap-x-4 gap-y-2 pt-3 sm:pt-4 pb-3 sm:rounded-l-none border-accentA-6 rounded-sm">
                       {additionalServices &&
                         field.state.value.map((_, i) => (
                           <form.AppField

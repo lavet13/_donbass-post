@@ -1,5 +1,11 @@
 import { useState, Fragment, type ComponentProps, type FC } from "react";
-import { Button, Tooltip, VisuallyHidden, Popover, AccessibleIcon } from "@radix-ui/themes";
+import {
+  Button,
+  Tooltip,
+  VisuallyHidden,
+  Popover,
+  AccessibleIcon,
+} from "@radix-ui/themes";
 import {
   Command,
   CommandEmpty,
@@ -139,9 +145,7 @@ const ComboboxGroupField: FC<
                 }
               }}
             >
-              <AccessibleIcon
-                label={selectedEntryClearTooltipMessage}
-              >
+              <AccessibleIcon label={selectedEntryClearTooltipMessage}>
                 <X />
               </AccessibleIcon>
             </span>
@@ -214,7 +218,12 @@ const ComboboxGroupField: FC<
           {!entries.length && !isLoading && refetch && (
             <p className="flex flex-col items-center justify-center py-2 text-center text-sm text-grayA-11">
               {refetchErrorMessage}
-              <Button variant="surface" radius="full" size="2" onClick={refetch}>
+              <Button
+                variant="surface"
+                radius="full"
+                size="2"
+                onClick={refetch}
+              >
                 Повторить запрос
               </Button>
             </p>
@@ -271,7 +280,7 @@ const ComboboxGroupField: FC<
             role="listbox"
             sideOffset={2}
             style={{ width: `${bounds?.width}px` }}
-            className={`p-0 border-grayA-6 border bg-gray-2 dark:bg-gray-2 rounded-sm`}
+            className={`p-0 rounded-sm`}
           >
             {renderContent()}
           </Popover.Content>

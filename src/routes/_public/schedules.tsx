@@ -119,7 +119,7 @@ const SearchPage: FC = () => {
 
   return (
     <div className="flex-1 flex min-h-min items-start w-full">
-      <div className="flex flex-col w-[24rem] sticky top-[calc(var(--header-height)+1px)] h-[calc(100svh-var(--header-height))]">
+      <div className="flex flex-col w-[24rem] sticky top-[calc(var(--header-height)+1px)]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -141,7 +141,7 @@ const SearchPage: FC = () => {
                     clearButton
                     placeholder={"Найти отделение..."}
                   />
-                  <CommandList className="h-auto max-h-max min-h-0">
+                  <CommandList className="h-[calc(100svh-var(--header-height)-var(--combobox-input-height))] max-h-max min-h-0">
                     {isPending ? (
                       <CommandLoading label={"Загружаем отделения..."}>
                         Загружаем отделения...

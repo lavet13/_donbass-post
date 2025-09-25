@@ -18,6 +18,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import type { TooltipProps } from "@radix-ui/themes";
 import { Tooltip, HoverCard, IconButton } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
 import { ChevronRight, Menu } from "lucide-react";
@@ -548,7 +549,8 @@ const SidebarMenuSubItem: FC<ComponentProps<"li">> = ({
 };
 
 const SidebarModeToggle: FC<
-  ComponentProps<typeof ModeToggle> & ComponentProps<typeof Tooltip>
+  ComponentProps<typeof ModeToggle> &
+    Omit<TooltipProps, 'content'> & { content?: string }
 > = ({ className, side = "right", ...props }) => {
   const { isCollapsed, isMobile } = useSidebar();
   const { theme } = useTheme();
