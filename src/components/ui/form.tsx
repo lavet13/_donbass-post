@@ -19,7 +19,7 @@ export const FormLabel: FC<ComponentProps<typeof LabelPrimitive.Root>> = ({
       data-slot="form-label"
       data-error={hasErrors}
       htmlFor={htmlFor || name}
-      className={cn("data-[error=true]:text-destructive", className)}
+      className={cn("data-[error=true]:text-red-11 mb-2", className)}
       {...props}
     />
   );
@@ -32,7 +32,7 @@ export const FormItem: FC<ComponentProps<"div">> = ({
   return (
     <div
       data-slot="form-item"
-      className={cn("flex flex-col gap-y-1 sm:gap-y-1.5", className)}
+      className={cn("flex flex-col", className)}
       {...props}
     />
   );
@@ -53,7 +53,10 @@ export const FormMessage: FC<ComponentProps<"p">> = ({
   return (
     <p
       data-slot="form-message"
-      className={cn("text-center sm:text-start text-destructive text-sm sm:text-xs", className)}
+      className={cn(
+        "text-center sm:text-start text-red-11 text-sm sm:text-xs mt-0.5 leading-[15px]",
+        className,
+      )}
       {...props}
     >
       {errors.join(", ")}
@@ -68,7 +71,7 @@ export const FormDescription: FC<ComponentProps<"p">> = ({
   return (
     <p
       data-slot="form-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("text-grayA-11 text-sm", className)}
       {...props}
     />
   );

@@ -1,10 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import type { ComponentProps, FC } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, Tooltip } from "@radix-ui/themes";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
-import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const NavButton: FC<
@@ -12,9 +11,13 @@ const NavButton: FC<
 > = ({ className, to, activeOptions, ...props }) => {
   return (
     <Button
+      variant="ghost"
+      radius="full"
+      size="2"
       className={cn(
-        "data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground data-[status=active]:font-medium",
-        "bg-background text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground",
+        "data-[status=active]:bg-accent-9 hover:data-[status=active]:bg-accent-10",
+        "active:data-[status=active]:filter-(--base-button-solid-active-filter)",
+        "data-[status=active]:text-accent-contrast data-[status=active]:font-medium",
         className,
       )}
       asChild
@@ -38,9 +41,9 @@ export const Header: FC = () => {
   }
 
   return (
-    <header className="sticky top-0 w-full h-14 flex z-20 bg-background border-b border-input">
-      <div className="container flex items-center w-full max-w-6xl ">
-        <div className="flex items-center gap-1">
+    <header className="sticky top-0 w-full h-14 z-1 flex bg-gray-2 dark:bg-grayA-2 dark:backdrop-blur-lg border-b border-grayA-6">
+      <div className="container flex items-center w-full max-w-6xl pl-3.5">
+        <div className="flex items-center gap-4.5">
           <NavButton to="/" activeOptions={{ exact: true }}>
             Главная
           </NavButton>
@@ -50,16 +53,16 @@ export const Header: FC = () => {
           <NavButton to="/pick-up-point-delivery-order">Забор груза</NavButton>
           <NavButton to="/schedules">Расписание</NavButton>
         </div>
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-2.5">
           <Tooltip content={content}>
-            <ModeToggle className="dark:text-accent-foreground" />
+            <ModeToggle />
           </Tooltip>
           {!isAuthenticated ? (
-            <Button asChild>
+            <Button variant="classic" asChild>
               <Link to="/auth">Личный кабинет</Link>
             </Button>
           ) : (
-            <Button asChild>
+            <Button variant="classic" asChild>
               <Link to="/dashboard">Мой кабинет</Link>
             </Button>
           )}

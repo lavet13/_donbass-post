@@ -3,10 +3,9 @@ import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
 import { SearchIcon, X } from "lucide-react";
 import { useEffect, useRef, type ComponentProps, type FC } from "react";
-import { Tooltip } from "@/components/ui/tooltip";
-import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
+import { Spinner, Tooltip } from "@radix-ui/themes";
+import { AccessibleIcon } from "@radix-ui/themes";
 import mergeRefs from "@/hooks/merge-refs";
-import { Icons } from "../icons";
 
 // https://github.com/pacocoursey/cmdk?tab=readme-ov-file
 const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
@@ -48,7 +47,7 @@ const CommandGroup: FC<ComponentProps<typeof CommandPrimitive.Group>> = ({
     <CommandPrimitive.Group
       data-slot="command-group"
       className={cn(
-        "[&_[cmdk-group-heading]]:px-1.5 [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium",
+        "[&_[cmdk-group-heading]]:px-1.5 [&_[cmdk-group-heading]]:text-grayA-11 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium",
         "text-foreground overflow-hidden p-1",
         className,
       )}
@@ -65,11 +64,11 @@ const CommandItem: FC<ComponentProps<typeof CommandPrimitive.Item>> = ({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "hover:data-[selected=true]:bg-primary/90 hover:data-[selected=true]:text-primary-foreground dark:hover:data-[selected=true]:bg-primary/90 dark:data-[selected=true]:bg-primary/90 active:data-[selected=true]:bg-primary dark:active:data-[selected=true]:bg-primary data-[selected=true]:bg-primary/90 data-[selected=true]:text-primary-foreground",
+        "hover:data-[selected=true]:bg-redA-10 hover:data-[selected=true]:text-red-contrast active:data-[selected=true]:filter-(--base-button-solid-active-filter) data-[selected=true]:bg-redA-9 data-[selected=true]:text-red-contrast",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-primary-foreground",
-        "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 select-none outline-hidden text-sm",
-        "md:text-sm text-base md:leading-4 leading-5 not-first:mt-0.5",
+        "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-gray-12 hover:[&_svg:not([class*='text-'])]:text-red-contrast",
+        "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 select-none outline-hidden",
+        "text-sm leading-[15px] not-first:mt-0.5",
         className,
       )}
       {...props}
@@ -85,11 +84,11 @@ const CommandLoading: FC<ComponentProps<typeof CommandPrimitive.Loading>> = ({
   return (
     <CommandPrimitive.Loading
       data-slot="command-loading"
-      className={cn("text-muted-foreground py-8", className)}
+      className={cn("text-grayA-11 py-8", className)}
       {...props}
     >
       <div className={"flex text-sm gap-2 items-center justify-center"}>
-        <Icons.spinner className="size-4" />
+        <Spinner />
         {children}
       </div>
     </CommandPrimitive.Loading>
@@ -102,7 +101,7 @@ const CommandSeparator: FC<
   return (
     <CommandPrimitive.Separator
       data-slot="command-separator"
-      className={cn("bg-border -mx-1 h-px", className)}
+      className={cn("bg-grayA-7 -mx-1 h-px", className)}
       {...props}
     />
   );
@@ -154,20 +153,19 @@ const CommandInput: FC<
   return (
     <div
       className={cn(
-        "sticky z-10 top-0 flex h-8 items-center gap-2 border-b border-border px-3 pr-1",
+        "sticky z-10 top-0 flex h-8 items-center gap-2 border-b border-grayA-6 px-3 pr-1",
         inputContainer,
       )}
     >
-      <SearchIcon className="size-4 shrink-0 opacity-50" />
+      <SearchIcon className="size-4 shrink-0 opacity-50 text-gray-11" />
       <CommandPrimitive.Input
         data-slot="command-input"
         ref={mergeRefs(inputRef, ref)}
         value={value}
         onValueChange={setValue}
         className={cn(
-          "flex h-10 w-full rounded-lg bg-transparent py-3 text-sm outline-hidden",
-          "placeholder:text-muted-foreground caret-primary disabled:cursor-not-allowed disabled:opacity-50",
-          "text-base md:text-sm",
+          "flex h-[30px] w-full bg-transparent py-3 text-sm outline-hidden",
+          "placeholder:text-grayA-11 caret-red-8 disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
         {...props}
@@ -176,15 +174,15 @@ const CommandInput: FC<
         <Tooltip content={clearButtonTooltipMessage}>
           <button
             data-slot="command-input-clear"
-            className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-secondary/60 active:bg-secondary/70 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+            className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 text-red-11 hover:bg-red-3 active:bg-red-4 outline-none focus-visible:ring-red-8 focus-visible:ring-[2px]"
             onKeyDown={handleKeyDown}
             onClick={handleClear}
             type="button"
             aria-label={clearButtonTooltipMessage}
           >
-            <AccessibleIconPrimitive.Root label={clearButtonTooltipMessage}>
+            <AccessibleIcon label={clearButtonTooltipMessage}>
               <X />
-            </AccessibleIconPrimitive.Root>
+            </AccessibleIcon>
           </button>
         </Tooltip>
       )}
@@ -212,10 +210,7 @@ const CommandShortcut: FC<ComponentProps<"span">> = ({
   return (
     <span
       data-slot="command-shortcut"
-      className={cn(
-        "text-muted-foreground ml-auto text-xs tracking-widest",
-        className,
-      )}
+      className={cn("text-grayA-11 ml-auto text-xs tracking-widest", className)}
       {...props}
     />
   );

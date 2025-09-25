@@ -3,8 +3,9 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
 import { router } from "@/router";
 import { useAuth } from "@/hooks/use-auth";
-import "@/index.css";
-import { useTheme } from "./hooks/use-theme";
+import { Theme } from "@radix-ui/themes";
+import "./styles.css";
+import { useTheme } from "@/hooks/use-theme";
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
@@ -15,8 +16,18 @@ declare module "@tanstack/react-router" {
 
 function App() {
   const auth = useAuth();
-  useTheme();
-  return <RouterProvider router={router} context={{ auth }} />;
+  const { resolvedTheme } = useTheme();
+
+  return (
+    <Theme
+      appearance={resolvedTheme}
+      accentColor="red"
+      grayColor="gray"
+      panelBackground="translucent"
+    >
+      <RouterProvider router={router} context={{ auth }} />
+    </Theme>
+  );
 }
 
 const rootElement = document.getElementById("root")!;

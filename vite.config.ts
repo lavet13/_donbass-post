@@ -51,21 +51,7 @@ export default defineConfig({
 
           // UI components
           UI: [
-            "@radix-ui/react-password-toggle-field",
-            "@radix-ui/react-accessible-icon",
-            "@radix-ui/react-checkbox",
-            "@radix-ui/react-label",
-            "@radix-ui/react-popover",
-            "@radix-ui/react-tooltip",
-            "@radix-ui/react-tabs",
-            "@radix-ui/react-radio-group",
-            "@radix-ui/react-toggle",
-            "@radix-ui/react-select",
-            "@radix-ui/react-visually-hidden",
-            "@radix-ui/react-hover-card",
-            "@radix-ui/react-collapsible",
-            "@radix-ui/react-dropdown-menu",
-            "@radix-ui/react-dialog",
+            "@radix-ui/themes",
             "vaul",
             "react-resizable-panels",
           ],
@@ -101,3 +87,4 @@ export default defineConfig({
     },
   },
 });
+

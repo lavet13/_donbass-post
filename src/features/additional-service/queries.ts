@@ -6,6 +6,7 @@ import {
   type UseQueryOptions,
 } from "@tanstack/react-query";
 import type { AdditionalServicePickUp } from "@/features/additional-service/types";
+// import { createMockAxiosError } from "@/lib/utils";
 
 const additionalServiceKeys = createQueryKeys("additional-service", {
   "pick-up": {
@@ -14,6 +15,7 @@ const additionalServiceKeys = createQueryKeys("additional-service", {
 });
 
 const fetchAdditionalServicePickUp = async () => {
+  // throw createMockAxiosError('501', "Internal Server Error");
   const response = await workplacePostApi.get<AdditionalServicePickUp[]>(
     "additional-service/pick-up",
   );

@@ -1,12 +1,22 @@
 import { useFormContext } from "@/hooks/form-context";
 import { cn } from "@/lib/utils";
-import type { ComponentProps, FC } from "react";
-import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/icons";
+import type { ComponentProps, FC, ReactNode } from "react";
+import { Button, Spinner } from "@radix-ui/themes";
 
 const SubmitButton: FC<
-  ComponentProps<"button"> & { label: string; loadingMessage?: string }
-> = ({ className, label, loadingMessage = "Подтверждается", ...props }) => {
+  ComponentProps<typeof Button> & {
+    label: string;
+    loadingMessage?: string;
+    icon?: ReactNode;
+  }
+> = ({
+  className,
+  label,
+  icon,
+  variant = "solid",
+  loadingMessage = "Подтверждается",
+  ...props
+}) => {
   const form = useFormContext();
 
   return (
@@ -22,16 +32,11 @@ const SubmitButton: FC<
           type="submit"
           disabled={!canSubmit || isDefaultValue || !isAccepted}
           className={cn("", className)}
+          variant={variant}
           {...props}
         >
-          {isSubmitting ? (
-            <>
-              <Icons.spinner className="text-primary-foreground size-4" />
-              {loadingMessage}
-            </>
-          ) : (
-            <>{label}</>
-          )}
+          <Spinner loading={isSubmitting}>{icon}</Spinner>
+          {isSubmitting ? loadingMessage : label}
         </Button>
       )}
     />

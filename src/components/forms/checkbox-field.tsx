@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
@@ -21,7 +21,10 @@ const CheckboxField: FC<
 
   return (
     <FormItem
-      className={cn("flex flex-col justify-center items-center my-2 gap-y-0.5 sm:gap-y-1", className)}
+      className={cn(
+        "flex flex-col justify-center items-center my-2 gap-y-0.5 sm:gap-y-1",
+        className,
+      )}
     >
       <div className="flex-1 flex items-center gap-2">
         <Checkbox
@@ -37,11 +40,7 @@ const CheckboxField: FC<
             field.handleChange(booleanValue);
           }}
         />
-        {label && (
-          <FormLabel htmlFor={formItemId} className="text-sm font-normal">
-            {label}
-          </FormLabel>
-        )}
+        {label && <FormLabel className="font-regular m-0" htmlFor={formItemId}>{label}</FormLabel>}
       </div>
       <FormMessage className="text-center" id={formMessageId} />
     </FormItem>

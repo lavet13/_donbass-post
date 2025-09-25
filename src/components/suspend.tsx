@@ -1,6 +1,6 @@
 import type { ComponentProps, FC } from "react";
 import { Suspense } from "react";
-import { Icons } from "@/components/icons";
+import { Spinner } from "@radix-ui/themes";
 
 type SuspendProps = ComponentProps<typeof Suspense>;
 
@@ -9,8 +9,8 @@ export const Suspend: FC<SuspendProps> = ({ fallback, children, ...props }) => {
     <Suspense
       fallback={
         fallback || (
-          <div className="col-span-full flex-1 flex items-center justify-center gap-2 my-1 text-primary">
-            <Icons.spinner />
+          <div className="col-span-full flex-1 flex items-center justify-center gap-2 my-1 text-accent-indicator">
+            <Spinner />
             Загрузка...
           </div>
         )

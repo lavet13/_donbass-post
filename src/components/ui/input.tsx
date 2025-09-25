@@ -1,25 +1,32 @@
-import * as React from "react";
+import type { FC, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
-import { Slot } from "@radix-ui/react-slot";
+import { TextField } from "@radix-ui/themes";
+import { Slot } from "radix-ui";
 
-const Input: React.FC<
-  React.ComponentProps<"input"> & { asChild?: boolean }
-> = ({ className, type, asChild, ...props }) => {
-  const Comp = asChild ? Slot : "input";
+const Input: FC<
+  TextField.RootProps & {
+    asChild?: boolean;
+    leftElement?: ReactNode;
+    rightElement?: ReactNode;
+  }
+> = ({ className, asChild, children, leftElement, rightElement, ...props }) => {
+  const Comp = asChild ? Slot.Root : TextField.Root;
 
   return (
     <Comp
-      type={type}
       data-slot="input"
       className={cn(
-        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-8 w-full min-w-0 rounded-sm border bg-background px-3 py-1 text-base shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm caret-foreground",
-        "focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[1px]",
-        "dark:aria-invalid:ring-destructive aria-invalid:border-destructive aria-invalid:ring-destructive",
+        "file:text-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent",
+        "has-[input[aria-invalid=true]]:shadow-[inset_0_0_0_var(--text-field-border-width)_var(--red-8)] has-[input[aria-invalid=true]]:caret-red-8",
         className,
       )}
       {...props}
-    />
+    >
+      {leftElement}
+      <Slot.Slottable>{children}</Slot.Slottable>
+      {rightElement}
+    </Comp>
   );
 };
 

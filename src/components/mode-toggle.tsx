@@ -1,10 +1,10 @@
 import { useTheme } from "@/hooks/use-theme";
-import type { ComponentProps, FC, MouseEvent } from "react";
+import type { FC, MouseEvent } from "react";
 import { SunIcon, MoonIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { IconButton, type IconButtonProps } from "@radix-ui/themes";
 
-type ModeToggleProps = ComponentProps<"button">;
+type ModeToggleProps = IconButtonProps;
 
 export const ModeToggle: FC<ModeToggleProps> = ({
   className,
@@ -41,10 +41,10 @@ export const ModeToggle: FC<ModeToggleProps> = ({
   }
 
   return (
-    <Button
-      className={cn("rounded-full", className)}
+    <IconButton
+      className={cn("rounded-full [&_svg]:size-4", className)}
       variant="ghost"
-      size="icon"
+      size="3"
       onClick={handleToggle}
       {...props}
     >
@@ -54,6 +54,6 @@ export const ModeToggle: FC<ModeToggleProps> = ({
       ) : (
         <span className="sr-only">{content}</span>
       )}
-    </Button>
+    </IconButton>
   );
 };

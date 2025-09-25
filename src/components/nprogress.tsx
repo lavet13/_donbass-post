@@ -12,7 +12,7 @@ const Bar: FC<
   return (
     <div
       style={{
-        background: "var(--color-primary)",
+        background: "var(--red-9)",
         height: 2,
         left: 0,
         marginLeft: isFinished ? `-100%` : `${(-1 + progress) * 100}%`,
@@ -26,7 +26,7 @@ const Bar: FC<
       <div
         style={{
           boxShadow:
-            "0 0 10px var(--color-primary), 0 0 5px var(--color-primary)",
+            "0 0 10px var(--red-9), 0 0 5px var(--red-10)",
           display: "block",
           height: "100%",
           opacity: 1,

@@ -9,7 +9,6 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import {
-  pointListQueryOptions,
   usePointListQuery,
 } from "@/features/point/queries";
 import { useAppForm } from "@/hooks/form";
@@ -29,17 +28,11 @@ import {
   MapPin,
   Search,
   Truck,
+  XIcon,
 } from "lucide-react";
 import { useMemo, useRef, type FC } from "react";
 import { Fragment } from "react/jsx-runtime";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Button, VisuallyHidden, Dialog, IconButton } from "@radix-ui/themes";
 
 type ScheduleSearch = {
   q?: string;
@@ -49,8 +42,6 @@ type ScheduleSearch = {
 
 export const Route = createFileRoute("/_public/schedules")({
   component: SchedulesComponent,
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(pointListQueryOptions),
   validateSearch: (search): ScheduleSearch => {
     return {
       q: (search.q as string) || undefined,
@@ -168,13 +159,6 @@ const SearchPage: FC = () => {
                                 title={name}
                                 role="option"
                                 aria-selected={id === field.state.value}
-                                className={cn(
-                                  id === field.state.value &&
-                                    cn(
-                                      "dark:bg-primary dark:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:text-primary-foreground dark:active:data-[selected=true]:bg-primary/80 dark:text-primary-foreground",
-                                      "bg-primary data-[selected=true]:bg-primary/90 hover:data-[selected=true]:bg-primary/90 active:data-[selected=true]:bg-primary/80 text-primary-foreground hover:data-[selected=true]:text-primary-foreground data-[selected=true]:text-primary-foreground",
-                                    ),
-                                )}
                                 value={id as string}
                                 key={id}
                                 onSelect={() => {
@@ -190,7 +174,7 @@ const SearchPage: FC = () => {
                                 </span>
                                 <CheckIcon
                                   className={cn(
-                                    "ml-auto size-4 text-primary-foreground dark:text-primary-foreground",
+                                    "ml-auto size-4",
                                     id === field.state.value
                                       ? "opacity-100"
                                       : "opacity-0",
@@ -209,8 +193,9 @@ const SearchPage: FC = () => {
                       <p className="flex flex-col items-center justify-center py-2 text-center text-sm text-muted-foreground">
                         Не удалось загрузить отделения
                         <Button
-                          variant="secondary"
-                          size="xs"
+                          variant="outline"
+                          radius="full"
+                          size="2"
                           onClick={refetch as () => void}
                         >
                           Повторить запрос
@@ -278,7 +263,7 @@ const SearchPage: FC = () => {
                     {/* Large Header Image */}
                     {selectedDepartment.image && (
                       <div className="w-full h-64 relative overflow-hidden">
-                        <Dialog
+                        <Dialog.Root
                           open={isPicOpen}
                           onOpenChange={(open) => {
                             navigate({
@@ -290,7 +275,7 @@ const SearchPage: FC = () => {
                             });
                           }}
                         >
-                          <DialogTrigger asChild>
+                          <Dialog.Trigger>
                             <button className="w-full h-full cursor-pointer group relative">
                               <img
                                 src={`https://workplace-post.ru/assets/point-image/${selectedDepartment.image}`}
@@ -304,16 +289,15 @@ const SearchPage: FC = () => {
                                 </div>
                               </div>
                             </button>
-                          </DialogTrigger>
-                          <DialogContent
+                          </Dialog.Trigger>
+                          <Dialog.Content
                             aria-describedby={undefined}
                             className="w-full h-full md:max-w-max md:max-h-max p-0 overflow-hidden bg-background rounded-none"
-                            showCloseButton={true}
                           >
                             <VisuallyHidden asChild>
-                              <DialogTitle>
+                              <Dialog.Title>
                                 Изображение отделения во весь экран
-                              </DialogTitle>
+                              </Dialog.Title>
                             </VisuallyHidden>
                             <div className="relative w-full h-full flex items-center justify-center">
                               <img
@@ -330,8 +314,18 @@ const SearchPage: FC = () => {
                                 {selectedDepartment.address}
                               </p>
                             </div>
-                          </DialogContent>
-                        </Dialog>
+                            <Dialog.Close>
+                              <IconButton
+                                variant="soft"
+                                radius="full"
+                                className="absolute top-4 right-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5"
+                              >
+                                <XIcon />
+                                <span className="sr-only">Закрыть окно</span>
+                              </IconButton>
+                            </Dialog.Close>
+                          </Dialog.Content>
+                        </Dialog.Root>
                       </div>
                     )}
 

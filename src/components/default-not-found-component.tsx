@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { Button } from "@radix-ui/themes";
 
 export const DefaultNotFoundComponent: FC = () => {
   return (

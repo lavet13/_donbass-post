@@ -9,9 +9,22 @@ import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
 import { Fragment, useState } from "react";
 import { FormItem } from "@/components/ui/form";
-import { ChevronDown, ChevronUp, TriangleAlert } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { TypographyH3 } from "@/components/ui/typography/typographyH3";
+import {
+  ChevronDown,
+  ChevronUp,
+  CircleAlertIcon,
+  TriangleAlert,
+} from "lucide-react";
+import {
+  Button,
+  IconButton,
+  Popover,
+  Separator,
+  Spinner,
+  Text,
+  TextField,
+} from "@radix-ui/themes";
+import { TypographyH3 } from "@/components/typography/typographyH3";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import { useStore } from "@tanstack/react-form";
 import { useBlocker } from "@tanstack/react-router";
@@ -21,7 +34,7 @@ import {
 } from "@/components/auto-dismiss-message";
 import { useCalculateGlobalMutation } from "@/features/delivery-rate/mutations";
 import { isAxiosError } from "axios";
-import { Icons } from "@/components/icons";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -43,7 +56,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
     const {
       data: additionalServices,
       isLoading: isAdditionalServiceLoading,
-      isFetching: isAdditionalServiceFetching,
       refetch: refetchAdditionalServices,
     } = useAdditionalServicePickUpQuery();
 
@@ -125,6 +137,11 @@ export const PickUpPointDeliveryOrderForm = withForm({
       durationMs: 60_000,
     });
 
+    const styles = getComputedStyle(document.documentElement);
+    const smBreakpoint = styles.getPropertyValue("--breakpoint-sm");
+
+    const isMobile = useMediaQuery(`(max-width: ${smBreakpoint})`);
+
     return (
       <form
         className="mx-auto w-full max-w-2xl"
@@ -135,7 +152,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
         }}
       >
         <AutoDismissMessage {...message} />
-        <TypographyH3 className="text-primary">Отправитель</TypographyH3>
+        <TypographyH3>Отправитель</TypographyH3>
         <form.AppField
           name="sender.type"
           validators={{
@@ -169,7 +186,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (senderType !== "individual") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
                   <form.AppField
                     name="sender.surnameSender"
                     validators={{
@@ -328,10 +345,31 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     children={(field) => {
                       return (
                         <field.TextField
-                          hint={
-                            <p className="text-base sm:text-sm">
-                              Забор груза отправителя
-                            </p>
+                          rightElement={
+                            <TextField.Slot side="right">
+                              <Popover.Root>
+                                <Popover.Trigger>
+                                  <IconButton
+                                    color="gray"
+                                    type="button"
+                                    className="[&_svg]:size-4"
+                                    size="2"
+                                    variant="ghost"
+                                  >
+                                    <CircleAlertIcon />
+                                  </IconButton>
+                                </Popover.Trigger>
+                                <Popover.Content
+                                  align="end"
+                                  side="bottom"
+                                  size="1"
+                                >
+                                  <Text size="1" as="p" trim="both">
+                                    Забор груза отправителя
+                                  </Text>
+                                </Popover.Content>
+                              </Popover.Root>
+                            </TextField.Slot>
                           }
                           label="Адрес"
                           placeholder="Адрес"
@@ -373,7 +411,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (senderType !== "company") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
                   <form.AppField
                     name="sender.companySender"
                     validators={{
@@ -501,15 +539,12 @@ export const PickUpPointDeliveryOrderForm = withForm({
                         <field.TextField
                           onChange={(e) => {
                             const isNotDigit = /[^0-9]/.test(e.target.value);
-
                             if (isNotDigit) {
                               return;
                             }
-
                             if (e.target.value.length > 12) {
                               return;
                             }
-
                             field.handleChange(e.target.value);
                           }}
                           label="ИНН"
@@ -524,7 +559,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
           }}
         />
 
-        <TypographyH3 className="text-primary">Получатель</TypographyH3>
+        <Separator size="2" className="mx-auto sm:my-rx-2 my-rx-3" />
+
+        <TypographyH3>Получатель</TypographyH3>
         <form.AppField
           name="recipient.type"
           validators={{
@@ -558,7 +595,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (recipientType !== "individual") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
                   <form.AppField
                     name="recipient.surnameRecipient"
                     validators={{
@@ -754,7 +791,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (recipientType !== "company") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-l-xs my-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-l-xs my-2">
                   <form.AppField
                     name="recipient.companyRecipient"
                     validators={{
@@ -856,15 +893,12 @@ export const PickUpPointDeliveryOrderForm = withForm({
                         <field.TextField
                           onChange={(e) => {
                             const isNotDigit = /[^0-9]/.test(e.target.value);
-
                             if (isNotDigit) {
                               return;
                             }
-
                             if (e.target.value.length > 12) {
                               return;
                             }
-
                             field.handleChange(e.target.value);
                           }}
                           label="ИНН"
@@ -931,18 +965,18 @@ export const PickUpPointDeliveryOrderForm = withForm({
           }}
         />
 
+        <Separator size="2" className="mx-auto sm:my-rx-2 my-rx-3" />
+
         <form.AppField
           name="customer.isToggled"
           children={(field) => {
             return (
               <div className={cn(!field.state.value && "py-2")}>
-                <TypographyH3 className="text-primary">Заказчик</TypographyH3>
+                <TypographyH3>Заказчик</TypographyH3>
                 <Toggle
                   className={cn(
-                    buttonVariants({ variant: "outline" }),
-                    "data-[state=on]:bg-primary data-[state=on]:[box-shadow:none] dark:data-[state=on]:bg-primary data-[state=on]:text-primary-foreground w-full sm:w-fit",
-                    "sm:rounded-bl-sm",
-                    "data-[state=on]:-mb-px data-[state=on]:rounded-bl-none data-[state=on]:rounded-br-none sm:data-[state=on]:rounded-b-sm sm:data-[state=on]:mb-0",
+                    "[&_svg]:size-4 px-3 py-2 rounded-full text-grayA-11 hover:text-accentA-11 active:text-accentA-11 [box-shadow:inset_0_0_0_1px_var(--gray-a7)] hover:[box-shadow:inset_0_0_0_1px_var(--accent-a8)] hover:bg-accentA-3 active:[box-shadow:inset_0_0_0_1px_var(--accent-a8)] active:bg-accentA-5 w-full sm:w-fit",
+                    "data-[state=on]:bg-accentA-5 data-[state=on]:[box-shadow:inset_0_0_0_1px_var(--accent-a7)] data-[state=on]:text-accentA-11 data-[state=on]:active:bg-accentA-3 data-[state=on]:active:[box-shadow:inset_0_0_0_1px_var(--accent-a6)] data-[state=on]:-mb-px sm:data-[state=on]:mb-0 max-sm:data-[state=on]:rounded-sm max-sm:data-[state=on]:rounded-bl-none max-sm:data-[state=on]:rounded-br-none",
                   )}
                   pressed={field.state.value}
                   onPressedChange={field.handleChange}
@@ -966,9 +1000,13 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   return (
                     <div
                       className={cn(
-                        "sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-tl-xs",
-                        "sm:mt-2 [&_button]:first-of-type:rounded-tl-none [&_button]:last-of-type:rounded-tr-none [&_span]:group-first-of-type:rounded-tl-none [&_span]:group-last-of-type:rounded-tr-none [&_button]:last-of-type:mr-0",
-                        "sm:[&_button]:first-of-type:rounded-l-sm sm:[&_button]:last-of-type:rounded-r-sm sm:[&_span]:group-first-of-type:rounded-l-sm sm:[&_span]:group-last-of-type:rounded-r-sm sm:[&_button]:last-of-type:-mr-px",
+                        "sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 rounded-tl-xs",
+
+                        // mobile view
+                        "sm:mt-2 [&_button]:first-of-type:rounded-l-sm [&_button]:first-of-type:rounded-tl-none [&_button]:last-of-type:rounded-r-sm [&_button]:last-of-type:rounded-tr-none [&_span]:group-first-of-type:rounded-l-sm [&_span]:group-first-of-type:rounded-tl-none [&_span]:group-last-of-type:rounded-r-sm [&_span]:group-last-of-type:rounded-tr-none [&_button]:last-of-type:mr-0",
+
+                        // desktop view
+                        "sm:[&_button]:first-of-type:rounded-l-full sm:[&_button]:last-of-type:rounded-r-full sm:[&_span]:group-first-of-type:rounded-l-full sm:[&_span]:group-last-of-type:rounded-r-full sm:[&_button]:last-of-type:-mr-px",
                       )}
                     >
                       <field.RadioGroupField
@@ -998,7 +1036,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (customerType !== "individual") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-bl-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-bl-xs">
                   <form.AppField
                     name="customer.surnameCustomer"
                     validators={{
@@ -1131,7 +1169,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             if (customerType !== "company") return null;
             return (
               <Suspend>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-ring rounded-bl-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-accentA-6 bg-redA-1 [&_label[data-slot='form-label']]:text-red-12 rounded-bl-xs">
                   <form.AppField
                     name="customer.companyCustomer"
                     validators={{
@@ -1233,7 +1271,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
           }}
         />
 
-        <TypographyH3 className="text-primary">Данные о грузе</TypographyH3>
+        <Separator size="2" className="mx-auto sm:my-rx-2 my-rx-3" />
+
+        <TypographyH3>Данные о грузе</TypographyH3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 mt-2 mb-4">
           <form.AppField
             name="cargoData.totalWeight"
@@ -1335,11 +1375,28 @@ export const PickUpPointDeliveryOrderForm = withForm({
               );
               return (
                 <field.NumericField
-                  hint={
-                    <p className="text-base sm:text-sm">
-                      Если не знаете объем груза, заполните габариты ниже
-                      (длина, ширина, высота)
-                    </p>
+                  rightElement={
+                    <TextField.Slot side="right">
+                      <Popover.Root>
+                        <Popover.Trigger>
+                          <IconButton
+                            color="gray"
+                            type="button"
+                            className="[&_svg]:size-4"
+                            size="2"
+                            variant="ghost"
+                          >
+                            <CircleAlertIcon />
+                          </IconButton>
+                        </Popover.Trigger>
+                        <Popover.Content align="end" side="bottom" size="1" maxWidth={"300px"}>
+                          <Text size="1" as="p" trim="both">
+                            Если не знаете объем груза, заполните габариты ниже
+                            (длина, ширина, высота)
+                          </Text>
+                        </Popover.Content>
+                      </Popover.Root>
+                    </TextField.Slot>
                   }
                   label="Метр кубический"
                   placeholder="Метр кубический"
@@ -1453,100 +1510,111 @@ export const PickUpPointDeliveryOrderForm = withForm({
           }}
         />
 
+        <Separator size="2" className="mx-auto sm:my-rx-2 my-rx-3" />
+
         {isAdditionalServiceLoading && (
-          <div className="flex gap-2 items-center justify-center py-1.5 text-primary">
-            <Icons.spinner />
+          <div className="flex gap-2 items-center justify-center py-1.5 text-redA-11">
+            <Spinner />
             Загружаем доп. услуги
           </div>
         )}
-        {!additionalServices && !isAdditionalServiceLoading && (
-          <div className="py-2 w-full flex flex-col gap-2 items-center justify-center">
-            Не удалось загрузить дополнительные услуги
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                refetchAdditionalServices();
+        {additionalServices &&
+          !additionalServices.length &&
+          !isAdditionalServiceLoading && (
+            <div className="py-2 w-full flex flex-col gap-2 items-center justify-center text-grayA-11">
+              Не удалось загрузить дополнительные услуги
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  refetchAdditionalServices();
+                }}
+                size="2"
+                radius="full"
+                variant="outline"
+              >
+                Попробовать еще раз
+              </Button>
+            </div>
+          )}
+
+        {additionalServices &&
+          additionalServices.length !== 0 &&
+          !isAdditionalServiceLoading && (
+            <form.AppField
+              name="additionalService"
+              mode="array"
+              children={(field) => {
+                return (
+                  <Fragment>
+                    <TypographyH3>Дополнительные услуги</TypographyH3>
+                    <div className="flex flex-wrap flex-col sm:flex-row gap-x-4 gap-y-2 pt-3 sm:pt-4 pb-3 my-2 sm:border-l-4 sm:rounded-l-none border-accentA-6 bg-accentA-2 px-1 pl-2 rounded-sm [&_label[data-slot='form-label']]:text-accentA-12!">
+                      {additionalServices &&
+                        field.state.value.map((_, i) => (
+                          <form.AppField
+                            key={i}
+                            name={`additionalService[${i}].selected`}
+                            children={(selectedField) => {
+                              const label = form.getFieldValue(
+                                `additionalService[${i}].label`,
+                              );
+                              const isCashOnDelivery = label
+                                .toLowerCase()
+                                .includes("наложенный платеж");
+                              const isSelected =
+                                selectedField.state.value.includes("yes");
+
+                              return (
+                                <FormItem className="flex-1 gap-y-1 sm:gap-y-1 items-stretch">
+                                  <selectedField.RadioGroupField
+                                    label={label}
+                                    stretched
+                                    options={[
+                                      { label: "Да", value: "yes" },
+                                      { label: "Нет", value: "no" },
+                                    ]}
+                                    ariaLabel={`Дополнительная услуга '${label}'`}
+                                  />
+
+                                  {isSelected && isCashOnDelivery && (
+                                    <form.AppField
+                                      name="cargoData.cashOnDelivery"
+                                      validators={{
+                                        onSubmit: ({ value }) => {
+                                          if (value <= 0) {
+                                            return "Укажите наложенный платеж";
+                                          }
+                                          return undefined;
+                                        },
+                                      }}
+                                      children={(field) => {
+                                        return (
+                                          <>
+                                            <field.NumericField
+                                              size={isMobile ? "2" : "1"}
+                                              shouldFocusOnMount
+                                              placeholder="Наложенный платеж в рублях"
+                                              thousandSeparator=" "
+                                              suffix=" ₽"
+                                            />
+                                          </>
+                                        );
+                                      }}
+                                    />
+                                  )}
+                                </FormItem>
+                              );
+                            }}
+                          />
+                        ))}
+                    </div>
+                  </Fragment>
+                );
               }}
-              size="sm"
-              variant="outline"
-            >
-              {isAdditionalServiceFetching && <Icons.spinner />}
-              Попробовать еще раз
-            </Button>
-          </div>
-        )}
+            />
+          )}
 
-        <form.AppField
-          name="additionalService"
-          mode="array"
-          children={(field) => {
-            return (
-              <Fragment>
-                <TypographyH3 className="text-primary">
-                  Дополнительные услуги
-                </TypographyH3>
-                <div className="flex flex-wrap flex-col sm:flex-row gap-x-4 gap-y-2 mt-3 sm:mt-2 mb-4">
-                  {additionalServices &&
-                    field.state.value.map((_, i) => (
-                      <form.AppField
-                        key={i}
-                        name={`additionalService[${i}].selected`}
-                        children={(selectedField) => {
-                          const label = form.getFieldValue(
-                            `additionalService[${i}].label`,
-                          );
-                          const isCashOnDelivery = label
-                            .toLowerCase()
-                            .includes("наложенный платеж");
-                          const isSelected =
-                            selectedField.state.value.includes("yes");
-
-                          return (
-                            <FormItem className="flex-1 gap-y-1 sm:gap-y-1 items-stretch">
-                              <selectedField.RadioGroupField
-                                label={label}
-                                stretched
-                                options={[
-                                  { label: "Да", value: "yes" },
-                                  { label: "Нет", value: "no" },
-                                ]}
-                                ariaLabel={`Дополнительная услуга '${label}'`}
-                              />
-
-                              {isSelected && isCashOnDelivery && (
-                                <form.AppField
-                                  name="cargoData.cashOnDelivery"
-                                  validators={{
-                                    onSubmit: ({ value }) => {
-                                      if (value <= 0) {
-                                        return "Укажите наложенный платеж";
-                                      }
-                                      return undefined;
-                                    },
-                                  }}
-                                  children={(field) => {
-                                    return (
-                                      <field.NumericField
-                                        shouldFocusOnMount
-                                        placeholder="Наложенный платеж в рублях"
-                                        thousandSeparator=" "
-                                        suffix=" ₽"
-                                      />
-                                    );
-                                  }}
-                                />
-                              )}
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    ))}
-                </div>
-              </Fragment>
-            );
-          }}
-        />
+        <Separator size="2" className="mx-auto sm:my-rx-2 my-rx-3" />
 
         <TypographyH3 className="text-primary">Оплата</TypographyH3>
         <div className="sm:grid sm:grid-cols-2 flex flex-col gap-x-4 gap-y-2 mt-2 mb-4">
@@ -1603,7 +1671,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             >
               {isPending ? (
                 <>
-                  <Icons.spinner className="size-4 text-primary-foreground" />
+                  <Spinner />
                   Просчёт...
                 </>
               ) : (
@@ -1611,7 +1679,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               )}
             </Button>
             {calculateDeliveryResult && !isError && (
-              <div className="flex py-2 text-3xl justify-center items-center bg-accent text-accent-foreground rounded-md font-bold">
+              <div className="flex py-2 text-3xl justify-center items-center bg-accentA-3 text-accentA-11 rounded-md font-bold">
                 {calculateDeliveryResult.price +
                   (form.state.values.additionalService
                     .filter(
@@ -1624,7 +1692,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               </div>
             )}
             {error && error.response && error.response.status === 404 && (
-              <div className="flex py-2 text-3xl text-center justify-center items-center bg-primary text-primary-foreground rounded-md font-bold">
+              <div className="flex py-2 text-3xl text-center justify-center items-center bg-accentA-3 text-accentA-11 rounded-md font-bold">
                 {error.response.data.message}
               </div>
             )}

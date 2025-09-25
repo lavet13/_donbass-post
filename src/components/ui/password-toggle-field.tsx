@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils";
 import * as PasswordToggleFieldPrimitive from "@radix-ui/react-password-toggle-field";
 import type { ComponentProps, FC } from "react";
-import { Input } from "@/components/ui/input";
 
 const PasswordToggleField: FC<
   ComponentProps<typeof PasswordToggleFieldPrimitive.Root>
@@ -20,14 +19,19 @@ const PasswordToggleFieldInput: FC<
   ComponentProps<typeof PasswordToggleFieldPrimitive.Input>
 > = ({ className, ...props }) => {
   return (
-    <Input
-      data-slot="password-toggle-field-input"
-      className={cn("pr-[30px]", className)}
-      {...props}
-      asChild
+    <div
+      className={cn(
+        "rt-TextFieldRoot rt-r-size-2 rt-variant-surface",
+        "has-[input[aria-invalid=true]]:[box-shadow:inset_0_0_0_var(--text-field-border-width)_var(--red-8)]",
+        "has-[input[aria-invalid=true]]:caret-red-8",
+      )}
     >
-      <PasswordToggleFieldPrimitive.Input />
-    </Input>
+      <PasswordToggleFieldPrimitive.Input
+        data-slot="password-toggle-field-input"
+        className={cn("rt-reset rt-TextFieldInput pr-[30px]", className)}
+        {...props}
+      />
+    </div>
   );
 };
 

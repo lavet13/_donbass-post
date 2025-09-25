@@ -1,10 +1,5 @@
 import { useState, Fragment, type ComponentProps, type FC } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
+import { Button, Tooltip, VisuallyHidden, Popover, AccessibleIcon } from "@radix-ui/themes";
 import {
   Command,
   CommandEmpty,
@@ -18,8 +13,6 @@ import {
 import { cn } from "@/lib/utils";
 import { CheckIcon, ChevronsUpDownIcon, X } from "lucide-react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Tooltip } from "@/components/ui/tooltip";
-import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { useMeasure } from "@/hooks/use-measure";
 import {
@@ -29,13 +22,12 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 type EntryType = { label: string; value: string | number; name?: string };
 
 const ComboboxGroupField: FC<
-  ComponentProps<"button"> & {
+  ComponentProps<typeof Button> & {
     searchEmptyMessage?: string;
     searchInputPlaceholder?: string;
     searchClearButtonTooltipMessage?: string;
@@ -98,13 +90,13 @@ const ComboboxGroupField: FC<
   const renderTrigger = () => {
     return (
       <Button
-        variant="outline"
+        variant="surface"
+        color="gray"
         ref={buttonRef}
         className={cn(
-          "dark:bg-input/30 dark:hover:bg-input/40 dark:active:bg-input/50",
-          `justify-between`,
-          open &&
-            "bg-primary/5 dark:bg-input/50 [box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))]",
+          `justify-between [&_svg]:size-4`,
+          `aria-invalid:shadow-[inset_0_0_0_1px_var(--red-8)]`,
+          open && "bg-grayA-4",
           className,
         )}
         id={formItemId}
@@ -120,11 +112,9 @@ const ComboboxGroupField: FC<
       >
         <div className="flex shrink items-center min-w-0">
           {!selectedEntry ? (
-            <span className="text-muted-foreground truncate text-base md:text-sm">
-              {placeholder}
-            </span>
+            <span className="truncate text-sm">{placeholder}</span>
           ) : (
-            <span className="font-bold truncate text-base md:text-sm">
+            <span className="text-grayA-12 font-medium truncate text-sm">
               {selectedEntry.name || selectedEntry.label}
             </span>
           )}
@@ -135,7 +125,7 @@ const ComboboxGroupField: FC<
           <Tooltip content={selectedEntryClearTooltipMessage}>
             <span
               tabIndex={0}
-              className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-5.5 rounded-full [&_svg]:size-4! hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+              className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-5.5 rounded-full [&_svg]:size-4! text-gray-12 hover:bg-grayA-3 active:bg-grayA-4 outline-none focus-visible:ring-red-8 focus-visible:ring-[2px]"
               aria-label={selectedEntryClearTooltipMessage}
               onClick={(e) => {
                 e.preventDefault();
@@ -149,11 +139,11 @@ const ComboboxGroupField: FC<
                 }
               }}
             >
-              <AccessibleIconPrimitive.Root
+              <AccessibleIcon
                 label={selectedEntryClearTooltipMessage}
               >
                 <X />
-              </AccessibleIconPrimitive.Root>
+              </AccessibleIcon>
             </span>
           </Tooltip>
         )}
@@ -168,7 +158,7 @@ const ComboboxGroupField: FC<
     return (
       <Command>
         <CommandInput
-          {...(modal ? { inputContainer: "bg-modal rounded-t-sm" } : {})}
+          {...(modal ? { inputContainer: "bg-gray-2 rounded-t-sm" } : {})}
           shouldFocus={shouldFocus}
           clearButton
           clearButtonTooltipMessage={searchClearButtonTooltipMessage}
@@ -190,13 +180,6 @@ const ComboboxGroupField: FC<
                   {items.map(({ label, value }) => (
                     <CommandItem
                       title={label}
-                      className={cn(
-                        value === field.state.value &&
-                          cn(
-                            "dark:bg-primary dark:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:bg-primary/90 dark:hover:data-[selected=true]:text-primary-foreground dark:active:data-[selected=true]:bg-primary/80 dark:text-primary-foreground",
-                            "bg-primary data-[selected=true]:bg-primary/90 hover:data-[selected=true]:bg-primary/90 active:data-[selected=true]:bg-primary/80 text-primary-foreground hover:data-[selected=true]:text-primary-foreground data-[selected=true]:text-primary-foreground",
-                          ),
-                      )}
                       key={value}
                       value={value as string}
                       role="option"
@@ -215,7 +198,7 @@ const ComboboxGroupField: FC<
                       </span>
                       <CheckIcon
                         className={cn(
-                          "ml-auto size-4 text-primary-foreground dark:text-primary-foreground",
+                          "ml-auto size-4",
                           value === field.state.value
                             ? "opacity-100"
                             : "opacity-0",
@@ -229,9 +212,9 @@ const ComboboxGroupField: FC<
             ))}
 
           {!entries.length && !isLoading && refetch && (
-            <p className="flex flex-col items-center justify-center py-2 text-center text-sm text-muted-foreground">
+            <p className="flex flex-col items-center justify-center py-2 text-center text-sm text-grayA-11">
               {refetchErrorMessage}
-              <Button variant="secondary" size="xs" onClick={refetch}>
+              <Button variant="surface" radius="full" size="2" onClick={refetch}>
                 Повторить запрос
               </Button>
             </p>
@@ -249,7 +232,7 @@ const ComboboxGroupField: FC<
           <DrawerTrigger asChild>{renderTrigger()}</DrawerTrigger>
           <DrawerContent
             aria-describedby={undefined}
-            className="bg-modal rounded-t-lg h-full! lg:max-h-full max-h-[calc(100vh-0.75rem)] top-3 lg:top-0 border border-input"
+            className="rounded-t-lg w-full h-full! lg:max-h-full max-h-[calc(100vh-0.75rem)] top-3 lg:top-0 border border-grayA-6"
             role="listbox"
           >
             <DrawerHandle />
@@ -267,14 +250,14 @@ const ComboboxGroupField: FC<
               >
                 <Tooltip content="Закрыть модальное окно">
                   <button
-                    className="hidden text-secondary-foreground absolute top-1 left-1 ml-auto pointer-events-auto cursor-pointer shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-4 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                    className="hidden text-red-11 hover:bg-red-3 active:bg-red-4 absolute top-1 left-1 ml-auto pointer-events-auto cursor-pointer shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-4 outline-none focus-visible:ring-red-8 focus-visible:ring-[2px]"
                     aria-label="Закрыть окно"
                     type="button"
                     onClick={() => setOpen(false)}
                   >
-                    <AccessibleIconPrimitive.Root label="Закрыть модальное окно">
+                    <AccessibleIcon label="Закрыть модальное окно">
                       <X />
-                    </AccessibleIconPrimitive.Root>
+                    </AccessibleIcon>
                   </button>
                 </Tooltip>
               </div>
@@ -282,17 +265,17 @@ const ComboboxGroupField: FC<
           </DrawerContent>
         </Drawer>
       ) : (
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>{renderTrigger()}</PopoverTrigger>
-          <PopoverContent
+        <Popover.Root open={open} onOpenChange={setOpen}>
+          <Popover.Trigger>{renderTrigger()}</Popover.Trigger>
+          <Popover.Content
             role="listbox"
             sideOffset={2}
             style={{ width: `${bounds?.width}px` }}
-            className={`p-0 bg-background [box-shadow:inset_0_0_0_1px_rgb(from_var(--ring)_calc(r*0.9)_calc(g*0.9)_calc(b*0.9))]`}
+            className={`p-0 border-grayA-6 border bg-gray-2 dark:bg-gray-2 rounded-sm`}
           >
             {renderContent()}
-          </PopoverContent>
-        </Popover>
+          </Popover.Content>
+        </Popover.Root>
       )}
       <FormMessage id={formMessageId} />
     </FormItem>

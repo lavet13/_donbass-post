@@ -1,14 +1,5 @@
 import { Fragment, type FC } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select } from "@radix-ui/themes";
 import { FormItem, FormLabel, FormMessage } from "../ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
@@ -42,33 +33,32 @@ const SelectField: FC<SelectFieldProps> = ({
   return (
     <FormItem>
       {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
-      <Select value={field.state.value} onValueChange={field.handleChange}>
-        <SelectTrigger
+      <Select.Root value={field.state.value} onValueChange={field.handleChange}>
+        <Select.Trigger
           title={field.state.value || placeholder}
+          placeholder={placeholder}
           id={formItemId}
           name={field.name}
           aria-invalid={!!error}
           aria-label={defaultAriaLabel}
           aria-describedby={ariaDescribedBy}
-        >
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
+        />
+        <Select.Content>
           {options.map((group, idx, groups) => (
             <Fragment key={idx}>
-              <SelectGroup>
-                <SelectLabel>{group.label}</SelectLabel>
+              <Select.Group>
+                <Select.Label>{group.label}</Select.Label>
                 {group.items.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
+                  <Select.Item key={item.value} value={item.value}>
                     {item.label}
-                  </SelectItem>
+                  </Select.Item>
                 ))}
-              </SelectGroup>
-              {groups.length - 1 !== idx && <SelectSeparator />}
+              </Select.Group>
+              {groups.length - 1 !== idx && <Select.Separator />}
             </Fragment>
           ))}
-        </SelectContent>
-      </Select>
+        </Select.Content>
+      </Select.Root>
       <FormMessage id={formMessageId} />
     </FormItem>
   );

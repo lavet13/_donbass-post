@@ -1,8 +1,8 @@
 import { useEffect, useState, forwardRef, useRef } from "react";
-import { cn } from "@/lib/utils";
 import { useImperativeHandle } from "react";
 import { useControllableState } from "@/hooks/use-controllable-state";
-import { Textarea } from "@/components/ui/textarea";
+import { TextArea, type TextAreaProps } from "@radix-ui/themes";
+import { cn } from "@/lib/utils";
 
 interface UseAutosizeTextAreaProps {
   textAreaRef: React.RefObject<HTMLTextAreaElement | null>;
@@ -54,7 +54,7 @@ type AutosizeTextAreaProps = {
   minHeight?: number;
   value?: any;
   onValueChange?: (value: any) => void;
-} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+} & TextAreaProps;
 
 export const AutosizeTextarea = forwardRef<
   AutosizeTextAreaRef,
@@ -96,11 +96,11 @@ export const AutosizeTextarea = forwardRef<
     };
 
     return (
-      <Textarea
+      <TextArea
         {...props}
         value={value}
         ref={textAreaRef}
-        className={cn("bg-background", className)}
+        className={cn("", className)}
         onChange={handleChange}
       />
     );

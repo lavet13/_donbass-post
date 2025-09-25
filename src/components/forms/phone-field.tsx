@@ -1,12 +1,14 @@
 import type { FC } from "react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import RPNInput from "react-phone-number-input/input";
-import { Input } from "@/components/ui/input";
 import type { DefaultInputComponentProps } from "react-phone-number-input";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
+import { Input } from "@/components/ui/input";
+import type { TextField } from "@radix-ui/themes";
 
 const PhoneField: FC<
-  DefaultInputComponentProps & { label?: string; ariaLabel?: string }
+  Omit<TextField.RootProps, 'value' | 'onChange'> &
+    DefaultInputComponentProps & { label?: string; ariaLabel?: string }
 > = ({ label, "aria-label": ariaLabelProp, ariaLabel, ...props }) => {
   const {
     field,

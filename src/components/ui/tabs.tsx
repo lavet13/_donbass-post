@@ -35,7 +35,7 @@ const TabsList: FC<ComponentProps<typeof TabsPrimitive.List>> = ({
     left: "0px",
     width: "0px",
     opacity: 0,
-    backgroundColor: "rgb(from var(--color-muted) r g b / 0.3)",
+    backgroundColor: "var(--gray-a3)",
   });
 
   const updateHoverIndicator = (
@@ -53,8 +53,8 @@ const TabsList: FC<ComponentProps<typeof TabsPrimitive.List>> = ({
       width: `${offsetWidth - 10}px`,
       opacity: 1,
       backgroundColor: isActive
-        ? "rgb(from var(--color-primary) r g b / 0.2)"
-        : "rgb(from var(--color-primary) r g b / 0.1)",
+        ? "var(--red-a3)"
+        : "var(--gray-a3)",
     });
   };
 
@@ -102,7 +102,7 @@ const TabsList: FC<ComponentProps<typeof TabsPrimitive.List>> = ({
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
-      className={cn("relative shrink-0 flex border-b border-input", className)}
+      className={cn("relative shrink-0 flex border-b border-grayA-6", className)}
       ref={listRef}
       {...(isMobile
         ? { onTouchEnd: () => updateHoverIndicator(null) }
@@ -125,11 +125,11 @@ const TabsList: FC<ComponentProps<typeof TabsPrimitive.List>> = ({
           )
         : props.children}
       <div
-        className="absolute z-1 top-1/2 -translate-y-1/2 h-[30px] transition-all duration-200 ease-out pointer-events-none rounded-md"
+        className="absolute z-1 top-1/2 -translate-y-1/2 h-[30px] transition-all duration-200 ease-out pointer-events-none rounded-md active:bg-redA-4!"
         style={hoverStyle}
       />
       <div
-        className="absolute bottom-0 h-0.5 bg-primary transition-all duration-200 ease-out"
+        className="absolute bottom-0 h-0.5 bg-red-indicator transition-all duration-200 ease-out"
         style={activeStyles}
       />
     </TabsPrimitive.List>
@@ -145,7 +145,6 @@ const TabsTrigger: FC<
   }
 > = ({ className, onHoverChange, ...props }) => {
   const triggerRef = useRef<HTMLButtonElement | null>(null);
-
   const isActive = triggerRef.current?.getAttribute("data-state") === "active";
 
   return (
@@ -154,9 +153,9 @@ const TabsTrigger: FC<
       ref={triggerRef}
       className={cn(
         "relative flex-1 flex items-center justify-center px-5 h-[45px] text-sm outline-none",
-        "leading-none select-none",
-        "hover:text-primary! data-[state=active]:text-primary transition-colors duration-150",
-        "first-of-type:rounded-tl-md last-of-type:rounded-tr-md bg-popover",
+        "leading-none select-none focus-visible:ring-red-8 focus-visible:ring-[2px]",
+        "hover:data-[state=active]:text-red-10! data-[state=active]:text-red-9 transition-colors duration-150",
+        "first-of-type:rounded-tl-md last-of-type:rounded-tr-md bg-grayA-2",
         className,
       )}
       {...(isMobile
@@ -187,7 +186,7 @@ const TabsContent: FC<ComponentProps<typeof TabsPrimitive.Content>> = ({
     <TabsPrimitive.Content
       data-slot="tabs-content"
       className={cn(
-        "grow p-5 bg-popover outline-none focus-visible:[box-shadow:0_0_0_2px_var(--color-primary)]",
+        "grow p-5 bg-grayA-2 outline-none focus-visible:[box-shadow:0_0_0_2px_var(--red-8)]",
         "rounded-bl-md rounded-br-md",
         className,
       )}

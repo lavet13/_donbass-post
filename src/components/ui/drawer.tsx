@@ -25,11 +25,11 @@ const DrawerContent: FC<ComponentProps<typeof DrawerPrimitive.Content>> = ({
 }) => {
   return (
     <DrawerPrimitive.Portal>
-      <DrawerPrimitive.Overlay className="fixed inset-0 bg-modal-backdrop z-50" />
+      <DrawerPrimitive.Overlay className="fixed inset-0 bg-grayA-2" />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
         className={cn(
-          "group/drawer-content flex flex-col text-modal-foreground fixed outline-none z-50",
+          "group/drawer-content flex flex-col text-gray-12 bg-gray-2 fixed outline-none",
 
           // removing blur
           "transform-gpu backface-hidden will-change-auto",
@@ -51,7 +51,7 @@ const DrawerHandle: FC<ComponentProps<typeof DrawerPrimitive.Handle>> = ({
     <DrawerPrimitive.Handle
       data-slot="drawer-handle"
       className={cn(
-        "cursor-grab active:cursor-grabbing data-[vaul-handle]:bg-modal-foreground/20! dark:data-[vaul-handle]:bg-modal-foreground! mx-auto mt-4 hidden h-2 w-[100px] mb-1 sm:mb-0 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block lg:data-[vaul-handle]:hidden!",
+        "cursor-grab active:cursor-grabbing data-[vaul-handle]:bg-grayA-6! mx-auto mt-4 hidden h-2 w-[100px] mb-1 sm:mb-0 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block lg:data-[vaul-handle]:hidden!",
         className,
       )}
       {...props}
@@ -78,7 +78,7 @@ const DrawerDescription: FC<
   return (
     <DrawerPrimitive.Description
       data-slot="drawer-description"
-      className={cn("leading-6 mt-2 text-muted-foreground", className)}
+      className={cn("leading-6 mt-2 text-grayA-11", className)}
       {...props}
     />
   );

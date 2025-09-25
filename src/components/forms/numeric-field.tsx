@@ -1,31 +1,24 @@
-import { useEffect, useRef, type FC, type ReactNode } from "react";
+import { useEffect, useRef, type ComponentProps, type FC } from "react";
 import { NumericFormat } from "react-number-format";
 import type { NumericFormatProps } from "react-number-format";
 import { Input } from "@/components/ui/input";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
-import {
-  Popover,
-  PopoverArrow,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Info } from "lucide-react";
 
 const NumericField: FC<
-  NumericFormatProps & {
-    hint?: ReactNode;
+  Omit<NumericFormatProps, 'size'> & Omit<ComponentProps<typeof Input>, 'type'> & {
+    labelStyles?: string;
     label?: string;
     ariaLabel?: string;
     shouldFocusOnMount?: boolean;
   }
 > = ({
   label,
-  className,
+  labelStyles,
   "aria-label": ariaLabelProp,
   ariaLabel,
-  hint,
   shouldFocusOnMount = false,
+  size,
   ...props
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -56,20 +49,9 @@ const NumericField: FC<
   return (
     <FormItem>
       {label && (
-        <div className="flex items-center gap-1.5">
-          <FormLabel htmlFor={formItemId}>{label}</FormLabel>
-          {hint && (
-            <Popover>
-              <PopoverTrigger className="[&_svg]:size-3 hover:text-accent-foreground rounded-md data-[state=open]:text-accent-foreground">
-                <Info />
-              </PopoverTrigger>
-              <PopoverContent className="p-2 bg-foreground text-background">
-                {hint}
-                <PopoverArrow className="fill-foreground" />
-              </PopoverContent>
-            </Popover>
-          )}
-        </div>
+        <FormLabel className={labelStyles} htmlFor={formItemId}>
+          {label}
+        </FormLabel>
       )}
       <NumericFormat
         getInputRef={inputRef}
@@ -79,9 +61,10 @@ const NumericField: FC<
         id={formItemId}
         name={field.name}
         type="tel"
-        customInput={Input}
+        customInput={Input as any}
         decimalScale={0}
         allowNegative={false}
+        size={size as any}
         isAllowed={(values) => {
           const floatValue = values.floatValue;
 

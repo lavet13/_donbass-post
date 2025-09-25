@@ -1,5 +1,5 @@
 import { useMessageTimer } from "@/hooks/use-message-timer";
-import { Tooltip } from "@/components/ui/tooltip";
+import { Tooltip } from "@radix-ui/themes";
 import {
   CheckCircle,
   CircleX,
@@ -93,7 +93,7 @@ export const AutoDismissMessage: FC<AutoDimissMessageProps> = ({
           {title && (
             <div className="flex items-center gap-3 pt-4 sm:pt-0">
               <dismissMessage.icon className="size-5 shrink-0" />
-              <p className="text-base font-bold">{title}</p>
+              <p className="font-bold">{title}</p>
             </div>
           )}
           {description && (

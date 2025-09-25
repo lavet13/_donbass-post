@@ -1,22 +1,21 @@
 import { withForm } from "@/hooks/form";
 import { defaultShopCostCalculationOrderOpts } from "@/features/shop-cost-calculation-order/shared-form";
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, Heading, Tooltip } from "@radix-ui/themes";
 import { z } from "zod";
 import { getEmailErrorMessage } from "@/lib/utils";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import { usePointPostQuery } from "@/features/point/queries";
-import { X } from "lucide-react";
-import * as AccessibleIconPrimitive from "@radix-ui/react-accessible-icon";
-import { Tooltip } from "@/components/ui/tooltip";
+import { PackagePlus, Store, X } from "lucide-react";
+import { AccessibleIcon } from "@radix-ui/themes";
 import {
   AutoDismissMessage,
   type AutoDimissMessageProps,
 } from "@/components/auto-dismiss-message";
 import { useBlocker } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-form";
-import { TypographyH2 } from "@/components/ui/typography/typographyH2";
-import { HighlightText } from "@/components/ui/typography/highlight-text";
+import { TypographyH2 } from "@/components/typography/typographyH2";
+import { HighlightText } from "@/components/typography/highlight-text";
 
 // https://colinhacks.com/essays/reasonable-email-regex
 // Исходный regex из Zod:
@@ -71,7 +70,7 @@ export const ShopCostCalculationOrderForm = withForm({
           }}
         >
           <AutoDismissMessage {...message} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 sm:gap-3">
             {/* Получатель */}
             <form.AppField
               name="shopCostCalculationOrder.surname"
@@ -211,16 +210,16 @@ export const ShopCostCalculationOrderForm = withForm({
                           <div className="flex justify-between items-center mt-2">
                             <Tooltip content="Удалить магазин и товары">
                               <button
-                                className="text-accent-foreground relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 bg-ring/5 hover:bg-ring/15 active:bg-ring/25 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                                className="text-redA-11 relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-redA-3 active:bg-redA-4 outline-none focus-visible:ring-red-8 focus-visible:ring-[2px]"
                                 aria-label="Удалить магазин и товары"
                                 type="button"
                                 onClick={() =>
                                   shopsField.removeValue(shopIndex)
                                 }
                               >
-                                <AccessibleIconPrimitive.Root label="Удалить магазин и товары">
+                                <AccessibleIcon label="Удалить магазин и товары">
                                   <X />
-                                </AccessibleIconPrimitive.Root>
+                                </AccessibleIcon>
                               </button>
                             </Tooltip>
                           </div>
@@ -251,26 +250,35 @@ export const ShopCostCalculationOrderForm = withForm({
                           name={`shopCostCalculationOrderPosition[${shopIndex}].products`}
                           mode="array"
                           children={(productsField) => {
+                            // Put Товар on the upper level
                             return (
                               <React.Fragment>
                                 {productsField.state.value.map(
                                   (_, productIndex) => {
                                     return (
                                       <React.Fragment key={productIndex}>
-                                        <div className="relative flex flex-col gap-1 mt-2 px-2 py-1 ml-1 border-l-3 border-ring rounded-l-xs rounded-r-lg bg-primary/2">
+                                        <div className="relative flex flex-col gap-1 mt-2 px-2 py-1 ml-1 border-l-3 border-red-6 rounded-s-xs bg-redA-1 [&_label]:text-red-12">
                                           {productIndex === 0 && (
-                                            <h3 className="font-medium text-sm">
+                                            <Heading
+                                              size="2"
+                                              as="h3"
+                                              className="font-medium text-red-12"
+                                            >
                                               Товар № {productIndex + 1}
-                                            </h3>
+                                            </Heading>
                                           )}
                                           {productIndex !== 0 && (
                                             <div className="flex justify-between items-center mt-2">
-                                              <h3 className="font-medium text-sm">
+                                              <Heading
+                                                size="2"
+                                                as="h3"
+                                                className="font-medium text-red-12"
+                                              >
                                                 Товар № {productIndex + 1}
-                                              </h3>
+                                              </Heading>
                                               <Tooltip content="Удалить товар">
                                                 <button
-                                                  className="text-accent-foreground relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 bg-ring/5 hover:bg-ring/15 active:bg-ring/25 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                                                  className="text-redA-11 relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-redA-3 active:bg-redA-4 outline-none focus-visible:ring-red-8 focus-visible:ring-[2px]"
                                                   aria-label="Удалить товар"
                                                   type="button"
                                                   onClick={() =>
@@ -279,9 +287,9 @@ export const ShopCostCalculationOrderForm = withForm({
                                                     )
                                                   }
                                                 >
-                                                  <AccessibleIconPrimitive.Root label="Удалить товар">
+                                                  <AccessibleIcon label="Удалить товар">
                                                     <X />
-                                                  </AccessibleIconPrimitive.Root>
+                                                  </AccessibleIcon>
                                                 </button>
                                               </Tooltip>
                                             </div>
@@ -372,8 +380,10 @@ export const ShopCostCalculationOrderForm = withForm({
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
                                   <Button
-                                    variant="outline"
+                                    className="[&_svg]:size-4"
+                                    variant="soft"
                                     type="button"
+                                    radius="full"
                                     onClick={() =>
                                       productsField.pushValue({
                                         description: "",
@@ -382,6 +392,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                       })
                                     }
                                   >
+                                    <PackagePlus />
                                     Добавить товар
                                   </Button>
                                 </div>
@@ -395,8 +406,10 @@ export const ShopCostCalculationOrderForm = withForm({
 
                   <div className="grid sm:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
                     <Button
-                      variant="outline"
+                      className="[&_svg]:size-4"
+                      variant="soft"
                       type="button"
+                      radius="full"
                       onClick={() =>
                         shopsField.pushValue({
                           shop: "",
@@ -404,6 +417,7 @@ export const ShopCostCalculationOrderForm = withForm({
                         })
                       }
                     >
+                      <Store />
                       Добавить магазин
                     </Button>
                   </div>

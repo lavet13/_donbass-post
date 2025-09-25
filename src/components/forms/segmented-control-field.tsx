@@ -1,30 +1,25 @@
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
-import type { FC } from "react";
-import {
-  RadioGroupIndicator,
-  RadioGroupItem,
-  RadioGroupLabel,
-  RadioGroup,
-} from "@/components/ui/radio-group";
+import type { ComponentProps, FC } from "react";
+import { SegmentedControl } from "@radix-ui/themes";
 import { FormItem, FormLabel, FormMessage } from "../ui/form";
-import { cn } from "@/lib/utils";
 
-type RadioGroupFieldProps = {
+type SegmentedControlProps = ComponentProps<typeof SegmentedControl.Root> & {
   options: { value: string; label: string }[];
   label?: string;
-  labelStyles?: string;
   "aria-label"?: string;
   ariaLabel?: string;
-  stretched?: boolean;
 };
 
-const RadioGroupField: FC<RadioGroupFieldProps> = ({
+const SegmentedControlField: FC<SegmentedControlProps> = ({
   options,
   label,
-  labelStyles,
   "aria-label": ariaLabelProp,
   ariaLabel,
-  stretched = false,
+
+  disabled,
+  size,
+  variant,
+  radius,
 }) => {
   const {
     field,
@@ -37,35 +32,31 @@ const RadioGroupField: FC<RadioGroupFieldProps> = ({
 
   return (
     <FormItem>
-      {label && <FormLabel className={cn("ml-[5px]", labelStyles)}>{label}</FormLabel>}
-      <RadioGroup
-        name={field.name}
+      {label && <FormLabel>{label}</FormLabel>}
+      <SegmentedControl.Root
         aria-label={defaultAriaLabel}
         value={field.state.value}
         onValueChange={(value) => field.handleChange(value)}
+        disabled={disabled}
+        size={size}
+        variant={variant}
+        radius={radius}
       >
         {options.map(({ value, label }, idx) => (
-          <RadioGroupItem
-            className={cn(
-              "flex-1 inline-flex items-center justify-center sm:inline-flex sm:flex-none",
-              stretched && "sm:flex-auto",
-            )}
+          <SegmentedControl.Item
             key={value}
             aria-invalid={!!error}
             aria-describedby={ariaDescribedBy}
             id={`${formItemId}-${idx + 1}`}
             value={value}
           >
-            <RadioGroupIndicator />
-            <RadioGroupLabel htmlFor={`${formItemId}-${idx + 1}`}>
-              {label}
-            </RadioGroupLabel>
-          </RadioGroupItem>
+            {label}
+          </SegmentedControl.Item>
         ))}
-      </RadioGroup>
+      </SegmentedControl.Root>
       <FormMessage id={formMessageId} />
     </FormItem>
   );
 };
 
-export default RadioGroupField;
+export default SegmentedControlField;

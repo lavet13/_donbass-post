@@ -11,11 +11,12 @@ const ComboboxField = lazy(() => import("@/components/forms/combobox-field"));
 const RadioGroupField = lazy(
   () => import("@/components/forms/radio-group-field"),
 );
+const SegmentedControlField = lazy(
+  () => import("@/components/forms/segmented-control-field"),
+);
 const TextareaField = lazy(() => import("@/components/forms/textarea-field"));
 const SelectField = lazy(() => import("@/components/forms/select-field"));
-const SubmitButton = lazy(
-  () => import("@/components/forms/submit-button"),
-);
+const SubmitButton = lazy(() => import("@/components/forms/submit-button"));
 
 // https://tanstack.com/form/latest/docs/framework/react/guides/form-composition
 export const { useAppForm, withForm } = createFormHook({
@@ -28,6 +29,7 @@ export const { useAppForm, withForm } = createFormHook({
     PhoneField,
     ComboboxField,
     PasswordField,
+    SegmentedControlField,
     RadioGroupField,
     TextareaField,
     SelectField,

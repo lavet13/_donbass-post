@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Lock, LogIn } from "lucide-react";
 import type { FC } from "react";
-import { buttonVariants } from "./ui/button";
+import { Button } from "@radix-ui/themes";
 
 export const UnauthorizedErrorComponent: FC<{ pathname: string }> = ({
   pathname,
@@ -17,18 +17,19 @@ export const UnauthorizedErrorComponent: FC<{ pathname: string }> = ({
           Доступ запрещен
         </h2>
 
-        <p className="text-muted-foreground text-base mb-8 max-w-md leading-6">
+        <p className="text-muted-foreground mb-8 max-w-md leading-6">
           Для доступа к этому разделу необходимо войти в систему
         </p>
 
-        <Link
-          to={"/auth"}
-          search={(prev) => ({ redirect: pathname, ...prev })}
-          className={buttonVariants({})}
-        >
-          <LogIn size={18} />
-          Войти в систему
-        </Link>
+        <Button variant="surface" size="2" asChild>
+          <Link
+            to={"/auth"}
+            search={(prev) => ({ redirect: pathname, ...prev })}
+          >
+            <LogIn size={18} />
+            Войти в систему
+          </Link>
+        </Button>
       </div>
     </main>
   );

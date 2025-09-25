@@ -1,26 +1,20 @@
-import type { ChangeEvent, FC, ReactNode } from "react";
+import type { ChangeEvent, ComponentProps, FC } from "react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { TextField as _TextField } from "@radix-ui/themes";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
-import {
-  Popover,
-  PopoverArrow,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Info } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
-type TextFieldProps = React.ComponentProps<"input"> & {
+type TextFieldProps = ComponentProps<typeof Input> & {
   label?: string;
+  labelStyles?: string;
   ariaLabel?: string;
-  hint?: ReactNode;
 };
 
 const TextField: FC<TextFieldProps> = ({
   label,
+  labelStyles,
   "aria-label": ariaLabelProp,
   ariaLabel,
-  hint,
   onChange: onChangeProp,
   ...props
 }) => {
@@ -47,20 +41,9 @@ const TextField: FC<TextFieldProps> = ({
   return (
     <FormItem>
       {label && (
-        <div className="flex items-center gap-1.5">
-          <FormLabel htmlFor={formItemId}>{label}</FormLabel>
-          {hint && (
-            <Popover>
-              <PopoverTrigger className="[&_svg]:size-3 hover:text-accent-foreground rounded-md data-[state=open]:text-accent-foreground">
-                <Info />
-              </PopoverTrigger>
-              <PopoverContent className="bg-foreground text-background p-2">
-                {hint}
-                <PopoverArrow className="fill-foreground" />
-              </PopoverContent>
-            </Popover>
-          )}
-        </div>
+        <FormLabel className={labelStyles} htmlFor={formItemId}>
+          {label}
+        </FormLabel>
       )}
       <Input
         id={formItemId}
