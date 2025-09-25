@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { IconButton, Tooltip } from "@radix-ui/themes";
 import {
   Sidebar,
   SidebarContent,
@@ -15,8 +15,7 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Tooltip } from "@/components/ui/tooltip";
-import { TypographyH2 } from "@/components/ui/typography/typographyH2";
+import { TypographyH2 } from "@/components/typography/typographyH2";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import {
@@ -77,10 +76,10 @@ function AuthenticatedLayout() {
   ]);
 
   const collapsedButton = (
-    <Button
+    <IconButton
       className="ml-auto rounded-xl @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
       variant="ghost"
-      size="icon"
+      size="2"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -88,7 +87,7 @@ function AuthenticatedLayout() {
       }}
     >
       {isCollapsed && !isMobile ? <PanelLeftOpen /> : <PanelLeftClose />}
-    </Button>
+    </IconButton>
   );
 
   return (
