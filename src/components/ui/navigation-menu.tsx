@@ -40,10 +40,10 @@ const NavigationMenuTrigger: FC<
       onPointerLeave={(event) => event.preventDefault()}
       className={cn(
         "flex items-center justify-center gap-[2px]",
-        "py-2 px-1.5 whitespace-nowrap overflow-hidden text-ellipsis outline-none select-none",
-        "text-accent-11 bg-accentA-2 hover:bg-accentA-3 leading-none",
+        "py-1.5 px-1.5 whitespace-nowrap overflow-hidden text-ellipsis outline-none select-none",
+        "text-sm text-accent-11 bg-accentA-2 hover:bg-accentA-4 leading-none",
         "[&[data-state='open']>svg]:-rotate-180 [&_svg]:size-4 [&_svg]:duration-150",
-        "[&[data-state='open']]:bg-accentA-4",
+        "[&[data-state='open']]:bg-accentA-5",
         className,
       )}
       {...props}
@@ -58,7 +58,7 @@ const NavigationMenuContent: FC<
     <NavigationMenuPrimitive.Content
       data-slot="navigation-menu-content"
       className={cn(
-        "absolute top-0 left-0 w-full flex-1",
+        "absolute top-0 left-0 w-full",
         "data-[motion=from-start]:animate-enter-from-left",
         "data-[motion=from-end]:animate-enter-from-right",
         "data-[motion=to-start]:animate-exit-to-left",
@@ -79,11 +79,11 @@ const NavigationMenuViewport: FC<
         data-slot="navigation-menu-viewport"
         onPointerLeave={(event) => event.preventDefault()}
         className={cn(
-          "relative top-full [transform-origin:top_center] mt-0 bg-background rounded-md overflow-hidden",
+          "relative [transform-origin:top_center] mt-0 bg-background rounded-md overflow-hidden",
           "shadow-3 h-[var(--radix-navigation-menu-viewport-height)] w-full sm:min-w-[var(--radix-navigation-menu-viewport-width)]",
           "[transition:width,height,300ms_ease]",
-          // "data-[state=open]:animate-scale-in",
-          // "data-[state=closed]:animate-scale-out",
+          "data-[state=open]:animate-scale-in",
+          "data-[state=closed]:animate-scale-out",
           className,
         )}
         {...props}
