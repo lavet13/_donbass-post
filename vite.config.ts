@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
-import topLevelAwait from 'vite-plugin-top-level-await';
+import topLevelAwait from "vite-plugin-top-level-await";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -29,6 +29,8 @@ export default defineConfig({
     host: true,
   },
   build: {
+    minify: "esbuild",
+    cssMinify: "lightningcss",
     // https://vite.dev/config/build-options.html#build-rollupoptions
     rollupOptions: {
       input: "./index.html",
@@ -54,6 +56,7 @@ export default defineConfig({
             "@radix-ui/themes",
             "vaul",
             "react-resizable-panels",
+            "@radix-ui/react-navigation-menu",
           ],
 
           // Form validation and schema
@@ -87,4 +90,3 @@ export default defineConfig({
     },
   },
 });
-

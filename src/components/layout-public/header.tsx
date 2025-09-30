@@ -1,10 +1,25 @@
-import { Link } from "@tanstack/react-router";
-import type { ComponentProps, FC } from "react";
-import { Button, Tooltip } from "@radix-ui/themes";
-import { ModeToggle } from "@/components/mode-toggle";
+import {
+  Link,
+  linkOptions,
+  useLocation,
+  type LinkProps,
+} from "@tanstack/react-router";
+import { useState, type ComponentProps, type FC } from "react";
+import { Button, IconButton, Text, Tooltip } from "@radix-ui/themes";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+  NavigationMenuLink,
+} from "@/components/ui/navigation-menu";
+import { ChevronDown, Menu } from "lucide-react";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const NavButton: FC<
   ComponentProps<typeof Button> & ComponentProps<typeof Link>
@@ -27,7 +42,27 @@ const NavButton: FC<
   );
 };
 
+const ListItem: FC<LinkProps & ComponentProps<"a">> = ({
+  className,
+  to,
+  children,
+  ...props
+}) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <Link className="text-accent-12 hover:bg-accent-3" to={to} {...props}>
+          <Text as={"p"} size="1">
+            {children}
+          </Text>
+        </Link>
+      </NavigationMenuLink>
+    </li>
+  );
+};
+
 export const Header: FC = () => {
+  const pathname = useLocation({ select: ({ pathname }) => pathname });
   const { isAuthenticated } = useAuth();
   let content = "";
   const { theme } = useTheme();
@@ -40,37 +75,182 @@ export const Header: FC = () => {
     content = isDark ? "Изменить на светлую тему" : "Изменить на темную тему";
   }
 
+  // https://codesandbox.io/p/sandbox/navigation-menu-track-position-forked-fx5dtd?file=%2Fsrc%2FApp.js%3A51%2C48-51%2C51
+  const [value, setValue] = useState("");
+  const [list, setList] = useState<HTMLUListElement | null>(null);
+  const [offset, setOffset] = useState<number | null>(null);
+  const onNodeUpdate = (trigger: any, itemValue: any) => {
+    if (trigger && list && value === itemValue) {
+      const listWidth = list.offsetWidth;
+      const listCenter = listWidth / 2;
+
+      const triggerOffsetRight =
+        listWidth -
+        trigger.offsetLeft -
+        trigger.offsetWidth +
+        trigger.offsetWidth / 2;
+
+      setOffset(Math.round(listCenter - triggerOffsetRight));
+    } else if (value === "") {
+      setOffset(null);
+    }
+    return trigger;
+  };
+
+  const navItems = [
+    {
+      label: "Грузы и посылки",
+      items: linkOptions([
+        {
+          label: "Адресный забор/доставка груза в ЛДНР и Запорожье",
+          to: "/pick-up-point-delivery-order",
+        },
+      ]),
+    },
+    {
+      label: "Интернет заказы",
+      items: linkOptions([
+        {
+          label: "Оформление заявки на просчет стоимости на выкуп заказов",
+          to: "/shop-cost-calculation-order",
+        },
+      ]),
+    },
+  ];
+
   return (
     <header className="sticky top-0 w-full h-14 z-1 flex bg-gray-2 dark:bg-grayA-2 dark:backdrop-blur-lg border-b border-grayA-6">
-      <div className="container flex items-center w-full max-w-6xl pl-3.5">
-        <div className="flex items-center gap-4.5">
-          <NavButton to="/" activeOptions={{ exact: true }}>
-            Главная
-          </NavButton>
-          <NavButton to="/shop-cost-calculation-order">
-            Выкуп менеджером ИМ
-          </NavButton>
-          <NavButton to="/pick-up-point-delivery-order">Забор груза</NavButton>
-          <NavButton to="/schedules">Расписание</NavButton>
+      <div className="container flex items-center w-full max-w-6xl px-3.5">
+        <div className="flex-none flex items-center">
+          <Tooltip content="Меню">
+            <IconButton
+              size="3"
+              radius="full"
+              className="[&_svg]:size-4"
+              variant="ghost"
+            >
+              <Menu />
+            </IconButton>
+          </Tooltip>
         </div>
-        <div className="ml-auto flex items-center gap-2.5">
+        <div className="flex-1 shrink-0 flex items-center justify-center">
+          <NavigationMenu onValueChange={setValue}>
+            <NavigationMenuList ref={setList}>
+              {navItems.map(({ label, items }) => (
+                <NavigationMenuItem key={label} value={label}>
+                  <NavigationMenuTrigger
+                    className={cn(
+                      items.some(({ to }) => pathname.includes(to)) &&
+                        "bg-accentA-3",
+                    )}
+                    ref={(node) => onNodeUpdate(node, label)}
+                  >
+                    {label} {!!items.length && <ChevronDown />}
+                  </NavigationMenuTrigger>
+                  {!!items.length && (
+                    <NavigationMenuContent>
+                      <ul className="grid p-4 m-0 gap-x-[10px] list-none w-full">
+                        {items.map(({ label, to }) => (
+                          <ListItem key={to} to={to}>
+                            {label}
+                          </ListItem>
+                        ))}
+                      </ul>
+                    </NavigationMenuContent>
+                  )}
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+
+            <NavigationMenuViewport
+              style={{
+                display: !offset ? "none" : undefined,
+                transform: `translateX(${offset}px)`,
+              }}
+            />
+          </NavigationMenu>
+        </div>
+        <div className="flex-none flex items-center justify-end">
           <Tooltip content={content}>
             <ModeToggle />
           </Tooltip>
-          {!isAuthenticated ? (
-            <Button variant="classic" asChild>
-              <Link to="/auth">Личный кабинет</Link>
-            </Button>
-          ) : (
-            <Button variant="classic" asChild>
-              <Link to="/dashboard">Мой кабинет</Link>
-            </Button>
-          )}
         </div>
       </div>
     </header>
   );
 };
+{
+  /* <div className="flex items-center gap-4.5"> */
+}
+{
+  /*   <NavButton to="/" activeOptions={{ exact: true }}> */
+}
+{
+  /*     Главная */
+}
+{
+  /*   </NavButton> */
+}
+{
+  /*   <NavButton to="/shop-cost-calculation-order"> */
+}
+{
+  /*     Выкуп менеджером ИМ */
+}
+{
+  /*   </NavButton> */
+}
+{
+  /*   <NavButton to="/pick-up-point-delivery-order">Забор груза</NavButton> */
+}
+{
+  /*   <NavButton to="/schedules">Расписание</NavButton> */
+}
+{
+  /* </div> */
+}
+{
+  /* <div className="ml-auto flex items-center gap-2.5"> */
+}
+{
+  /*   <Tooltip content={content}> */
+}
+{
+  /*     <ModeToggle /> */
+}
+{
+  /*   </Tooltip> */
+}
+{
+  /*   {!isAuthenticated ? ( */
+}
+{
+  /*     <Button variant="classic" asChild> */
+}
+{
+  /*       <Link to="/auth">Личный кабинет</Link> */
+}
+{
+  /*     </Button> */
+}
+{
+  /*   ) : ( */
+}
+{
+  /*     <Button variant="classic" asChild> */
+}
+{
+  /*       <Link to="/dashboard">Мой кабинет</Link> */
+}
+{
+  /*     </Button> */
+}
+{
+  /*   )} */
+}
+{
+  /* </div> */
+}
 
 {
   /* <Button className="ml-auto" onClick={logout}>Выйти</Button> */

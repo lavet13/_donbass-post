@@ -23,19 +23,20 @@ const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
   );
 };
 
-const CommandList: FC<ComponentProps<typeof CommandPrimitive.List>> = ({
-  className,
-  ...props
-}) => {
+const CommandList: FC<
+  ComponentProps<typeof CommandPrimitive.List> & { listStyles?: string }
+> = ({ className, listStyles, ...props }) => {
   return (
     <ScrollArea
       className={cn("max-h-[300px] h-[40vh]", className)}
       scrollbars="vertical"
+      type="always"
     >
       <CommandPrimitive.List
         data-slot="command-list"
         className={cn(
-          "scroll-py-1 transition-[height] duration-100 ease-out overflow-x-hidden overflow-y-auto outline-none",
+          "scroll-py-1 transition-[height] duration-100 ease-out overflow-x-hidden overflow-y-auto outline-none pl-rx-1 pr-rx-3",
+          listStyles,
         )}
         {...props}
       />
@@ -68,7 +69,7 @@ const CommandItem: FC<ComponentProps<typeof CommandPrimitive.Item>> = ({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "hover:data-[selected=true]:bg-redA-10 hover:data-[selected=true]:text-red-contrast active:data-[selected=true]:filter-(--base-button-solid-active-filter) data-[selected=true]:bg-redA-9 data-[selected=true]:text-red-contrast",
+        "hover:data-[selected=true]:bg-redA-10 data-[selected=true]:[&_svg:not([class*='text-'])]:text-red-contrast hover:data-[selected=true]:text-red-contrast active:data-[selected=true]:filter-(--base-button-solid-active-filter) data-[selected=true]:bg-redA-9 data-[selected=true]:text-red-contrast",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-gray-12 hover:[&_svg:not([class*='text-'])]:text-red-contrast",
         "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 select-none outline-hidden",

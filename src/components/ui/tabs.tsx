@@ -52,9 +52,7 @@ const TabsList: FC<ComponentProps<typeof TabsPrimitive.List>> = ({
       left: `${offsetLeft + 5}px`,
       width: `${offsetWidth - 10}px`,
       opacity: 1,
-      backgroundColor: isActive
-        ? "var(--red-a3)"
-        : "var(--gray-a3)",
+      backgroundColor: isActive ? "var(--accent-a3)" : "var(--gray-a3)",
     });
   };
 
@@ -102,7 +100,10 @@ const TabsList: FC<ComponentProps<typeof TabsPrimitive.List>> = ({
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
-      className={cn("relative shrink-0 flex border-b border-grayA-6", className)}
+      className={cn(
+        "relative shrink-0 flex shadow-(--base-card-surface-box-shadow) rounded-tl-md rounded-tr-md",
+        className,
+      )}
       ref={listRef}
       {...(isMobile
         ? { onTouchEnd: () => updateHoverIndicator(null) }
@@ -125,11 +126,11 @@ const TabsList: FC<ComponentProps<typeof TabsPrimitive.List>> = ({
           )
         : props.children}
       <div
-        className="absolute z-1 top-1/2 -translate-y-1/2 h-[30px] transition-all duration-200 ease-out pointer-events-none rounded-md active:bg-redA-4!"
+        className="absolute z-1 top-1/2 -translate-y-1/2 h-[30px] transition-all duration-200 ease-out pointer-events-none rounded-md active:bg-accentA-4!"
         style={hoverStyle}
       />
       <div
-        className="absolute bottom-0 h-0.5 bg-red-indicator transition-all duration-200 ease-out"
+        className="absolute bottom-0 h-0.5 bg-accent-indicator transition-all duration-200 ease-out"
         style={activeStyles}
       />
     </TabsPrimitive.List>
@@ -153,9 +154,9 @@ const TabsTrigger: FC<
       ref={triggerRef}
       className={cn(
         "relative flex-1 flex items-center justify-center px-5 h-[45px] text-sm outline-none",
-        "leading-none select-none focus-visible:ring-red-8 focus-visible:ring-[2px]",
-        "hover:data-[state=active]:text-red-10! data-[state=active]:text-red-9 transition-colors duration-150",
-        "first-of-type:rounded-tl-md last-of-type:rounded-tr-md bg-grayA-2",
+        "leading-none select-none focus-visible:ring-accent-8 focus-visible:ring-[2px]",
+        "hover:data-[state=active]:text-accent-10! data-[state=active]:text-accent-9 transition-colors duration-150",
+        "first-of-type:rounded-tl-md last-of-type:rounded-tr-md bg-panel",
         className,
       )}
       {...(isMobile
@@ -184,10 +185,11 @@ const TabsContent: FC<ComponentProps<typeof TabsPrimitive.Content>> = ({
 }) => {
   return (
     <TabsPrimitive.Content
+      data-panel-background="solid"
       data-slot="tabs-content"
       className={cn(
-        "grow p-5 bg-grayA-2 outline-none focus-visible:[box-shadow:0_0_0_2px_var(--red-8)]",
-        "rounded-bl-md rounded-br-md",
+        "grow p-5 bg-panel outline-none focus-visible:[box-shadow:0_0_0_2px_var(--accent-8)]",
+        "rounded-bl-md rounded-br-md shadow-(--base-card-surface-box-shadow)",
         className,
       )}
       {...props}

@@ -28,7 +28,7 @@ const CheckboxField: FC<
     >
       <div className="flex-1 flex items-center gap-2">
         <Checkbox
-          className="self-start mt-0.5"
+          className="self-start"
           id={formItemId}
           name={field.name}
           aria-label={defaultAriaLabel}

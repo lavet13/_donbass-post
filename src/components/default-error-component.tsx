@@ -57,8 +57,6 @@ export const DefaultErrorComponent: ErrorRouteComponent = ({ error }) => {
                     display: "inline-flex",
                     whiteSpace: "wrap",
                     fontSize: "0.7em",
-                    border: "1px solid var(--gray-a6)",
-                    borderRadius: "0.25rem",
                     padding: "0.3rem",
                     color: "var(--accent-a11)",
                     overflow: "auto",

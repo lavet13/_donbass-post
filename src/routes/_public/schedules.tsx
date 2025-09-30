@@ -8,9 +8,7 @@ import {
   CommandLoading,
   CommandSeparator,
 } from "@/components/ui/command";
-import {
-  usePointListQuery,
-} from "@/features/point/queries";
+import { usePointListQuery } from "@/features/point/queries";
 import { useAppForm } from "@/hooks/form";
 import { cn } from "@/lib/utils";
 import { useNavigate, useSearch } from "@tanstack/react-router";
@@ -32,7 +30,22 @@ import {
 } from "lucide-react";
 import { useMemo, useRef, type FC } from "react";
 import { Fragment } from "react/jsx-runtime";
-import { Button, VisuallyHidden, Dialog, IconButton } from "@radix-ui/themes";
+import {
+  Button,
+  VisuallyHidden,
+  Dialog,
+  IconButton,
+  Card,
+  Box,
+  Link,
+  Inset,
+  Text,
+  Heading,
+  Flex,
+  Separator,
+  Callout,
+} from "@radix-ui/themes";
+import { TypographyH2 } from "@/components/typography/typographyH2";
 
 type ScheduleSearch = {
   q?: string;
@@ -96,7 +109,6 @@ const SearchPage: FC = () => {
     },
     onSubmit: async ({ value }) => {
       navigate({
-        resetScroll: false,
         search: (prev) => {
           return {
             ...prev,
@@ -119,7 +131,7 @@ const SearchPage: FC = () => {
 
   return (
     <div className="flex-1 flex min-h-min items-start w-full">
-      <div className="flex flex-col w-[24rem] sticky top-[calc(var(--header-height)+1px)]">
+      <div className="flex flex-col min-w-[18rem] sticky top-[calc(var(--header-height)+1px)]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -134,14 +146,17 @@ const SearchPage: FC = () => {
               return (
                 <Command>
                   <CommandInput
-                    inputContainer={"bg-background"}
+                    inputContainer={"bg-background mr-rx-1"}
                     value={query}
                     onValueChange={handleSearchQuery}
                     ref={inputRef}
                     clearButton
                     placeholder={"Найти отделение..."}
                   />
-                  <CommandList className="h-[calc(100svh-var(--header-height)-var(--combobox-input-height))] max-h-max min-h-0">
+                  <CommandList
+                    listStyles="pb-rx-9"
+                    className="h-[calc(100svh-var(--header-height)-var(--combobox-input-height))] max-h-max min-h-0"
+                  >
                     {isPending ? (
                       <CommandLoading label={"Загружаем отделения..."}>
                         Загружаем отделения...
@@ -213,56 +228,60 @@ const SearchPage: FC = () => {
       <div className="w-full h-full">
         <div className="flex items-stretch text-[1.05rem] sm:text-[15px] xl:w-full">
           <div className="flex min-w-0 flex-1 flex-col">
-            <div className="h-(--top-spacing) shrink-0" />
             <div className="mx-auto flex w-full max-w-2xl min-w-0 flex-1 flex-col gap-8 px-4 py-6 md:px-0 lg:py-8">
               {!selectedDepartment && (
-                <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center rounded-xl border-2 border-dashed border-border/50">
-                  {/* Иконка с улучшенным оформлением */}
-                  <div className="relative mb-6">
-                    <div className="bg-primary/10 rounded-full p-6 border-2 border-primary/20">
-                      <Search size={40} className="text-primary" />
+                <Card
+                  variant="classic"
+                  size="4"
+                  className="flex flex-col items-center justify-center min-h-[300px] text-center"
+                >
+                  <Box pb="6" className="relative">
+                    <div className="bg-grayA-2 rounded-full p-6 border-1 border-grayA-6">
+                      <Search size={40} className="text-gray-11" />
                     </div>
-                    {/* Декоративные элементы */}
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary/30 rounded-full animate-pulse" />
-                    <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-primary/20 rounded-full animate-pulse delay-300" />
-                  </div>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-grayA-4 rounded-full animate-pulse" />
+                    <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-grayA-4 rounded-full animate-pulse delay-300" />
+                  </Box>
 
-                  {/* Заголовок с улучшенной типографикой */}
-                  <div className="mb-4">
-                    <h2 className="text-3xl text-primary font-bold mb-1">
+                  <Box pb="4">
+                    <TypographyH2 className="text-3xl text-grayA-12 font-bold mb-1">
                       Выберите отделение
-                    </h2>
-                  </div>
+                    </TypographyH2>
+                  </Box>
 
-                  {/* Пояснительный текст с улучшенным оформлением */}
                   <div className="max-w-md">
-                    <p className="text-muted-foreground text-lg leading-relaxed mb-2">
+                    <Text size="3" as="p" className="mb-rx-3">
                       Для просмотра расписания выберите интересующее вас
                       отделение из списка слева
-                    </p>
-                    <p className="text-sm text-muted-foreground/80">
+                    </Text>
+                    <Text color="gray" size="2" as="p">
                       Используйте{" "}
-                      <span
-                        onClick={() => {
+                      <Link
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
                           inputRef.current?.focus();
                           document.documentElement.scrollIntoView();
                         }}
-                        className="decoration-1 underline-offset-3 underline decoration-muted hover:decoration-primary hover:text-primary hover:cursor-pointer"
                       >
                         поиск
-                      </span>{" "}
+                      </Link>{" "}
                       для быстрого нахождения нужного отделения
-                    </p>
+                    </Text>
                   </div>
-                </div>
+                </Card>
               )}
               {selectedDepartment && (
                 <div className="space-y-6">
                   {/* Header Section */}
-                  <div className="bg-card border border-border rounded-2xl overflow-hidden">
+                  <Card size="3">
                     {/* Large Header Image */}
                     {selectedDepartment.image && (
-                      <div className="w-full h-64 relative overflow-hidden">
+                      <Inset
+                        className="overflow-hidden pb-rx-6"
+                        clip="padding-box"
+                        side="top"
+                      >
                         <Dialog.Root
                           open={isPicOpen}
                           onOpenChange={(open) => {
@@ -276,23 +295,24 @@ const SearchPage: FC = () => {
                           }}
                         >
                           <Dialog.Trigger>
-                            <button className="w-full h-full cursor-pointer group relative">
+                            <button className="w-full h-full cursor-pointer group relative hover:scale-105 duration-200 ">
                               <img
                                 src={`https://workplace-post.ru/assets/point-image/${selectedDepartment.image}`}
                                 alt={selectedDepartment.name}
-                                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                                className="w-full h-80 object-cover transition-all"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-primary-foreground/10 to-transparent" />
-                              <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-all duration-300 flex items-center justify-center">
-                                <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/95 dark:bg-black/95 rounded-2xl p-4">
-                                  <ImageUpscale className="size-8 text-primary-foreground" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-accentA-9/40 via-accentA-9/20 to-transparent" />
+                              <div className="absolute inset-0 group-hover:bg-grayA-3 transition-all flex items-center justify-center">
+                                <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-accentA-3 group-active:bg-accentA-4 rounded-2xl p-4">
+                                  <ImageUpscale className="size-8 text-accent-11 dark:text-accent-12" />
                                 </div>
                               </div>
                             </button>
                           </Dialog.Trigger>
                           <Dialog.Content
+                            size="4"
                             aria-describedby={undefined}
-                            className="w-full h-full md:max-w-max md:max-h-max p-0 overflow-hidden bg-background rounded-none"
+                            className="w-full h-full max-w-max md:min-h-auto max-h-max p-0 overflow-hidden shadow-[0_0_0_1px_var(--accent-a6)] bg-background rounded-none sm:rounded-5"
                           >
                             <VisuallyHidden asChild>
                               <Dialog.Title>
@@ -300,23 +320,38 @@ const SearchPage: FC = () => {
                               </Dialog.Title>
                             </VisuallyHidden>
                             <div className="relative w-full h-full flex items-center justify-center">
-                              <img
-                                src={`https://workplace-post.ru/assets/point-image/${selectedDepartment.image}`}
-                                alt={selectedDepartment.name}
-                                className="max-w-full max-h-full object-cover md:aspect-[4/3]"
-                              />
+                              <Inset
+                                className="pt-rx-9 mx-rx-3"
+                                clip="padding-box"
+                                side="bottom"
+                                pb="current"
+                              >
+                                <img
+                                  src={`https://workplace-post.ru/assets/point-image/${selectedDepartment.image}`}
+                                  alt={selectedDepartment.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </Inset>
                             </div>
-                            <div className="absolute bottom-0 left-0 right-0 bg-primary/50 text-primary-foreground selection:text-primary selection:bg-primary-foreground p-6">
-                              <h3 className="text-primary-foreground font-bold text-xl">
+                            <Box
+                              className="sticky mt-rx-4 bottom-0 left-0 right-0 bg-accent-4 text-accent-11"
+                              p="4"
+                            >
+                              <Heading
+                                trim="start"
+                                size="6"
+                                as="h3"
+                                weight="bold"
+                              >
                                 {selectedDepartment.name}
-                              </h3>
-                              <p className="text-primary-foreground text-sm">
+                              </Heading>
+                              <Text as="p" size="3">
                                 {selectedDepartment.address}
-                              </p>
-                            </div>
+                              </Text>
+                            </Box>
                             <Dialog.Close>
                               <IconButton
-                                variant="soft"
+                                variant="ghost"
                                 radius="full"
                                 className="absolute top-4 right-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5"
                               >
@@ -326,223 +361,259 @@ const SearchPage: FC = () => {
                             </Dialog.Close>
                           </Dialog.Content>
                         </Dialog.Root>
-                      </div>
+                      </Inset>
                     )}
 
-                    <div className="p-6">
-                      <div className="flex items-start gap-4">
-                        {/* Small Department Image (fallback when no main image) */}
-                        {!selectedDepartment.image && (
-                          <div className="flex-shrink-0">
-                            <div className="w-24 h-24 rounded-xl overflow-hidden bg-muted border-2 border-border">
-                              <div
-                                className="w-full h-full flex items-center justify-center bg-primary/5"
-                                title="Нет изображения"
+                    <div className="flex items-start gap-4">
+                      {/* Small Department Image (fallback when no main image) */}
+                      {!selectedDepartment.image && (
+                        <div className="flex-shrink-0">
+                          <Card
+                            size="2"
+                            className="w-24 h-24 overflow-hidden"
+                            title="Нет изображения"
+                          >
+                            <div className="w-full h-full flex flex-col items-center justify-center space-y-1.5">
+                              <ImageOff size={40} className="text-primary" />
+                              <Text
+                                className="leading-rx-3"
+                                align="center"
+                                trim="both"
+                                size="1"
                               >
-                                <ImageOff size={40} className="text-primary" />
-                              </div>
+                                Нет изображения
+                              </Text>
                             </div>
-                          </div>
-                        )}
+                          </Card>
+                        </div>
+                      )}
 
-                        {/* Department Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="min-w-0">
-                              <h1
-                                className={cn(
-                                  "font-bold text-card-foreground mb-1",
-                                  selectedDepartment.image
-                                    ? "text-3xl"
-                                    : "text-2xl",
-                                )}
+                      {/* Department Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <div className="flex flex-col space-y-2 mb-3 sm:mb-4">
+                              <Heading
+                                as="h1"
+                                size={selectedDepartment.image ? "7" : "6"}
+                                weight="bold"
+                                trim="end"
                               >
                                 {selectedDepartment.name}
-                              </h1>
+                              </Heading>
                               {selectedDepartment.shortName && (
-                                <p className="text-sm text-accent-foreground mb-2">
+                                <Text as="p" trim="start">
                                   {selectedDepartment.shortName}
-                                </p>
+                                </Text>
                               )}
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                                <MapPin
-                                  size={14}
-                                  className="self-start shrink-0 mt-1"
-                                />
-                                <span className="leading-5">
-                                  {selectedDepartment.address}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            </div>
+                            <Flex gap="2" align="center">
+                              <MapPin
+                                size={16}
+                                className="self-start shrink-0"
+                              />
+                              <Text
+                                trim="both"
+                                size="2"
+                                as="p"
+                                className="leading-2"
+                              >
+                                {selectedDepartment.address}
+                              </Text>
+                            </Flex>
+                            <Flex direction="column">
+                              <Separator size="4" my="3" />
+                              <Flex gap="2" align="center">
                                 <Building
-                                  size={14}
-                                  className="self-start shrink-0 mt-1"
+                                  size={16}
+                                  className="self-start shrink-0"
                                 />
-                                <span>{selectedDepartment.city.name}</span>
-                                <span className="text-muted-foreground/60 select-none">
-                                  •
-                                </span>
-                                <span>
+                                <Text size="2" trim="both" as="p">
+                                  {selectedDepartment.city.name}
+                                </Text>
+                                <Separator orientation="vertical" />
+                                <Text size="2" trim="both" as="p">
                                   {selectedDepartment.deliveryCompany.name}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Status Badges */}
-                            <div className="min-w-fit flex flex-col gap-0.5">
-                              {selectedDepartment.temporarilyClosed ? (
-                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-destructive/10 text-destructive rounded-full text-xs font-medium">
-                                  <AlertCircle className="shrink-0" size={12} />
-                                  Временно закрыто
-                                </div>
-                              ) : selectedDepartment.active ? (
-                                <div className="flex items-center gap-1.5 px-3 py-1.5 text-primary-foreground bg-primary rounded-full text-xs font-medium">
-                                  <CheckCircle className="shrink-0" size={12} />
-                                  Активно
-                                </div>
-                              ) : (
-                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted text-muted-foreground rounded-full text-xs font-medium">
-                                  <Clock className="shrink-0" size={12} />
-                                  Неактивно
-                                </div>
-                              )}
-
-                              {selectedDepartment.mobilePoint && (
-                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 rounded-full text-xs font-medium">
-                                  <Truck size={12} />
-                                  Мобильный пункт
-                                </div>
-                              )}
-                            </div>
+                                </Text>
+                              </Flex>
+                            </Flex>
                           </div>
 
-                          {/* Message if exists */}
-                          {selectedDepartment.message && (
-                            <div className="mt-4 p-3 bg-background dark:bg-accent/20 border border-accent dark:border-accent/30 rounded-lg">
-                              <div className="flex items-start gap-2">
-                                <Info
-                                  size={16}
-                                  className="text-primary flex-shrink-0 mt-0.5"
-                                />
-                                <p className="text-sm text-accent-foreground">
-                                  {selectedDepartment.message}
-                                </p>
-                              </div>
-                            </div>
-                          )}
+                          {/* Status Badges */}
+                          <div className="min-w-fit flex flex-col gap-0.5">
+                            {selectedDepartment.temporarilyClosed ? (
+                              <Flex
+                                align="center"
+                                gap="2"
+                                className="px-3 py-1.5 bg-grayA-1 text-gray-11 rounded-full"
+                              >
+                                <AlertCircle className="shrink-0" size={16} />
+                                <Text weight="medium" size="1">
+                                  Временно закрыто
+                                </Text>
+                              </Flex>
+                            ) : selectedDepartment.active ? (
+                              <Flex
+                                align="center"
+                                gap="2"
+                                className="px-3 py-1.5 text-accent-11 bg-accentA-3 rounded-full"
+                              >
+                                <CheckCircle className="shrink-0" size={16} />
+                                <Text weight="medium" size="1">
+                                  Активно
+                                </Text>
+                              </Flex>
+                            ) : (
+                              <Flex
+                                align="center"
+                                className="gap-1.5 px-3 py-1.5 bg-grayA-1 text-gray-11 rounded-full"
+                              >
+                                <Clock className="shrink-0" size={16} />
+                                <Text weight="medium" size="1">
+                                  Неактивно
+                                </Text>
+                              </Flex>
+                            )}
+
+                            {selectedDepartment.mobilePoint && (
+                              <Flex
+                                align="center"
+                                className="gap-1.5 px-3 py-1.5 bg-grayA-2 text-gray-12 rounded-full"
+                              >
+                                <Truck size={12} />
+                                <Text weight="medium" size="1">
+                                  Мобильный пункт
+                                </Text>
+                              </Flex>
+                            )}
+                          </div>
                         </div>
+
+                        {/* Message if exists */}
+                        {selectedDepartment.message && (
+                          <Callout.Root size="1" className="mt-4">
+                            <Callout.Icon>
+                              <Info size={16} />
+                            </Callout.Icon>
+                            <Callout.Text>
+                              {selectedDepartment.message}
+                            </Callout.Text>
+                          </Callout.Root>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  </Card>
 
                   {/* Schedule Section */}
-                  <div className="bg-card border border-border rounded-2xl p-6">
-                    <div className="flex items-center gap-2 mb-4 text-card-foreground">
-                      <Clock size={20} />
-                      <h2 className="text-lg font-semibold">
-                        Расписание работы
-                      </h2>
-                    </div>
+                  {!selectedDepartment.mobilePoint && (
+                    <Card size="3">
+                      <div className="flex items-center gap-2 mb-4 text-card-foreground">
+                        <Clock size={22} />
+                        <Heading weight="bold" as="h2" size="6">
+                          Расписание работы
+                        </Heading>
+                      </div>
 
-                    <div className="grid gap-1">
-                      {[
-                        { key: "mondayWorkTime", label: "Понедельник" },
-                        { key: "tuesdayWorkTime", label: "Вторник" },
-                        { key: "wednesdayWorkTime", label: "Среда" },
-                        { key: "thursdayWorkTime", label: "Четверг" },
-                        { key: "fridayWorkTime", label: "Пятница" },
-                        { key: "saturdayWorkTime", label: "Суббота" },
-                        { key: "sundayWorkTime", label: "Воскресенье" },
-                      ].map(({ key, label }) => {
-                        const workTime = selectedDepartment[
-                          key as keyof typeof selectedDepartment
-                        ] as string | null;
-                        const isWeekend =
-                          key.includes("saturday") || key.includes("sunday");
-                        const today = new Date().getDay();
-                        const dayIndex = [
-                          "sunday",
-                          "monday",
-                          "tuesday",
-                          "wednesday",
-                          "thursday",
-                          "friday",
-                          "saturday",
-                        ].indexOf(key.replace("WorkTime", "").toLowerCase());
-                        const isToday = today === dayIndex;
+                      <div className="grid gap-1">
+                        {[
+                          { key: "mondayWorkTime", label: "Понедельник" },
+                          { key: "tuesdayWorkTime", label: "Вторник" },
+                          { key: "wednesdayWorkTime", label: "Среда" },
+                          { key: "thursdayWorkTime", label: "Четверг" },
+                          { key: "fridayWorkTime", label: "Пятница" },
+                          { key: "saturdayWorkTime", label: "Суббота" },
+                          { key: "sundayWorkTime", label: "Воскресенье" },
+                        ].map(({ key, label }) => {
+                          const workTime = selectedDepartment[
+                            key as keyof typeof selectedDepartment
+                          ] as string | null;
+                          // const isWeekend =
+                          //   key.includes("saturday") || key.includes("sunday");
+                          const today = new Date().getDay();
+                          const dayIndex = [
+                            "sunday",
+                            "monday",
+                            "tuesday",
+                            "wednesday",
+                            "thursday",
+                            "friday",
+                            "saturday",
+                          ].indexOf(key.replace("WorkTime", "").toLowerCase());
+                          const isToday = today === dayIndex;
 
-                        return (
-                          <div
-                            key={key}
-                            className={cn(
-                              "flex items-center justify-between py-2 px-4 rounded-md transition-colors",
-                              isToday &&
-                                "bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-accent dark:border-accent-foreground/20",
-                              !isToday && "bg-muted/30",
-                            )}
-                          >
-                            <div className="flex items-center gap-3">
-                              <span
-                                className={cn(
-                                  "font-medium",
-                                  isToday &&
-                                    "text-primary dark:text-accent-foreground",
-                                  isWeekend &&
-                                    !isToday &&
-                                    "text-muted-foreground",
-                                )}
-                              >
-                                {label}
-                              </span>
-                              {isToday && (
-                                <span className="text-xs bg-primary/10 text-primary dark:text-accent-foreground px-2 py-0.5 rounded-full font-bold">
-                                  Сегодня
-                                </span>
-                              )}
-                            </div>
-                            <span
+                          return (
+                            <Card
+                              key={key}
                               className={cn(
-                                "text-sm",
-                                workTime
-                                  ? "text-card-foreground"
-                                  : "text-muted-foreground",
+                                "flex items-center justify-between py-2 px-4 rounded-md",
                                 isToday &&
-                                  "text-primary dark:text-accent-foreground font-semibold",
+                                  "[&.rt-Card:where(.rt-variant-surface)::after]:[box-shadow:0_0_0_1px_color-mix(in_oklab,_var(--accent-a5),_var(--gray-5)_25%)]",
+                                !isToday && "",
                               )}
                             >
-                              {workTime || "Выходной"}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                              <div className="flex items-center gap-3">
+                                <span
+                                  className={cn(
+                                    "font-medium",
+                                    isToday && "text-accent-11",
+                                    !isToday && "text-grayA-11",
+                                  )}
+                                >
+                                  {label}
+                                </span>
+                                {isToday && (
+                                  <Text
+                                    size="1"
+                                    // trim="both"
+                                    className="text-accent-11 bg-accentA-3 px-2 py-0.5 rounded-full font-bold"
+                                  >
+                                    Сегодня
+                                  </Text>
+                                )}
+                              </div>
+                              <Text
+                                className={cn(
+                                  "text-sm font-normal text-grayA-11",
+                                  isToday && "text-accent-11 font-medium",
+                                )}
+                              >
+                                {workTime || "Выходной"}
+                              </Text>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    </Card>
+                  )}
 
                   {/* Map Section */}
                   {selectedDepartment.map && (
-                    <div className="bg-card border border-border rounded-2xl p-6">
-                      <div className="flex items-center gap-2 mb-4 text-card-foreground">
-                        <Map size={20} />
-                        <h2 className="text-lg font-semibold">
+                    <Card size="3">
+                      <Flex align="center" gap="2" className="mb-4">
+                        <Map size={22} />
+                        <Heading as="h2" weight="bold" size="6">
                           Расположение на карте
-                        </h2>
-                      </div>
-                      <div className="rounded-xl overflow-hidden border border-border bg-muted/30 min-h-[300px] flex items-center justify-center">
+                        </Heading>
+                      </Flex>
+                      <Card
+                        size="4"
+                        className="overflow-hidden bg-grayA-2 min-h-[300px] flex items-center justify-center"
+                      >
                         {/* You can replace this with actual map implementation */}
-                        <div className="text-center">
+                        <Text align="center" as="div">
                           <MapPin
                             size={48}
-                            className="text-muted-foreground/50 mx-auto mb-3"
+                            className="text-grayA-12 mx-auto mb-3"
                           />
-                          <p className="text-muted-foreground text-sm">
+                          <Text as="p" className="text-gray-12 text-sm">
                             Карта будет загружена здесь
-                          </p>
-                          <p className="text-xs text-muted-foreground/70 mt-1">
+                          </Text>
+                          <Text as="p" className="text-xs text-gray-11 mt-1">
                             {selectedDepartment.address}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                          </Text>
+                        </Text>
+                      </Card>
+                    </Card>
                   )}
                 </div>
               )}
