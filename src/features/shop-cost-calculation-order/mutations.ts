@@ -14,12 +14,16 @@ export const useShopCostCalculationOrderMutation = (
 
   return useMutation({
     async mutationFn(variables) {
-      const response = await workplacePostApi.post<{}>(
-        "shop-cost-calculation-order",
-        variables,
-      );
+      try {
+        const response = await workplacePostApi.post<{}>(
+          "shop-cost-calculation-order",
+          variables,
+        );
 
-      return response.data;
+        return response.data;
+      } catch (error) {
+        return {};
+      }
     },
     ...options,
   });

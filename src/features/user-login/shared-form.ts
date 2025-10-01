@@ -16,6 +16,5 @@ export const defaultUserLoginOpts = formOptions({
   defaultValues: {
     phone: '',
     password: '',
-    accepted: true,
   },
 });

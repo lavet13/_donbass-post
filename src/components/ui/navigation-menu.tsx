@@ -58,7 +58,7 @@ const NavigationMenuContent: FC<
     <NavigationMenuPrimitive.Content
       data-slot="navigation-menu-content"
       className={cn(
-        "absolute top-0 left-0 w-full",
+        "absolute top-0 left-0 w-full sm:w-auto",
         "data-[motion=from-start]:animate-enter-from-left",
         "data-[motion=from-end]:animate-enter-from-right",
         "data-[motion=to-start]:animate-exit-to-left",
@@ -74,13 +74,13 @@ const NavigationMenuViewport: FC<
   ComponentProps<typeof NavigationMenuPrimitive.Viewport>
 > = ({ className, ...props }) => {
   return (
-    <div className="absolute flex justify-center w-full top-full left-0">
+    <div className="absolute flex justify-center w-full top-full left-0 perspective-[2000px]">
       <NavigationMenuPrimitive.Viewport
         data-slot="navigation-menu-viewport"
         onPointerLeave={(event) => event.preventDefault()}
         className={cn(
           "relative [transform-origin:top_center] mt-0 bg-background rounded-md overflow-hidden",
-          "shadow-3 h-[var(--radix-navigation-menu-viewport-height)] w-full sm:min-w-[var(--radix-navigation-menu-viewport-width)]",
+          "shadow-3 h-[var(--radix-navigation-menu-viewport-height)] w-full min-w-0 sm:min-w-[var(--radix-navigation-menu-viewport-width)]",
           "[transition:width,height,300ms_ease]",
           "data-[state=open]:animate-scale-in",
           "data-[state=closed]:animate-scale-out",

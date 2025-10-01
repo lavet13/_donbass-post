@@ -100,7 +100,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             >;
 
             if (status === 400) {
-              // validation error
+              // TODO: consider showing it like below or above the form, cause they might not see it
               form.setErrorMap({
                 onChange: {
                   fields: {

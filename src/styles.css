@@ -229,6 +229,14 @@
   /*   } */
   /* } */
 
+  .rt-TextFieldRoot {
+    z-index: 1;
+  }
+
+  .rt-BaseButton:where(.rt-variant-solid):where([data-disabled]) {
+    color: var(--gray-8);
+  }
+
   .radix-themes {
     --default-font-family: var(--font-inter);
   }

@@ -154,7 +154,7 @@ export const Header: FC = () => {
                   </NavigationMenuTrigger>
                   {!!items.length && (
                     <NavigationMenuContent>
-                      <ul className="grid p-4 m-0 gap-x-[10px] list-none w-full">
+                      <ul className="grid p-4 m-0 gap-x-[10px] list-none w-full sm:min-w-[500px] sm:grid-cols-2">
                         {items.map(({ label, to }) => (
                           <ListItem key={to} to={to}>
                             {label}

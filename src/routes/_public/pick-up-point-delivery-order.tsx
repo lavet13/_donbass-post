@@ -2,9 +2,9 @@ import PickUpPointDeliveryOrderPage from "@/features/pick-up-point-delivery-orde
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_public/pick-up-point-delivery-order")({
-  component: RouteComponent,
+  component: PickUpPointDeliveryOrderComponent,
 });
 
-function RouteComponent() {
+function PickUpPointDeliveryOrderComponent() {
   return <PickUpPointDeliveryOrderPage />;
 }

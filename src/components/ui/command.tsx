@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
 import { SearchIcon, X } from "lucide-react";
 import { useEffect, useRef, type ComponentProps, type FC } from "react";
-import { ScrollArea, Spinner, Tooltip } from "@radix-ui/themes";
+import { ScrollArea, Spinner, Tooltip, type ScrollAreaProps } from "@radix-ui/themes";
 import { AccessibleIcon } from "@radix-ui/themes";
 import mergeRefs from "@/hooks/merge-refs";
 
@@ -24,13 +24,17 @@ const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
 };
 
 const CommandList: FC<
-  ComponentProps<typeof CommandPrimitive.List> & { listStyles?: string }
-> = ({ className, listStyles, ...props }) => {
+  ComponentProps<typeof CommandPrimitive.List> & {
+    listStyles?: string;
+    scrollProps?: ScrollAreaProps;
+  }
+> = ({ className, scrollProps, listStyles, ...props }) => {
   return (
     <ScrollArea
       className={cn("max-h-[300px] h-[40vh]", className)}
       scrollbars="vertical"
       type="always"
+      {...scrollProps}
     >
       <CommandPrimitive.List
         data-slot="command-list"

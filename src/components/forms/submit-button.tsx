@@ -27,18 +27,22 @@ const SubmitButton: FC<
         state.isDefaultValue,
         state.values.accepted,
       ]}
-      children={([canSubmit, isSubmitting, isDefaultValue, isAccepted]) => (
-        <Button
-          type="submit"
-          disabled={!canSubmit || isDefaultValue || !isAccepted}
-          className={cn("", className)}
-          variant={variant}
-          {...props}
-        >
-          <Spinner loading={isSubmitting}>{icon}</Spinner>
-          {isSubmitting ? loadingMessage : label}
-        </Button>
-      )}
+      children={([canSubmit, isSubmitting, isDefaultValue, isAccepted]) => {
+        isAccepted = isAccepted ?? true;
+
+        return (
+          <Button
+            type="submit"
+            disabled={!canSubmit || isDefaultValue || !isAccepted}
+            className={cn("", className)}
+            variant={variant}
+            {...props}
+          >
+            <Spinner loading={isSubmitting}>{icon}</Spinner>
+            {isSubmitting ? loadingMessage : label}
+          </Button>
+        );
+      }}
     />
   );
 };

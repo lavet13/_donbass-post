@@ -154,6 +154,9 @@ const SearchPage: FC = () => {
                     placeholder={"Найти отделение..."}
                   />
                   <CommandList
+                    scrollProps={{
+                      type: "hover",
+                    }}
                     listStyles="pb-rx-9"
                     className="h-[calc(100svh-var(--header-height)-var(--combobox-input-height))] max-h-max min-h-0"
                   >

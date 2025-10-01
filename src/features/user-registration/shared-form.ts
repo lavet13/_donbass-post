@@ -17,6 +17,5 @@ export const defaultUserRegistrationOpts = formOptions({
     phone: "",
     password: "",
     confirmPassword: "",
-    accepted: true,
   },
 });
