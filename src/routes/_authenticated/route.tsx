@@ -15,7 +15,6 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { TypographyH2 } from "@/components/typography/typographyH2";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import {

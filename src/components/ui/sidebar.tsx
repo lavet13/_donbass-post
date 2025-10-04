@@ -36,7 +36,6 @@ import {
 } from "@/components/ui/drawer";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { isMobile as isMobileDevice } from "react-device-detect";
-import { NProgress } from "../nprogress";
 
 type SidebarContextProps = {
   panelRef: React.RefObject<ImperativePanelHandle | null>;

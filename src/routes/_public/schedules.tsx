@@ -79,9 +79,6 @@ const SearchPage: FC = () => {
       select: (search) => search.pic,
     }) || false;
 
-  const [selectedDepartmentRef, setSelectedDepartmentRef] =
-    useState<HTMLDivElement | null>(null);
-
   const selectedDepartment = useMemo(
     () =>
       data
@@ -132,22 +129,26 @@ const SearchPage: FC = () => {
   });
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedDepartmentRef, setSelectedDepartmentRef] =
+    useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (selectedDepartmentRef) {
-      selectedDepartmentRef.scrollIntoView({
-        block: "center",
-        inline: "end",
-        behavior: "smooth", // Optional: makes it smoother
-      });
-
-      // Wait for the first scroll to complete, then scroll to top
-      setTimeout(() => {
-        document.documentElement.scrollIntoView({
-          block: "start",
+    setTimeout(() => {
+      if (selectedDepartmentRef) {
+        selectedDepartmentRef.scrollIntoView({
+          block: "center",
+          behavior: "smooth",
         });
-      }, 150); // Small delay to ensure first scroll starts
-    }
+
+        // Wait for the first scroll to complete, then scroll to top
+        setTimeout(() => {
+          document.documentElement.scrollIntoView({
+            block: "start",
+            behavior: "instant",
+          });
+        }, 0);
+      }
+    }, 0);
   }, [selectedDepartmentRef]);
 
   return (
