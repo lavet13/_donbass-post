@@ -13,7 +13,7 @@ const DrawerTrigger: FC<ComponentProps<typeof DrawerPrimitive.Trigger>> = ({
   return (
     <DrawerPrimitive.Trigger
       data-slot="drawer-trigger"
-      className={cn("", className)}
+      className={cn("radix-themes", className)}
       {...props}
     />
   );
@@ -28,7 +28,15 @@ const DrawerContent: FC<ComponentProps<typeof DrawerPrimitive.Content>> = ({
       <DrawerPrimitive.Overlay className="fixed inset-0 bg-grayA-2" />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
+        data-is-root-theme="true"
+        data-accent-color="red"
+        data-gray-color="gray"
+        data-has-background="true"
+        data-panel-background="translucent"
+        data-radius="medium"
+        data-scaling="100%"
         className={cn(
+          "radix-themes",
           "group/drawer-content flex flex-col text-gray-12 bg-gray-2 fixed outline-none",
 
           // removing blur

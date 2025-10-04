@@ -28,7 +28,7 @@ import {
   Truck,
   XIcon,
 } from "lucide-react";
-import { useMemo, useRef, type FC } from "react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { Fragment } from "react/jsx-runtime";
 import {
   Button,
@@ -79,12 +79,15 @@ const SearchPage: FC = () => {
       select: (search) => search.pic,
     }) || false;
 
+  const [selectedDepartmentRef, setSelectedDepartmentRef] =
+    useState<HTMLDivElement | null>(null);
+
   const selectedDepartment = useMemo(
     () =>
       data
         ?.flatMap((departmentType) => departmentType.items)
         .find((department) => department.id === departmentId),
-    [departmentId],
+    [departmentId, isPending],
   );
 
   const query =
@@ -108,7 +111,8 @@ const SearchPage: FC = () => {
       id: departmentId ?? ("" as string | number),
     },
     onSubmit: async ({ value }) => {
-      navigate({
+      await navigate({
+        resetScroll: false,
         search: (prev) => {
           return {
             ...prev,
@@ -129,6 +133,23 @@ const SearchPage: FC = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (selectedDepartmentRef) {
+      selectedDepartmentRef.scrollIntoView({
+        block: "center",
+        inline: "end",
+        behavior: "smooth", // Optional: makes it smoother
+      });
+
+      // Wait for the first scroll to complete, then scroll to top
+      setTimeout(() => {
+        document.documentElement.scrollIntoView({
+          block: "start",
+        });
+      }, 150); // Small delay to ensure first scroll starts
+    }
+  }, [selectedDepartmentRef]);
+
   return (
     <div className="flex-1 flex min-h-min items-start w-full">
       <div className="flex flex-col min-w-[18rem] sticky top-[calc(var(--header-height)+1px)]">
@@ -144,7 +165,7 @@ const SearchPage: FC = () => {
             name="id"
             children={(field) => {
               return (
-                <Command>
+                <Command shouldFilter={!isPending}>
                   <CommandInput
                     inputContainer={"bg-background mr-rx-1"}
                     value={query}
@@ -174,6 +195,11 @@ const SearchPage: FC = () => {
                           <CommandGroup heading={label}>
                             {items.map(({ id, name }) => (
                               <CommandItem
+                                ref={(node) => {
+                                  if (id === field.state.value) {
+                                    setSelectedDepartmentRef(node);
+                                  }
+                                }}
                                 title={name}
                                 role="option"
                                 aria-selected={id === field.state.value}

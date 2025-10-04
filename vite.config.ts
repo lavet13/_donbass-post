@@ -7,7 +7,7 @@ import topLevelAwait from "vite-plugin-top-level-await";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/user/",
+  base: "/user",
   plugins: [
     tailwindcss(),
     tanstackRouter({

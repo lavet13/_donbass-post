@@ -124,61 +124,74 @@ export const Header: FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 w-full h-14 z-1 flex bg-gray-2 dark:bg-grayA-2 dark:backdrop-blur-lg border-b border-grayA-6">
-      <div className="container flex items-center w-full max-w-6xl px-3.5">
-        <div className="flex-none flex items-center">
-          <Tooltip content="Меню">
-            <IconButton
-              size="3"
-              radius="full"
-              className="[&_svg]:size-4"
-              variant="ghost"
+    <header className="sticky top-0 w-full h-14 z-1 flex bg-background dark:bg-grayA-2 dark:backdrop-blur-lg border-b border-grayA-6">
+      <div className="flex items-center w-full px-3.5">
+        <div className="relative h-full w-full flex justify-between items-center">
+          <div className="flex-none flex gap-3 items-center">
+            <Tooltip content="Меню">
+              <IconButton
+                size="3"
+                radius="full"
+                className="[&_svg]:size-4"
+                variant="ghost"
+              >
+                <Menu />
+              </IconButton>
+            </Tooltip>
+            <Link
+              className="select-none hidden md:block data-[status=active]:animate-[glow_10s_ease-in-out_infinite]"
+              to="/"
+              activeOptions={{ exact: true }}
             >
-              <Menu />
-            </IconButton>
-          </Tooltip>
-        </div>
-        <div className="flex-1 shrink-0 flex items-center justify-center">
-          <NavigationMenu onValueChange={setValue}>
-            <NavigationMenuList ref={setList}>
-              {navItems.map(({ label, items }) => (
-                <NavigationMenuItem key={label} value={label}>
-                  <NavigationMenuTrigger
-                    className={cn(
-                      items.some(({ to }) => pathname.includes(to)) &&
-                        "bg-accentA-3 [box-shadow:inset_0_0_0_1px_var(--accent-a7)]",
+              <img
+                className="w-[220px] h-full"
+                src={`${import.meta.env.BASE_URL}/logomini_np-bsd.png`}
+                alt={`Лого "Наша Почта - почта по-новому" Партнер "БСД"`}
+              />
+            </Link>
+          </div>
+          <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 flex-1 shrink-0 flex items-center justify-center">
+            <NavigationMenu onValueChange={setValue}>
+              <NavigationMenuList ref={setList}>
+                {navItems.map(({ label, items }) => (
+                  <NavigationMenuItem key={label} value={label}>
+                    <NavigationMenuTrigger
+                      className={cn(
+                        items.some(({ to }) => pathname.includes(to)) &&
+                          "bg-accentA-3 [box-shadow:inset_0_0_0_1px_var(--accent-a7)]",
+                      )}
+                      ref={(node) => onNodeUpdate(node, label)}
+                    >
+                      {label} {!!items.length && <ChevronDown />}
+                    </NavigationMenuTrigger>
+                    {!!items.length && (
+                      <NavigationMenuContent>
+                        <ul className="grid p-4 m-0 gap-x-[10px] list-none w-full sm:min-w-[500px] sm:grid-cols-2">
+                          {items.map(({ label, to }) => (
+                            <ListItem key={to} to={to}>
+                              {label}
+                            </ListItem>
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
                     )}
-                    ref={(node) => onNodeUpdate(node, label)}
-                  >
-                    {label} {!!items.length && <ChevronDown />}
-                  </NavigationMenuTrigger>
-                  {!!items.length && (
-                    <NavigationMenuContent>
-                      <ul className="grid p-4 m-0 gap-x-[10px] list-none w-full sm:min-w-[500px] sm:grid-cols-2">
-                        {items.map(({ label, to }) => (
-                          <ListItem key={to} to={to}>
-                            {label}
-                          </ListItem>
-                        ))}
-                      </ul>
-                    </NavigationMenuContent>
-                  )}
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
+                  </NavigationMenuItem>
+                ))}
+              </NavigationMenuList>
 
-            <NavigationMenuViewport
-              style={{
-                display: !offset ? "none" : undefined,
-                translate: `${isMobile ? 0 : offset}px 0`,
-              }}
-            />
-          </NavigationMenu>
-        </div>
-        <div className="flex-none flex items-center justify-end">
-          <Tooltip content={content}>
-            <ModeToggle />
-          </Tooltip>
+              <NavigationMenuViewport
+                style={{
+                  display: !offset ? "none" : undefined,
+                  translate: `${isMobile ? 0 : offset}px 0`,
+                }}
+              />
+            </NavigationMenu>
+          </div>
+          <div className="flex-none flex items-center justify-end">
+            <Tooltip content={content}>
+              <ModeToggle />
+            </Tooltip>
+          </div>
         </div>
       </div>
     </header>

@@ -4,6 +4,7 @@ import type { FC } from "react";
 import { type ComponentProps } from "react";
 import { useFieldContext } from "@/hooks/form-context";
 import { cn } from "@/lib/utils";
+import { Text, type TextProps } from "@radix-ui/themes";
 
 export const FormLabel: FC<ComponentProps<typeof LabelPrimitive.Root>> = ({
   className,
@@ -38,10 +39,7 @@ export const FormItem: FC<ComponentProps<"div">> = ({
   );
 };
 
-export const FormMessage: FC<ComponentProps<"p">> = ({
-  className,
-  ...props
-}) => {
+export const FormMessage: FC<TextProps> = ({ className, ...props }) => {
   const field = useFieldContext();
   const hasErrors = !!field.state.meta.errors.length;
   const errors = field.state.meta.errors;
@@ -51,7 +49,9 @@ export const FormMessage: FC<ComponentProps<"p">> = ({
   }
 
   return (
-    <p
+    <Text
+      as="p"
+      wrap="balance"
       data-slot="form-message"
       className={cn(
         "text-center sm:text-start text-red-11 text-sm sm:text-xs mt-0.5 leading-[15px]",
@@ -60,16 +60,18 @@ export const FormMessage: FC<ComponentProps<"p">> = ({
       {...props}
     >
       {errors.join(", ")}
-    </p>
+    </Text>
   );
 };
 
-export const FormDescription: FC<ComponentProps<"p">> = ({
+export const FormDescription: FC<TextProps> = ({
   className,
   ...props
 }) => {
   return (
-    <p
+    <Text
+      as="p"
+      wrap="balance"
       data-slot="form-description"
       className={cn("text-grayA-11 text-sm", className)}
       {...props}

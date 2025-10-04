@@ -1,8 +1,8 @@
 import { useAppForm } from "@/hooks/form";
 import type { FC } from "react";
-import { defaultCargoTrackingOpts } from "./shared-form";
-import { CargoTrackingForm } from "./nested-form";
-import { useCargoTrackingMutation } from "./mutations";
+import { defaultCargoTrackingOpts } from "@/features/cargo-tracking/shared-form";
+import { CargoTrackingForm } from "@/features/cargo-tracking/nested-form";
+import { useCargoTrackingMutation } from "@/features/cargo-tracking/mutations";
 
 const CargoTrackingPage: FC = () => {
   const { mutateAsync: getCargoTrackingData } = useCargoTrackingMutation();

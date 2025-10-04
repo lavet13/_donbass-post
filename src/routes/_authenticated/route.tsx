@@ -1,4 +1,4 @@
-import { IconButton, Tooltip } from "@radix-ui/themes";
+import { Heading, IconButton, Tooltip } from "@radix-ui/themes";
 import {
   Sidebar,
   SidebarContent,
@@ -77,9 +77,10 @@ function AuthenticatedLayout() {
 
   const collapsedButton = (
     <IconButton
-      className="ml-auto rounded-xl @max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 @max-[130px]:rounded-lg"
+      className="@max-[130px]:w-full [&_svg]:size-4"
+      radius="full"
       variant="ghost"
-      size="2"
+      size="3"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -93,16 +94,20 @@ function AuthenticatedLayout() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex-1 shrink @max-[130px]:hidden">
-          <TypographyH2
-            className={cn(
-              "text-foreground sm:leading-none text-sm @max-[130px]:hidden",
-            )}
+        <div className="flex-1 min-w-0 shrink @max-[130px]:hidden">
+          <Heading
+            truncate
+            wrap="nowrap"
+            as="h2"
+            size="2"
+            className={
+              "pl-3 leading-rx-4 mb-1 sm:mb-0 tracking-tight @max-[130px]:hidden"
+            }
           >
             Личный кабинет
-          </TypographyH2>
+          </Heading>
         </div>
-        <div className="grow-0 @max-[130px]:flex-1 @max-[130px]:px-[0.5rem]">
+        <div className={cn("min-w-0 @max-[130px]:flex-1 mt-2 mx-2", isMobile && "mr-3")}>
           {isMobile ? (
             collapsedButton
           ) : (

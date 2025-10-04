@@ -131,7 +131,7 @@ const ComboboxGroupField: FC<
           <Tooltip content={selectedEntryClearTooltipMessage}>
             <span
               tabIndex={0}
-              className="pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-5.5 rounded-full [&_svg]:size-4! text-gray-12 hover:bg-grayA-3 active:bg-grayA-4 outline-none focus-visible:ring-red-8 focus-visible:ring-[2px]"
+              className="pointer-events-auto shrink-0 rounded-full [&_svg]:size-5! rt-reset rt-BaseButton rt-r-size-1 rt-variant-ghost rt-IconButton"
               aria-label={selectedEntryClearTooltipMessage}
               onClick={(e) => {
                 e.preventDefault();

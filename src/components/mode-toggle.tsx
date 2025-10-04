@@ -42,9 +42,8 @@ export const ModeToggle: FC<ModeToggleProps> = ({
 
   return (
     <IconButton
-      className={cn("rounded-full [&_svg]:size-4", className)}
+      className={cn("rounded-full [&>svg]:size-4 [&>svg]:shrink-0", className)}
       variant="ghost"
-      size="3"
       onClick={handleToggle}
       {...props}
     >

@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
 import { SearchIcon, X } from "lucide-react";
 import { useEffect, useRef, type ComponentProps, type FC } from "react";
-import { ScrollArea, Spinner, Tooltip, type ScrollAreaProps } from "@radix-ui/themes";
+import { IconButton, ScrollArea, Spinner, Tooltip, type ScrollAreaProps } from "@radix-ui/themes";
 import { AccessibleIcon } from "@radix-ui/themes";
 import mergeRefs from "@/hooks/merge-refs";
 
@@ -162,7 +162,7 @@ const CommandInput: FC<
   return (
     <div
       className={cn(
-        "sticky z-10 top-0 flex h-8 items-center gap-2 border-b border-grayA-6 px-3 pr-1",
+        "sticky z-10 top-0 flex h-8 items-center gap-2 border-b border-grayA-6 px-3 pr-2",
         inputContainer,
       )}
     >
@@ -181,9 +181,12 @@ const CommandInput: FC<
       />
       {clearButton && value && (
         <Tooltip content={clearButtonTooltipMessage}>
-          <button
+          <IconButton
+            size="2"
+            variant="ghost"
+            radius="full"
             data-slot="command-input-clear"
-            className="shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 text-red-11 hover:bg-red-3 active:bg-red-4 outline-none focus-visible:ring-red-8 focus-visible:ring-[2px]"
+            className="shrink-0 [&_svg]:size-4.5 text-red-11 hover:bg-redA-3 active:bg-redA-4 rounded-full p-[6px] box-content h-fit"
             onKeyDown={handleKeyDown}
             onClick={handleClear}
             type="button"
@@ -192,7 +195,7 @@ const CommandInput: FC<
             <AccessibleIcon label={clearButtonTooltipMessage}>
               <X />
             </AccessibleIcon>
-          </button>
+          </IconButton>
         </Tooltip>
       )}
     </div>

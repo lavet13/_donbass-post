@@ -21,7 +21,7 @@ const NavigationMenuList: FC<
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
       className={cn(
-        "flex justify-center bg-grayA-1 rounded-full list-none p-1 m-0",
+        "flex justify-center bg-accentA-2 rounded-full list-none p-1 m-0",
         "[&>li:first-of-type_button]:rounded-s-full [&>li:last-of-type_button]:rounded-e-full",
         className,
       )}

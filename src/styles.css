@@ -152,6 +152,19 @@
       opacity: 0;
     }
   }
+
+  @keyframes glow {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 4px var(--accent-3))
+        drop-shadow(0 0 8px var(--accent-3));
+    }
+    50% {
+      filter: drop-shadow(0 0 12px var(--accent-3))
+        drop-shadow(0 0 20px var(--accent-3))
+        drop-shadow(0 0 28px var(--accent-3));
+    }
+  }
 }
 
 @import "radix-themes-tw/theme.css"; /* <-- import the preset */
@@ -230,11 +243,15 @@
   /* } */
 
   .rt-TextFieldRoot {
-    z-index: 1;
+    z-index: 0;
   }
 
   .rt-BaseButton:where(.rt-variant-solid):where([data-disabled]) {
     color: var(--gray-8);
+  }
+
+  .rt-BaseButton:where(.rt-variant-soft, .rt-variant-ghost) {
+    color: var(--accent-11);
   }
 
   .radix-themes {

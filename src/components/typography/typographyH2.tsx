@@ -8,6 +8,7 @@ export const TypographyH2: FC<ComponentProps<typeof Heading>> = ({
 }) => {
   return (
     <Heading
+      wrap="balance"
       as="h2"
       size="7"
       className={cn(

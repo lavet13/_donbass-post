@@ -1,5 +1,8 @@
 import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
-import type { CargoTrackingParams, CargoTrackingResult } from "./types";
+import type {
+  CargoTrackingParams,
+  CargoTrackingResult,
+} from "@/features/cargo-tracking/types";
 import type { AxiosError } from "axios";
 import { workplacePostApi } from "@/axios";
 
