@@ -137,7 +137,7 @@ const SearchPage: FC = () => {
       if (selectedDepartmentRef) {
         selectedDepartmentRef.scrollIntoView({
           block: "center",
-          behavior: "smooth",
+          behavior: "instant",
         });
 
         // Wait for the first scroll to complete, then scroll to top
