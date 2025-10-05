@@ -6,7 +6,7 @@ import { workplacePostApi } from "@/axios";
 type UseTrackingRostovProps = {
   options?: UseMutationOptions<
     TrackingRostovResult,
-    AxiosError<{ message: string }>,
+    Error,
     TrackingRostovParams
   >;
 };
@@ -29,38 +29,24 @@ const useTrackingRostov = (props: UseTrackingRostovProps = {}) => {
 
         if (axiosError.response) {
           if (axiosError.response.status === 500) {
-            return {
-              success: false as const,
-              error: "Ошибка сервера",
-              message:
-                "Сервер временно недоступен. Пожалуйста, попробуйте позже.",
-            };
+            throw new Error(
+              "Сервер временно недоступен. Пожалуйста, попробуйте позже.",
+            );
           }
           if (axiosError.response.status === 400) {
-            return {
-              success: false as const,
-              error: "Неверный запрос",
-              message: "Проверьте правильность введенного ТТН №/Трека",
-            };
+            throw new Error("Проверьте правильность введенного ТТН №/Трека");
           }
-          return {
-            success: false as const,
-            error: "Ошибка запроса",
-            message: `Запрос завершился с ошибкой ${axiosError.response.status}`,
-          };
+          throw new Error(
+            `Запрос завершился с ошибкой ${axiosError.response.status}`,
+          );
         } else if (axiosError.request) {
-          return {
-            success: false as const,
-            error: "Нет ответа",
-            message:
-              "Нет ответа от сервера. Пожалуйста, проверьте подключение к интернету.",
-          };
+          throw new Error(
+            "Нет ответа от сервера. Пожалуйста, проверьте подключение к интернету.",
+          );
         } else {
-          return {
-            success: false as const,
-            error: "Неизвестная ошибка",
-            message: "Произошла непредвиденная ошибка. Попробуйте еще раз.",
-          };
+          throw new Error(
+            "Произошла непредвиденная ошибка. Попробуйте еще раз.",
+          );
         }
       }
     },

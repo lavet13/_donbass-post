@@ -1,3 +1,6 @@
+import type { inferQueryKeys } from "@lukemorales/query-key-factory";
+import type { deliveryRateKeys } from "@/features/delivery-rate/queries";
+
 export type CalculateGlobalParams = {
   weight: number;
   cubicMeter: number;
@@ -11,3 +14,4 @@ export type CalculateGlobalParams = {
 export type CalculateGlobalResult = {
   price: number;
 };
+export type DeliveryRateKeys = inferQueryKeys<typeof deliveryRateKeys>;

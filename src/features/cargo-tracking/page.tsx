@@ -5,24 +5,41 @@ import { CargoTrackingForm } from "@/features/cargo-tracking/nested-form";
 import { useCargoTrackingMutation } from "@/features/cargo-tracking/mutations";
 
 const CargoTrackingPage: FC = () => {
-  const { mutateAsync: getCargoTrackingData } = useCargoTrackingMutation();
+  const { mutateAsync: getCargoTrackingData, data } =
+    useCargoTrackingMutation();
 
   const form = useAppForm({
     ...defaultCargoTrackingOpts,
     onSubmit: async ({ formApi, value }) => {
-      const response = await getCargoTrackingData({
-        trackingNumber: value.trackingNumber,
-      });
+      try {
+        await getCargoTrackingData({
+          trackingNumber: value.trackingNumber,
+        });
 
-      if (response.success) {
         formApi.reset();
-      } else {
-        console.log({ response });
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Произошла ошибка";
+
+        formApi.setErrorMap({
+          onChange: {
+            fields: {
+              trackingNumber: errorMessage,
+            },
+          },
+        });
       }
     },
   });
 
-  return <CargoTrackingForm form={form} />;
+  console.log({ data });
+
+  return (
+    <div className="flex-1 min-w-0 flex flex-col gap-3">
+      <CargoTrackingForm form={form} />
+      {data ? <div className="flex-1 min-w-0 flex flex-col"></div> : null}
+    </div>
+  );
 };
 
 export default CargoTrackingPage;

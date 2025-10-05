@@ -1,15 +1,4 @@
-export type TrackingRostovErrorResult = {
-  success: false;
-  error: string;
-  message: string;
-};
-
-export type TrackingRostovSuccessResult = {
-  success: true;
-  data: TrackingRostovData;
-};
-
-export type TrackingRostovData = {
+export type TrackingRostovResult = {
   id: number;
   npTrack: string;
   otherTrack: string;
@@ -24,10 +13,6 @@ export type TrackingRostovData = {
   createdAt: string;
   updatedAt: string;
 };
-
-export type TrackingRostovResult =
-  | TrackingRostovErrorResult
-  | TrackingRostovSuccessResult;
 
 export type TrackingRostovParams = {
   trackingNumber: string;

@@ -36,8 +36,6 @@ const NavigationMenuTrigger: FC<
   return (
     <NavigationMenuPrimitive.Trigger
       data-slot="navigation-menu-trigger"
-      onPointerMove={(event) => event.preventDefault()}
-      onPointerLeave={(event) => event.preventDefault()}
       className={cn(
         "flex items-center justify-center gap-[2px]",
         "py-1.5 px-1.5 whitespace-nowrap overflow-hidden text-ellipsis outline-none select-none",
@@ -77,13 +75,10 @@ const NavigationMenuViewport: FC<
     <div className="absolute flex justify-center w-full top-full left-0 perspective-[2000px]">
       <NavigationMenuPrimitive.Viewport
         data-slot="navigation-menu-viewport"
-        onPointerLeave={(event) => event.preventDefault()}
         className={cn(
           "relative [transform-origin:top_center] mt-0 bg-background rounded-md overflow-hidden",
           "shadow-3 h-[var(--radix-navigation-menu-viewport-height)] w-full min-w-0 sm:min-w-[var(--radix-navigation-menu-viewport-width)]",
-          "[transition:width,height,300ms_ease]",
-          "data-[state=open]:animate-scale-in",
-          "data-[state=closed]:animate-scale-out",
+          "[transition:width,height,150ms_ease]",
           className,
         )}
         {...props}

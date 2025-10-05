@@ -1,13 +1,7 @@
-export type IMTrackingErrorResult = {
-  success: false;
-  message: string;
-  error: string;
-};
-export type IMTrackingSuccessResult = {
-  success: true;
-  data: IMTrackingData;
-};
-export type IMTrackingData = {
+import type { inferQueryKeys } from "@lukemorales/query-key-factory";
+import type { InternetMagazineTrackingKeys } from "./queries";
+
+export type IMTrackingResult = {
   id: number;
   promo: string;
   price: string;
@@ -18,9 +12,6 @@ export type IMTrackingData = {
   createdAt: string;
   updatedAt: string;
 };
-
-export type IMTrackingResult = IMTrackingErrorResult | IMTrackingSuccessResult;
-
-export type IMTrackingParams = {
-  promo: string;
-};
+export type InternetMagazineTrackingKeys = inferQueryKeys<
+  typeof InternetMagazineTrackingKeys
+>;

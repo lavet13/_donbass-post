@@ -2,26 +2,24 @@ export type CargoTrackingParams = {
   trackingNumber: string;
 };
 
-export type CargoTrackingErrorResult = {
+export type CargoTrackingResult = {
   success: false;
-  error: string;
-  message: string;
+  data: {
+    waybillNumber: string;
+    trackNumber: string;
+    receptionDate: string; // Format: DD.MM.YYYY
+    departureCity: string;
+    destinationCity: string;
+    departureDate: string;
+    message: string;
+    warehouseMovements: WarehouseMovement[];
+    deliveryRecord: DeliveryRecord;
+  };
 };
 
-export type CargoTrackingSuccessResult = {
-  success: true;
-  data: CargoTrackingData;
-};
-
-export type CargoTrackingData = {
-  waybillNumber: string;
-  trackNumber: string;
-  receptionDate: string; // Format: DD.MM.YYYY
-  departureCity: string;
-  destinationCity: string;
-  departureDate: string;
-  message: string;
-  warehouseMovements: WarehouseMovement[];
+type DeliveryRecord = {
+  arrivalDate: string;
+  deliveryDate: string;
 };
 
 export type WarehouseMovement = {
@@ -29,7 +27,3 @@ export type WarehouseMovement = {
   departureDate: string;
   warehousePoint: string;
 };
-
-export type CargoTrackingResult =
-  | CargoTrackingSuccessResult
-  | CargoTrackingErrorResult;

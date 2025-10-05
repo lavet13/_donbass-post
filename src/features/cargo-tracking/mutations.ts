@@ -7,11 +7,7 @@ import type { AxiosError } from "axios";
 import { workplacePostApi } from "@/axios";
 
 type UseCargoTrackingMutationProps = {
-  options?: UseMutationOptions<
-    CargoTrackingResult,
-    AxiosError<{ message: string }>,
-    CargoTrackingParams
-  >;
+  options?: UseMutationOptions<CargoTrackingResult, Error, CargoTrackingParams>;
 };
 
 const useCargoTrackingMutation = (
@@ -32,38 +28,24 @@ const useCargoTrackingMutation = (
 
         if (axiosError.response) {
           if (axiosError.response.status === 500) {
-            return {
-              success: false as const,
-              error: "Ошибка сервера",
-              message:
-                "Сервер временно недоступен. Пожалуйста, попробуйте позже.",
-            };
+            throw new Error(
+              "Сервер временно недоступен. Пожалуйста, попробуйте позже.",
+            );
           }
-          if (axiosError.response.status === 404) {
-            return {
-              success: false as const,
-              error: "Не найдено",
-              message: "Груз с указанным номером не найден.",
-            };
+          if (axiosError.response.status === 400) {
+            throw new Error("Проверьте правильность введенного ТТН №/Трека");
           }
-          return {
-            success: false as const,
-            error: "Ошибка запроса",
-            message: `Запрос завершился с ошибкой ${axiosError.response.status}`,
-          };
+          throw new Error(
+            `Запрос завершился с ошибкой ${axiosError.response.status}`,
+          );
         } else if (axiosError.request) {
-          return {
-            success: false as const,
-            error: "Нет ответа",
-            message:
-              "Нет ответа от сервера. Пожалуйста, проверьте подключение к интернету.",
-          };
+          throw new Error(
+            "Нет ответа от сервера. Пожалуйста, проверьте подключение к интернету.",
+          );
         } else {
-          return {
-            success: false as const,
-            error: "Неизвестная ошибка",
-            message: "Произошла непредвиденная ошибка. Попробуйте еще раз.",
-          };
+          throw new Error(
+            "Произошла непредвиденная ошибка. Попробуйте еще раз.",
+          );
         }
       }
     },

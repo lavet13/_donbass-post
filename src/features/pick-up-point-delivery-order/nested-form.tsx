@@ -7,7 +7,7 @@ import { useDeliveryCompaniesQuery } from "@/features/delivery-company/queries";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Toggle } from "@/components/ui/toggle";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { FormItem } from "@/components/ui/form";
 import {
   ChevronDown,
@@ -33,11 +33,13 @@ import {
   AutoDismissMessage,
   type AutoDimissMessageProps,
 } from "@/components/auto-dismiss-message";
-import { useCalculateGlobalMutation } from "@/features/delivery-rate/mutations";
-import { isAxiosError } from "axios";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { TypographyH2 } from "@/components/typography/typographyH2";
 import { HighlightText } from "@/components/typography/highlight-text";
+import { useCalculateGlobalQuery } from "../delivery-rate/queries";
+import type { CalculateGlobalParams } from "../delivery-rate/types";
+import { isAxiosError } from "axios";
+import { keepPreviousData } from "@tanstack/react-query";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -62,13 +64,23 @@ export const PickUpPointDeliveryOrderForm = withForm({
       refetch: refetchAdditionalServices,
     } = useAdditionalServicePickUpQuery();
 
+    const [calculateParams, setCalculateParams] =
+      useState<CalculateGlobalParams>();
     const {
       data: calculateDeliveryResult,
-      mutateAsync: calculateDelivery,
+      isLoading,
+      isPlaceholderData,
       isError,
       error,
-      isPending,
-    } = useCalculateGlobalMutation();
+    } = useCalculateGlobalQuery({
+      params: calculateParams,
+      options: {
+        enabled: !!calculateParams,
+        placeholderData: keepPreviousData,
+      },
+    });
+
+    console.log({ isError, error });
 
     const handleCalculation = async () => {
       const pointFrom = Number.parseInt(form.state.values.sender.pointFrom, 10);
@@ -79,41 +91,16 @@ export const PickUpPointDeliveryOrderForm = withForm({
       );
       const { totalWeight, cubicMeter } = form.state.values.cargoData;
 
-      try {
-        await calculateDelivery({
-          weight: totalWeight,
-          cubicMeter: cubicMeter,
-          pointFrom,
-          pointTo,
-          deliveryCompany,
-          isHomeDelivery: false,
-          deliveryType: 3,
-          deliveryRateGroup: 4,
-        });
-      } catch (error) {
-        if (isAxiosError(error)) {
-          if (error.response) {
-            const status = error.response.status;
-            const errors = error.response?.data.message[0] as Record<
-              string,
-              string
-            >;
-
-            if (status === 400) {
-              // TODO: consider showing it like below or above the form, cause they might not see it
-              form.setErrorMap({
-                onChange: {
-                  fields: {
-                    "sender.pointFrom": errors["pointFrom"],
-                    "recipient.pointTo": errors["pointTo"],
-                    "recipient.deliveryCompany": errors["deliveryCompany"],
-                  },
-                },
-              });
-            }
-          }
-        }
-      }
+      setCalculateParams({
+        weight: totalWeight,
+        cubicMeter: cubicMeter,
+        pointFrom,
+        pointTo,
+        deliveryCompany,
+        isHomeDelivery: false,
+        deliveryType: 3,
+        deliveryRateGroup: 4,
+      });
     };
 
     const isDefaultValue = useStore(
@@ -144,6 +131,31 @@ export const PickUpPointDeliveryOrderForm = withForm({
     const smBreakpoint = styles.getPropertyValue("--breakpoint-sm");
 
     const isMobile = useMediaQuery(`(max-width: ${smBreakpoint})`);
+
+    // if (isError) {
+    //   if (isAxiosError(error)) {
+    //     if (error.response) {
+    //       const status = error.response.status;
+    //       const errors = error.response?.data.message[0] as unknown as Record<
+    //         string,
+    //         string
+    //       >;
+    //
+    //       if (status === 400) {
+    //         // TODO: consider showing it like below or above the form, cause they might not see it
+    //         form.setErrorMap({
+    //           onChange: {
+    //             fields: {
+    //               "sender.pointFrom": errors["pointFrom"],
+    //               "recipient.pointTo": errors["pointTo"],
+    //               "recipient.deliveryCompany": errors["deliveryCompany"],
+    //             },
+    //           },
+    //         });
+    //       }
+    //     }
+    //   }
+    // }
 
     return (
       <div className="mx-auto w-full max-w-2xl">
@@ -1674,11 +1686,11 @@ export const PickUpPointDeliveryOrderForm = withForm({
               </form.AppForm>
               <div className="flex flex-col gap-1.5">
                 <Button
-                  disabled={isPending}
+                  disabled={isLoading || isPlaceholderData}
                   type="button"
                   onClick={handleCalculation}
                 >
-                  {isPending ? (
+                  {isLoading || isPlaceholderData ? (
                     <>
                       <Spinner />
                       Просчёт...
@@ -1688,7 +1700,12 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   )}
                 </Button>
                 {calculateDeliveryResult && !isError && (
-                  <div className="flex py-2 text-3xl justify-center items-center bg-accentA-3 text-accentA-11 rounded-md font-bold">
+                  <div
+                    className={cn(
+                      "flex py-2 text-3xl justify-center items-center bg-accentA-3 text-accentA-11 rounded-md font-bold",
+                      isPlaceholderData && "brightness-75",
+                    )}
+                  >
                     {calculateDeliveryResult.price +
                       (form.state.values.additionalService
                         .filter(
