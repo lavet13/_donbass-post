@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DefaultErrorComponent } from "@/components/default-error-component";
 import { DefaultNotFoundComponent } from "@/components/default-not-found-component";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { Toaster } from "sonner";
 
 function createRouter() {
   const queryClient = new QueryClient({
@@ -37,6 +38,7 @@ function createRouter() {
       return (
         <QueryClientProvider client={queryClient}>
           <TooltipProvider delayDuration={400}>{children}</TooltipProvider>
+          <Toaster />
         </QueryClientProvider>
       );
     },

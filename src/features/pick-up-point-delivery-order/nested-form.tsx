@@ -40,6 +40,7 @@ import { useCalculateGlobalQuery } from "../delivery-rate/queries";
 import type { CalculateGlobalParams } from "../delivery-rate/types";
 import { keepPreviousData } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { sonner } from "@/components/ui/toast";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -141,7 +142,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
             >;
 
             if (status === 400) {
-              // TODO: consider showing it like below or above the form, cause they might not see it
               form.setErrorMap({
                 onChange: {
                   fields: {
@@ -149,6 +149,13 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     "recipient.pointTo": errors["pointTo"],
                     "recipient.deliveryCompany": errors["deliveryCompany"],
                   },
+                },
+              });
+              sonner({
+                title: "Просчёт стоимости",
+                description: "something",
+                button: {
+                  label: "Понятно",
                 },
               });
             }

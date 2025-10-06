@@ -8,7 +8,7 @@ import {
   CommandLoading,
   CommandSeparator,
 } from "@/components/ui/command";
-import { usePointListQuery } from "@/features/point/queries";
+import { pointKeys, usePointListQuery } from "@/features/point/queries";
 import { useAppForm } from "@/hooks/form";
 import { cn } from "@/lib/utils";
 import { useNavigate, useSearch } from "@tanstack/react-router";
@@ -55,6 +55,9 @@ type ScheduleSearch = {
 
 export const Route = createFileRoute("/_public/schedules")({
   component: SchedulesComponent,
+  loader({ context }) {
+    return context.queryClient.ensureQueryData(pointKeys.list);
+  },
   validateSearch: (search): ScheduleSearch => {
     return {
       q: (search.q as string) || undefined,

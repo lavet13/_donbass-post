@@ -168,7 +168,10 @@ const ComboboxGroupField: FC<
           clearButtonTooltipMessage={searchClearButtonTooltipMessage}
           placeholder={searchInputPlaceholder}
         />
-        <CommandList className={cn(modal && `h-auto max-h-fit`)}>
+        <CommandList
+          scrollProps={{ type: modal ? "auto" : "always" }}
+          className={cn(modal && `h-auto max-h-fit`)}
+        >
           {isLoading ? (
             <CommandLoading label={loadingMessage}>
               {loadingMessage}
