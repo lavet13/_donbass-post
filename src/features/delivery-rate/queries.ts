@@ -41,7 +41,11 @@ type UseCalculateGlobalQueryProps = {
 
 const useCalculateGlobalQuery = (props: UseCalculateGlobalQueryProps = {}) => {
   const { options, params } = props;
-  return useQuery({ ...deliveryRateKeys.calculateGlobal(params), ...options });
+  return useQuery({
+    ...deliveryRateKeys.calculateGlobal(params),
+    retry: 0,
+    ...options,
+  });
 };
 
 export {

@@ -78,6 +78,8 @@ export const defaultPickUpPointDeliveryOrderOpts = formOptions({
       },
     ],
 
+    calculatedPrice: 0,
+
     accepted: false,
   },
 });

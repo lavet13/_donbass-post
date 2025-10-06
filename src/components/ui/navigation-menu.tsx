@@ -72,13 +72,12 @@ const NavigationMenuViewport: FC<
   ComponentProps<typeof NavigationMenuPrimitive.Viewport>
 > = ({ className, ...props }) => {
   return (
-    <div className="absolute flex justify-center w-full top-full left-0 perspective-[2000px]">
+    <div className="absolute flex justify-center w-full top-full left-0">
       <NavigationMenuPrimitive.Viewport
         data-slot="navigation-menu-viewport"
         className={cn(
-          "relative [transform-origin:top_center] mt-0 bg-background rounded-md overflow-hidden",
+          "relative mt-0 bg-background rounded-md overflow-hidden",
           "shadow-3 h-[var(--radix-navigation-menu-viewport-height)] w-full min-w-0 sm:min-w-[var(--radix-navigation-menu-viewport-width)]",
-          "[transition:width,height,150ms_ease]",
           className,
         )}
         {...props}

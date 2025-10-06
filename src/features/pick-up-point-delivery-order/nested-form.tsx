@@ -38,8 +38,8 @@ import { TypographyH2 } from "@/components/typography/typographyH2";
 import { HighlightText } from "@/components/typography/highlight-text";
 import { useCalculateGlobalQuery } from "../delivery-rate/queries";
 import type { CalculateGlobalParams } from "../delivery-rate/types";
-import { isAxiosError } from "axios";
 import { keepPreviousData } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -79,8 +79,6 @@ export const PickUpPointDeliveryOrderForm = withForm({
         placeholderData: keepPreviousData,
       },
     });
-
-    console.log({ isError, error });
 
     const handleCalculation = async () => {
       const pointFrom = Number.parseInt(form.state.values.sender.pointFrom, 10);
@@ -132,30 +130,32 @@ export const PickUpPointDeliveryOrderForm = withForm({
 
     const isMobile = useMediaQuery(`(max-width: ${smBreakpoint})`);
 
-    // if (isError) {
-    //   if (isAxiosError(error)) {
-    //     if (error.response) {
-    //       const status = error.response.status;
-    //       const errors = error.response?.data.message[0] as unknown as Record<
-    //         string,
-    //         string
-    //       >;
-    //
-    //       if (status === 400) {
-    //         // TODO: consider showing it like below or above the form, cause they might not see it
-    //         form.setErrorMap({
-    //           onChange: {
-    //             fields: {
-    //               "sender.pointFrom": errors["pointFrom"],
-    //               "recipient.pointTo": errors["pointTo"],
-    //               "recipient.deliveryCompany": errors["deliveryCompany"],
-    //             },
-    //           },
-    //         });
-    //       }
-    //     }
-    //   }
-    // }
+    useEffect(() => {
+      if (isError) {
+        if (isAxiosError(error)) {
+          if (error.response) {
+            const status = error.response.status;
+            const errors = error.response?.data.message[0] as unknown as Record<
+              string,
+              string
+            >;
+
+            if (status === 400) {
+              // TODO: consider showing it like below or above the form, cause they might not see it
+              form.setErrorMap({
+                onChange: {
+                  fields: {
+                    "sender.pointFrom": errors["pointFrom"],
+                    "recipient.pointTo": errors["pointTo"],
+                    "recipient.deliveryCompany": errors["deliveryCompany"],
+                  },
+                },
+              });
+            }
+          }
+        }
+      }
+    }, [isError, error]);
 
     return (
       <div className="mx-auto w-full max-w-2xl">

@@ -76,7 +76,7 @@ export default defineConfig({
           "number-input": ["react-number-format"],
           "phone-input": ["react-phone-number-input"],
 
-          misc: ["react-device-detect", "immer", "@tanem/react-nprogress"],
+          misc: ["react-device-detect", "immer", "@tanem/react-nprogress", "sonner"],
 
           // Network and API
           network: ["axios"],
