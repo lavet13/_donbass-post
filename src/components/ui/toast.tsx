@@ -1,11 +1,12 @@
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { Button, Text } from "@radix-ui/themes";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { toast as sonnerToast } from "sonner";
 
 export type ToastProps = {
   id: string | number;
   title: string;
-  description: string;
+  description: ReactNode;
   button: {
     label: string;
     onClick?: () => void;
@@ -29,21 +30,26 @@ export function sonner(toast: Omit<ToastProps, "id">) {
 const Toast: FC<ToastProps> = (props) => {
   const { title, description, button, id } = props;
 
+  const styles = getComputedStyle(document.documentElement);
+  const mdBreakpoint = styles.getPropertyValue("--breakpoint-md");
+
+  const isMobile = useMediaQuery(`(max-width: ${mdBreakpoint})`);
+
   return (
     <div className="flex flex-col rounded-lg bg-background shadow-3 w-full md:w-[364px] items-center p-4">
       <div className="flex w-full items-start">
         <div className="w-full">
-          <Text weight="medium" size="2" as="p" className="text-gray-12">
+          <Text weight="medium" size="2" mb="2" as="p" className="text-gray-12">
             {title}
           </Text>
-          <Text as="p" size="1" className="mt-1 text-gray-11">
-            {description}
-          </Text>
+          {description}
         </div>
       </div>
-      <div className="ml-auto shrink-0">
+      <div className="w-full md:w-auto mt-rx-3 md:mt-rx-2 md:ml-auto shrink-0">
         <Button
-          size="1"
+          className="w-full"
+          color="gray"
+          size={isMobile ? "2" : "1"}
           radius="small"
           variant="surface"
           highContrast

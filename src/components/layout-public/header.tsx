@@ -22,27 +22,6 @@ import { ChevronDown, Menu } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
-// const NavButton: FC<
-//   ComponentProps<typeof Button> & ComponentProps<typeof Link>
-// > = ({ className, to, activeOptions, ...props }) => {
-//   return (
-//     <Button
-//       variant="ghost"
-//       radius="full"
-//       size="2"
-//       className={cn(
-//         "data-[status=active]:bg-accent-9 hover:data-[status=active]:bg-accent-10",
-//         "active:data-[status=active]:filter-(--base-button-solid-active-filter)",
-//         "data-[status=active]:text-accent-contrast data-[status=active]:font-medium",
-//         className,
-//       )}
-//       asChild
-//     >
-//       <Link {...props} to={to} />
-//     </Button>
-//   );
-// };
-
 const ListItem: FC<LinkProps & ComponentProps<"a">> = ({
   className,
   to,
@@ -53,7 +32,7 @@ const ListItem: FC<LinkProps & ComponentProps<"a">> = ({
     <li>
       <NavigationMenuLink asChild>
         <Link className="text-accent-12 hover:bg-accent-3" to={to} {...props}>
-          <Text className="leading-rx-4" as={"p"} size="1">
+          <Text className="leading-rx-4" as={"p"} size="2">
             {children}
           </Text>
         </Link>
@@ -166,7 +145,7 @@ export const Header: FC = () => {
                     </NavigationMenuTrigger>
                     {!!items.length && (
                       <NavigationMenuContent>
-                        <ul className="grid p-4 m-0 gap-x-[10px] list-none w-full sm:min-w-[500px] sm:grid-cols-2">
+                        <ul className="grid p-4 m-0 gap-x-[10px] list-none w-full sm:w-[600px] sm:grid-cols-2">
                           {items.map(({ label, to }) => (
                             <ListItem key={to} to={to}>
                               {label}

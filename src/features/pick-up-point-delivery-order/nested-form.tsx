@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ChevronUp,
   CircleAlertIcon,
+  RussianRuble,
   TriangleAlert,
 } from "lucide-react";
 import {
@@ -141,6 +142,12 @@ export const PickUpPointDeliveryOrderForm = withForm({
               string
             >;
 
+            const russianFieldNames: Record<string, string> = {
+              "pointFrom": "Населенный пункт отправителя должен быть заполнен!",
+              "pointTo": "Населенный пункт получателя должен быть заполнен!",
+              "deliveryCompany": "Транспортная компания должна быть заполнена!",
+            };
+
             if (status === 400) {
               form.setErrorMap({
                 onChange: {
@@ -151,11 +158,22 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   },
                 },
               });
+
+              const messages = [];
+              for (const errorName in errors) {
+                const message = russianFieldNames[errorName];
+                messages.push(`${message}`);
+              }
+
               sonner({
                 title: "Просчёт стоимости",
-                description: "something",
+                description: messages.map((message) => (
+                  <Text as="p" size="1" className="mt-1 text-accent-11">
+                    {message}
+                  </Text>
+                )),
                 button: {
-                  label: "Понятно",
+                  label: "Закрыть",
                 },
               });
             }
@@ -1700,7 +1718,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   {isLoading || isPlaceholderData ? (
                     <>
                       <Spinner />
-                      Просчёт...
+                      Просчитываем...
                     </>
                   ) : (
                     <>Узнать примерную стоимость</>
