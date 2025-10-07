@@ -1,3 +1,6 @@
+import type { inferQueryKeys } from "@lukemorales/query-key-factory";
+import type { trackingRostovKeys } from "./queries";
+
 export type TrackingRostovResult = {
   id: number;
   npTrack: string;
@@ -17,3 +20,5 @@ export type TrackingRostovResult = {
 export type TrackingRostovParams = {
   trackingNumber: string;
 };
+
+export type TrackingRostovKeys = inferQueryKeys<typeof trackingRostovKeys>;
