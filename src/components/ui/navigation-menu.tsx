@@ -21,8 +21,8 @@ const NavigationMenuList: FC<
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
       className={cn(
-        "flex flex-1 justify-center bg-accentA-2 rounded-full list-none p-1 m-0",
-        "[&>li:first-of-type_button]:rounded-s-full [&>li:last-of-type_button]:rounded-e-full",
+        "flex gap-0.5 flex-1 items-center justify-center bg-accentA-2 rounded-xl list-none p-1 py-1.5 m-0",
+        // "[&>li:first-of-type_button]:rounded-s-full [&>li:last-of-type_button]:rounded-e-full",
         className,
       )}
       {...props}
@@ -37,10 +37,10 @@ const NavigationMenuTrigger: FC<
     <NavigationMenuPrimitive.Trigger
       data-slot="navigation-menu-trigger"
       className={cn(
-        "flex flex-1 items-center justify-center gap-[2px]",
-        "py-1.5 px-1.5 whitespace-nowrap overflow-hidden text-ellipsis outline-none select-none",
+        "flex flex-1 items-center justify-center gap-[2px] rounded-xl",
+        "py-2.5 px-2.5 whitespace-nowrap overflow-hidden text-ellipsis outline-none select-none",
         "text-sm text-accent-11 bg-accentA-2 hover:bg-accentA-4 leading-none",
-        "[&[data-state='open']>svg]:-rotate-180 [&_svg]:size-4 [&_svg]:duration-150",
+        "[&[data-state='open']>svg]:scale-110 [&[data-state='open']>svg]:rotate-15 [&_svg]:size-5 [&_svg]:duration-150",
         "[&[data-state='open']]:bg-accentA-5",
         className,
       )}
@@ -56,7 +56,7 @@ const NavigationMenuContent: FC<
     <NavigationMenuPrimitive.Content
       data-slot="navigation-menu-content"
       className={cn(
-        "absolute top-0 left-0 w-full sm:w-auto",
+        "absolute top-0 left-0 w-auto bg-panel-translucent",
         "data-[motion=from-start]:animate-enter-from-left",
         "data-[motion=from-end]:animate-enter-from-right",
         "data-[motion=to-start]:animate-exit-to-left",
@@ -77,8 +77,8 @@ const NavigationMenuViewport: FC<
         data-slot="navigation-menu-viewport"
         className={cn(
           "relative origin-[top_center] mt-0 bg-background rounded-md overflow-hidden",
-          "shadow-3 h-[var(--radix-navigation-menu-viewport-height)] w-full min-w-[var(--radix-navigation-menu-viewport-width)]",
-          "[transition:width,height,250ms_ease]",
+          "shadow-5 h-[var(--radix-navigation-menu-viewport-height)] w-full min-w-[var(--radix-navigation-menu-viewport-width)]",
+          "[transition:width,height,150ms_ease]",
           "data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out",
           className,
         )}

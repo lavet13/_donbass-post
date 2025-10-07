@@ -63,10 +63,10 @@
     }
   }
 
-  --animate-enter-from-left: enterFromLeft 250ms ease;
-  --animate-enter-from-right: enterFromRight 250ms ease;
-  --animate-exit-to-left: exitToLeft 250ms ease;
-  --animate-exit-to-right: exitToRight 250ms ease;
+  --animate-enter-from-left: enterFromLeft 150ms ease;
+  --animate-enter-from-right: enterFromRight 150ms ease;
+  --animate-exit-to-left: exitToLeft 150ms ease;
+  --animate-exit-to-right: exitToRight 150ms ease;
   --animate-scale-in: scaleIn 150ms ease;
   --animate-scale-out: scaleOut 150ms ease;
 

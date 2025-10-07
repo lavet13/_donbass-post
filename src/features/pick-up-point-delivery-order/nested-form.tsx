@@ -152,9 +152,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
               form.setErrorMap({
                 onChange: {
                   fields: {
-                    "sender.pointFrom": errors["pointFrom"],
-                    "recipient.pointTo": errors["pointTo"],
-                    "recipient.deliveryCompany": errors["deliveryCompany"],
+                    "sender.pointFrom": errors["pointFrom"] && russianFieldNames["pointFrom"],
+                    "recipient.pointTo": errors["pointTo"] && russianFieldNames["pointTo"],
+                    "recipient.deliveryCompany": errors["deliveryCompany"] && russianFieldNames["deliveryCompany"],
                   },
                 },
               });
@@ -230,7 +230,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (senderType !== "individual") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-gray-6 bg-grayA-1 rounded-l-xs my-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 rounded-l-xs my-2">
                       <form.AppField
                         name="sender.surnameSender"
                         validators={{
@@ -455,7 +455,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (senderType !== "company") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-gray-6 bg-grayA-1 rounded-l-xs my-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 my-2">
                       <form.AppField
                         name="sender.companySender"
                         validators={{
@@ -639,7 +639,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (recipientType !== "individual") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-gray-6 bg-grayA-1 rounded-l-xs my-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 my-2">
                       <form.AppField
                         name="recipient.surnameRecipient"
                         validators={{
@@ -835,7 +835,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (recipientType !== "company") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 sm:border-l-3 border-gray-6 bg-grayA-1 rounded-l-xs my-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 my-2">
                       <form.AppField
                         name="recipient.companyRecipient"
                         validators={{
@@ -1039,7 +1039,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       return (
                         <div
                           className={cn(
-                            "sm:pl-2 sm:pt-2 sm:ml-1 sm:border-l-3 border-gray-6 bg-grayA-1 rounded-tl-xs",
+                            "sm:pl-2 sm:pt-2 sm:ml-1 rounded-tl-xs",
 
                             // mobile view
                             "sm:mt-2 [&_button]:first-of-type:rounded-l-sm [&_button]:first-of-type:rounded-tl-none [&_button]:last-of-type:rounded-r-sm [&_button]:last-of-type:rounded-tr-none [&_span]:group-first-of-type:rounded-l-sm [&_span]:group-first-of-type:rounded-tl-none [&_span]:group-last-of-type:rounded-r-sm [&_span]:group-last-of-type:rounded-tr-none [&_button]:last-of-type:mr-0",
@@ -1073,7 +1073,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (customerType !== "individual") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-gray-6 bg-grayA-1 rounded-bl-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 rounded-bl-xs">
                       <form.AppField
                         name="customer.surnameCustomer"
                         validators={{
@@ -1206,7 +1206,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (customerType !== "company") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 sm:border-l-3 border-gray-6 bg-grayA-1 rounded-bl-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 rounded-bl-xs">
                       <form.AppField
                         name="customer.companyCustomer"
                         validators={{

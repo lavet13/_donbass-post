@@ -1,22 +1,17 @@
 import { createFormHook } from "@tanstack/react-form";
 import { fieldContext, formContext } from "@/hooks/form-context";
-import { lazy } from "react";
 
-const TextField = lazy(() => import("@/components/forms/text-field"));
-const PasswordField = lazy(() => import("@/components/forms/password-field"));
-const CheckboxField = lazy(() => import("@/components/forms/checkbox-field"));
-const NumericField = lazy(() => import("@/components/forms/numeric-field"));
-const PhoneField = lazy(() => import("@/components/forms/phone-field"));
-const ComboboxField = lazy(() => import("@/components/forms/combobox-field"));
-const RadioGroupField = lazy(
-  () => import("@/components/forms/radio-group-field"),
-);
-const SegmentedControlField = lazy(
-  () => import("@/components/forms/segmented-control-field"),
-);
-const TextareaField = lazy(() => import("@/components/forms/textarea-field"));
-const SelectField = lazy(() => import("@/components/forms/select-field"));
-const SubmitButton = lazy(() => import("@/components/forms/submit-button"));
+import TextField from "@/components/forms/text-field";
+import PasswordField from "@/components/forms/password-field";
+import CheckboxField from "@/components/forms/checkbox-field";
+import NumericField from "@/components/forms/numeric-field";
+import PhoneField from "@/components/forms/phone-field";
+import ComboboxField from "@/components/forms/combobox-field";
+import RadioGroupField from "@/components/forms/radio-group-field";
+import SegmentedControlField from "@/components/forms/segmented-control-field";
+import TextareaField from "@/components/forms/textarea-field";
+import SelectField from "@/components/forms/select-field";
+import SubmitButton from "@/components/forms/submit-button";
 
 // https://tanstack.com/form/latest/docs/framework/react/guides/form-composition
 export const { useAppForm, withForm } = createFormHook({

@@ -5,7 +5,7 @@ import {
   type LinkProps,
 } from "@tanstack/react-router";
 import { useState, type ComponentProps, type FC } from "react";
-import { IconButton, Text, Tooltip } from "@radix-ui/themes";
+import { Heading, IconButton, Text, Tooltip } from "@radix-ui/themes";
 // import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,7 @@ import {
   NavigationMenuViewport,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
-import { ChevronDown, Menu } from "lucide-react";
+import { ChevronDown, Menu, Package, ShoppingBag } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -84,6 +84,8 @@ export const Header: FC = () => {
   const navItems = [
     {
       label: "Грузы и посылки",
+      triggerStyles: "py-2.5 px-4.5",
+      icon: <Package />,
       items: linkOptions([
         {
           label: "Адресный забор/доставка груза в ЛДНР и Запорожье",
@@ -93,6 +95,8 @@ export const Header: FC = () => {
     },
     {
       label: "Интернет заказы",
+      triggerStyles: "py-2.5 px-4.5",
+      icon: <ShoppingBag />,
       items: linkOptions([
         {
           label: "Оформление заявки на просчет стоимости на выкуп заказов",
@@ -130,28 +134,45 @@ export const Header: FC = () => {
             </Link>
           </div>
           <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 flex-1 shrink-0 flex items-center justify-center">
-            <NavigationMenu delayDuration={0} skipDelayDuration={0} onValueChange={setValue}>
+            <NavigationMenu
+              delayDuration={0}
+              skipDelayDuration={0}
+              onValueChange={setValue}
+            >
               <NavigationMenuList ref={setList}>
-                {navItems.map(({ label, items }) => (
+                {navItems.map(({ label, icon, items, triggerStyles }) => (
                   <NavigationMenuItem key={label} value={label}>
                     <NavigationMenuTrigger
                       className={cn(
                         items.some(({ to }) => pathname.includes(to)) &&
-                          "bg-accentA-3 [box-shadow:inset_0_0_0_1px_var(--accent-a7)]",
+                          "bg-accentA-3 [box-shadow:inset_0_0_0_1px_var(--accent-a7)] [&>svg]:rotate-10",
+                        triggerStyles,
                       )}
                       ref={(node) => onNodeUpdate(node, label)}
                     >
-                      {label} {!!items.length && <ChevronDown />}
+                      {icon}
                     </NavigationMenuTrigger>
                     {!!items.length && (
                       <NavigationMenuContent>
-                        <ul className="grid p-4 m-0 gap-x-[10px] list-none w-full sm:w-[600px] sm:grid-cols-2">
-                          {items.map(({ label, to }) => (
-                            <ListItem key={to} to={to}>
-                              {label}
-                            </ListItem>
-                          ))}
-                        </ul>
+                        <div className="p-4">
+                          <Heading
+                            weight="bold"
+                            className="px-3"
+                            mb="1"
+                            as="h3"
+                            size="2"
+                            wrap="balance"
+                          >
+                            {label}
+                          </Heading>
+                          <ul className="grid m-0 gap-[10px] list-none shrink-0 w-[calc(100svw-4rem)] xs:w-[400px] sm:w-[600px] sm:grid-cols-2">
+                            {items.map(({ label, to }) => (
+                              <ListItem key={to} to={to}>
+                                {label}
+                              </ListItem>
+                            ))}
+                          </ul>
+                        </div>
                       </NavigationMenuContent>
                     )}
                   </NavigationMenuItem>
@@ -160,7 +181,6 @@ export const Header: FC = () => {
 
               <NavigationMenuViewport
                 style={{
-                  display: !offset ? "none" : undefined,
                   translate: `${isMobile ? 0 : offset}px 0`,
                 }}
               />
@@ -168,7 +188,7 @@ export const Header: FC = () => {
           </div>
           <div className="flex-none flex items-center justify-end">
             <Tooltip content={content}>
-              <ModeToggle />
+              <ModeToggle size="3" />
             </Tooltip>
           </div>
         </div>
