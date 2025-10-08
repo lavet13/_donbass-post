@@ -1,17 +1,17 @@
 import { workplacePostApi } from "@/axios";
 import { createQueryKeys } from "@lukemorales/query-key-factory";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import type { IMTrackingResult } from "./types";
+import type { IMTrackingResult, InternetMagazineTrackingKeys } from "./types";
 
-const InternetMagazineTrackingKeys = createQueryKeys("im-tracking", {
-  promo: (promocode: string) => ({
+const internetMagazineTrackingKeys = createQueryKeys("im-tracking", {
+  promo: (promocode?: string) => ({
     queryKey: [promocode],
     queryFn: () => fetchInternetMagazinePromo(promocode),
   }),
 });
 
-const fetchInternetMagazinePromo = async (promo: string) => {
+const fetchInternetMagazinePromo = async (promo?: string) => {
   try {
     const response = await workplacePostApi.get<IMTrackingResult>(
       "/im-tracking",
@@ -48,12 +48,33 @@ const fetchInternetMagazinePromo = async (promo: string) => {
   }
 };
 
-const useInternetMagazinePromo = (promocode: string) => {
-  return useQuery(InternetMagazineTrackingKeys.promo(promocode));
+type UseInternetMagazinePromoProps = {
+  promocode?: string;
+  options?: Omit<
+    UseQueryOptions<
+      IMTrackingResult,
+      AxiosError<{ message: string }>,
+      IMTrackingResult,
+      InternetMagazineTrackingKeys["promo"]["queryKey"]
+    >,
+    "queryKey"
+  >;
+};
+
+const useInternetMagazinePromo = (
+  props: UseInternetMagazinePromoProps = {},
+) => {
+  const { options = {}, promocode } = props;
+
+  return useQuery({
+    ...internetMagazineTrackingKeys.promo(promocode),
+    retry: 0,
+    ...options,
+  });
 };
 
 export {
-  InternetMagazineTrackingKeys,
+  internetMagazineTrackingKeys,
   fetchInternetMagazinePromo,
   useInternetMagazinePromo,
 };

@@ -15,6 +15,7 @@ const SubmitButton: FC<
   icon,
   variant = "solid",
   loadingMessage = "Подтверждается",
+  loading,
   ...props
 }) => {
   const form = useFormContext();
@@ -33,13 +34,13 @@ const SubmitButton: FC<
         return (
           <Button
             type="submit"
-            disabled={!canSubmit || isDefaultValue || !isAccepted}
+            disabled={!canSubmit || isDefaultValue || !isAccepted || loading}
             className={cn("", className)}
             variant={variant}
             {...props}
           >
-            <Spinner loading={isSubmitting}>{icon}</Spinner>
-            {isSubmitting ? loadingMessage : label}
+            <Spinner loading={isSubmitting || loading}>{icon}</Spinner>
+            {isSubmitting || loading ? loadingMessage : label}
           </Button>
         );
       }}

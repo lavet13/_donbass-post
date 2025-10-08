@@ -18,7 +18,7 @@ import {
   NavigationMenuViewport,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
-import { ChevronDown, Menu, Package, ShoppingBag } from "lucide-react";
+import { Menu, Package, ShoppingBag } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -160,7 +160,7 @@ export const Header: FC = () => {
                             className="px-3"
                             mb="1"
                             as="h3"
-                            size="2"
+                            size="3"
                             wrap="balance"
                           >
                             {label}

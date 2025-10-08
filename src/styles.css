@@ -19,7 +19,12 @@
 
 /* Include just the colors you use */
 @import "@radix-ui/themes/tokens/colors/red.css" layer(radix-themes);
+@import "@radix-ui/themes/tokens/colors/tomato.css" layer(radix-themes); /* error */
 @import "@radix-ui/themes/tokens/colors/gray.css" layer(radix-themes);
+@import "@radix-ui/themes/tokens/colors/indigo.css" layer(radix-themes); /* info */
+@import "@radix-ui/themes/tokens/colors/iris.css" layer(radix-themes); /* info */
+@import "@radix-ui/themes/tokens/colors/orange.css" layer(radix-themes); /* warning */
+@import "@radix-ui/themes/tokens/colors/grass.css" layer(radix-themes); /* success */
 
 /* Rest of the CSS */
 @import "@radix-ui/themes/components.css" layer(radix-themes);

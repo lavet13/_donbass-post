@@ -13,7 +13,6 @@ import {
   ChevronDown,
   ChevronUp,
   CircleAlertIcon,
-  RussianRuble,
   TriangleAlert,
 } from "lucide-react";
 import {

@@ -1,43 +1,372 @@
 import { useAppForm } from "@/hooks/form";
-import type { FC } from "react";
+import { Fragment, type FC } from "react";
 import { defaultCargoTrackingOpts } from "@/features/cargo-tracking/shared-form";
 import { CargoTrackingForm } from "@/features/cargo-tracking/nested-form";
-import { useCargoTrackingMutation } from "@/features/cargo-tracking/mutations";
+import { useCargoTrackingQuery } from "./queries";
+import { keepPreviousData } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
+import {
+  Callout,
+  Code,
+  Flex,
+  Separator,
+  Skeleton,
+  Text,
+} from "@radix-ui/themes";
+import {
+  Calendar,
+  TruckIcon,
+  type LucideProps,
+  CheckCircle2,
+  Package,
+  SearchX,
+  ArrowRightIcon,
+  RouteIcon,
+  FileTextIcon,
+  Building2,
+  PackageCheckIcon,
+  UserCheck,
+  InfoIcon,
+  Barcode,
+} from "lucide-react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Route } from "@/routes/_public/tracking";
+import type { AccentColors } from "@/types";
 
 const CargoTrackingPage: FC = () => {
-  const { mutateAsync: getCargoTrackingData, data } =
-    useCargoTrackingMutation();
+  const query = useSearch({ from: Route.id, select: (search) => search.q }) ?? "";
+  const navigate = useNavigate();
 
   const form = useAppForm({
     ...defaultCargoTrackingOpts,
-    onSubmit: async ({ formApi, value }) => {
-      try {
-        await getCargoTrackingData({
-          trackingNumber: value.trackingNumber,
-        });
-
-        formApi.reset();
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Произошла ошибка";
-
-        formApi.setErrorMap({
-          onChange: {
-            fields: {
-              trackingNumber: errorMessage,
-            },
-          },
-        });
-      }
+    onSubmit: async ({ value }) => {
+      navigate({
+        resetScroll: false,
+        from: Route.fullPath,
+        search: {
+          q: value.trackingNumber,
+        },
+      });
+      // } catch (error) {
+      //   const errorMessage =
+      //     error instanceof Error ? error.message : "Произошла ошибка";
+      //
+      //   formApi.setErrorMap({
+      //     onChange: {
+      //       fields: {
+      //         trackingNumber: errorMessage,
+      //       },
+      //     },
+      //   });
+      // }
     },
   });
 
-  console.log({ data });
+  const { data, isLoading, isPlaceholderData } = useCargoTrackingQuery({
+    trackingNumber: query,
+    options: {
+      enabled: !!query,
+      placeholderData: keepPreviousData,
+    },
+  });
+
+  const statusConfig: Record<
+    string,
+    {
+      icon: React.ForwardRefExoticComponent<
+        Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
+      >;
+      color?: AccentColors;
+    }
+  > = {
+    "Нет данных о грузе": { icon: SearchX, color: "tomato" },
+    "Груз еще в пути, следует с транзитного пункта в конечный пункт получения":
+      { icon: TruckIcon, color: "iris" },
+    "Груз ожидает вручения в городе получения": {
+      icon: InfoIcon,
+      color: "indigo",
+    },
+    "Груз выдан получателю": { icon: CheckCircle2, color: "grass" },
+    "Груз еще в пути и не достиг конечного пункта назначения": {
+      icon: Package,
+      color: "orange",
+    },
+  };
+
+  const statusData = data?.data.message
+    ? statusConfig[data.data.message]
+    : null;
+
+  const StatusIcon = statusData?.icon;
+  const statusColor = statusData?.color;
 
   return (
-    <div className="flex-1 min-w-0 flex flex-col gap-3">
+    <div className="flex-1 min-w-0 flex flex-col gap-1">
       <CargoTrackingForm form={form} />
-      {data ? <div className="flex-1 min-w-0 flex flex-col"></div> : null}
+      {!data && isLoading && (
+        <Flex direction="column" gap="1">
+          <Skeleton
+            className="rounded-xl xs:w-auto w-full xs:max-w-[300px]"
+            height="40px"
+          />
+          <Skeleton maxWidth="180px" maxHeight="40px" />
+          <Skeleton maxWidth="80px" maxHeight="40px" />
+          <Skeleton maxWidth="180px" maxHeight="40px" />
+          <Skeleton maxWidth="80px" maxHeight="40px" />
+          <Skeleton maxWidth="180px" maxHeight="40px" />
+          <Skeleton maxWidth="80px" maxHeight="40px" />
+          <Skeleton maxWidth="180px" maxHeight="40px" />
+          <Skeleton maxWidth="80px" maxHeight="40px" />
+          <Skeleton maxWidth="180px" maxHeight="40px" />
+          <Skeleton maxWidth="80px" maxHeight="40px" />
+        </Flex>
+      )}
+      {data?.data && query ? (
+        <div
+          className={cn(
+            "flex-1 min-w-0 flex flex-col gap-y-2 [&_svg]:shrink-0",
+            isPlaceholderData && "opacity-95 animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite]",
+          )}
+        >
+          {data.data.message && (
+            <Callout.Root
+              className="self-start items-center rounded-xl w-full xs:w-auto"
+              size="1"
+              color={statusColor}
+            >
+              <Callout.Icon className="self-start">
+                {StatusIcon && <StatusIcon size={16} />}
+              </Callout.Icon>
+              <Callout.Text className="leading-rx-4" size="2" wrap="balance">
+                {data.data.message}
+              </Callout.Text>
+            </Callout.Root>
+          )}
+          {data.data.message !== "Нет данных о грузе" && (
+            <div className={cn("pl-2.5 flex-1 min-w-0 flex flex-col gap-y-2")}>
+              {data.data.trackNumber && (
+                <Flex gap="1" align="center">
+                  <Barcode className="self-start" size={14} />
+                  <Flex direction="column">
+                    <Text
+                      className="mt-px"
+                      trim="start"
+                      size="2"
+                      wrap="balance"
+                    >
+                      Трек номер вашего груза
+                    </Text>
+                    <Code
+                      className="self-start"
+                      color="indigo"
+                      size="2"
+                      wrap="balance"
+                    >
+                      {data.data.trackNumber}
+                    </Code>
+                  </Flex>
+                </Flex>
+              )}
+              {data.data.departureCity && data.data.receptionDate && (
+                <Flex gap="1" align="center">
+                  <Calendar className="self-start" size={14} />
+                  <Flex direction="column">
+                    <Text
+                      className="mt-px"
+                      trim="start"
+                      size="2"
+                      wrap="balance"
+                    >
+                      Груз принят в ПВЗ{" "}
+                      <Text color="indigo" wrap="balance">
+                        {data.data.departureCity}
+                      </Text>
+                    </Text>
+                    <Text color="indigo" size="2" wrap="balance">
+                      {data.data.receptionDate}
+                    </Text>
+                  </Flex>
+                </Flex>
+              )}
+              {data.data.departureCity && data.data.destinationCity && (
+                <Flex gap="1" align="center">
+                  <RouteIcon className="self-start" size={14} />
+                  <Flex direction="column">
+                    <Text
+                      className="mt-px"
+                      trim="start"
+                      size="2"
+                      wrap="balance"
+                    >
+                      Груз отправляется из ПВЗ{" "}
+                      <Text color="indigo" wrap="balance">
+                        {data.data.departureCity}
+                      </Text>
+                      <ArrowRightIcon className="inline-block mx-1" size="12" />
+                      следует в ПВЗ{" "}
+                      <Text color="indigo" wrap="balance">
+                        {data.data.destinationCity}
+                      </Text>
+                    </Text>
+                  </Flex>
+                </Flex>
+              )}
+              {data.data.waybillNumber &&
+                data.data.message !== "Нет данных о грузе" && (
+                  <Flex gap="1" align="center">
+                    <FileTextIcon className="self-start" size={14} />
+                    <Flex direction="column">
+                      <Text
+                        className="mt-px"
+                        trim="start"
+                        size="2"
+                        wrap="balance"
+                      >
+                        Грузу присвоен ТТН №{" "}
+                        <Code color="indigo" size="2" wrap="balance">
+                          {data.data.waybillNumber}
+                        </Code>
+                      </Text>
+                    </Flex>
+                  </Flex>
+                )}
+              {data.data.departureDate && data.data.departureCity && (
+                <Flex gap="1" align="center">
+                  <TruckIcon className="self-start" size={14} />
+                  <Flex direction="column">
+                    <Text
+                      className="mt-px"
+                      trim="start"
+                      size="2"
+                      wrap="balance"
+                    >
+                      Груз отправлен из ПВЗ{" "}
+                      <Text color="indigo" wrap="balance">
+                        {data.data.departureCity}
+                      </Text>
+                    </Text>
+                    <Text color="indigo" size="2" wrap="balance">
+                      {data.data.departureDate}
+                    </Text>
+                  </Flex>
+                </Flex>
+              )}
+              {data.data.warehouseMovements?.length &&
+                data.data.warehouseMovements.map(
+                  ({ arrivalDate, departureDate, warehousePoint }, idx) => (
+                    <Fragment key={idx}>
+                      <Flex gap="1" align="center">
+                        <Building2 className="self-start" size={14} />
+                        <Flex direction="column">
+                          <Text
+                            className="mt-px"
+                            trim="start"
+                            size="2"
+                            wrap="balance"
+                          >
+                            Груз прибыл на сортировочный пункт{" "}
+                            <Text color="indigo" wrap="balance">
+                              {warehousePoint}
+                            </Text>
+                          </Text>
+                          <Text color="indigo" size="2" wrap="balance">
+                            {arrivalDate}
+                          </Text>
+                        </Flex>
+                      </Flex>
+                      <Flex gap="1" align="center">
+                        <TruckIcon className="self-start" size={14} />
+                        <Flex direction="column">
+                          <Text
+                            className="mt-px"
+                            trim="start"
+                            size="2"
+                            wrap="balance"
+                          >
+                            Груз покинул на сортировочный пункт{" "}
+                            <Text color="indigo" wrap="balance">
+                              {warehousePoint}
+                            </Text>
+                          </Text>
+                          <Text color="indigo" size="2" wrap="balance">
+                            {departureDate}
+                          </Text>
+                        </Flex>
+                      </Flex>
+                    </Fragment>
+                  ),
+                )}
+
+              {data.data.deliveryRecord && (
+                <>
+                  {/* Дата прибытия */}
+                  {data.data.deliveryRecord.arrivalDate && (
+                    <Flex gap="1" align="center">
+                      <PackageCheckIcon className="self-start" size={14} />
+                      <Flex direction="column">
+                        <Text
+                          className="mt-px"
+                          trim="start"
+                          size="2"
+                          wrap="balance"
+                        >
+                          Груз прибыл на выдачу в ПВЗ{" "}
+                          <Text color="indigo" wrap="balance">
+                            {data.data.destinationCity}
+                          </Text>
+                        </Text>
+                        <Text color="indigo" size="2" wrap="balance">
+                          {data.data.deliveryRecord.arrivalDate}
+                        </Text>
+                      </Flex>
+                    </Flex>
+                  )}
+
+                  {/* Дата выдачи */}
+                  {data.data.deliveryRecord.deliveryDate && (
+                    <Flex gap="1" align="center">
+                      <UserCheck className="self-start" size={14} />
+                      <Flex direction="column">
+                        <Text
+                          className="mt-px"
+                          trim="start"
+                          size="2"
+                          wrap="balance"
+                        >
+                          Груз выдан получателю
+                        </Text>
+                        <Text
+                          color="indigo"
+                          className="self-start"
+                          size="2"
+                          wrap="balance"
+                        >
+                          {data.data.deliveryRecord.deliveryDate}
+                        </Text>
+                      </Flex>
+                    </Flex>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      ) : (
+        <Text
+          className="inline-flex flex-wrap items-center gap-1"
+          color="gray"
+          size="2"
+        >
+          Для отслеживание необходимо ввести{" "}
+          <Flex align="center">
+            <Code>ТТН №</Code>
+            <Separator mx="1" orientation="vertical" />
+            <Code>Трек №</Code>
+            <Separator mx="1" orientation="vertical" />
+            <Code>Промокод</Code>
+          </Flex>
+        </Text>
+      )}
     </div>
   );
 };

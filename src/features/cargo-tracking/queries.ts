@@ -3,12 +3,12 @@ import {
   createQueryKeys,
   type inferQueryKeys,
 } from "@lukemorales/query-key-factory";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type { CargoTrackingResult } from "./types";
 
 const cargoTrackingKeys = createQueryKeys("cargo-tracking", {
-  tracking: (trackingNumber: string) => ({
+  tracking: (trackingNumber?: string) => ({
     queryKey: [trackingNumber],
     queryFn: () => fetchCargoTracking(trackingNumber),
   }),
@@ -16,10 +16,10 @@ const cargoTrackingKeys = createQueryKeys("cargo-tracking", {
 
 export type CargoTrackingKeys = inferQueryKeys<typeof cargoTrackingKeys>;
 
-const fetchCargoTracking = async (trackingNumber: string) => {
+const fetchCargoTracking = async (trackingNumber?: string) => {
   try {
     const response = await workplacePostApi.get<CargoTrackingResult>(
-      `cargo-tracking/search/${encodeURIComponent(trackingNumber)}`,
+      `cargo-tracking/search/${encodeURIComponent(trackingNumber ?? "")}`,
     );
 
     return response.data;
@@ -48,8 +48,27 @@ const fetchCargoTracking = async (trackingNumber: string) => {
   }
 };
 
-const useCargoTrackingQuery = (trackingNumber: string) => {
-  return useQuery(cargoTrackingKeys.tracking(trackingNumber));
+type UseCargoTrackingQueryProps = {
+  trackingNumber?: string;
+  options?: Omit<
+    UseQueryOptions<
+      CargoTrackingResult,
+      AxiosError<{ message: string }>,
+      CargoTrackingResult,
+      CargoTrackingKeys["tracking"]["queryKey"]
+    >,
+    "queryKey"
+  >;
+};
+
+const useCargoTrackingQuery = (props: UseCargoTrackingQueryProps = {}) => {
+  const { options = {}, trackingNumber } = props;
+
+  return useQuery({
+    ...cargoTrackingKeys.tracking(trackingNumber),
+    retry: 0,
+    ...options,
+  });
 };
 
 export { useCargoTrackingQuery, cargoTrackingKeys, fetchCargoTracking };

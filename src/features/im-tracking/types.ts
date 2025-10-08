@@ -1,5 +1,5 @@
 import type { inferQueryKeys } from "@lukemorales/query-key-factory";
-import type { InternetMagazineTrackingKeys } from "./queries";
+import type { internetMagazineTrackingKeys } from "./queries";
 
 export type IMTrackingResult = {
   id: number;
@@ -13,5 +13,5 @@ export type IMTrackingResult = {
   updatedAt: string;
 };
 export type InternetMagazineTrackingKeys = inferQueryKeys<
-  typeof InternetMagazineTrackingKeys
+  typeof internetMagazineTrackingKeys
 >;

@@ -22,8 +22,8 @@ import {
   ImageOff,
   ImageUpscale,
   Info,
-  Map,
   MapPin,
+  MapPinned,
   Search,
   Truck,
   XIcon,
@@ -524,7 +524,7 @@ const SearchPage: FC = () => {
 
                         {/* Message if exists */}
                         {selectedDepartment.message && (
-                          <Callout.Root size="1" className="mt-4">
+                          <Callout.Root color="indigo" size="1" className="mt-4">
                             <Callout.Icon>
                               <Info size={16} />
                             </Callout.Icon>
@@ -623,7 +623,7 @@ const SearchPage: FC = () => {
                   {selectedDepartment.map && (
                     <Card size="3">
                       <Flex align="center" gap="2" className="mb-4">
-                        <Map size={22} />
+                        <MapPinned size={22} />
                         <Heading as="h2" weight="bold" size="6">
                           Расположение на карте
                         </Heading>
