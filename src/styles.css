@@ -24,7 +24,7 @@
 @import "@radix-ui/themes/tokens/colors/indigo.css" layer(radix-themes); /* info */
 @import "@radix-ui/themes/tokens/colors/iris.css" layer(radix-themes); /* info */
 @import "@radix-ui/themes/tokens/colors/orange.css" layer(radix-themes); /* warning */
-@import "@radix-ui/themes/tokens/colors/grass.css" layer(radix-themes); /* success */
+@import "@radix-ui/themes/tokens/colors/green.css" layer(radix-themes); /* success */
 
 /* Rest of the CSS */
 @import "@radix-ui/themes/components.css" layer(radix-themes);

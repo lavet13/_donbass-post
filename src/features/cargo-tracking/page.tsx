@@ -35,11 +35,16 @@ import {
   Bus,
   SendIcon,
   FileText,
+  Ticket,
+  HandCoins,
+  CircleDot,
+  Activity,
 } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Route } from "@/routes/_public/tracking";
 import type { AccentColors } from "@/types";
 import { useTrackingRostovQuery } from "../tracking/queries";
+import { useInternetMagazinePromo } from "../im-tracking/queries";
 
 const CargoTrackingPage: FC = () => {
   const query =
@@ -91,6 +96,18 @@ const CargoTrackingPage: FC = () => {
     },
   });
 
+  const {
+    data: promoData,
+    isLoading: promoLoading,
+    isPlaceholderData: promoPlaceholderData,
+  } = useInternetMagazinePromo({
+    promocode: query,
+    options: {
+      enabled: !!query,
+      placeholderData: keepPreviousData,
+    },
+  });
+
   const [isLNR, setIsLNR] = useState(false);
   const [isRostov, setIsRostov] = useState(false);
 
@@ -110,12 +127,12 @@ const CargoTrackingPage: FC = () => {
   > = {
     "Нет данных о грузе": { icon: SearchX, color: "tomato" },
     "Груз еще в пути, следует с транзитного пункта в конечный пункт получения":
-      { icon: TruckIcon, color: "iris" },
+      { icon: TruckIcon, color: "indigo" },
     "Груз ожидает вручения в городе получения": {
-      icon: InfoIcon,
-      color: "indigo",
+      icon: PackageCheckIcon,
+      color: "iris",
     },
-    "Груз выдан получателю": { icon: CheckCircle2, color: "grass" },
+    "Груз выдан получателю": { icon: CheckCircle2, color: "green" },
     "Груз еще в пути и не достиг конечного пункта назначения": {
       icon: Package,
       color: "orange",
@@ -132,8 +149,10 @@ const CargoTrackingPage: FC = () => {
   const hasData =
     isLoading ||
     rostovLoading ||
-    (data?.data && query) ||
-    (rostovData && query);
+    promoLoading ||
+    (data?.data && data.data.message !== "Нет данных о грузе" && query) ||
+    (rostovData && query) ||
+    (promoData && query);
 
   return (
     <div className="flex-1 min-w-0 flex flex-col gap-1">
@@ -156,6 +175,107 @@ const CargoTrackingPage: FC = () => {
           <Skeleton maxWidth="80px" maxHeight="40px" />
         </Flex>
       )}
+      {promoData && query && (
+        <div
+          className={cn(
+            "flex-1 min-w-0 flex flex-col gap-y-2 [&_svg]:shrink-0",
+            promoPlaceholderData &&
+              "opacity-70 animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite]",
+          )}
+        >
+          <Callout.Root
+            className="self-start items-center rounded-xl w-full xs:w-auto"
+            size="1"
+            color={"iris"}
+          >
+            <Callout.Icon className="self-start">
+              <InfoIcon size={16} />
+            </Callout.Icon>
+            <Callout.Text className="leading-rx-4" size="2" wrap="balance">
+              Результат отслеживания по промокоду
+            </Callout.Text>
+          </Callout.Root>
+          <div className={cn("pl-2.5 flex-1 min-w-0 flex flex-col gap-y-2")}>
+            {promoData.promo && (
+              <Flex gap="1" align="center">
+                <Ticket className="self-start" size={14} />
+                <Flex direction="column">
+                  <Text className="mt-px" trim="start" size="2" wrap="balance">
+                    Промокод
+                  </Text>
+                  <Code
+                    className="self-start"
+                    color="indigo"
+                    size="2"
+                    wrap="balance"
+                  >
+                    {promoData.promo}
+                  </Code>
+                </Flex>
+              </Flex>
+            )}
+            {promoData.price && (
+              <Flex gap="1" align="center">
+                <HandCoins className="self-start" size={14} />
+                <Flex direction="column">
+                  <Text className="mt-px" trim="start" size="2" wrap="balance">
+                    Оплата получена
+                  </Text>
+                  <Code
+                    className="self-start"
+                    color="indigo"
+                    size="2"
+                    wrap="balance"
+                  >
+                    {promoData.price}
+                    {" ₽"}
+                  </Code>
+                </Flex>
+              </Flex>
+            )}
+            {promoData.date && (
+              <Flex gap="1" align="center">
+                <Calendar className="self-start" size={14} />
+                <Flex direction="column">
+                  <Text className="mt-px" trim="start" size="2" wrap="balance">
+                    Дата оплаты заказа
+                  </Text>
+                  <Code
+                    className="self-start"
+                    color="indigo"
+                    size="2"
+                    wrap="balance"
+                  >
+                    {format(
+                      new TZDate(promoData.date, "Europe/Moscow"),
+                      "EEEE, d MMMM yyyy",
+                      { locale: ru },
+                    )}
+                  </Code>
+                </Flex>
+              </Flex>
+            )}
+            {promoData.calculatedStatus && (
+              <Flex gap="1" align="center">
+                <Activity className="self-start" size={14} />
+                <Flex direction="column">
+                  <Text className="mt-px" trim="start" size="2" wrap="balance">
+                    Статус
+                  </Text>
+                  <Code
+                    className="self-start"
+                    color="indigo"
+                    size="2"
+                    wrap="balance"
+                  >
+                    {promoData.calculatedStatus}
+                  </Code>
+                </Flex>
+              </Flex>
+            )}
+          </div>
+        </div>
+      )}
       {data?.data && query && (
         <div
           className={cn(
@@ -164,7 +284,21 @@ const CargoTrackingPage: FC = () => {
               "opacity-70 animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite]",
           )}
         >
-          {data.data.message && hasData && (
+          {data.data.message && hasData && data.data.message !== "Нет данных о грузе" && (
+            <Callout.Root
+              className="self-start items-center rounded-xl w-full xs:w-auto"
+              size="1"
+              color={statusColor}
+            >
+              <Callout.Icon className="self-start">
+                {StatusIcon && <StatusIcon size={16} />}
+              </Callout.Icon>
+              <Callout.Text className="leading-rx-4" size="2" wrap="balance">
+                {data.data.message}
+              </Callout.Text>
+            </Callout.Root>
+          )}
+          {data.data.message && !hasData && data.data.message === "Нет данных о грузе" && (
             <Callout.Root
               className="self-start items-center rounded-xl w-full xs:w-auto"
               size="1"
@@ -657,11 +791,11 @@ const CargoTrackingPage: FC = () => {
         >
           Для отслеживание необходимо ввести{" "}
           <Flex align="center">
-            <Code>ТТН №</Code>
+            <Code color="tomato">ТТН №</Code>
             <Separator mx="1" orientation="vertical" />
-            <Code>Трек №</Code>
+            <Code color="tomato">Трек №</Code>
             <Separator mx="1" orientation="vertical" />
-            <Code>Промокод</Code>
+            <Code color="tomato">Промокод</Code>
           </Flex>
         </Text>
       )}

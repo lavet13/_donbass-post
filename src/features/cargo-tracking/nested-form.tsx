@@ -1,13 +1,15 @@
 import { withForm } from "@/hooks/form";
 import { defaultCargoTrackingOpts } from "@/features/cargo-tracking/shared-form";
 import { Search, X } from "lucide-react";
-import { IconButton, TextField } from "@radix-ui/themes";
+import { IconButton, TextField, Tooltip } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
 import { useSearch } from "@tanstack/react-router";
 import { Route } from "@/routes/_public/tracking";
 import { useEffect } from "react";
 import { useCargoTrackingQuery } from "./queries";
 import { keepPreviousData } from "@tanstack/react-query";
+import { useTrackingRostovQuery } from "../tracking/queries";
+import { useInternetMagazinePromo } from "../im-tracking/queries";
 
 export const CargoTrackingForm = withForm({
   ...defaultCargoTrackingOpts,
@@ -17,6 +19,22 @@ export const CargoTrackingForm = withForm({
 
     const { isFetching } = useCargoTrackingQuery({
       trackingNumber: query,
+      options: {
+        enabled: !!query,
+        placeholderData: keepPreviousData,
+      },
+    });
+
+    const { isLoading: rostovLoading } = useTrackingRostovQuery({
+      trackingNumber: query,
+      options: {
+        enabled: !!query,
+        placeholderData: keepPreviousData,
+      },
+    });
+
+    const { isLoading: promoLoading } = useInternetMagazinePromo({
+      promocode: query,
       options: {
         enabled: !!query,
         placeholderData: keepPreviousData,
@@ -60,14 +78,16 @@ export const CargoTrackingForm = withForm({
                 rightElement={
                   field.state.value.length ? (
                     <TextField.Slot side="right">
-                      <IconButton
-                        onClick={() => field.handleChange("")}
-                        type="button"
-                        variant="ghost"
-                        radius="full"
-                      >
-                        <X size={20} />
-                      </IconButton>
+                      <Tooltip content="Очистить поиск">
+                        <IconButton
+                          onClick={() => field.handleChange("")}
+                          type="button"
+                          variant="ghost"
+                          radius="full"
+                        >
+                          <X size={20} />
+                        </IconButton>
+                      </Tooltip>
                     </TextField.Slot>
                   ) : null
                 }
@@ -78,7 +98,7 @@ export const CargoTrackingForm = withForm({
 
           <form.AppForm>
             <form.SubmitButton
-              loading={isFetching}
+              loading={isFetching || rostovLoading || promoLoading}
               loadingMessage="Проверяем..."
               label="Искать"
               icon={<Search size={16} />}
