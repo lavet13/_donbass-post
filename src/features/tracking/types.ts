@@ -7,7 +7,7 @@ export type TrackingRostovResult = {
   otherTrack: string;
   status: string;
   date: string;
-  dataTransfer: string;
+  dateTransfer: string;
   transferCompany: string;
   ttn: string;
   datePL: string;

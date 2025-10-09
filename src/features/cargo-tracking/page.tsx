@@ -1,10 +1,13 @@
 import { useAppForm } from "@/hooks/form";
-import { Fragment, type FC } from "react";
+import { Fragment, useEffect, useState, type FC } from "react";
 import { defaultCargoTrackingOpts } from "@/features/cargo-tracking/shared-form";
 import { CargoTrackingForm } from "@/features/cargo-tracking/nested-form";
 import { useCargoTrackingQuery } from "./queries";
 import { keepPreviousData } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { TZDate } from "@date-fns/tz";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 import {
   Callout,
   Code,
@@ -28,13 +31,19 @@ import {
   UserCheck,
   InfoIcon,
   Barcode,
+  Clock9Icon,
+  Bus,
+  SendIcon,
+  FileText,
 } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Route } from "@/routes/_public/tracking";
 import type { AccentColors } from "@/types";
+import { useTrackingRostovQuery } from "../tracking/queries";
 
 const CargoTrackingPage: FC = () => {
-  const query = useSearch({ from: Route.id, select: (search) => search.q }) ?? "";
+  const query =
+    useSearch({ from: Route.id, select: (search) => search.q }) ?? "";
   const navigate = useNavigate();
 
   const form = useAppForm({
@@ -44,7 +53,7 @@ const CargoTrackingPage: FC = () => {
         resetScroll: false,
         from: Route.fullPath,
         search: {
-          q: value.trackingNumber,
+          q: value.trackingNumber.trim(),
         },
       });
       // } catch (error) {
@@ -69,6 +78,26 @@ const CargoTrackingPage: FC = () => {
       placeholderData: keepPreviousData,
     },
   });
+
+  const {
+    data: rostovData,
+    isLoading: rostovLoading,
+    isPlaceholderData: rostovPlaceholderData,
+  } = useTrackingRostovQuery({
+    trackingNumber: query,
+    options: {
+      enabled: !!query,
+      placeholderData: keepPreviousData,
+    },
+  });
+
+  const [isLNR, setIsLNR] = useState(false);
+  const [isRostov, setIsRostov] = useState(false);
+
+  useEffect(() => {
+    setIsLNR(rostovData?.ttn === query);
+    setIsRostov(rostovData?.npTrack === query);
+  }, [rostovData]);
 
   const statusConfig: Record<
     string,
@@ -100,6 +129,12 @@ const CargoTrackingPage: FC = () => {
   const StatusIcon = statusData?.icon;
   const statusColor = statusData?.color;
 
+  const hasData =
+    isLoading ||
+    rostovLoading ||
+    (data?.data && query) ||
+    (rostovData && query);
+
   return (
     <div className="flex-1 min-w-0 flex flex-col gap-1">
       <CargoTrackingForm form={form} />
@@ -121,14 +156,15 @@ const CargoTrackingPage: FC = () => {
           <Skeleton maxWidth="80px" maxHeight="40px" />
         </Flex>
       )}
-      {data?.data && query ? (
+      {data?.data && query && (
         <div
           className={cn(
             "flex-1 min-w-0 flex flex-col gap-y-2 [&_svg]:shrink-0",
-            isPlaceholderData && "opacity-95 animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite]",
+            isPlaceholderData &&
+              "opacity-70 animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite]",
           )}
         >
-          {data.data.message && (
+          {data.data.message && hasData && (
             <Callout.Root
               className="self-start items-center rounded-xl w-full xs:w-auto"
               size="1"
@@ -323,7 +359,7 @@ const CargoTrackingPage: FC = () => {
                   )}
 
                   {/* Дата выдачи */}
-                  {data.data.deliveryRecord.deliveryDate && (
+                  {data.data.deliveryRecord.deliveryDate && !isLNR && (
                     <Flex gap="1" align="center">
                       <UserCheck className="self-start" size={14} />
                       <Flex direction="column">
@@ -351,7 +387,269 @@ const CargoTrackingPage: FC = () => {
             </div>
           )}
         </div>
-      ) : (
+      )}
+      {rostovData && query && (
+        <div
+          className={cn(
+            "flex-1 min-w-0 flex flex-col gap-y-2 [&_svg]:shrink-0",
+            rostovPlaceholderData &&
+              "opacity-70 animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite]",
+          )}
+        >
+          {isRostov && (
+            <>
+              <Callout.Root
+                className="self-start items-center rounded-xl w-full xs:w-auto"
+                size="1"
+                color={"iris"}
+              >
+                <Callout.Icon className="self-start">
+                  <InfoIcon size={16} />
+                </Callout.Icon>
+                <Callout.Text className="leading-rx-4" size="2" wrap="balance">
+                  Результат отслеживания по Ростову-на-Дону
+                </Callout.Text>
+              </Callout.Root>
+              <div
+                className={cn("pl-2.5 flex-1 min-w-0 flex flex-col gap-y-2")}
+              >
+                {rostovData.npTrack && (
+                  <Flex gap="1" align="center">
+                    <FileTextIcon className="self-start" size={14} />
+                    <Flex direction="column">
+                      <Text
+                        className="mt-px"
+                        trim="start"
+                        size="2"
+                        wrap="balance"
+                      >
+                        Груз ТТН №
+                      </Text>
+                      <Code
+                        className="self-start"
+                        color="indigo"
+                        size="2"
+                        wrap="balance"
+                      >
+                        {rostovData.npTrack}
+                      </Code>
+                    </Flex>
+                  </Flex>
+                )}
+                {rostovData.date && (
+                  <Flex gap="1" align="center">
+                    <Calendar className="self-start" size={14} />
+                    <Flex direction="column">
+                      <Text
+                        className="mt-px"
+                        trim="start"
+                        size="2"
+                        wrap="balance"
+                      >
+                        Дата прибытия
+                      </Text>
+                      <Code
+                        className="self-start"
+                        color="indigo"
+                        size="2"
+                        wrap="balance"
+                      >
+                        {rostovData.date}
+                      </Code>
+                    </Flex>
+                  </Flex>
+                )}
+                {rostovData.status && (
+                  <Flex gap="1" align="center">
+                    <Clock9Icon className="self-start" size={14} />
+                    <Flex direction="column">
+                      <Text
+                        className="mt-px"
+                        trim="start"
+                        size="2"
+                        wrap="balance"
+                      >
+                        Статус
+                      </Text>
+                      <Code
+                        className="self-start"
+                        color="indigo"
+                        size="2"
+                        wrap="balance"
+                      >
+                        {rostovData.status}
+                      </Code>
+                    </Flex>
+                  </Flex>
+                )}
+                {rostovData.dateTransfer && (
+                  <Flex gap="1" align="center">
+                    <Calendar className="self-start" size={14} />
+                    <Flex direction="column">
+                      <Text
+                        className="mt-px"
+                        trim="start"
+                        size="2"
+                        wrap="balance"
+                      >
+                        Дата пересылки
+                      </Text>
+                      <Code
+                        className="self-start"
+                        color="indigo"
+                        size="2"
+                        wrap="balance"
+                      >
+                        {rostovData.dateTransfer}
+                      </Code>
+                    </Flex>
+                  </Flex>
+                )}
+                {rostovData.transferCompany && (
+                  <Flex gap="1" align="center">
+                    <Bus className="self-start" size={14} />
+                    <Flex direction="column">
+                      <Text
+                        className="mt-px"
+                        trim="start"
+                        size="2"
+                        wrap="balance"
+                      >
+                        Транспортная компания
+                      </Text>
+                      <Code
+                        className="self-start"
+                        color="indigo"
+                        size="2"
+                        wrap="balance"
+                      >
+                        {rostovData.transferCompany}
+                      </Code>
+                    </Flex>
+                  </Flex>
+                )}
+              </div>
+            </>
+          )}
+          {isLNR && (
+            <>
+              <Callout.Root
+                className="self-start items-center rounded-xl w-full xs:w-auto"
+                size="1"
+                color={"iris"}
+              >
+                <Callout.Icon className="self-start">
+                  <InfoIcon size={16} />
+                </Callout.Icon>
+                <Callout.Text className="leading-rx-4" size="2" wrap="balance">
+                  Результат отслеживания по ЛНР
+                </Callout.Text>
+              </Callout.Root>
+              <div
+                className={cn("pl-2.5 flex-1 min-w-0 flex flex-col gap-y-2")}
+              >
+                {rostovData.ttn && (
+                  <Flex gap="1" align="center">
+                    <FileTextIcon className="self-start" size={14} />
+                    <Flex direction="column">
+                      <Text
+                        className="mt-px"
+                        trim="start"
+                        size="2"
+                        wrap="balance"
+                      >
+                        Груз ТТН №
+                      </Text>
+                      <Code
+                        className="self-start"
+                        color="indigo"
+                        size="2"
+                        wrap="balance"
+                      >
+                        {rostovData.ttn}
+                      </Code>
+                    </Flex>
+                  </Flex>
+                )}
+                {rostovData.datePL && (
+                  <Flex gap="1" align="center">
+                    <Calendar className="self-start" size={14} />
+                    <Flex direction="column">
+                      <Text
+                        className="mt-px"
+                        trim="start"
+                        size="2"
+                        wrap="balance"
+                      >
+                        Ваше отправление доставили в Луганск
+                      </Text>
+                      <Code
+                        className="self-start"
+                        color="indigo"
+                        size="2"
+                        wrap="balance"
+                      >
+                        {format(
+                          new TZDate(rostovData.datePL, "Europe/Moscow"),
+                          "EEEE, d MMMM yyyy",
+                          { locale: ru },
+                        )}
+                      </Code>
+                    </Flex>
+                  </Flex>
+                )}
+                {rostovData.ttnPL && (
+                  <Flex gap="1" align="center">
+                    <SendIcon className="self-start" size={14} />
+                    <Flex direction="column">
+                      <Text
+                        className="mt-px"
+                        trim="start"
+                        size="2"
+                        wrap="balance"
+                      >
+                        Ваше отправление доставили в Луганск
+                      </Text>
+                      <Code
+                        className="self-start"
+                        color="indigo"
+                        size="2"
+                        wrap="balance"
+                      >
+                        {rostovData.ttnPL}
+                      </Code>
+                    </Flex>
+                  </Flex>
+                )}
+                {rostovData.point && (
+                  <Flex gap="1" align="center">
+                    <FileText className="self-start" size={14} />
+                    <Flex direction="column">
+                      <Text
+                        className="mt-px"
+                        trim="start"
+                        size="2"
+                        wrap="balance"
+                      >
+                        № декларации "Почта ЛНР"
+                      </Text>
+                      <Code
+                        className="self-start"
+                        color="indigo"
+                        size="2"
+                        wrap="balance"
+                      >
+                        {rostovData.point}
+                      </Code>
+                    </Flex>
+                  </Flex>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+      {!hasData && (
         <Text
           className="inline-flex flex-wrap items-center gap-1"
           color="gray"
