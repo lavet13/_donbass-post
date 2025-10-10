@@ -10,9 +10,9 @@ export default defineConfig([
   globalIgnores([
     "dist",
     "node_modules",
-    "**/__generated__/**",
-    "coverage",
-    ".vite",
+    ".tanstack",
+    ".git",
+    "public",
   ]),
   {
     files: ["**/*.{ts,tsx}"],
