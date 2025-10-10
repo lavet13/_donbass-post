@@ -37,7 +37,6 @@ import {
   FileText,
   Ticket,
   HandCoins,
-  CircleDot,
   Activity,
 } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
