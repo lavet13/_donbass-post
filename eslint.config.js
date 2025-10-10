@@ -1,35 +1,60 @@
 import js from "@eslint/js";
 import globals from "globals";
+import reactPlugin from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
 import tseslint from "typescript-eslint";
+import { defineConfig, globalIgnores } from "eslint/config";
 import pluginQuery from "@tanstack/eslint-plugin-query";
-import { globalIgnores } from "eslint/config";
 
-export default tseslint.config([
-  ...pluginQuery.configs["flat/recommended"],
-  globalIgnores(["dist"]),
-  js.configs.recommended,
+export default defineConfig([
+  // ...pluginQuery.configs["flat/recommended"],
+  globalIgnores([
+    "dist",
+    "node_modules",
+    "**/__generated__/**",
+    "coverage",
+    ".vite",
+  ]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [
-      ...tseslint.configs.recommendedTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs["recommended-latest"],
       reactRefresh.configs.vite,
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
     ],
+    plugins: {
+      react: reactPlugin,
+    },
     languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       globals: globals.browser,
+    },
+    settings: {
+      react: { version: "detect" },
+    },
+    rules: {
+      // TypeScript
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/consistent-type-imports": "warn",
+      "@typescript-eslint/consistent-type-definitions": ["warn", "interface"],
+
+      // React
+      "react/jsx-key": "error",
+      "react/self-closing-comp": "warn",
+      "react/jsx-curly-brace-presence": ["warn", "never"],
+
+      // General
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "prefer-const": "warn",
+      eqeqeq: ["error", "always"],
     },
   },
 ]);

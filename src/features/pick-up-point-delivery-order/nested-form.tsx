@@ -81,7 +81,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
       },
     });
 
-    const handleCalculation = async () => {
+    const handleCalculation = () => {
       const pointFrom = Number.parseInt(form.state.values.sender.pointFrom, 10);
       const pointTo = Number.parseInt(form.state.values.recipient.pointTo, 10);
       const deliveryCompany = Number.parseInt(
@@ -167,7 +167,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               sonner({
                 title: "Просчёт стоимости",
                 description: messages.map((message) => (
-                  <Text as="p" size="1" className="mt-1 text-accent-11">
+                  <Text key={message} as="p" size="1" className="mt-1 text-accent-11">
                     {message}
                   </Text>
                 )),
