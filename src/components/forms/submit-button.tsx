@@ -15,7 +15,7 @@ const SubmitButton: FC<
   icon,
   variant = "solid",
   loadingMessage = "Подтверждается",
-  loading,
+  loading = false,
   ...props
 }) => {
   const form = useFormContext();

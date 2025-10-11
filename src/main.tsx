@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import type { router } from "@/router";
 import "@/styles.css";
+import { router } from "@/router";
 import App from "@/App";
 
 // Register the router instance for type safety

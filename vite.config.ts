@@ -14,11 +14,7 @@ export default defineConfig({
       target: "react",
       autoCodeSplitting: true,
     }),
-    react({
-      babel: {
-        plugins: [["babel-plugin-react-compiler"]],
-      },
-    }),
+    react(),
     topLevelAwait({
       promiseExportName: "__tla",
       promiseImportName: (i) => `__tla_${i}`,

@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Theme } from "@radix-ui/themes";
-import { useTheme } from "./hooks/use-theme";
+import { useTheme } from "@/hooks/use-theme";
 import { RouterProvider } from "@tanstack/react-router";
 import { router } from "@/router";
 
