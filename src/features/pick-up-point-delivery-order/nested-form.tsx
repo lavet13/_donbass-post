@@ -46,7 +46,7 @@ const emailSchema = z.email({ pattern: z.regexes.email });
 
 export const PickUpPointDeliveryOrderForm = withForm({
   ...defaultPickUpPointDeliveryOrderOpts,
-  render({ form }) {
+  render: function Render({ form }) {
     const {
       data: points,
       isLoading: isPointsLoading,

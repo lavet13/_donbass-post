@@ -12,7 +12,7 @@ import { useState } from "react";
 
 export const UserLoginForm = withForm({
   ...defaultUserLoginOpts,
-  render: function ({ form }) {
+  render: function Render({ form }) {
     const [message, setMessage] = useState<AutoDimissMessageProps>({
       isOpen: false,
       variant: "error",
@@ -46,7 +46,7 @@ export const UserLoginForm = withForm({
               <field.PhoneField
                 label="Номер телефона"
                 placeholder="Введите номер телефона"
-                country={"RU"}
+                country="RU"
                 international
                 withCountryCallingCode
                 labels={ru}

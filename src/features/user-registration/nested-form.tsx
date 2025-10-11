@@ -8,7 +8,7 @@ import { AutoDismissMessage, type AutoDimissMessageProps } from "@/components/au
 
 export const UserRegistrationForm = withForm({
   ...defaultUserRegistrationOpts,
-  render: function ({ form }) {
+  render: function Render({ form }) {
     const [message, setMessage] = useState<AutoDimissMessageProps>({
       isOpen: false,
       variant: "error",
@@ -42,7 +42,7 @@ export const UserRegistrationForm = withForm({
               <field.PhoneField
                 label="Номер телефона"
                 placeholder="Введите номер телефона"
-                country={"RU"}
+                country="RU"
                 international
                 withCountryCallingCode
                 labels={ru}

@@ -27,7 +27,7 @@ const linkSchema = z.url();
 
 export const ShopCostCalculationOrderForm = withForm({
   ...defaultShopCostCalculationOrderOpts,
-  render: function ({ form }) {
+  render: function Render({ form }) {
     const {
       data: values,
       isLoading,
@@ -169,7 +169,7 @@ export const ShopCostCalculationOrderForm = withForm({
                 }}
                 children={(phoneField) => (
                   <phoneField.PhoneField
-                    label={"Телефон"}
+                    label="Телефон"
                     placeholder="Заполните номер телефона"
                     // country={"RU"}
                     // international

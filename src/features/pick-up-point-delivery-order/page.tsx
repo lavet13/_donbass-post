@@ -134,7 +134,6 @@ const PickUpPointDeliveryOrderPage: FC = () => {
           deliveryCompany,
           pointTo,
         } = recipientRest;
-        console.log({ deliveryCompany });
 
         companyRecipient = {
           companyRecipient: companyRecipientField,

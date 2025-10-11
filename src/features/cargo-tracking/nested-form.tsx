@@ -13,7 +13,7 @@ import { useInternetMagazinePromo } from "../im-tracking/queries";
 
 export const CargoTrackingForm = withForm({
   ...defaultCargoTrackingOpts,
-  render({ form }) {
+  render: function Render({ form }) {
     const query =
       useSearch({ from: Route.id, select: (search) => search.q }) ?? "";
 
@@ -67,14 +67,12 @@ export const CargoTrackingForm = withForm({
                 if (!value.trim().length) {
                   return "Поле обязательно к заполнению!";
                 }
-                if (true) {
-                }
                 return undefined;
               },
             }}
             children={(field) => (
               <field.TextField
-                className={"w-full"}
+                className="w-full"
                 rightElement={
                   field.state.value.length ? (
                     <TextField.Slot side="right">

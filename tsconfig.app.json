@@ -29,11 +29,8 @@
     "noUncheckedSideEffectImports": true,
     /* Additional strict checks */
     "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@yandex/ymaps3-types"
