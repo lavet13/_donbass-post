@@ -64,7 +64,7 @@ export const getEmailErrorMessage = (email: string) => {
   }
 
   // Все символы локальной части должны быть [A-Za-z0-9_'+\-\.]
-  if (!/^[A-Za-z0-9_'+\-\.]*$/.test(localPart)) {
+  if (!/^[A-Za-z0-9_'+\-.]*$/.test(localPart)) {
     return "Локальная часть email может содержать только латинские буквы, цифры и символы: _ ' + - .";
   }
 
