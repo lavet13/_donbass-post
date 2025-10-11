@@ -2,7 +2,7 @@ import { useAppForm } from "@/hooks/form";
 import { Fragment, useEffect, useState, type FC } from "react";
 import { defaultCargoTrackingOpts } from "@/features/cargo-tracking/shared-form";
 import { CargoTrackingForm } from "@/features/cargo-tracking/nested-form";
-import { useCargoTrackingQuery } from "./queries";
+import { useCargoTrackingQuery } from "@/features/cargo-tracking/queries";
 import { keepPreviousData } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { TZDate } from "@date-fns/tz";
@@ -41,9 +41,9 @@ import {
 } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Route } from "@/routes/_public/tracking";
-import type { AccentColors } from "@/types";
-import { useTrackingRostovQuery } from "../tracking/queries";
-import { useInternetMagazinePromo } from "../im-tracking/queries";
+import type { AccentColors } from "@/radix-types";
+import { useTrackingRostovQuery } from "@/features/tracking/queries";
+import { useInternetMagazinePromo } from "@/features/im-tracking/queries";
 
 const CargoTrackingPage: FC = () => {
   const query =
@@ -113,7 +113,7 @@ const CargoTrackingPage: FC = () => {
   useEffect(() => {
     setIsLNR(rostovData?.ttn === query);
     setIsRostov(rostovData?.npTrack === query);
-  }, [rostovData]);
+  }, [rostovData, query]);
 
   const statusConfig: Record<
     string,
@@ -185,7 +185,7 @@ const CargoTrackingPage: FC = () => {
           <Callout.Root
             className="self-start items-center rounded-xl w-full xs:w-auto"
             size="1"
-            color={"iris"}
+            color="iris"
           >
             <Callout.Icon className="self-start">
               <InfoIcon size={16} />
@@ -534,7 +534,7 @@ const CargoTrackingPage: FC = () => {
               <Callout.Root
                 className="self-start items-center rounded-xl w-full xs:w-auto"
                 size="1"
-                color={"iris"}
+                color="iris"
               >
                 <Callout.Icon className="self-start">
                   <InfoIcon size={16} />
@@ -669,7 +669,7 @@ const CargoTrackingPage: FC = () => {
               <Callout.Root
                 className="self-start items-center rounded-xl w-full xs:w-auto"
                 size="1"
-                color={"iris"}
+                color="iris"
               >
                 <Callout.Icon className="self-start">
                   <InfoIcon size={16} />

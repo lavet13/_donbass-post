@@ -1,8 +1,8 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { router } from "@/router";
-import "./styles.css";
-import App from "./App";
+import type { router } from "@/router";
+import "@/styles.css";
+import App from "@/App";
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
