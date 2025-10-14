@@ -1,7 +1,7 @@
-import ShopCostCalculationOrderPage from "@/features/shop-cost-calculation-order/page";
+import { ShopCostCalculationOrderPage } from "@/routes/_public/shop-cost-calculation-order/-shared";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_public/shop-cost-calculation-order")({
+export const Route = createFileRoute("/_public/shop-cost-calculation-order/")({
   component: ShopCostCalculationOrderComponent,
 });
 

@@ -1,5 +1,5 @@
 import { withForm } from "@/hooks/form";
-import { defaultPickUpPointDeliveryOrderOpts } from "@/features/pick-up-point-delivery-order/shared-form";
+import { defaultPickUpPointDeliveryOrderOpts } from "@/routes/_public/pick-up-point-delivery-order/-shared/shared-form";
 import { Suspend } from "@/components/suspend";
 import z from "zod";
 import { cn, getEmailErrorMessage } from "@/lib/utils";
@@ -36,8 +36,8 @@ import {
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { TypographyH2 } from "@/components/typography/typographyH2";
 import { HighlightText } from "@/components/typography/highlight-text";
-import { useCalculateGlobalQuery } from "../delivery-rate/queries";
-import type { CalculateGlobalParams } from "../delivery-rate/types";
+import { useCalculateGlobalQuery } from "@/features/delivery-rate/queries";
+import type { CalculateGlobalParams } from "@/features/delivery-rate/types";
 import { keepPreviousData } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { sonner } from "@/components/ui/toast";
@@ -142,18 +142,22 @@ export const PickUpPointDeliveryOrderForm = withForm({
             >;
 
             const russianFieldNames: Record<string, string> = {
-              "pointFrom": "Населенный пункт отправителя должен быть заполнен!",
-              "pointTo": "Населенный пункт получателя должен быть заполнен!",
-              "deliveryCompany": "Транспортная компания должна быть заполнена!",
+              pointFrom: "Населенный пункт отправителя должен быть заполнен!",
+              pointTo: "Населенный пункт получателя должен быть заполнен!",
+              deliveryCompany: "Транспортная компания должна быть заполнена!",
             };
 
             if (status === 400) {
               form.setErrorMap({
                 onChange: {
                   fields: {
-                    "sender.pointFrom": errors["pointFrom"] && russianFieldNames["pointFrom"],
-                    "recipient.pointTo": errors["pointTo"] && russianFieldNames["pointTo"],
-                    "recipient.deliveryCompany": errors["deliveryCompany"] && russianFieldNames["deliveryCompany"],
+                    "sender.pointFrom":
+                      errors["pointFrom"] && russianFieldNames["pointFrom"],
+                    "recipient.pointTo":
+                      errors["pointTo"] && russianFieldNames["pointTo"],
+                    "recipient.deliveryCompany":
+                      errors["deliveryCompany"] &&
+                      russianFieldNames["deliveryCompany"],
                   },
                 },
               });
@@ -167,24 +171,29 @@ export const PickUpPointDeliveryOrderForm = withForm({
               sonner({
                 title: "Просчёт стоимости",
                 description: messages.map((message) => (
-                  <Text key={message} as="p" size="1" className="mt-1 text-accent-11">
+                  <Text
+                    key={message}
+                    as="p"
+                    size="1"
+                    className="text-accent-11 mt-1"
+                  >
                     {message}
                   </Text>
                 )),
                 button: {
-                  label: "Закрыть",
+                  label: "Понятно",
                 },
               });
             }
           }
         }
       }
-    }, [isError, error]);
+    }, [form, isError, error]);
 
     return (
       <div className="mx-auto w-full max-w-2xl">
-        <div className="h-4 xs:h-2 shrink-0" />
-        <TypographyH2 className="text-start sm:text-center pb-2">
+        <div className="xs:h-2 h-4 shrink-0" />
+        <TypographyH2 className="pb-2 text-start sm:text-center">
           Online заявка <HighlightText>на забор груза</HighlightText> в ЛДНР и
           Запорожье
         </TypographyH2>
@@ -215,9 +224,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       { label: "Физ лицо", value: "individual" },
                       { label: "Компания", value: "company" },
                     ]}
-                    ariaLabel={
-                      "Выберите физ. лицо отправителя или компания отправителя"
-                    }
+                    ariaLabel="Выберите физ. лицо отправителя или компания отправителя"
                   />
                 );
               }}
@@ -229,7 +236,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (senderType !== "individual") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 rounded-l-xs my-2">
+                    <div className="my-2 grid grid-cols-1 gap-2 rounded-l-xs py-2 sm:ml-1 sm:grid-cols-2 sm:pl-2">
                       <form.AppField
                         name="sender.surnameSender"
                         validators={{
@@ -271,7 +278,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                             <field.TextField
                               label="Имя"
                               ariaLabel="Заполните имя физического лица"
-                              placeholder={"Иван"}
+                              placeholder="Иван"
                             />
                           );
                         }}
@@ -454,7 +461,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (senderType !== "company") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 my-2">
+                    <div className="my-2 grid grid-cols-1 gap-2 py-2 sm:ml-1 sm:grid-cols-2 sm:pl-2 md:grid-cols-2">
                       <form.AppField
                         name="sender.companySender"
                         validators={{
@@ -604,7 +611,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               }}
             />
 
-            <Separator size="2" className="mx-auto sm:my-rx-4 my-rx-3" />
+            <Separator size="2" className="sm:my-rx-4 my-rx-3 mx-auto" />
 
             <TypographyH3>Получатель</TypographyH3>
             <form.AppField
@@ -624,9 +631,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       { label: "Физ лицо", value: "individual" },
                       { label: "Компания", value: "company" },
                     ]}
-                    ariaLabel={
-                      "Выберите физ. лицо получателя или компанию получателя"
-                    }
+                    ariaLabel="Выберите физ. лицо получателя или компанию получателя"
                   />
                 );
               }}
@@ -638,7 +643,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (recipientType !== "individual") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 my-2">
+                    <div className="my-2 grid grid-cols-1 gap-2 py-2 sm:ml-1 sm:grid-cols-2 sm:pl-2 md:grid-cols-2">
                       <form.AppField
                         name="recipient.surnameRecipient"
                         validators={{
@@ -680,7 +685,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                             <field.TextField
                               label="Имя"
                               ariaLabel="Заполните имя физического лица получателя"
-                              placeholder={"Иван"}
+                              placeholder="Иван"
                             />
                           );
                         }}
@@ -834,7 +839,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (recipientType !== "company") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 py-2 sm:pl-2 sm:ml-1 my-2">
+                    <div className="my-2 grid grid-cols-1 gap-2 py-2 sm:ml-1 sm:grid-cols-2 sm:pl-2 md:grid-cols-2">
                       <form.AppField
                         name="recipient.companyRecipient"
                         validators={{
@@ -1002,7 +1007,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               }}
             />
 
-            <Separator size="2" className="mx-auto sm:my-rx-4 my-rx-3" />
+            <Separator size="2" className="sm:my-rx-4 my-rx-3 mx-auto" />
 
             <form.AppField
               name="customer.isToggled"
@@ -1012,7 +1017,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     <TypographyH3>Заказчик</TypographyH3>
                     <Toggle
                       className={cn(
-                        "data-[state=on]:bg-accentA-5 data-[state=on]:[box-shadow:inset_0_0_0_1px_var(--accent-a7)] data-[state=on]:text-accentA-11 data-[state=on]:active:bg-accentA-3 data-[state=on]:active:[box-shadow:inset_0_0_0_1px_var(--accent-a6)] data-[state=on]:-mb-px sm:data-[state=on]:mb-0 max-sm:data-[state=on]:rounded-sm max-sm:data-[state=on]:rounded-bl-none max-sm:data-[state=on]:rounded-br-none",
+                        "data-[state=on]:bg-accentA-5 data-[state=on]:text-accentA-11 data-[state=on]:active:bg-accentA-3 data-[state=on]:-mb-px data-[state=on]:[box-shadow:inset_0_0_0_1px_var(--accent-a7)] data-[state=on]:active:[box-shadow:inset_0_0_0_1px_var(--accent-a6)] max-sm:data-[state=on]:rounded-sm max-sm:data-[state=on]:rounded-br-none max-sm:data-[state=on]:rounded-bl-none sm:data-[state=on]:mb-0",
                       )}
                       pressed={field.state.value}
                       onPressedChange={field.handleChange}
@@ -1038,13 +1043,13 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       return (
                         <div
                           className={cn(
-                            "sm:pl-2 sm:pt-2 sm:ml-1 rounded-tl-xs",
+                            "rounded-tl-xs sm:ml-1 sm:pt-2 sm:pl-2",
 
                             // mobile view
-                            "sm:mt-2 [&_button]:first-of-type:rounded-l-sm [&_button]:first-of-type:rounded-tl-none [&_button]:last-of-type:rounded-r-sm [&_button]:last-of-type:rounded-tr-none [&_span]:group-first-of-type:rounded-l-sm [&_span]:group-first-of-type:rounded-tl-none [&_span]:group-last-of-type:rounded-r-sm [&_span]:group-last-of-type:rounded-tr-none [&_button]:last-of-type:mr-0",
+                            "sm:mt-2 [&_button]:first-of-type:rounded-l-sm [&_button]:first-of-type:rounded-tl-none [&_button]:last-of-type:mr-0 [&_button]:last-of-type:rounded-r-sm [&_button]:last-of-type:rounded-tr-none [&_span]:group-first-of-type:rounded-l-sm [&_span]:group-first-of-type:rounded-tl-none [&_span]:group-last-of-type:rounded-r-sm [&_span]:group-last-of-type:rounded-tr-none",
 
                             // desktop view
-                            "sm:[&_button]:first-of-type:rounded-l-full sm:[&_button]:last-of-type:rounded-r-full sm:[&_span]:group-first-of-type:rounded-l-full sm:[&_span]:group-last-of-type:rounded-r-full sm:[&_button]:last-of-type:-mr-px",
+                            "sm:[&_button]:first-of-type:rounded-l-full sm:[&_button]:last-of-type:-mr-px sm:[&_button]:last-of-type:rounded-r-full sm:[&_span]:group-first-of-type:rounded-l-full sm:[&_span]:group-last-of-type:rounded-r-full",
                           )}
                         >
                           <field.RadioGroupField
@@ -1052,7 +1057,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                               { label: "Физ лицо", value: "individual" },
                               { label: "Компания", value: "company" },
                             ]}
-                            ariaLabel={"Выберите один из вариантов"}
+                            ariaLabel="Выберите один из вариантов"
                           />
                         </div>
                       );
@@ -1072,7 +1077,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (customerType !== "individual") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 rounded-bl-xs">
+                    <div className="mb-4 grid grid-cols-1 gap-2 rounded-bl-xs pt-2 sm:ml-1 sm:grid-cols-2 sm:pl-2 md:grid-cols-2">
                       <form.AppField
                         name="customer.surnameCustomer"
                         validators={{
@@ -1205,7 +1210,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 if (customerType !== "company") return null;
                 return (
                   <Suspend>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 pt-2 mb-4 sm:pl-2 sm:ml-1 rounded-bl-xs">
+                    <div className="mb-4 grid grid-cols-1 gap-2 rounded-bl-xs pt-2 sm:ml-1 sm:grid-cols-2 sm:pl-2 md:grid-cols-2">
                       <form.AppField
                         name="customer.companyCustomer"
                         validators={{
@@ -1309,10 +1314,10 @@ export const PickUpPointDeliveryOrderForm = withForm({
               }}
             />
 
-            <Separator size="2" className="mx-auto sm:my-rx-4 my-rx-3" />
+            <Separator size="2" className="sm:my-rx-4 my-rx-3 mx-auto" />
 
             <TypographyH3>Данные о грузе</TypographyH3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 mt-2 mb-4">
+            <div className="mt-2 mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-2">
               <form.AppField
                 name="cargoData.totalWeight"
                 validators={{
@@ -1431,7 +1436,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                               align="end"
                               side="bottom"
                               size="1"
-                              maxWidth={"300px"}
+                              maxWidth="300px"
                             >
                               <Text size="1" as="p" trim="both">
                                 Если не знаете объем груза, заполните габариты
@@ -1525,7 +1530,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               />
             </div>
 
-            <div className="w-full text-accentA-11 inline-flex text-sm [&_svg]:self-start leading-none gap-2 justify-center items-center mb-3 [&_svg]:size-4.5 [&_svg]:shrink-0">
+            <div className="text-accentA-11 mb-3 inline-flex w-full items-center justify-center gap-2 text-sm leading-none [&_svg]:size-4.5 [&_svg]:shrink-0 [&_svg]:self-start">
               <TriangleAlert />
               <Text className="leading-rx-4" as="p">
                 Габариты указываются по самой большой позиции груза
@@ -1555,18 +1560,19 @@ export const PickUpPointDeliveryOrderForm = withForm({
               }}
             />
 
-            <Separator size="2" className="mx-auto sm:my-rx-4 my-rx-3" />
+            <Separator size="2" className="sm:my-rx-4 my-rx-3 mx-auto" />
 
             {isAdditionalServiceLoading && (
-              <div className="flex gap-2 items-center justify-center py-1.5 text-accentA-11">
+              <div className="text-accentA-11 flex items-center justify-center gap-2 py-1.5">
                 <Spinner />
                 Загружаем доп. услуги
               </div>
             )}
-            {additionalServices &&
-              !additionalServices.length &&
+            {(additionalServices === null ||
+              additionalServices === undefined ||
+              additionalServices?.length === 0) &&
               !isAdditionalServiceLoading && (
-                <div className="py-2 w-full flex flex-col gap-2 items-center justify-center text-grayA-11">
+                <div className="text-gray-12 flex w-full flex-col items-center justify-center gap-2 py-2">
                   Не удалось загрузить дополнительные услуги
                   <Button
                     onClick={(e) => {
@@ -1593,7 +1599,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     return (
                       <Fragment>
                         <TypographyH3>Дополнительные услуги</TypographyH3>
-                        <div className="flex flex-wrap flex-col sm:flex-row gap-x-4 gap-y-2 pt-3 sm:pt-4 pb-3 sm:rounded-l-none border-accentA-6 rounded-sm">
+                        <div className="border-accentA-6 flex flex-col flex-wrap gap-x-4 gap-y-2 rounded-sm pt-3 pb-3 sm:flex-row sm:rounded-l-none sm:pt-4">
                           {additionalServices &&
                             field.state.value.map((_, i) => (
                               <form.AppField
@@ -1610,7 +1616,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                                     selectedField.state.value.includes("yes");
 
                                   return (
-                                    <FormItem className="flex-1 gap-y-1 sm:gap-y-1 items-stretch">
+                                    <FormItem className="flex-1 items-stretch gap-y-1 sm:gap-y-1">
                                       <selectedField.RadioGroupField
                                         label={label}
                                         stretched
@@ -1659,10 +1665,10 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 />
               )}
 
-            <Separator size="2" className="mx-auto sm:my-rx-4 my-rx-3" />
+            <Separator size="2" className="sm:my-rx-4 my-rx-3 mx-auto" />
 
             <TypographyH3 className="text-primary">Оплата</TypographyH3>
-            <div className="sm:grid sm:grid-cols-2 flex flex-col gap-x-4 gap-y-2 mt-2 mb-rx-6">
+            <div className="mb-rx-6 mt-2 flex flex-col gap-x-4 gap-y-2 sm:grid sm:grid-cols-2">
               <form.AppField
                 name="cargoData.shippingPayment"
                 validators={{
@@ -1701,7 +1707,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               )}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-2">
               <form.AppForm>
                 <form.SubmitButton
                   loadingMessage="Оформляем заявку"
@@ -1726,7 +1732,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                 {calculateDeliveryResult && !isError && (
                   <div
                     className={cn(
-                      "flex py-2 text-3xl justify-center items-center bg-accentA-3 text-accentA-11 rounded-md font-bold",
+                      "bg-accentA-3 text-accentA-11 flex items-center justify-center rounded-md py-2 text-3xl font-bold",
                       isPlaceholderData && "brightness-75",
                     )}
                   >
@@ -1742,7 +1748,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   </div>
                 )}
                 {error && error.response && error.response.status === 404 && (
-                  <div className="flex py-2 text-3xl text-center justify-center items-center bg-accentA-3 text-accentA-11 rounded-md font-bold">
+                  <div className="bg-accentA-3 text-accentA-11 flex items-center justify-center rounded-md py-2 text-center text-3xl font-bold">
                     {error.response.data.message}
                   </div>
                 )}

@@ -41,7 +41,7 @@ function AuthComponent() {
   });
 
   return (
-    <div className="mx-auto flex-1 max-w-2xl w-full flex flex-col justify-center items-center">
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center">
       <Tabs value={tab}>
         <TabsList aria-label="Вход и регистрация">
           <TabsTrigger value="login" asChild>

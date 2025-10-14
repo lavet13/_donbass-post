@@ -21,19 +21,13 @@
     "jsx": "react-jsx",
     /* Linting */
     "strict": true,
-    "strictNullChecks": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    /* Additional strict checks */
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/@yandex/ymaps3-types"
-    ],
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -42,7 +36,11 @@
       "ymaps3": [
         "./node_modules/@yandex/ymaps3-types"
       ]
-    }
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/@yandex/ymaps3-types"
+    ]
   },
   "include": [
     "src"

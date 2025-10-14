@@ -12,12 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
-import { Route as PublicTrackingRouteImport } from './routes/_public/tracking'
-import { Route as PublicShopCostCalculationOrderRouteImport } from './routes/_public/shop-cost-calculation-order'
 import { Route as PublicSchedulesRouteImport } from './routes/_public/schedules'
-import { Route as PublicPickUpPointDeliveryOrderRouteImport } from './routes/_public/pick-up-point-delivery-order'
 import { Route as PublicAuthRouteImport } from './routes/_public/auth'
 import { Route as AuthenticatedDashboardRouteRouteImport } from './routes/_authenticated/dashboard/route'
+import { Route as PublicTrackingIndexRouteImport } from './routes/_public/tracking/index'
+import { Route as PublicShopCostCalculationOrderIndexRouteImport } from './routes/_public/shop-cost-calculation-order/index'
+import { Route as PublicPickUpPointDeliveryOrderIndexRouteImport } from './routes/_public/pick-up-point-delivery-order/index'
 import { Route as AuthenticatedDashboardRequestsIndexRouteImport } from './routes/_authenticated/dashboard/requests/index'
 import { Route as AuthenticatedDashboardRequestsShopCostCalculationOrderRouteImport } from './routes/_authenticated/dashboard/requests/shop-cost-calculation-order'
 import { Route as AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRouteImport } from './routes/_authenticated/dashboard/requests/pick-up-point-delivery-order'
@@ -35,28 +35,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const PublicTrackingRoute = PublicTrackingRouteImport.update({
-  id: '/tracking',
-  path: '/tracking',
-  getParentRoute: () => PublicRouteRoute,
-} as any)
-const PublicShopCostCalculationOrderRoute =
-  PublicShopCostCalculationOrderRouteImport.update({
-    id: '/shop-cost-calculation-order',
-    path: '/shop-cost-calculation-order',
-    getParentRoute: () => PublicRouteRoute,
-  } as any)
 const PublicSchedulesRoute = PublicSchedulesRouteImport.update({
   id: '/schedules',
   path: '/schedules',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const PublicPickUpPointDeliveryOrderRoute =
-  PublicPickUpPointDeliveryOrderRouteImport.update({
-    id: '/pick-up-point-delivery-order',
-    path: '/pick-up-point-delivery-order',
-    getParentRoute: () => PublicRouteRoute,
-  } as any)
 const PublicAuthRoute = PublicAuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -67,6 +50,23 @@ const AuthenticatedDashboardRouteRoute =
     id: '/dashboard',
     path: '/dashboard',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const PublicTrackingIndexRoute = PublicTrackingIndexRouteImport.update({
+  id: '/tracking/',
+  path: '/tracking/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicShopCostCalculationOrderIndexRoute =
+  PublicShopCostCalculationOrderIndexRouteImport.update({
+    id: '/shop-cost-calculation-order/',
+    path: '/shop-cost-calculation-order/',
+    getParentRoute: () => PublicRouteRoute,
+  } as any)
+const PublicPickUpPointDeliveryOrderIndexRoute =
+  PublicPickUpPointDeliveryOrderIndexRouteImport.update({
+    id: '/pick-up-point-delivery-order/',
+    path: '/pick-up-point-delivery-order/',
+    getParentRoute: () => PublicRouteRoute,
   } as any)
 const AuthenticatedDashboardRequestsIndexRoute =
   AuthenticatedDashboardRequestsIndexRouteImport.update({
@@ -90,11 +90,11 @@ const AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute =
 export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/auth': typeof PublicAuthRoute
-  '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/schedules': typeof PublicSchedulesRoute
-  '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
-  '/tracking': typeof PublicTrackingRoute
   '/': typeof PublicIndexRoute
+  '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderIndexRoute
+  '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderIndexRoute
+  '/tracking': typeof PublicTrackingIndexRoute
   '/dashboard/requests/pick-up-point-delivery-order': typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute
   '/dashboard/requests/shop-cost-calculation-order': typeof AuthenticatedDashboardRequestsShopCostCalculationOrderRoute
   '/dashboard/requests': typeof AuthenticatedDashboardRequestsIndexRoute
@@ -102,11 +102,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/auth': typeof PublicAuthRoute
-  '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/schedules': typeof PublicSchedulesRoute
-  '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
-  '/tracking': typeof PublicTrackingRoute
   '/': typeof PublicIndexRoute
+  '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderIndexRoute
+  '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderIndexRoute
+  '/tracking': typeof PublicTrackingIndexRoute
   '/dashboard/requests/pick-up-point-delivery-order': typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute
   '/dashboard/requests/shop-cost-calculation-order': typeof AuthenticatedDashboardRequestsShopCostCalculationOrderRoute
   '/dashboard/requests': typeof AuthenticatedDashboardRequestsIndexRoute
@@ -117,11 +117,11 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/_public/auth': typeof PublicAuthRoute
-  '/_public/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderRoute
   '/_public/schedules': typeof PublicSchedulesRoute
-  '/_public/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderRoute
-  '/_public/tracking': typeof PublicTrackingRoute
   '/_public/': typeof PublicIndexRoute
+  '/_public/pick-up-point-delivery-order/': typeof PublicPickUpPointDeliveryOrderIndexRoute
+  '/_public/shop-cost-calculation-order/': typeof PublicShopCostCalculationOrderIndexRoute
+  '/_public/tracking/': typeof PublicTrackingIndexRoute
   '/_authenticated/dashboard/requests/pick-up-point-delivery-order': typeof AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRoute
   '/_authenticated/dashboard/requests/shop-cost-calculation-order': typeof AuthenticatedDashboardRequestsShopCostCalculationOrderRoute
   '/_authenticated/dashboard/requests/': typeof AuthenticatedDashboardRequestsIndexRoute
@@ -131,11 +131,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/dashboard'
     | '/auth'
-    | '/pick-up-point-delivery-order'
     | '/schedules'
+    | '/'
+    | '/pick-up-point-delivery-order'
     | '/shop-cost-calculation-order'
     | '/tracking'
-    | '/'
     | '/dashboard/requests/pick-up-point-delivery-order'
     | '/dashboard/requests/shop-cost-calculation-order'
     | '/dashboard/requests'
@@ -143,11 +143,11 @@ export interface FileRouteTypes {
   to:
     | '/dashboard'
     | '/auth'
-    | '/pick-up-point-delivery-order'
     | '/schedules'
+    | '/'
+    | '/pick-up-point-delivery-order'
     | '/shop-cost-calculation-order'
     | '/tracking'
-    | '/'
     | '/dashboard/requests/pick-up-point-delivery-order'
     | '/dashboard/requests/shop-cost-calculation-order'
     | '/dashboard/requests'
@@ -157,11 +157,11 @@ export interface FileRouteTypes {
     | '/_public'
     | '/_authenticated/dashboard'
     | '/_public/auth'
-    | '/_public/pick-up-point-delivery-order'
     | '/_public/schedules'
-    | '/_public/shop-cost-calculation-order'
-    | '/_public/tracking'
     | '/_public/'
+    | '/_public/pick-up-point-delivery-order/'
+    | '/_public/shop-cost-calculation-order/'
+    | '/_public/tracking/'
     | '/_authenticated/dashboard/requests/pick-up-point-delivery-order'
     | '/_authenticated/dashboard/requests/shop-cost-calculation-order'
     | '/_authenticated/dashboard/requests/'
@@ -195,32 +195,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/_public/tracking': {
-      id: '/_public/tracking'
-      path: '/tracking'
-      fullPath: '/tracking'
-      preLoaderRoute: typeof PublicTrackingRouteImport
-      parentRoute: typeof PublicRouteRoute
-    }
-    '/_public/shop-cost-calculation-order': {
-      id: '/_public/shop-cost-calculation-order'
-      path: '/shop-cost-calculation-order'
-      fullPath: '/shop-cost-calculation-order'
-      preLoaderRoute: typeof PublicShopCostCalculationOrderRouteImport
-      parentRoute: typeof PublicRouteRoute
-    }
     '/_public/schedules': {
       id: '/_public/schedules'
       path: '/schedules'
       fullPath: '/schedules'
       preLoaderRoute: typeof PublicSchedulesRouteImport
-      parentRoute: typeof PublicRouteRoute
-    }
-    '/_public/pick-up-point-delivery-order': {
-      id: '/_public/pick-up-point-delivery-order'
-      path: '/pick-up-point-delivery-order'
-      fullPath: '/pick-up-point-delivery-order'
-      preLoaderRoute: typeof PublicPickUpPointDeliveryOrderRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/auth': {
@@ -236,6 +215,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_public/tracking/': {
+      id: '/_public/tracking/'
+      path: '/tracking'
+      fullPath: '/tracking'
+      preLoaderRoute: typeof PublicTrackingIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/shop-cost-calculation-order/': {
+      id: '/_public/shop-cost-calculation-order/'
+      path: '/shop-cost-calculation-order'
+      fullPath: '/shop-cost-calculation-order'
+      preLoaderRoute: typeof PublicShopCostCalculationOrderIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/pick-up-point-delivery-order/': {
+      id: '/_public/pick-up-point-delivery-order/'
+      path: '/pick-up-point-delivery-order'
+      fullPath: '/pick-up-point-delivery-order'
+      preLoaderRoute: typeof PublicPickUpPointDeliveryOrderIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
     '/_authenticated/dashboard/requests/': {
       id: '/_authenticated/dashboard/requests/'
@@ -296,20 +296,22 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface PublicRouteRouteChildren {
   PublicAuthRoute: typeof PublicAuthRoute
-  PublicPickUpPointDeliveryOrderRoute: typeof PublicPickUpPointDeliveryOrderRoute
   PublicSchedulesRoute: typeof PublicSchedulesRoute
-  PublicShopCostCalculationOrderRoute: typeof PublicShopCostCalculationOrderRoute
-  PublicTrackingRoute: typeof PublicTrackingRoute
   PublicIndexRoute: typeof PublicIndexRoute
+  PublicPickUpPointDeliveryOrderIndexRoute: typeof PublicPickUpPointDeliveryOrderIndexRoute
+  PublicShopCostCalculationOrderIndexRoute: typeof PublicShopCostCalculationOrderIndexRoute
+  PublicTrackingIndexRoute: typeof PublicTrackingIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicAuthRoute: PublicAuthRoute,
-  PublicPickUpPointDeliveryOrderRoute: PublicPickUpPointDeliveryOrderRoute,
   PublicSchedulesRoute: PublicSchedulesRoute,
-  PublicShopCostCalculationOrderRoute: PublicShopCostCalculationOrderRoute,
-  PublicTrackingRoute: PublicTrackingRoute,
   PublicIndexRoute: PublicIndexRoute,
+  PublicPickUpPointDeliveryOrderIndexRoute:
+    PublicPickUpPointDeliveryOrderIndexRoute,
+  PublicShopCostCalculationOrderIndexRoute:
+    PublicShopCostCalculationOrderIndexRoute,
+  PublicTrackingIndexRoute: PublicTrackingIndexRoute,
 }
 
 const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(

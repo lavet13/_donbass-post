@@ -93,20 +93,23 @@ function AuthenticatedLayout() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex-1 min-w-0 shrink @max-[130px]:hidden">
+        <div className="min-w-0 flex-1 shrink @max-[130px]:hidden">
           <Heading
             truncate
             wrap="nowrap"
             as="h2"
             size="2"
-            className={
-              "pl-3 leading-rx-4 mb-1 sm:mb-0 tracking-tight @max-[130px]:hidden"
-            }
+            className="leading-rx-4 mb-1 pl-3 tracking-tight sm:mb-0 @max-[130px]:hidden"
           >
             Личный кабинет
           </Heading>
         </div>
-        <div className={cn("min-w-0 @max-[130px]:flex-1 mt-2 mx-2", isMobile && "mr-3")}>
+        <div
+          className={cn(
+            "mx-2 mt-2 min-w-0 @max-[130px]:flex-1",
+            isMobile && "mr-3",
+          )}
+        >
           {isMobile ? (
             collapsedButton
           ) : (

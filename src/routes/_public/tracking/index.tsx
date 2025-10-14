@@ -1,8 +1,8 @@
-import CargoTrackingPage from "@/features/cargo-tracking/page";
+import { TrackingPage } from "@/routes/_public/tracking/-shared";
 import { Flex, Text, Strong, Separator, Heading } from "@radix-ui/themes";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_public/tracking")({
+export const Route = createFileRoute("/_public/tracking/")({
   component: TrackingComponent,
   validateSearch(search) {
     return {
@@ -11,11 +11,10 @@ export const Route = createFileRoute("/_public/tracking")({
   },
 });
 
-
 function TrackingComponent() {
   return (
     <div className="mx-auto w-full">
-      <div className="h-4 xs:h-2 shrink-0" />
+      <div className="xs:h-2 h-4 shrink-0" />
       <Heading align="center" mb="3">
         Отслеживание
       </Heading>
@@ -24,7 +23,7 @@ function TrackingComponent() {
           Обновление данных происходит <Strong>Пн-Сб</Strong> с 17<sup>00</sup>{" "}
           до 18<sup>00</sup> по МСК.
         </Text>
-        <CargoTrackingPage />
+        <TrackingPage />
         <Separator ml="4" my="2" size="2" />
       </Flex>
     </div>

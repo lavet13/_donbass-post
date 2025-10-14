@@ -1,7 +1,7 @@
 import { useAppForm } from "@/hooks/form";
 import { Fragment, useEffect, useState, type FC } from "react";
-import { defaultCargoTrackingOpts } from "@/features/cargo-tracking/shared-form";
-import { CargoTrackingForm } from "@/features/cargo-tracking/nested-form";
+import { defaultCargoTrackingOpts } from "@/routes/_public/tracking/-shared/shared-form";
+import { CargoTrackingForm } from "@/routes/_public/tracking/-shared/nested-form";
 import { useCargoTrackingQuery } from "@/features/cargo-tracking/queries";
 import { keepPreviousData } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -40,12 +40,12 @@ import {
   Activity,
 } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { Route } from "@/routes/_public/tracking";
+import { Route } from "@/routes/_public/tracking/index";
 import type { AccentColors } from "@/radix-types";
 import { useTrackingRostovQuery } from "@/features/tracking/queries";
 import { useInternetMagazinePromo } from "@/features/im-tracking/queries";
 
-const CargoTrackingPage: FC = () => {
+const TrackingPage: FC = () => {
   const query =
     useSearch({ from: Route.id, select: (search) => search.q }) ?? "";
   const navigate = useNavigate();
@@ -60,18 +60,6 @@ const CargoTrackingPage: FC = () => {
           q: value.trackingNumber.trim(),
         },
       });
-      // } catch (error) {
-      //   const errorMessage =
-      //     error instanceof Error ? error.message : "Произошла ошибка";
-      //
-      //   formApi.setErrorMap({
-      //     onChange: {
-      //       fields: {
-      //         trackingNumber: errorMessage,
-      //       },
-      //     },
-      //   });
-      // }
     },
   });
 
@@ -154,12 +142,12 @@ const CargoTrackingPage: FC = () => {
     (promoData && query);
 
   return (
-    <div className="flex-1 min-w-0 flex flex-col gap-1">
+    <div className="flex min-w-0 flex-1 flex-col gap-1">
       <CargoTrackingForm form={form} />
       {!data && isLoading && (
         <Flex direction="column" gap="1">
           <Skeleton
-            className="rounded-xl xs:w-auto w-full xs:max-w-[300px]"
+            className="xs:w-auto xs:max-w-[300px] w-full rounded-xl"
             height="40px"
           />
           <Skeleton maxWidth="180px" maxHeight="40px" />
@@ -177,13 +165,13 @@ const CargoTrackingPage: FC = () => {
       {promoData && query && (
         <div
           className={cn(
-            "flex-1 min-w-0 flex flex-col gap-y-2 [&_svg]:shrink-0",
+            "flex min-w-0 flex-1 flex-col gap-y-2 [&_svg]:shrink-0",
             promoPlaceholderData &&
-              "opacity-70 animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite]",
+              "animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite] opacity-70",
           )}
         >
           <Callout.Root
-            className="self-start items-center rounded-xl w-full xs:w-auto"
+            className="xs:w-auto w-full items-center self-start rounded-xl"
             size="1"
             color="iris"
           >
@@ -194,7 +182,7 @@ const CargoTrackingPage: FC = () => {
               Результат отслеживания по промокоду
             </Callout.Text>
           </Callout.Root>
-          <div className={cn("pl-2.5 flex-1 min-w-0 flex flex-col gap-y-2")}>
+          <div className={cn("flex min-w-0 flex-1 flex-col gap-y-2 pl-2.5")}>
             {promoData.promo && (
               <Flex gap="1" align="center">
                 <Ticket className="self-start" size={14} />
@@ -278,41 +266,45 @@ const CargoTrackingPage: FC = () => {
       {data?.data && query && (
         <div
           className={cn(
-            "flex-1 min-w-0 flex flex-col gap-y-2 [&_svg]:shrink-0",
+            "flex min-w-0 flex-1 flex-col gap-y-2 [&_svg]:shrink-0",
             isPlaceholderData &&
-              "opacity-70 animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite]",
+              "animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite] opacity-70",
           )}
         >
-          {data.data.message && hasData && data.data.message !== "Нет данных о грузе" && (
-            <Callout.Root
-              className="self-start items-center rounded-xl w-full xs:w-auto"
-              size="1"
-              color={statusColor}
-            >
-              <Callout.Icon className="self-start">
-                {StatusIcon && <StatusIcon size={16} />}
-              </Callout.Icon>
-              <Callout.Text className="leading-rx-4" size="2" wrap="balance">
-                {data.data.message}
-              </Callout.Text>
-            </Callout.Root>
-          )}
-          {data.data.message && !hasData && data.data.message === "Нет данных о грузе" && (
-            <Callout.Root
-              className="self-start items-center rounded-xl w-full xs:w-auto"
-              size="1"
-              color={statusColor}
-            >
-              <Callout.Icon className="self-start">
-                {StatusIcon && <StatusIcon size={16} />}
-              </Callout.Icon>
-              <Callout.Text className="leading-rx-4" size="2" wrap="balance">
-                {data.data.message}
-              </Callout.Text>
-            </Callout.Root>
-          )}
+          {data.data.message &&
+            hasData &&
+            data.data.message !== "Нет данных о грузе" && (
+              <Callout.Root
+                className="xs:w-auto w-full items-center self-start rounded-xl"
+                size="1"
+                color={statusColor}
+              >
+                <Callout.Icon className="self-start">
+                  {StatusIcon && <StatusIcon size={16} />}
+                </Callout.Icon>
+                <Callout.Text className="leading-rx-4" size="2" wrap="balance">
+                  {data.data.message}
+                </Callout.Text>
+              </Callout.Root>
+            )}
+          {data.data.message &&
+            !hasData &&
+            data.data.message === "Нет данных о грузе" && (
+              <Callout.Root
+                className="xs:w-auto w-full items-center self-start rounded-xl"
+                size="1"
+                color={statusColor}
+              >
+                <Callout.Icon className="self-start">
+                  {StatusIcon && <StatusIcon size={16} />}
+                </Callout.Icon>
+                <Callout.Text className="leading-rx-4" size="2" wrap="balance">
+                  {data.data.message}
+                </Callout.Text>
+              </Callout.Root>
+            )}
           {data.data.message !== "Нет данных о грузе" && (
-            <div className={cn("pl-2.5 flex-1 min-w-0 flex flex-col gap-y-2")}>
+            <div className={cn("flex min-w-0 flex-1 flex-col gap-y-2 pl-2.5")}>
               {data.data.trackNumber && (
                 <Flex gap="1" align="center">
                   <Barcode className="self-start" size={14} />
@@ -371,7 +363,7 @@ const CargoTrackingPage: FC = () => {
                       <Text color="indigo" wrap="balance">
                         {data.data.departureCity}
                       </Text>
-                      <ArrowRightIcon className="inline-block mx-1" size="12" />
+                      <ArrowRightIcon className="mx-1 inline-block" size="12" />
                       следует в ПВЗ{" "}
                       <Text color="indigo" wrap="balance">
                         {data.data.destinationCity}
@@ -524,15 +516,15 @@ const CargoTrackingPage: FC = () => {
       {rostovData && query && (
         <div
           className={cn(
-            "flex-1 min-w-0 flex flex-col gap-y-2 [&_svg]:shrink-0",
+            "flex min-w-0 flex-1 flex-col gap-y-2 [&_svg]:shrink-0",
             rostovPlaceholderData &&
-              "opacity-70 animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite]",
+              "animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite] opacity-70",
           )}
         >
           {isRostov && (
             <>
               <Callout.Root
-                className="self-start items-center rounded-xl w-full xs:w-auto"
+                className="xs:w-auto w-full items-center self-start rounded-xl"
                 size="1"
                 color="iris"
               >
@@ -544,7 +536,7 @@ const CargoTrackingPage: FC = () => {
                 </Callout.Text>
               </Callout.Root>
               <div
-                className={cn("pl-2.5 flex-1 min-w-0 flex flex-col gap-y-2")}
+                className={cn("flex min-w-0 flex-1 flex-col gap-y-2 pl-2.5")}
               >
                 {rostovData.npTrack && (
                   <Flex gap="1" align="center">
@@ -667,7 +659,7 @@ const CargoTrackingPage: FC = () => {
           {isLNR && (
             <>
               <Callout.Root
-                className="self-start items-center rounded-xl w-full xs:w-auto"
+                className="xs:w-auto w-full items-center self-start rounded-xl"
                 size="1"
                 color="iris"
               >
@@ -679,7 +671,7 @@ const CargoTrackingPage: FC = () => {
                 </Callout.Text>
               </Callout.Root>
               <div
-                className={cn("pl-2.5 flex-1 min-w-0 flex flex-col gap-y-2")}
+                className={cn("flex min-w-0 flex-1 flex-col gap-y-2 pl-2.5")}
               >
                 {rostovData.ttn && (
                   <Flex gap="1" align="center">
@@ -802,4 +794,4 @@ const CargoTrackingPage: FC = () => {
   );
 };
 
-export default CargoTrackingPage;
+export default TrackingPage;

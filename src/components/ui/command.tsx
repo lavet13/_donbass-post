@@ -3,9 +3,15 @@ import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
 import { SearchIcon, X } from "lucide-react";
 import { useEffect, useRef, type ComponentProps, type FC } from "react";
-import { IconButton, ScrollArea, Spinner, Tooltip, type ScrollAreaProps } from "@radix-ui/themes";
+import {
+  IconButton,
+  ScrollArea,
+  Spinner,
+  Tooltip,
+  type ScrollAreaProps,
+} from "@radix-ui/themes";
 import { AccessibleIcon } from "@radix-ui/themes";
-import mergeRefs from "@/hooks/merge-refs";
+import { useComposedRefs } from "@/hooks/use-composed-refs";
 
 // https://github.com/pacocoursey/cmdk?tab=readme-ov-file
 const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
@@ -31,7 +37,7 @@ const CommandList: FC<
 > = ({ className, scrollProps, listStyles, ...props }) => {
   return (
     <ScrollArea
-      className={cn("max-h-[300px] h-[40vh]", className)}
+      className={cn("h-[40vh] max-h-[300px]", className)}
       scrollbars="vertical"
       type="always"
       {...scrollProps}
@@ -39,7 +45,7 @@ const CommandList: FC<
       <CommandPrimitive.List
         data-slot="command-list"
         className={cn(
-          "scroll-py-1 transition-[height] duration-100 ease-out overflow-x-hidden overflow-y-auto outline-none pl-rx-1 pr-rx-3",
+          "pl-rx-1 pr-rx-3 scroll-py-1 overflow-x-hidden overflow-y-auto transition-[height] duration-100 ease-out outline-none",
           listStyles,
         )}
         {...props}
@@ -56,7 +62,7 @@ const CommandGroup: FC<ComponentProps<typeof CommandPrimitive.Group>> = ({
     <CommandPrimitive.Group
       data-slot="command-group"
       className={cn(
-        "[&_[cmdk-group-heading]]:px-1.5 [&_[cmdk-group-heading]]:text-grayA-11 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium",
+        "[&_[cmdk-group-heading]]:text-grayA-11 [&_[cmdk-group-heading]]:px-1.5 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium",
         "text-foreground overflow-hidden p-1",
         className,
       )}
@@ -73,10 +79,10 @@ const CommandItem: FC<ComponentProps<typeof CommandPrimitive.Item>> = ({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "hover:data-[selected=true]:bg-redA-10 data-[selected=true]:[&_svg:not([class*='text-'])]:text-red-contrast hover:data-[selected=true]:text-red-contrast active:data-[selected=true]:filter-(--base-button-solid-active-filter) data-[selected=true]:bg-redA-9 data-[selected=true]:text-red-contrast",
+        "hover:data-[selected=true]:bg-redA-10 data-[selected=true]:[&_svg:not([class*='text-'])]:text-red-contrast hover:data-[selected=true]:text-red-contrast data-[selected=true]:bg-redA-9 data-[selected=true]:text-red-contrast active:data-[selected=true]:filter-(--base-button-solid-active-filter)",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-gray-12 hover:[&_svg:not([class*='text-'])]:text-red-contrast",
-        "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 select-none outline-hidden",
+        "[&_svg:not([class*='text-'])]:text-gray-12 hover:[&_svg:not([class*='text-'])]:text-red-contrast [&_svg:not([class*='size-'])]:size-4",
+        "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 outline-hidden select-none",
         "text-sm leading-[15px] not-first:mt-0.5",
         className,
       )}
@@ -96,7 +102,7 @@ const CommandLoading: FC<ComponentProps<typeof CommandPrimitive.Loading>> = ({
       className={cn("text-grayA-11 py-8", className)}
       {...props}
     >
-      <div className={"flex text-sm gap-2 items-center justify-center"}>
+      <div className="flex items-center justify-center gap-2 text-sm">
         <Spinner />
         {children}
       </div>
@@ -136,6 +142,8 @@ const CommandInput: FC<
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const composedRefs = useComposedRefs(inputRef, ref);
+
   const [value, setValue] = useControllableState({
     prop: valueProp,
     onChange: onValueChange,
@@ -157,19 +165,19 @@ const CommandInput: FC<
     if (inputRef.current && shouldFocus) {
       inputRef.current.focus();
     }
-  }, [inputRef.current]);
+  }, [shouldFocus]);
 
   return (
     <div
       className={cn(
-        "sticky z-10 top-0 flex h-8 items-center gap-2 border-b border-grayA-6 px-3 pr-2",
+        "border-grayA-6 sticky top-0 z-10 flex h-8 items-center gap-2 border-b px-3 pr-0.5",
         inputContainer,
       )}
     >
-      <SearchIcon className="size-4 shrink-0 opacity-50 text-gray-11" />
+      <SearchIcon className="text-gray-11 size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         data-slot="command-input"
-        ref={mergeRefs(inputRef, ref)}
+        ref={composedRefs}
         value={value}
         onValueChange={setValue}
         className={cn(
@@ -186,7 +194,7 @@ const CommandInput: FC<
             variant="ghost"
             radius="full"
             data-slot="command-input-clear"
-            className="shrink-0 [&_svg]:size-4.5 text-red-11 hover:bg-redA-3 active:bg-redA-4 rounded-full p-[6px] box-content h-fit"
+            className="text-red-11 hover:bg-redA-3 active:bg-redA-4 box-content h-fit shrink-0 rounded-full p-[6px] [&_svg]:size-4.5 mr-px"
             onKeyDown={handleKeyDown}
             onClick={handleClear}
             type="button"
@@ -209,7 +217,7 @@ const CommandEmpty: FC<ComponentProps<typeof CommandPrimitive.Empty>> = ({
   return (
     <CommandPrimitive.Empty
       data-slot="command-empty"
-      className={cn("text-sm text-center py-6", className)}
+      className={cn("py-6 text-center text-sm", className)}
       {...props}
     />
   );

@@ -37,7 +37,7 @@ const DrawerContent: FC<ComponentProps<typeof DrawerPrimitive.Content>> = ({
         data-scaling="100%"
         className={cn(
           "radix-themes",
-          "group/drawer-content flex flex-col text-gray-12 bg-gray-2 fixed outline-none",
+          "group/drawer-content flex flex-col text-gray-12 bg-gray-2 fixed outline-none min-h-0",
 
           // removing blur
           "transform-gpu backface-hidden will-change-auto",

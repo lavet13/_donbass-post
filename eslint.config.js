@@ -39,6 +39,7 @@ export default defineConfig([
       "@typescript-eslint/consistent-type-imports": "off",
       "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
 
       // React
       "react/jsx-key": "error",

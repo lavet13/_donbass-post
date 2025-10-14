@@ -10,10 +10,10 @@ export const Route = createFileRoute("/_public")({
 function PublicLayout() {
   return (
     <Fragment>
-      <div className="flex flex-col min-h-svh">
+      <div className="flex min-h-svh flex-col">
         <Header />
-        <main className="flex-1 flex flex-col">
-          <div className="flex-1 flex flex-col container w-full max-w-6xl mx-auto min-h-[calc(100svh-var(--header-height))]">
+        <main className="flex flex-1 flex-col">
+          <div className="container mx-auto flex min-h-[calc(100svh-var(--header-height))] w-full max-w-6xl flex-1 flex-col">
             <Outlet />
           </div>
         </main>

@@ -8,7 +8,7 @@ import {
   CommandLoading,
   CommandSeparator,
 } from "@/components/ui/command";
-import { pointKeys, usePointListQuery } from "@/features/point/queries";
+import { usePointListQuery } from "@/features/point/queries";
 import { useAppForm } from "@/hooks/form";
 import { cn } from "@/lib/utils";
 import { useNavigate, useSearch } from "@tanstack/react-router";
@@ -55,9 +55,6 @@ type ScheduleSearch = {
 
 export const Route = createFileRoute("/_public/schedules")({
   component: SchedulesComponent,
-  loader({ context }) {
-    return context.queryClient.ensureQueryData(pointKeys.list);
-  },
   validateSearch: (search): ScheduleSearch => {
     return {
       q: (search.q as string) || undefined,
@@ -155,15 +152,15 @@ const SearchPage: FC = () => {
   }, [selectedDepartmentRef]);
 
   return (
-    <div className="flex-1 flex min-h-min items-start w-full">
-      <div className="flex flex-col min-w-[18rem] sticky top-[calc(var(--header-height)+1px)]">
+    <div className="flex min-h-min w-full flex-1 items-start">
+      <div className="sticky top-[calc(var(--header-height)+1px)] flex min-w-[18rem] flex-col">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
             void form.handleSubmit();
           }}
-          className="flex-1 w-full overflow-y-auto"
+          className="w-full flex-1 overflow-y-auto"
         >
           <form.AppField
             name="id"
@@ -171,12 +168,12 @@ const SearchPage: FC = () => {
               return (
                 <Command shouldFilter={!isPending}>
                   <CommandInput
-                    inputContainer={"bg-background mr-rx-1"}
+                    inputContainer="bg-background mr-rx-1"
                     value={query}
                     onValueChange={handleSearchQuery}
                     ref={inputRef}
                     clearButton
-                    placeholder={"Найти отделение..."}
+                    placeholder="Найти отделение..."
                   />
                   <CommandList
                     scrollProps={{
@@ -185,13 +182,12 @@ const SearchPage: FC = () => {
                     listStyles="pb-rx-9"
                     className="h-[calc(100svh-var(--header-height)-var(--combobox-input-height))] max-h-max min-h-0"
                   >
-                    {isPending ? (
-                      <CommandLoading label={"Загружаем отделения..."}>
+                    {isPending && (
+                      <CommandLoading label="Загружаем отделения...">
                         Загружаем отделения...
                       </CommandLoading>
-                    ) : (
-                      <CommandEmpty>Не найдено</CommandEmpty>
                     )}
+                    {!!data?.length && <CommandEmpty>Не найдено</CommandEmpty>}
                     {!isPending &&
                       data?.length !== 0 &&
                       data?.map(({ label, items }, valuesIdx, entries) => (
@@ -238,7 +234,7 @@ const SearchPage: FC = () => {
                       ))}
 
                     {!data?.length && !isPending && refetch && (
-                      <p className="flex flex-col items-center justify-center py-2 text-center text-sm text-muted-foreground">
+                      <p className="text-muted-foreground flex flex-col items-center justify-center py-2 text-center text-sm">
                         Не удалось загрузить отделения
                         <Button
                           variant="outline"
@@ -258,7 +254,7 @@ const SearchPage: FC = () => {
         </form>
       </div>
 
-      <div className="w-full h-full">
+      <div className="h-full w-full">
         <div className="flex items-stretch text-[1.05rem] sm:text-[15px] xl:w-full">
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="mx-auto flex w-full max-w-2xl min-w-0 flex-1 flex-col gap-8 px-4 py-6 md:px-0 lg:py-8">
@@ -266,18 +262,18 @@ const SearchPage: FC = () => {
                 <Card
                   variant="classic"
                   size="4"
-                  className="flex flex-col items-center justify-center min-h-[300px] text-center"
+                  className="flex min-h-[300px] flex-col items-center justify-center text-center"
                 >
                   <Box pb="6" className="relative">
-                    <div className="bg-grayA-2 rounded-full p-6 border-1 border-grayA-6">
+                    <div className="bg-grayA-2 border-grayA-6 rounded-full border-1 p-6">
                       <Search size={40} className="text-gray-11" />
                     </div>
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-grayA-4 rounded-full animate-pulse" />
-                    <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-grayA-4 rounded-full animate-pulse delay-300" />
+                    <div className="bg-grayA-4 absolute -top-1 -right-1 h-3 w-3 animate-pulse rounded-full" />
+                    <div className="bg-grayA-4 absolute -bottom-1 -left-1 h-2 w-2 animate-pulse rounded-full delay-300" />
                   </Box>
 
                   <Box pb="4">
-                    <TypographyH2 className="text-3xl text-grayA-12 font-bold mb-1">
+                    <TypographyH2 className="text-grayA-12 mb-1 text-3xl font-bold">
                       Выберите отделение
                     </TypographyH2>
                   </Box>
@@ -311,7 +307,7 @@ const SearchPage: FC = () => {
                     {/* Large Header Image */}
                     {selectedDepartment.image && (
                       <Inset
-                        className="overflow-hidden pb-rx-6"
+                        className="pb-rx-6 overflow-hidden"
                         clip="padding-box"
                         side="top"
                       >
@@ -328,16 +324,16 @@ const SearchPage: FC = () => {
                           }}
                         >
                           <Dialog.Trigger>
-                            <button className="w-full h-full cursor-pointer group relative hover:scale-105 duration-200 ">
+                            <button className="group relative h-full w-full cursor-pointer duration-200 hover:scale-105">
                               <img
                                 src={`https://workplace-post.ru/assets/point-image/${selectedDepartment.image}`}
                                 alt={selectedDepartment.name}
-                                className="w-full h-80 object-cover transition-all"
+                                className="h-80 w-full object-cover transition-all"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-accentA-9/40 via-accentA-9/20 to-transparent" />
-                              <div className="absolute inset-0 group-hover:bg-grayA-3 transition-all flex items-center justify-center">
-                                <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-accentA-3 group-active:bg-accentA-4 rounded-2xl p-4">
-                                  <ImageUpscale className="size-8 text-accent-11 dark:text-accent-12" />
+                              <div className="from-accentA-9/40 via-accentA-9/20 absolute inset-0 bg-gradient-to-t to-transparent" />
+                              <div className="group-hover:bg-grayA-3 absolute inset-0 flex items-center justify-center transition-all">
+                                <div className="bg-accentA-3 group-active:bg-accentA-4 rounded-2xl p-4 opacity-0 transition-all duration-300 group-hover:opacity-100">
+                                  <ImageUpscale className="text-accent-11 dark:text-accent-12 size-8" />
                                 </div>
                               </div>
                             </button>
@@ -345,14 +341,14 @@ const SearchPage: FC = () => {
                           <Dialog.Content
                             size="4"
                             aria-describedby={undefined}
-                            className="w-full h-full max-w-max md:min-h-auto max-h-max p-0 overflow-hidden shadow-[0_0_0_1px_var(--accent-a6)] bg-background rounded-none sm:rounded-5"
+                            className="bg-background sm:rounded-5 h-full max-h-max w-full max-w-max overflow-hidden rounded-none p-0 shadow-[0_0_0_1px_var(--accent-a6)] md:min-h-auto"
                           >
                             <VisuallyHidden asChild>
                               <Dialog.Title>
                                 Изображение отделения во весь экран
                               </Dialog.Title>
                             </VisuallyHidden>
-                            <div className="relative w-full h-full flex items-center justify-center">
+                            <div className="relative flex h-full w-full items-center justify-center">
                               <Inset
                                 className="pt-rx-9 mx-rx-3"
                                 clip="padding-box"
@@ -362,12 +358,12 @@ const SearchPage: FC = () => {
                                 <img
                                   src={`https://workplace-post.ru/assets/point-image/${selectedDepartment.image}`}
                                   alt={selectedDepartment.name}
-                                  className="w-full h-full object-cover"
+                                  className="h-full w-full object-cover"
                                 />
                               </Inset>
                             </div>
                             <Box
-                              className="sticky mt-rx-4 bottom-0 left-0 right-0 bg-accent-4 text-accent-11"
+                              className="mt-rx-4 bg-accent-4 text-accent-11 sticky right-0 bottom-0 left-0"
                               p="4"
                             >
                               <Heading
@@ -403,10 +399,10 @@ const SearchPage: FC = () => {
                         <div className="flex-shrink-0">
                           <Card
                             size="2"
-                            className="w-24 h-24 overflow-hidden"
+                            className="h-24 w-24 overflow-hidden"
                             title="Нет изображения"
                           >
-                            <div className="w-full h-full flex flex-col items-center justify-center space-y-1.5">
+                            <div className="flex h-full w-full flex-col items-center justify-center space-y-1.5">
                               <ImageOff size={40} className="text-primary" />
                               <Text
                                 className="leading-rx-3"
@@ -422,10 +418,10 @@ const SearchPage: FC = () => {
                       )}
 
                       {/* Department Info */}
-                      <div className="flex-1 min-w-0">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
-                            <div className="flex flex-col space-y-2 mb-3 sm:mb-4">
+                            <div className="mb-3 flex flex-col space-y-2 sm:mb-4">
                               <Heading
                                 as="h1"
                                 size={selectedDepartment.image ? "7" : "6"}
@@ -443,7 +439,7 @@ const SearchPage: FC = () => {
                             <Flex gap="2" align="center">
                               <MapPin
                                 size={16}
-                                className="self-start shrink-0"
+                                className="shrink-0 self-start"
                               />
                               <Text
                                 trim="both"
@@ -459,7 +455,7 @@ const SearchPage: FC = () => {
                               <Flex gap="2" align="center">
                                 <Building
                                   size={16}
-                                  className="self-start shrink-0"
+                                  className="shrink-0 self-start"
                                 />
                                 <Text size="2" trim="both" as="p">
                                   {selectedDepartment.city.name}
@@ -473,12 +469,12 @@ const SearchPage: FC = () => {
                           </div>
 
                           {/* Status Badges */}
-                          <div className="min-w-fit flex flex-col gap-0.5">
+                          <div className="flex min-w-fit flex-col gap-0.5">
                             {selectedDepartment.temporarilyClosed ? (
                               <Flex
                                 align="center"
                                 gap="2"
-                                className="px-3 py-1.5 bg-grayA-1 text-gray-11 rounded-full"
+                                className="bg-grayA-1 text-gray-11 rounded-full px-3 py-1.5"
                               >
                                 <AlertCircle className="shrink-0" size={16} />
                                 <Text weight="medium" size="1">
@@ -489,7 +485,7 @@ const SearchPage: FC = () => {
                               <Flex
                                 align="center"
                                 gap="2"
-                                className="px-3 py-1.5 text-accent-11 bg-accentA-3 rounded-full"
+                                className="text-accent-11 bg-accentA-3 rounded-full px-3 py-1.5"
                               >
                                 <CheckCircle className="shrink-0" size={16} />
                                 <Text weight="medium" size="1">
@@ -499,7 +495,7 @@ const SearchPage: FC = () => {
                             ) : (
                               <Flex
                                 align="center"
-                                className="gap-1.5 px-3 py-1.5 bg-grayA-1 text-gray-11 rounded-full"
+                                className="bg-grayA-1 text-gray-11 gap-1.5 rounded-full px-3 py-1.5"
                               >
                                 <Clock className="shrink-0" size={16} />
                                 <Text weight="medium" size="1">
@@ -511,7 +507,7 @@ const SearchPage: FC = () => {
                             {selectedDepartment.mobilePoint && (
                               <Flex
                                 align="center"
-                                className="gap-1.5 px-3 py-1.5 bg-grayA-2 text-gray-12 rounded-full"
+                                className="bg-grayA-2 text-gray-12 gap-1.5 rounded-full px-3 py-1.5"
                               >
                                 <Truck size={12} />
                                 <Text weight="medium" size="1">
@@ -524,7 +520,11 @@ const SearchPage: FC = () => {
 
                         {/* Message if exists */}
                         {selectedDepartment.message && (
-                          <Callout.Root color="indigo" size="1" className="mt-4">
+                          <Callout.Root
+                            color="indigo"
+                            size="1"
+                            className="mt-4"
+                          >
                             <Callout.Icon>
                               <Info size={16} />
                             </Callout.Icon>
@@ -540,7 +540,7 @@ const SearchPage: FC = () => {
                   {/* Schedule Section */}
                   {!selectedDepartment.mobilePoint && (
                     <Card size="3">
-                      <div className="flex items-center gap-2 mb-4 text-card-foreground">
+                      <div className="text-card-foreground mb-4 flex items-center gap-2">
                         <Clock size={22} />
                         <Heading weight="bold" as="h2" size="6">
                           Расписание работы
@@ -578,7 +578,7 @@ const SearchPage: FC = () => {
                             <Card
                               key={key}
                               className={cn(
-                                "flex items-center justify-between py-2 px-4 rounded-md",
+                                "flex items-center justify-between rounded-md px-4 py-2",
                                 isToday &&
                                   "[&.rt-Card:where(.rt-variant-surface)::after]:[box-shadow:0_0_0_1px_color-mix(in_oklab,_var(--accent-a5),_var(--gray-5)_25%)]",
                                 !isToday && "",
@@ -598,7 +598,7 @@ const SearchPage: FC = () => {
                                   <Text
                                     size="1"
                                     // trim="both"
-                                    className="text-accent-11 bg-accentA-3 px-2 py-0.5 rounded-full font-bold"
+                                    className="text-accent-11 bg-accentA-3 rounded-full px-2 py-0.5 font-bold"
                                   >
                                     Сегодня
                                   </Text>
@@ -606,7 +606,7 @@ const SearchPage: FC = () => {
                               </div>
                               <Text
                                 className={cn(
-                                  "text-sm font-normal text-grayA-11",
+                                  "text-grayA-11 text-sm font-normal",
                                   isToday && "text-accent-11 font-medium",
                                 )}
                               >
@@ -630,7 +630,7 @@ const SearchPage: FC = () => {
                       </Flex>
                       <Card
                         size="4"
-                        className="overflow-hidden bg-grayA-2 min-h-[300px] flex items-center justify-center"
+                        className="bg-grayA-2 flex min-h-[300px] items-center justify-center overflow-hidden"
                       >
                         {/* You can replace this with actual map implementation */}
                         <Text align="center" as="div">
@@ -641,7 +641,7 @@ const SearchPage: FC = () => {
                           <Text as="p" className="text-gray-12 text-sm">
                             Карта будет загружена здесь
                           </Text>
-                          <Text as="p" className="text-xs text-gray-11 mt-1">
+                          <Text as="p" className="text-gray-11 mt-1 text-xs">
                             {selectedDepartment.address}
                           </Text>
                         </Text>
@@ -652,7 +652,7 @@ const SearchPage: FC = () => {
               )}
             </div>
           </div>
-          <div className="sticky hidden top-[calc(var(--header-height)+1px)] ml-auto h-[calc(100svh-var(--header-height))] w-72 flex-col gap-4 overflow-hidden pb-8" />
+          <div className="sticky top-[calc(var(--header-height)+1px)] ml-auto hidden h-[calc(100svh-var(--header-height))] w-72 flex-col gap-4 overflow-hidden pb-8" />
         </div>
       </div>
     </div>

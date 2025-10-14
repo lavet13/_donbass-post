@@ -30,16 +30,11 @@ export function sonner(toast: Omit<ToastProps, "id">) {
 const Toast: FC<ToastProps> = (props) => {
   const { title, description, button, id } = props;
 
-  const styles = getComputedStyle(document.documentElement);
-  const mdBreakpoint = styles.getPropertyValue("--breakpoint-md");
-
-  const isMobile = useMediaQuery(`(max-width: ${mdBreakpoint})`);
-
   return (
     <div className="flex flex-col rounded-lg bg-background shadow-3 w-full md:w-[364px] items-center p-4">
       <div className="flex w-full items-start">
         <div className="w-full">
-          <Text weight="medium" size="2" mb="2" as="p" className="text-gray-12">
+          <Text weight="medium" size="3" mb="2" as="p" className="text-gray-12">
             {title}
           </Text>
           {description}
@@ -48,11 +43,10 @@ const Toast: FC<ToastProps> = (props) => {
       <div className="w-full md:w-auto mt-rx-3 md:mt-rx-2 md:ml-auto shrink-0">
         <Button
           className="w-full"
-          color="gray"
-          size={isMobile ? "2" : "1"}
-          radius="small"
-          variant="surface"
-          highContrast
+          color="red"
+          size="2"
+          radius="full"
+          variant="solid"
           onClick={() => {
             button.onClick?.();
             sonnerToast.dismiss(id);

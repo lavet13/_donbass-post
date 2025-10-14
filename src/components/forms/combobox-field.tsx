@@ -116,11 +116,11 @@ const ComboboxGroupField: FC<
         title={selectedEntry?.label}
         {...props}
       >
-        <div className="flex shrink items-center min-w-0">
+        <div className="flex min-w-0 shrink items-center">
           {!selectedEntry ? (
             <span className="truncate text-sm">{placeholder}</span>
           ) : (
-            <span className="text-grayA-12 font-medium truncate text-sm">
+            <span className="text-grayA-12 truncate text-sm font-medium">
               {selectedEntry.name || selectedEntry.label}
             </span>
           )}
@@ -131,7 +131,7 @@ const ComboboxGroupField: FC<
           <Tooltip content={selectedEntryClearTooltipMessage}>
             <span
               tabIndex={0}
-              className="pointer-events-auto shrink-0 rounded-full [&_svg]:size-5! rt-reset rt-BaseButton rt-r-size-1 rt-variant-ghost rt-IconButton"
+              className="rt-reset rt-BaseButton rt-r-size-1 rt-variant-ghost rt-IconButton pointer-events-auto shrink-0 rounded-full [&_svg]:size-5!"
               aria-label={selectedEntryClearTooltipMessage}
               onClick={(e) => {
                 e.preventDefault();
@@ -172,11 +172,12 @@ const ComboboxGroupField: FC<
           scrollProps={{ type: modal ? "auto" : "always" }}
           className={cn(modal && `h-auto max-h-fit`)}
         >
-          {isLoading ? (
+          {isLoading && (
             <CommandLoading label={loadingMessage}>
               {loadingMessage}
             </CommandLoading>
-          ) : (
+          )}
+          {!!entries.length && !isLoading && (
             <CommandEmpty>{searchEmptyMessage}</CommandEmpty>
           )}
           {entries.length !== 0 &&
@@ -217,9 +218,8 @@ const ComboboxGroupField: FC<
                 {valuesIdx !== entries.length - 1 && <CommandSeparator />}
               </Fragment>
             ))}
-
           {!entries.length && !isLoading && refetch && (
-            <p className="flex flex-col items-center justify-center py-2 text-center text-sm text-grayA-11">
+            <p className="text-grayA-11 flex flex-col items-center justify-center py-2 text-center text-sm">
               {refetchErrorMessage}
               <Button
                 variant="surface"
@@ -244,25 +244,25 @@ const ComboboxGroupField: FC<
           <DrawerTrigger asChild>{renderTrigger()}</DrawerTrigger>
           <DrawerContent
             aria-describedby={undefined}
-            className="rounded-t-lg w-full h-full! lg:max-h-full max-h-[calc(100vh-0.75rem)] top-3 lg:top-0 border border-grayA-6"
+            className="border-grayA-6 top-5 h-full! max-h-[calc(100vh-1.25rem)] w-full rounded-t-lg border lg:top-0 lg:max-h-full"
             role="listbox"
           >
             <DrawerHandle />
-            <div className="w-full overflow-y-auto flex flex-1">
-              <div className="grow shrink sticky top-0" />
-              <div className="shrink-1 max-w-4xl w-full">
+            <div className="flex w-full flex-1 overflow-y-auto">
+              <div className="sticky top-0 shrink grow" />
+              <div className="w-full max-w-4xl shrink-1">
                 <VisuallyHidden>
                   <DrawerTitle>{searchInputPlaceholder}</DrawerTitle>
                 </VisuallyHidden>
                 {renderContent({ shouldFocus: true })}
               </div>
               <div
-                className="grow shrink cursor-pointer sticky top-0 hover:bg-secondary/10"
+                className="hover:bg-secondary/10 sticky top-0 shrink grow cursor-pointer"
                 onClick={() => setOpen(false)}
               >
                 <Tooltip content="Закрыть модальное окно">
                   <button
-                    className="hidden text-red-11 hover:bg-red-3 active:bg-red-4 absolute top-1 left-1 ml-auto pointer-events-auto cursor-pointer shrink-0 lg:inline-flex justify-center items-center size-8 rounded-full [&_svg]:size-4 outline-none focus-visible:ring-red-8 focus-visible:ring-[2px]"
+                    className="text-red-11 hover:bg-red-3 active:bg-red-4 focus-visible:ring-red-8 pointer-events-auto absolute top-1 left-1 ml-auto hidden size-8 shrink-0 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-[2px] lg:inline-flex [&_svg]:size-4"
                     aria-label="Закрыть окно"
                     type="button"
                     onClick={() => setOpen(false)}
@@ -283,7 +283,7 @@ const ComboboxGroupField: FC<
             role="listbox"
             sideOffset={2}
             style={{ width: `${bounds?.width}px` }}
-            className={`p-0 rounded-sm`}
+            className={`rounded-sm p-0`}
           >
             {renderContent()}
           </Popover.Content>

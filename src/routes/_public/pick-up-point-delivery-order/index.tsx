@@ -1,7 +1,7 @@
-import PickUpPointDeliveryOrderPage from "@/features/pick-up-point-delivery-order/page";
+import { PickUpPointDeliveryOrderPage } from "@/routes/_public/pick-up-point-delivery-order/-shared";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_public/pick-up-point-delivery-order")({
+export const Route = createFileRoute("/_public/pick-up-point-delivery-order/")({
   component: PickUpPointDeliveryOrderComponent,
 });
 

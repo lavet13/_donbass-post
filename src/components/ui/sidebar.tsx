@@ -303,7 +303,7 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
             <HoverCard.Content
               side="right"
               align="start"
-              sideOffset={0}
+              sideOffset={-5}
               className={cn(
                 "w-[240px]",
                 "outline-hidden z-0",

@@ -216,12 +216,12 @@
       background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: hsl(var(--border));
+      background: var(--gray-6);
       border-radius: 5px;
     }
     * {
       scrollbar-width: thin;
-      scrollbar-color: hsl(var(--border)) transparent;
+      scrollbar-color: var(--gray-a7) transparent;
     }
   }
 }

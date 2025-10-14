@@ -1,13 +1,13 @@
 import { useAppForm } from "@/hooks/form";
-import { defaultShopCostCalculationOrderOpts } from "@/features/shop-cost-calculation-order/shared-form";
-import { ShopCostCalculationOrderForm } from "@/features/shop-cost-calculation-order/nested-form";
-import { useShopCostCalculationOrderMutation } from "./mutations";
+import { defaultShopCostCalculationOrderOpts } from "@/routes/_public/shop-cost-calculation-order/-shared/shared-form";
+import { ShopCostCalculationOrderForm } from "@/routes/_public/shop-cost-calculation-order/-shared/nested-form";
+import { useShopCostCalculationOrderMutation } from "@/features/shop-cost-calculation-order/mutations";
 import { isAxiosError } from "axios";
 import { cn, transformApiErrorsToFormErrors } from "@/lib/utils";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Suspend } from "@/components/suspend";
 import { Fragment, type FC } from "react";
-import type { ShopCostCalculationOrderVariables } from "./types";
+import type { ShopCostCalculationOrderVariables } from "@/features/shop-cost-calculation-order/types";
 
 const ShopCostCalculationOrderPage: FC = () => {
   const { mutateAsync: sendShopCostCalculationOrder } =
@@ -47,7 +47,7 @@ const ShopCostCalculationOrderPage: FC = () => {
           ...prev,
           isOpen: true,
           extra: [
-            <Fragment>
+            <Fragment key="megalul">
               {[
                 {
                   label: "Пункт выдачи:",
@@ -66,8 +66,8 @@ const ShopCostCalculationOrderPage: FC = () => {
             `Мы отправили письмо с заполненными данными на вашу почту: ${payload.shopCostCalculationOrder.email}`,
             `Это письмо сформировано автоматически службой уведомлений сайта компании.`,
             `Отвечать на него не нужно.`,
-            <br />,
-            <p className="font-bold text-sm">
+            <br key="break-me" />,
+            <p key="the-mEsSaGe" className="text-sm font-bold">
               В случае не соответствия повторите заказ.
             </p>,
           ],

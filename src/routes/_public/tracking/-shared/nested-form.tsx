@@ -1,15 +1,15 @@
 import { withForm } from "@/hooks/form";
-import { defaultCargoTrackingOpts } from "@/features/cargo-tracking/shared-form";
+import { defaultCargoTrackingOpts } from "@/routes/_public/tracking/-shared/shared-form";
 import { Search, X } from "lucide-react";
 import { IconButton, TextField, Tooltip } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
 import { useSearch } from "@tanstack/react-router";
-import { Route } from "@/routes/_public/tracking";
 import { useEffect } from "react";
-import { useCargoTrackingQuery } from "./queries";
+import { useCargoTrackingQuery } from "@/features/cargo-tracking/queries";
 import { keepPreviousData } from "@tanstack/react-query";
-import { useTrackingRostovQuery } from "../tracking/queries";
-import { useInternetMagazinePromo } from "../im-tracking/queries";
+import { useTrackingRostovQuery } from "@/features/tracking/queries";
+import { useInternetMagazinePromo } from "@/features/im-tracking/queries";
+import { Route } from "@/routes/_public/tracking/index";
 
 export const CargoTrackingForm = withForm({
   ...defaultCargoTrackingOpts,
@@ -43,7 +43,7 @@ export const CargoTrackingForm = withForm({
 
     useEffect(() => {
       form.setFieldValue("trackingNumber", query, { dontValidate: true });
-    }, [query]);
+    }, [form, query]);
 
     return (
       <form
@@ -55,21 +55,13 @@ export const CargoTrackingForm = withForm({
       >
         <div
           className={cn(
-            "flex flex-col gap-2 xs:gap-0 xs:flex-row xs:items-center [&_div[class~='rt-TextFieldRoot']]:rounded-e-none [&_button[class~='rt-BaseButton'][type='submit']]:rounded-s-none xs:[&_button[class~='rt-BaseButton'][type='submit']]:self-start",
+            "xs:gap-0 xs:flex-row xs:items-center xs:[&_button[class~='rt-BaseButton'][type='submit']]:self-start flex flex-col gap-2 [&_button[class~='rt-BaseButton'][type='submit']]:rounded-s-none [&_div[class~='rt-TextFieldRoot']]:rounded-e-none",
             "xs:[&_div[class~='rt-TextFieldRoot']]:rounded-s-xl xs:[&_button[class~='rt-BaseButton'][type='submit']]:rounded-e-xl",
-            "[&_div[class~='rt-TextFieldRoot']]:rounded-s-none [&_button[class~='rt-BaseButton'][type='submit']]:rounded-e-none",
+            "[&_button[class~='rt-BaseButton'][type='submit']]:rounded-e-none [&_div[class~='rt-TextFieldRoot']]:rounded-s-none",
           )}
         >
           <form.AppField
             name="trackingNumber"
-            validators={{
-              onChange: ({ value }) => {
-                if (!value.trim().length) {
-                  return "Поле обязательно к заполнению!";
-                }
-                return undefined;
-              },
-            }}
             children={(field) => (
               <field.TextField
                 className="w-full"
@@ -96,6 +88,7 @@ export const CargoTrackingForm = withForm({
 
           <form.AppForm>
             <form.SubmitButton
+              variant="classic"
               loading={isFetching || rostovLoading || promoLoading}
               loadingMessage="Проверяем..."
               label="Искать"

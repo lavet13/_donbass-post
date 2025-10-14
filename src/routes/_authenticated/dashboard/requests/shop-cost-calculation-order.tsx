@@ -13,7 +13,7 @@ export const Route = createFileRoute(
     context.queryClient.ensureQueryData(
       shopCostCalculationOrderUserQueryOptions,
     ),
-  errorComponent({ error, reset }) {
+  errorComponent: function ErrorComponent({ error, reset }) {
     const pathname = useLocation({
       select: (location) => location.pathname,
     });

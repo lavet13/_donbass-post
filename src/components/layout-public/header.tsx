@@ -18,7 +18,7 @@ import {
   NavigationMenuViewport,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
-import { Menu, Package, ShoppingBag } from "lucide-react";
+import { HandbagIcon, Menu, Package } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -32,7 +32,7 @@ const ListItem: FC<LinkProps & ComponentProps<"a">> = ({
     <li>
       <NavigationMenuLink asChild>
         <Link className="text-accent-12 hover:bg-accent-3" to={to} {...props}>
-          <Text className="leading-rx-4" as={"p"} size="2">
+          <Text className="leading-rx-4" as="span" size="2">
             {children}
           </Text>
         </Link>
@@ -96,7 +96,7 @@ export const Header: FC = () => {
     {
       label: "Интернет заказы",
       triggerStyles: "py-2.5 px-4.5",
-      icon: <ShoppingBag />,
+      icon: <HandbagIcon />,
       items: linkOptions([
         {
           label: "Оформление заявки на просчет стоимости на выкуп заказов",

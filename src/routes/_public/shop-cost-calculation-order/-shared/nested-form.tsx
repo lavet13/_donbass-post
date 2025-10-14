@@ -1,5 +1,5 @@
 import { withForm } from "@/hooks/form";
-import { defaultShopCostCalculationOrderOpts } from "@/features/shop-cost-calculation-order/shared-form";
+import { defaultShopCostCalculationOrderOpts } from "@/routes/_public/shop-cost-calculation-order/-shared/shared-form";
 import React, { Fragment, useState } from "react";
 import { Button, Card, Heading, Separator, Tooltip } from "@radix-ui/themes";
 import { z } from "zod";
@@ -65,8 +65,8 @@ export const ShopCostCalculationOrderForm = withForm({
 
     return (
       <div className="mx-auto w-full max-w-2xl">
-        <div className="h-4 xs:h-2 shrink-0" />
-        <TypographyH2 className="text-start sm:text-center pb-2">
+        <div className="xs:h-2 h-4 shrink-0" />
+        <TypographyH2 className="pb-2 text-start sm:text-center">
           Оформление заявки на просчет стоимости на{" "}
           <HighlightText>выкуп заказов</HighlightText>
         </TypographyH2>
@@ -84,7 +84,7 @@ export const ShopCostCalculationOrderForm = withForm({
             }}
           >
             <TypographyH3 className="sm:mb-1">Получатель</TypographyH3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 sm:gap-3">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 md:grid-cols-2">
               {/* Получатель */}
               <form.AppField
                 name="shopCostCalculationOrder.surname"
@@ -180,7 +180,7 @@ export const ShopCostCalculationOrderForm = withForm({
               />
             </div>
 
-            <Separator size="2" className="mx-auto sm:my-rx-4 my-rx-3" />
+            <Separator size="2" className="sm:my-rx-4 my-rx-3 mx-auto" />
             <TypographyH3 className="sm:mb-1">Пункт выдачи</TypographyH3>
 
             {/* Пункт выдачи*/}
@@ -213,7 +213,7 @@ export const ShopCostCalculationOrderForm = withForm({
               />
             </div>
 
-            <Separator size="2" className="mx-auto sm:my-rx-4 my-rx-3" />
+            <Separator size="2" className="sm:my-rx-4 my-rx-3 mx-auto" />
             <TypographyH3 className="sm:mb-1">Заказ</TypographyH3>
 
             {/* Заказ */}
@@ -222,7 +222,7 @@ export const ShopCostCalculationOrderForm = withForm({
               mode="array"
               children={(shopsField) => {
                 return (
-                  <div className="grid mb-rx-5 sm:mb-rx-6">
+                  <div className="mb-rx-5 sm:mb-rx-6 grid">
                     {shopsField.state.value.map((_, shopIndex) => {
                       return (
                         <React.Fragment key={shopIndex}>
@@ -230,12 +230,12 @@ export const ShopCostCalculationOrderForm = withForm({
                             <Fragment>
                               <Separator
                                 size="2"
-                                className="mx-auto sm:my-rx-5 my-rx-3"
+                                className="sm:my-rx-5 my-rx-3 mx-auto"
                               />
-                              <div className="flex justify-between items-center mt-2">
+                              <div className="mt-2 flex items-center justify-between">
                                 <Tooltip content="Удалить магазин и товары">
                                   <button
-                                    className="text-redA-11 relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-redA-3 active:bg-redA-4 outline-none focus-visible:ring-red-8 focus-visible:ring-[2px]"
+                                    className="text-redA-11 hover:bg-redA-3 active:bg-redA-4 focus-visible:ring-red-8 pointer-events-auto relative -bottom-1 ml-auto inline-flex size-6 shrink-0 cursor-default items-center justify-center rounded-full outline-none focus-visible:ring-[2px] [&_svg]:size-3"
                                     aria-label="Удалить магазин и товары"
                                     type="button"
                                     onClick={() =>
@@ -283,7 +283,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                     (_, productIndex) => {
                                       return (
                                         <React.Fragment key={productIndex}>
-                                          <div className="relative flex flex-col gap-1 mt-2 px-2 py-1 ml-1">
+                                          <div className="relative mt-2 ml-1 flex flex-col gap-1 px-2 py-1">
                                             {productIndex === 0 && (
                                               <Heading
                                                 size="2"
@@ -294,7 +294,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                               </Heading>
                                             )}
                                             {productIndex !== 0 && (
-                                              <div className="flex justify-between items-center mt-2">
+                                              <div className="mt-2 flex items-center justify-between">
                                                 <Heading
                                                   size="2"
                                                   as="h3"
@@ -304,7 +304,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                                 </Heading>
                                                 <Tooltip content="Удалить товар">
                                                   <button
-                                                    className="text-redA-11 relative -bottom-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 hover:bg-redA-3 active:bg-redA-4 outline-none focus-visible:ring-red-8 focus-visible:ring-[2px]"
+                                                    className="text-redA-11 hover:bg-redA-3 active:bg-redA-4 focus-visible:ring-red-8 pointer-events-auto relative -bottom-1 ml-auto inline-flex size-6 shrink-0 cursor-default items-center justify-center rounded-full outline-none focus-visible:ring-[2px] [&_svg]:size-3"
                                                     aria-label="Удалить товар"
                                                     type="button"
                                                     onClick={() =>
@@ -321,7 +321,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                               </div>
                                             )}
 
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
+                                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-2">
                                               <form.AppField
                                                 name={`shopCostCalculationOrderPosition[${shopIndex}].products[${productIndex}].link`}
                                                 validators={{
@@ -408,7 +408,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                     },
                                   )}
 
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
+                                  <div className="mt-2 grid grid-cols-1 gap-2 sm:ml-2 sm:grid-cols-2 sm:pl-2">
                                     <Button
                                       className="[&_svg]:size-4"
                                       variant="soft"
@@ -434,7 +434,7 @@ export const ShopCostCalculationOrderForm = withForm({
                       );
                     })}
 
-                    <div className="grid sm:grid-cols-2 gap-2 mt-2 sm:pl-2 sm:ml-2">
+                    <div className="mt-2 grid gap-2 sm:ml-2 sm:grid-cols-2 sm:pl-2">
                       <Button
                         className="[&_svg]:size-4"
                         variant="soft"
@@ -463,7 +463,7 @@ export const ShopCostCalculationOrderForm = withForm({
               )}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-2">
               <form.AppForm>
                 <form.SubmitButton label="Зарегистрировать" />
               </form.AppForm>
