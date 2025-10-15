@@ -10,33 +10,48 @@ const Bar: FC<
   }
 > = ({ animationDuration, progress, isFinished }) => {
   return (
-    <div
-      style={{
-        background: "var(--red-9)",
-        height: 2,
-        left: 0,
-        marginLeft: isFinished ? `-100%` : `${(-1 + progress) * 100}%`,
-        position: "fixed",
-        top: 0,
-        transition: `margin-left ${animationDuration}ms ease-out`,
-        width: "100%",
-        zIndex: 1031,
-      }}
-    >
+    <>
+      {/* Background bar */}
       <div
         style={{
-          boxShadow:
-            "0 0 10px var(--red-9), 0 0 5px var(--red-10)",
-          display: "block",
-          height: "100%",
-          opacity: 1,
-          position: "absolute",
-          right: 0,
-          transform: "rotate(3deg) translate(0px, -4px)",
-          width: 100,
+          background: "var(--gray-6)", // Semi-transparent background
+          height: 2,
+          left: 0,
+          position: "fixed",
+          top: 0,
+          width: "100%",
+          zIndex: 1030,
         }}
       />
-    </div>
+
+      {/* Progress bar */}
+      <div
+        style={{
+          background: "var(--red-9)",
+          height: 2,
+          left: 0,
+          marginLeft: isFinished ? `-100%` : `${(-1 + progress) * 100}%`,
+          position: "fixed",
+          top: 0,
+          transition: `margin-left ${animationDuration}ms ease-out`,
+          width: "100%",
+          zIndex: 1031,
+        }}
+      >
+        <div
+          style={{
+            boxShadow: "0 0 10px var(--red-9), 0 0 5px var(--red-10)",
+            display: "block",
+            height: "100%",
+            opacity: 1,
+            position: "absolute",
+            right: 0,
+            transform: "rotate(3deg) translate(0px, -4px)",
+            width: 100,
+          }}
+        />
+      </div>
+    </>
   );
 };
 

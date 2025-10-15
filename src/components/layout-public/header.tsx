@@ -107,10 +107,10 @@ export const Header: FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 w-full h-14 z-10 flex bg-background dark:bg-grayA-2 dark:backdrop-blur-lg border-b border-grayA-6">
-      <div className="flex items-center w-full px-3.5">
-        <div className="relative h-full w-full flex justify-between items-center">
-          <div className="flex-none flex gap-3 items-center">
+    <header className="bg-background dark:bg-grayA-2 border-grayA-6 sticky top-0 z-10 flex h-14 w-full border-b dark:backdrop-blur-lg">
+      <div className="flex w-full items-center px-3.5">
+        <div className="relative flex h-full w-full items-center justify-between">
+          <div className="flex flex-none items-center gap-3">
             <Tooltip content="Меню">
               <IconButton
                 size="3"
@@ -122,18 +122,18 @@ export const Header: FC = () => {
               </IconButton>
             </Tooltip>
             <Link
-              className="select-none hidden md:block data-[status=active]:animate-[glow_10s_ease-in-out_infinite]"
+              className="hidden select-none data-[status=active]:animate-[glow_10s_ease-in-out_infinite] md:block"
               to="/"
               activeOptions={{ exact: true }}
             >
               <img
-                className="w-[220px] h-full"
+                className="h-full w-[220px]"
                 src={`${import.meta.env.BASE_URL}/logomini_np-bsd.png`}
                 alt={`Лого "Наша Почта - почта по-новому" Партнер "БСД"`}
               />
             </Link>
           </div>
-          <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 flex-1 shrink-0 flex items-center justify-center">
+          <div className="absolute top-1/2 left-1/2 flex flex-1 shrink-0 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
             <NavigationMenu
               delayDuration={0}
               skipDelayDuration={0}
@@ -145,7 +145,7 @@ export const Header: FC = () => {
                     <NavigationMenuTrigger
                       className={cn(
                         items.some(({ to }) => pathname.includes(to)) &&
-                          "[&[data-state='open']]:bg-accentA-3 [box-shadow:inset_0_0_0_1px_var(--accent-a11)] [&>svg]:rotate-10",
+                          "[&[data-state='open']]:bg-accentA-3 [box-shadow:inset_0_0_0_1px_var(--accent-a11)] [&>svg]:scale-110 [&>svg]:rotate-10",
                         triggerStyles,
                       )}
                       ref={(node) => onNodeUpdate(node, label)}
@@ -165,7 +165,7 @@ export const Header: FC = () => {
                           >
                             {label}
                           </Heading>
-                          <ul className="grid m-0 gap-[10px] list-none shrink-0 w-[calc(100svw-4rem)] xs:w-[400px] sm:w-[600px] sm:grid-cols-2">
+                          <ul className="xs:w-[400px] m-0 grid w-[calc(100svw-4rem)] shrink-0 list-none gap-[10px] sm:w-[600px] sm:grid-cols-2">
                             {items.map(({ label, to }) => (
                               <ListItem key={to} to={to}>
                                 {label}
@@ -186,7 +186,7 @@ export const Header: FC = () => {
               />
             </NavigationMenu>
           </div>
-          <div className="flex-none flex items-center justify-end">
+          <div className="flex flex-none items-center justify-end">
             <Tooltip content={content}>
               <ModeToggle size="3" />
             </Tooltip>
