@@ -788,6 +788,11 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       />
                       <form.AppField
                         name="recipient.deliveryCompany"
+                        validators={{
+                          onChange: () => {
+                            return undefined;
+                          },
+                        }}
                         children={(field) => {
                           return (
                             <field.ComboboxField
@@ -985,6 +990,11 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       />
                       <form.AppField
                         name="recipient.deliveryCompany"
+                        validators={{
+                          onChange: () => {
+                            return undefined;
+                          },
+                        }}
                         children={(field) => {
                           return (
                             <field.ComboboxField
@@ -1022,7 +1032,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       pressed={field.state.value}
                       onPressedChange={field.handleChange}
                     >
-                      <span className="min-w-0 flex-shrink flex-1 truncate">
+                      <span className="min-w-0 flex-1 flex-shrink truncate">
                         Заказчик(по выбору клиента)
                       </span>
                       {field.state.value ? <ChevronDown /> : <ChevronUp />}
@@ -1716,6 +1726,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               </form.AppForm>
               <div className="flex flex-col gap-1.5">
                 <Button
+                  variant="classic"
                   disabled={isLoading || isPlaceholderData}
                   type="button"
                   onClick={handleCalculation}
@@ -1733,7 +1744,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
                   <div
                     className={cn(
                       "bg-accentA-3 text-accentA-11 flex items-center justify-center rounded-md py-2 text-3xl font-bold",
-                      isPlaceholderData && "brightness-75",
+                      isPlaceholderData &&
+                        "animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite] opacity-70",
                     )}
                   >
                     {calculateDeliveryResult.price +

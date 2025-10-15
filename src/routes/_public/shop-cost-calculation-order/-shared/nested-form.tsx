@@ -1,6 +1,6 @@
 import { withForm } from "@/hooks/form";
 import { defaultShopCostCalculationOrderOpts } from "@/routes/_public/shop-cost-calculation-order/-shared/shared-form";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, type ReactNode } from "react";
 import { Button, Card, Heading, Separator, Tooltip } from "@radix-ui/themes";
 import { z } from "zod";
 import { getEmailErrorMessage } from "@/lib/utils";
@@ -8,16 +8,13 @@ import { isPossiblePhoneNumber } from "react-phone-number-input";
 import { usePointPostQuery } from "@/features/point/queries";
 import { PackagePlus, Store, X } from "lucide-react";
 import { AccessibleIcon } from "@radix-ui/themes";
-import {
-  AutoDismissMessage,
-  type AutoDimissMessageProps,
-} from "@/components/auto-dismiss-message";
 import { useBlocker } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-form";
 import { TypographyH2 } from "@/components/typography/typographyH2";
 import { HighlightText } from "@/components/typography/highlight-text";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { TypographyH3 } from "@/components/typography/typographyH3";
+import * as AutoDismissMessage from "@/components/ui/auto-dismiss-message";
 
 // https://colinhacks.com/essays/reasonable-email-regex
 // Исходный regex из Zod:
@@ -34,13 +31,8 @@ export const ShopCostCalculationOrderForm = withForm({
       refetch: refetchPoints,
     } = usePointPostQuery();
 
-    const [message, setMessage] = useState<AutoDimissMessageProps>({
-      title: "Регистрация успешно проведена!",
-      variant: "success",
-      onClose: () => setMessage((prev) => ({ ...prev, isOpen: false })),
-      isOpen: false,
-      durationMs: 60_000,
-    });
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState<ReactNode | ReactNode[]>(null);
 
     const isDefaultValue = useStore(
       form.store,
@@ -70,17 +62,25 @@ export const ShopCostCalculationOrderForm = withForm({
           Оформление заявки на просчет стоимости на{" "}
           <HighlightText>выкуп заказов</HighlightText>
         </TypographyH2>
-        {message.isOpen && (
-          <Card my="2" size={isMobile ? "2" : "3"}>
-            <AutoDismissMessage {...message} />
-          </Card>
-        )}
+        <AutoDismissMessage.Root
+          open={open}
+          onOpenChange={setOpen}
+          durationMs={10_000}
+        >
+          <AutoDismissMessage.Container>
+            <AutoDismissMessage.Title>
+              Регистрация заявки на просчет стоимости успешно проведена!
+            </AutoDismissMessage.Title>
+            <AutoDismissMessage.Content>{message}</AutoDismissMessage.Content>
+            <AutoDismissMessage.Close />
+          </AutoDismissMessage.Container>
+        </AutoDismissMessage.Root>
         <Card my="2" size={isMobile ? "2" : "3"}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              void form.handleSubmit({ onSubmit: setMessage });
+              void form.handleSubmit({ setMessage, setOpen });
             }}
           >
             <TypographyH3 className="sm:mb-1">Получатель</TypographyH3>

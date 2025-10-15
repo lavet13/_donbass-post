@@ -45,8 +45,8 @@ export const AutoDismissMessage: FC<AutoDimissMessageProps> = ({
   };
 
   const remainingTime = useMessageTimer({
-    isOpen,
-    onClose: handleCloseDismissMessage,
+    open: isOpen,
+    onEnd: handleCloseDismissMessage,
     durationMs,
   });
 
@@ -79,7 +79,7 @@ export const AutoDismissMessage: FC<AutoDimissMessageProps> = ({
       {isOpen && (
         <div
           className={cn(
-            "relative flex flex-col border border-input rounded-lg gap-y-1 p-3 mb-2",
+            "border-input relative mb-2 flex flex-col gap-y-1 rounded-lg border p-3",
             variant === "success" &&
               "text-success-foreground bg-success border-success-border",
             variant === "info" &&
@@ -119,7 +119,7 @@ export const AutoDismissMessage: FC<AutoDimissMessageProps> = ({
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               className={cn(
-                "absolute text-sm top-1 right-1 ml-auto pointer-events-auto cursor-default shrink-0 inline-flex justify-center items-center size-6 rounded-full [&_svg]:size-3 [&_svg]:shrink-0 hover:bg-popover-foreground/10 active:bg-popover-foreground/15 outline-none",
+                "hover:bg-popover-foreground/10 active:bg-popover-foreground/15 pointer-events-auto absolute top-1 right-1 ml-auto inline-flex size-6 shrink-0 cursor-default items-center justify-center rounded-full text-sm outline-none [&_svg]:size-3 [&_svg]:shrink-0",
                 "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
                 variant === "success" &&
                   "focus-visible:border-success-ring focus-visible:ring-success-ring/50",
@@ -129,9 +129,9 @@ export const AutoDismissMessage: FC<AutoDimissMessageProps> = ({
                   "focus-visible:border-warning-ring focus-visible:ring-warning-ring/50",
                 variant === "error" &&
                   "focus-visible:border-destructive-ring focus-visible:ring-destructive-ring/50",
-                isHovered && "px-1.5 gap-0 justify-between w-11",
+                isHovered && "w-11 justify-between gap-0 px-1.5",
                 remainingTime < 5 &&
-                  "px-1.5 gap-0 justify-between w-11 animate-pulse",
+                  "w-11 animate-pulse justify-between gap-0 px-1.5",
               )}
               aria-label="Закрыть сообщение"
               type="button"

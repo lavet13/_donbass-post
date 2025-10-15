@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 
 export const useMessageTimer = ({
   open,
-  onClose,
+  onEnd,
   durationMs,
 }: {
   open: boolean;
-  onClose?: () => void;
+  onEnd?: () => void;
   durationMs: number;
 }) => {
   const [count, setCount] = useState(durationMs / 1000);
@@ -25,7 +25,7 @@ export const useMessageTimer = ({
       });
 
       if (nextCount === 0) {
-        onClose?.();
+        onEnd?.();
       }
     };
 
@@ -34,7 +34,7 @@ export const useMessageTimer = ({
     return () => {
       if (intervalId) clearTimeout(intervalId);
     };
-  }, [open, durationMs, onClose]);
+  }, [open, durationMs, onEnd]);
 
   return count;
 };

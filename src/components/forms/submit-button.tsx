@@ -13,7 +13,7 @@ const SubmitButton: FC<
   className,
   label,
   icon,
-  variant = "solid",
+  variant = "classic",
   loadingMessage = "Подтверждается",
   loading = false,
   ...props

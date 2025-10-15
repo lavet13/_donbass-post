@@ -4,7 +4,12 @@ import { useMessageTimer } from "@/hooks/use-message-timer";
 import { cn, composeEventHandlers } from "@/lib/utils";
 import { Slot } from "@radix-ui/themes";
 import { CheckCircle, CircleX, Info, TriangleAlert, X } from "lucide-react";
-import React, { type ComponentProps, type FC, type SVGProps } from "react";
+import React, {
+  Fragment,
+  type ComponentProps,
+  type FC,
+  type SVGProps,
+} from "react";
 
 /* -------------------------------------------------------------------------------------------------
  * AutoDismissMessage
@@ -18,7 +23,6 @@ type AutoDismissMessageContextValue = {
   variant: Variant;
   open: boolean;
   onOpenChange(open: boolean): void;
-  onOpenToggle(): void;
   remainingTime: number;
   durationMs: number;
 };
@@ -36,7 +40,6 @@ interface AutoDismissMessageProps {
   defaultOpen?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onClose?: () => void;
   durationMs?: number;
 }
 
@@ -47,7 +50,6 @@ const AutoDismissMessage: React.FC<AutoDismissMessageProps> = (props) => {
     open: openProp,
     defaultOpen,
     onOpenChange,
-    onClose,
     durationMs = 15000,
   } = props;
 
@@ -60,9 +62,11 @@ const AutoDismissMessage: React.FC<AutoDismissMessageProps> = (props) => {
 
   const remainingTime = useMessageTimer({
     open,
-    onClose,
+    onEnd: React.useCallback(() => setOpen((open) => !open), [setOpen]),
     durationMs,
   });
+
+  if (!open) return null;
 
   return (
     <AutoDismissMessageProvider
@@ -71,10 +75,6 @@ const AutoDismissMessage: React.FC<AutoDismissMessageProps> = (props) => {
       variant={variant}
       open={open}
       onOpenChange={setOpen}
-      onOpenToggle={React.useCallback(
-        () => setOpen((prevOpen) => !prevOpen),
-        [setOpen],
-      )}
     >
       {children}
     </AutoDismissMessageProvider>
@@ -217,7 +217,23 @@ const AutoDismissMessageContent: FC<AutoDismissMessageContentProps> = (
   const { asChild = false, className, ...contentProps } = props;
   const Comp = asChild ? Slot : "div";
 
-  return <Comp className={cn("text-sm", className)} {...contentProps} />;
+  return (
+    <Comp className={cn("text-sm", className)} {...contentProps}>
+      {typeof props.children === "object" && Array.isArray(props.children)
+        ? props.children.map((node, index) => {
+            if (typeof node === "string") {
+              return (
+                <p key={index} className="text-sm">
+                  {node}
+                </p>
+              );
+            } else {
+              return <Fragment key={index}>{node}</Fragment>;
+            }
+          })
+        : props.children}
+    </Comp>
+  );
 };
 AutoDismissMessageContent.displayName = CONTENT_NAME;
 
@@ -289,23 +305,7 @@ const Description = AutoDismissMessageDescription;
 const Content = AutoDismissMessageContent;
 const Close = AutoDismissMessageClose;
 
-export {
-  AutoDismissMessage,
-  AutoDismissMessageContainer,
-  AutoDismissMessageIcon,
-  AutoDismissMessageTitle,
-  AutoDismissMessageDescription,
-  AutoDismissMessageContent,
-  AutoDismissMessageClose,
-  //
-  Root,
-  Container,
-  Icon,
-  Title,
-  Description,
-  Content,
-  Close,
-};
+export { Root, Container, Icon, Title, Description, Content, Close };
 
 export type {
   AutoDismissMessageProps,

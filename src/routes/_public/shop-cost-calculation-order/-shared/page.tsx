@@ -34,7 +34,7 @@ const ShopCostCalculationOrderPage: FC = () => {
       };
 
       try {
-        await sendShopCostCalculationOrder(payload);
+        // await sendShopCostCalculationOrder(payload);
         formApi.reset();
 
         const entries = values || [];
@@ -43,35 +43,32 @@ const ShopCostCalculationOrderPage: FC = () => {
           (entry) => entry.value === payload.shopCostCalculationOrder.pointTo,
         )!;
 
-        meta.onSubmit?.((prev) => ({
-          ...prev,
-          isOpen: true,
-          extra: [
-            <Fragment key="megalul">
-              {[
-                {
-                  label: "Пункт выдачи:",
-                  value: `${selectedEntry.name.trim()}, по адресу: ${selectedEntry.address}`,
-                },
-              ].map(({ label, value }, idx, options) => (
-                <div
-                  className={cn(options.length - 1 === idx && "py-2 pb-4")}
-                  key={`${label}${value}`}
-                >
-                  <span className="text-sm font-bold">{label} </span>
-                  <span className="text-sm">{value}</span>
-                </div>
-              ))}
-            </Fragment>,
-            `Мы отправили письмо с заполненными данными на вашу почту: ${payload.shopCostCalculationOrder.email}`,
-            `Это письмо сформировано автоматически службой уведомлений сайта компании.`,
-            `Отвечать на него не нужно.`,
-            <br key="break-me" />,
-            <p key="the-mEsSaGe" className="text-sm font-bold">
-              В случае не соответствия повторите заказ.
-            </p>,
-          ],
-        }));
+        meta.setOpen?.(true);
+        meta.setMessage?.([
+          <Fragment key="megalul">
+            {[
+              {
+                label: "Пункт выдачи:",
+                value: `${selectedEntry.name.trim()}, по адресу: ${selectedEntry.address}`,
+              },
+            ].map(({ label, value }, idx, options) => (
+              <div
+                className={cn(options.length - 1 === idx && "py-2 pb-4")}
+                key={`${label}${value}`}
+              >
+                <span className="text-sm font-bold">{label} </span>
+                <span className="text-sm">{value}</span>
+              </div>
+            ))}
+          </Fragment>,
+          `Мы отправили письмо с заполненными данными на вашу почту: ${payload.shopCostCalculationOrder.email}`,
+          `Это письмо сформировано автоматически службой уведомлений сайта компании.`,
+          `Отвечать на него не нужно.`,
+          <br key="break-me" />,
+          <p key="the-mEsSaGe" className="text-sm font-bold">
+            В случае не соответствия повторите заказ.
+          </p>,
+        ]);
       } catch (error) {
         if (isAxiosError(error)) {
           if (error.response) {
