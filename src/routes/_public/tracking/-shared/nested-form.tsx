@@ -3,7 +3,7 @@ import { defaultCargoTrackingOpts } from "@/routes/_public/tracking/-shared/shar
 import { Search, X } from "lucide-react";
 import { IconButton, TextField, Tooltip } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
-import { useSearch } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useCargoTrackingQuery } from "@/features/cargo-tracking/queries";
 import { keepPreviousData } from "@tanstack/react-query";
@@ -16,6 +16,7 @@ export const CargoTrackingForm = withForm({
   render: function Render({ form }) {
     const query =
       useSearch({ from: Route.id, select: (search) => search.q }) ?? "";
+    const navigate = useNavigate();
 
     const { isFetching } = useCargoTrackingQuery({
       trackingNumber: query,
@@ -70,7 +71,16 @@ export const CargoTrackingForm = withForm({
                     <TextField.Slot side="right">
                       <Tooltip content="Очистить поиск">
                         <IconButton
-                          onClick={() => field.handleChange("")}
+                          onClick={() => {
+                            field.handleChange("");
+                            navigate({
+                              resetScroll: false,
+                              from: Route.fullPath,
+                              search: {
+                                q: "",
+                              },
+                            });
+                          }}
                           type="button"
                           variant="ghost"
                           radius="full"

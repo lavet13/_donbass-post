@@ -107,7 +107,7 @@ export const Header: FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 w-full h-14 z-1 flex bg-background dark:bg-grayA-2 dark:backdrop-blur-lg border-b border-grayA-6">
+    <header className="sticky top-0 w-full h-14 z-10 flex bg-background dark:bg-grayA-2 dark:backdrop-blur-lg border-b border-grayA-6">
       <div className="flex items-center w-full px-3.5">
         <div className="relative h-full w-full flex justify-between items-center">
           <div className="flex-none flex gap-3 items-center">
@@ -145,7 +145,7 @@ export const Header: FC = () => {
                     <NavigationMenuTrigger
                       className={cn(
                         items.some(({ to }) => pathname.includes(to)) &&
-                          "bg-accentA-3 [box-shadow:inset_0_0_0_1px_var(--accent-a7)] [&>svg]:rotate-10",
+                          "[&[data-state='open']]:bg-accentA-3 [box-shadow:inset_0_0_0_1px_var(--accent-a11)] [&>svg]:rotate-10",
                         triggerStyles,
                       )}
                       ref={(node) => onNodeUpdate(node, label)}

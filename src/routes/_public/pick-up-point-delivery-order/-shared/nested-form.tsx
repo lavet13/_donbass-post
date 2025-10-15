@@ -1022,7 +1022,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                       pressed={field.state.value}
                       onPressedChange={field.handleChange}
                     >
-                      <span className="truncate">
+                      <span className="min-w-0 flex-shrink flex-1 truncate">
                         Заказчик(по выбору клиента)
                       </span>
                       {field.state.value ? <ChevronDown /> : <ChevronUp />}

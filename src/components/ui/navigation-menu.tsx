@@ -21,7 +21,7 @@ const NavigationMenuList: FC<
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
       className={cn(
-        "flex gap-0.5 flex-1 items-center justify-center bg-accentA-2 rounded-xl list-none p-1 py-1.5 m-0",
+        "flex gap-0.5 flex-1 items-center justify-center bg-accentA-2 rounded-xl list-none p-1 m-0",
         // "[&>li:first-of-type_button]:rounded-s-full [&>li:last-of-type_button]:rounded-e-full",
         className,
       )}
@@ -39,9 +39,9 @@ const NavigationMenuTrigger: FC<
       className={cn(
         "flex flex-1 items-center justify-center gap-[2px] rounded-xl",
         "py-2.5 px-2.5 whitespace-nowrap overflow-hidden text-ellipsis outline-none select-none",
-        "text-sm text-accent-11 bg-accentA-2 hover:bg-accentA-4 leading-none",
+        "text-sm text-accent-11 hover:bg-accentA-2 leading-none",
         "[&[data-state='open']>svg]:scale-110 [&[data-state='open']>svg]:rotate-15 [&_svg]:size-5 [&_svg]:duration-150",
-        "[&[data-state='open']]:bg-accentA-5",
+        "[&[data-state='open']]:bg-accentA-2",
         className,
       )}
       {...props}
@@ -105,8 +105,8 @@ const NavigationMenuLink: FC<
       className={cn(
         "block no-underline leading-none outline-none select-none",
         "py-2 px-3 rounded-sm",
-        "data-[status=active]:text-accent-12 text-gray-12 hover:bg-accentA-3 active:bg-accentA-4",
-        "data-[status=active]:bg-accentA-4",
+        "data-[status=active]:text-gray-12 text-gray-12 hover:bg-accentA-2 active:bg-accentA-3",
+        "data-[status=active]:bg-accentA-3",
         className,
       )}
       {...props}
