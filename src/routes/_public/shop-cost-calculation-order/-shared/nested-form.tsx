@@ -63,9 +63,10 @@ export const ShopCostCalculationOrderForm = withForm({
           <HighlightText>выкуп заказов</HighlightText>
         </TypographyH2>
         <AutoDismissMessage.Root
+          variant="info"
           open={open}
           onOpenChange={setOpen}
-          durationMs={10_000}
+          durationMs={60_000}
         >
           <AutoDismissMessage.Container>
             <AutoDismissMessage.Title>

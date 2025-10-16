@@ -74,6 +74,7 @@
   --animate-exit-to-right: exitToRight 150ms ease;
   --animate-scale-in: scaleIn 150ms ease;
   --animate-scale-out: scaleOut 150ms ease;
+  --animate-border-beam: border-beam 2s linear infinite;
 
   @keyframes enterFromRight {
     from {
@@ -169,6 +170,15 @@
       filter: drop-shadow(0 0 12px var(--accent-3))
         drop-shadow(0 0 20px var(--accent-3))
         drop-shadow(0 0 28px var(--accent-3));
+    }
+  }
+
+  @keyframes border-beam {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
     }
   }
 }

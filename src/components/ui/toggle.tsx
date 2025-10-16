@@ -17,7 +17,7 @@ const Toggle: FC<ComponentProps<typeof TogglePrimitive.Root>> = ({
       )}
       {...props}
     >
-      <span className="relative flex min-w-0 flex-1 items-center gap-0.5 leading-2 group-active:top-[1px] px-3 py-2">
+      <span className="[[data-state='on']_&]:font-medium relative flex min-w-0 flex-1 items-center gap-0.5 leading-2 group-active:top-[1px] px-3 py-2">
         {children}
       </span>
     </TogglePrimitive.Root>

@@ -1,86 +1,13 @@
-import {
-  Link,
-  linkOptions,
-  useLocation,
-  type LinkProps,
-} from "@tanstack/react-router";
-import { useState, type ComponentProps, type FC } from "react";
-import { Heading, IconButton, Text, Tooltip } from "@radix-ui/themes";
-// import { useAuth } from "@/hooks/use-auth";
+import { Link, linkOptions } from "@tanstack/react-router";
+import { type FC } from "react";
+import { IconButton, Tooltip } from "@radix-ui/themes";
 import { useTheme } from "@/hooks/use-theme";
-import { cn } from "@/lib/utils";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
-  NavigationMenuLink,
-} from "@/components/ui/navigation-menu";
 import { HandbagIcon, Menu, Package } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useMediaQuery } from "@/hooks/use-media-query";
-
-const ListItem: FC<LinkProps & ComponentProps<"a">> = ({
-  className,
-  to,
-  children,
-  ...props
-}) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <Link className="text-accent-12 hover:bg-accent-3" to={to} {...props}>
-          <Text className="leading-rx-4" as="span" size="2">
-            {children}
-          </Text>
-        </Link>
-      </NavigationMenuLink>
-    </li>
-  );
-};
+import MainNav from "../ui/main-nav";
+import MainSidebar from "../ui/main-sidebar";
 
 export const Header: FC = () => {
-  const pathname = useLocation({ select: ({ pathname }) => pathname });
-  // const { isAuthenticated } = useAuth();
-  let content = "";
-  const { theme } = useTheme();
-  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  if (theme === "dark") {
-    content = "Изменить на светлую тему";
-  } else if (theme === "light") {
-    content = "Изменить на темную тему";
-  } else {
-    content = isDark ? "Изменить на светлую тему" : "Изменить на темную тему";
-  }
-
-  const styles = getComputedStyle(document.documentElement);
-  const sm = styles.getPropertyValue("--breakpoint-sm"); // 64rem
-  const isMobile = useMediaQuery(`(max-width: ${sm})`);
-
-  // https://codesandbox.io/p/sandbox/navigation-menu-track-position-forked-fx5dtd?file=%2Fsrc%2FApp.js%3A51%2C48-51%2C51
-  const [value, setValue] = useState("");
-  const [list, setList] = useState<HTMLUListElement | null>(null);
-  const [offset, setOffset] = useState<number | null>(null);
-  const onNodeUpdate = (trigger: any, itemValue: any) => {
-    if (trigger && list && value === itemValue) {
-      const listWidth = list.offsetWidth;
-      const listCenter = listWidth / 2;
-
-      const triggerOffsetRight =
-        listWidth -
-        trigger.offsetLeft -
-        trigger.offsetWidth +
-        trigger.offsetWidth / 2;
-
-      setOffset(Math.round(listCenter - triggerOffsetRight));
-    } else if (value === "") {
-      setOffset(null);
-    }
-    return trigger;
-  };
-
   const navItems = [
     {
       label: "Грузы и посылки",
@@ -111,164 +38,35 @@ export const Header: FC = () => {
       <div className="flex w-full items-center px-3.5">
         <div className="relative flex h-full w-full items-center justify-between">
           <div className="flex flex-none items-center gap-3">
-            <Tooltip content="Меню">
-              <IconButton
-                size="3"
-                radius="full"
-                className="[&_svg]:size-4"
-                variant="ghost"
-              >
-                <Menu />
-              </IconButton>
-            </Tooltip>
-            <Link
-              className="hidden select-none data-[status=active]:animate-[glow_10s_ease-in-out_infinite] md:block"
-              to="/"
-              activeOptions={{ exact: true }}
-            >
-              <img
-                className="h-full w-[220px]"
-                src={`${import.meta.env.BASE_URL}/logomini_np-bsd.png`}
-                alt={`Лого "Наша Почта - почта по-новому" Партнер "БСД"`}
-              />
-            </Link>
+            <MainSidebar />
           </div>
           <div className="absolute top-1/2 left-1/2 flex flex-1 shrink-0 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-            <NavigationMenu
-              delayDuration={0}
-              skipDelayDuration={0}
-              onValueChange={setValue}
-            >
-              <NavigationMenuList ref={setList}>
-                {navItems.map(({ label, icon, items, triggerStyles }) => (
-                  <NavigationMenuItem key={label} value={label}>
-                    <NavigationMenuTrigger
-                      className={cn(
-                        items.some(({ to }) => pathname.includes(to)) &&
-                          "[&[data-state='open']]:bg-accentA-3 [box-shadow:inset_0_0_0_1px_var(--accent-a11)] [&>svg]:scale-110 [&>svg]:rotate-10",
-                        triggerStyles,
-                      )}
-                      ref={(node) => onNodeUpdate(node, label)}
-                    >
-                      {icon}
-                    </NavigationMenuTrigger>
-                    {!!items.length && (
-                      <NavigationMenuContent>
-                        <div className="p-4">
-                          <Heading
-                            weight="bold"
-                            className="px-3"
-                            mb="1"
-                            as="h3"
-                            size="3"
-                            wrap="balance"
-                          >
-                            {label}
-                          </Heading>
-                          <ul className="xs:w-[400px] m-0 grid w-[calc(100svw-4rem)] shrink-0 list-none gap-[10px] sm:w-[600px] sm:grid-cols-2">
-                            {items.map(({ label, to }) => (
-                              <ListItem key={to} to={to}>
-                                {label}
-                              </ListItem>
-                            ))}
-                          </ul>
-                        </div>
-                      </NavigationMenuContent>
-                    )}
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-
-              <NavigationMenuViewport
-                style={{
-                  translate: `${isMobile ? 0 : offset}px 0`,
-                }}
-              />
-            </NavigationMenu>
+            <MainNav navItems={navItems} />
           </div>
           <div className="flex flex-none items-center justify-end">
-            <Tooltip content={content}>
-              <ModeToggle size="3" />
-            </Tooltip>
+            <ThemeToggle />
           </div>
         </div>
       </div>
     </header>
   );
 };
-{
-  /* <div className="flex items-center gap-4.5"> */
-}
-{
-  /*   <NavButton to="/" activeOptions={{ exact: true }}> */
-}
-{
-  /*     Главная */
-}
-{
-  /*   </NavButton> */
-}
-{
-  /*   <NavButton to="/shop-cost-calculation-order"> */
-}
-{
-  /*     Выкуп менеджером ИМ */
-}
-{
-  /*   </NavButton> */
-}
-{
-  /*   <NavButton to="/pick-up-point-delivery-order">Забор груза</NavButton> */
-}
-{
-  /*   <NavButton to="/schedules">Расписание</NavButton> */
-}
-{
-  /* </div> */
-}
-{
-  /* <div className="ml-auto flex items-center gap-2.5"> */
-}
-{
-  /*   <Tooltip content={content}> */
-}
-{
-  /*     <ModeToggle /> */
-}
-{
-  /*   </Tooltip> */
-}
-{
-  /*   {!isAuthenticated ? ( */
-}
-{
-  /*     <Button variant="classic" asChild> */
-}
-{
-  /*       <Link to="/auth">Личный кабинет</Link> */
-}
-{
-  /*     </Button> */
-}
-{
-  /*   ) : ( */
-}
-{
-  /*     <Button variant="classic" asChild> */
-}
-{
-  /*       <Link to="/dashboard">Мой кабинет</Link> */
-}
-{
-  /*     </Button> */
-}
-{
-  /*   )} */
-}
-{
-  /* </div> */
-}
 
-{
-  /* <Button className="ml-auto" onClick={logout}>Выйти</Button> */
-}
+const ThemeToggle: FC = () => {
+  let content = "";
+  const { theme } = useTheme();
+  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if (theme === "dark") {
+    content = "Изменить на светлую тему";
+  } else if (theme === "light") {
+    content = "Изменить на темную тему";
+  } else {
+    content = isDark ? "Изменить на светлую тему" : "Изменить на темную тему";
+  }
+
+  return (
+    <Tooltip content={content}>
+      <ModeToggle size="3" />
+    </Tooltip>
+  );
+};

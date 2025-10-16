@@ -14,7 +14,7 @@ const Bar: FC<
       {/* Background bar */}
       <div
         style={{
-          background: "var(--gray-6)", // Semi-transparent background
+          background: "var(--gray-7)", // Semi-transparent background
           height: 2,
           left: 0,
           position: "fixed",

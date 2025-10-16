@@ -103,15 +103,15 @@ const AutoDismissMessageContainer: FC<AutoDismissMessageContainerProps> = (
   return (
     <Comp
       className={cn(
-        "border-input relative mb-2 flex flex-col gap-y-1 rounded-lg border p-3",
+        "relative mb-2 flex flex-col gap-y-1 rounded-lg border p-3",
         context.variant === "success" &&
-          "text-success-foreground bg-success border-success-border",
+          "text-green-11 bg-green-3 border-green-6",
         context.variant === "info" &&
-          "text-info-foreground bg-info border-info-border",
+          "text-iris-11 bg-iris-3 border-iris-6",
         context.variant === "warning" &&
-          "text-warning-foreground bg-warning border-warning-border",
+          "text-orange-11 bg-orange-3 border-orange-6",
         context.variant === "error" &&
-          "text-destructive-foreground bg-destructive border-destructive-border",
+          "text-tomato-11 bg-tomato-3 border-tomato-6",
         className,
       )}
       {...containerProps}
@@ -265,16 +265,16 @@ const AutoDismissMessageClose: FC<AutoDismissMessageCloseProps> = (props) => {
       )}
       onClick={composeEventHandlers(onClick, () => context.onOpenChange(false))}
       className={cn(
-        "hover:bg-popover-foreground/10 active:bg-popover-foreground/15 pointer-events-auto absolute top-1 right-1 ml-auto inline-flex size-6 shrink-0 cursor-default items-center justify-center rounded-full text-sm outline-none [&_svg]:size-3 [&_svg]:shrink-0",
+        "pointer-events-auto absolute top-1 right-1 ml-auto inline-flex size-6 shrink-0 cursor-default items-center justify-center rounded-full text-sm outline-none [&_svg]:size-3 [&_svg]:shrink-0",
         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
         context.variant === "success" &&
-          "focus-visible:border-success-ring focus-visible:ring-success-ring/50",
+          "hover:bg-greenA-3 active:bg-greenA-4 focus-visible:border-green-6 focus-visible:ring-green-6/50",
         context.variant === "info" &&
-          "focus-visible:border-info-ring focus-visible:ring-info-ring/50",
+          "hover:bg-irisA-3 active:bg-irisA-4 focus-visible:border-iris-6 focus-visible:ring-iris-6/50",
         context.variant === "warning" &&
-          "focus-visible:border-warning-ring focus-visible:ring-warning-ring/50",
+          "hover:bg-warningA-3 active:bg-warningA-4 focus-visible:border-orange-6 focus-visible:ring-orange-6/50",
         context.variant === "error" &&
-          "focus-visible:border-destructive-ring focus-visible:ring-destructive-ring/50",
+          "hover:bg-tomatoA-3 active:bg-tomatoA-4 focus-visible:border-tomato-6 focus-visible:ring-tomato-6/50",
         isHovered && "w-11 justify-between gap-0 px-1.5",
         context.remainingTime < 5 &&
           "w-11 animate-pulse justify-between gap-0 px-1.5",
