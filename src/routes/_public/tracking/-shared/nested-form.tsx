@@ -56,7 +56,7 @@ export const CargoTrackingForm = withForm({
       >
         <div
           className={cn(
-            "xs:gap-0 xs:flex-row xs:items-center xs:[&_button[class~='rt-BaseButton'][type='submit']]:self-start flex flex-col gap-2 [&_button[class~='rt-BaseButton'][type='submit']]:rounded-s-none [&_div[class~='rt-TextFieldRoot']]:rounded-e-none",
+            "xs:flex-row xs:items-center xs:[&_button[class~='rt-BaseButton'][type='submit']]:self-start flex flex-col [&_button[class~='rt-BaseButton'][type='submit']]:rounded-s-none [&_div[class~='rt-TextFieldRoot']]:rounded-e-none",
             "xs:[&_div[class~='rt-TextFieldRoot']]:rounded-s-xl xs:[&_button[class~='rt-BaseButton'][type='submit']]:rounded-e-xl",
             "[&_button[class~='rt-BaseButton'][type='submit']]:rounded-e-none [&_div[class~='rt-TextFieldRoot']]:rounded-s-none",
           )}

@@ -2,9 +2,13 @@ import { TrackingPage } from "@/routes/_public/tracking/-shared";
 import { Flex, Text, Strong, Separator, Heading } from "@radix-ui/themes";
 import { createFileRoute } from "@tanstack/react-router";
 
+type TrackingSearch = {
+  q?: string;
+};
+
 export const Route = createFileRoute("/_public/tracking/")({
   component: TrackingComponent,
-  validateSearch(search) {
+  validateSearch(search): TrackingSearch {
     return {
       q: (search.q as string) || undefined,
     };

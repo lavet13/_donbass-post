@@ -18,7 +18,6 @@
 @import "@radix-ui/themes/tokens/base.css" layer(radix-themes);
 
 /* Include just the colors you use */
-@import "@radix-ui/themes/tokens/colors/black.css" layer(radix-themes);
 @import "@radix-ui/themes/tokens/colors/red.css" layer(radix-themes);
 @import "@radix-ui/themes/tokens/colors/tomato.css" layer(radix-themes); /* error */
 @import "@radix-ui/themes/tokens/colors/gray.css" layer(radix-themes);

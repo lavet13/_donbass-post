@@ -174,12 +174,23 @@ const MainSidebarHeader: FC<ComponentProps<"div">> = (props) => {
 
   const handleToggle = () => setOpen((prev) => !prev);
 
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    triggerRef.current?.focus();
+  }, []);
+
   return (
     <div
       className="sticky top-0 z-0 flex min-w-0 items-center gap-3 px-3.5 pt-4 pb-2"
       {...props}
     >
-      <Trigger iconProps={{ size: 20 }} Icon={X} onClick={handleToggle} />
+      <Trigger
+        ref={triggerRef}
+        iconProps={{ size: 20 }}
+        Icon={X}
+        onClick={handleToggle}
+      />
       <Logo onClick={handleToggle} />
     </div>
   );
@@ -200,7 +211,7 @@ const MainSidebarContent: FC<ComponentProps<typeof ScrollArea>> = ({
 }) => {
   return (
     <ScrollArea scrollbars="vertical" {...props}>
-      <div className="flex min-h-0 flex-1 flex-col items-start gap-3 px-4.5 pt-2">
+      <div className="flex min-h-0 flex-1 flex-col items-start gap-3.5 px-4.5 pt-2">
         {children}
       </div>
     </ScrollArea>

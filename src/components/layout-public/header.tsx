@@ -2,7 +2,7 @@ import { Link, linkOptions } from "@tanstack/react-router";
 import { type FC } from "react";
 import { Tooltip } from "@radix-ui/themes";
 import { useTheme } from "@/hooks/use-theme";
-import { Calendar, HandbagIcon, Package } from "lucide-react";
+import { Calendar, HandbagIcon, Package, Route } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import MainNav from "@/components/ui/main-nav";
 import {
@@ -47,6 +47,9 @@ export const Header: FC = () => {
             <MainSidebar>
               <MainSidebarHeader />
               <MainSidebarContent>
+                <MainSidebarButton Icon={Route} asChild>
+                  <Link to="/tracking">Отслеживание</Link>
+                </MainSidebarButton>
                 <MainSidebarButton Icon={Calendar} asChild>
                   <Link to="/schedules">Расписание</Link>
                 </MainSidebarButton>
