@@ -25,7 +25,7 @@ const DrawerContent: FC<ComponentProps<typeof DrawerPrimitive.Content>> = ({
 }) => {
   return (
     <DrawerPrimitive.Portal>
-      <DrawerPrimitive.Overlay className="fixed inset-0 bg-grayA-2" />
+      <DrawerPrimitive.Overlay className="fixed inset-0 bg-blackA-6" />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
         data-is-root-theme="true"

@@ -18,6 +18,7 @@
 @import "@radix-ui/themes/tokens/base.css" layer(radix-themes);
 
 /* Include just the colors you use */
+@import "@radix-ui/themes/tokens/colors/black.css" layer(radix-themes);
 @import "@radix-ui/themes/tokens/colors/red.css" layer(radix-themes);
 @import "@radix-ui/themes/tokens/colors/tomato.css" layer(radix-themes); /* error */
 @import "@radix-ui/themes/tokens/colors/gray.css" layer(radix-themes);
@@ -50,6 +51,26 @@
   /* Animations */
   --animate-collapsible-slide-up: collapsibleSlideUp 150ms ease-out;
   --animate-collapsible-slide-down: collapsibleSlideDown 150ms ease-out;
+  --animate-collapsible-slide-right: collapsibleSlideRight 150ms ease-out;
+  --animate-collapsible-slide-left: collapsibleSlideLeft 150ms ease-out;
+
+  @keyframes collapsibleSlideLeft {
+    from {
+      width: var(--radix-collapsible-content-width);
+    }
+    to {
+      width: 0;
+    }
+  }
+
+  @keyframes collapsibleSlideRight {
+    from {
+      width: 0;
+    }
+    to {
+      width: var(--radix-collapsible-content-width);
+    }
+  }
 
   @keyframes collapsibleSlideDown {
     from {
@@ -68,12 +89,12 @@
     }
   }
 
-  --animate-enter-from-left: enterFromLeft 150ms ease;
-  --animate-enter-from-right: enterFromRight 150ms ease;
-  --animate-exit-to-left: exitToLeft 150ms ease;
-  --animate-exit-to-right: exitToRight 150ms ease;
-  --animate-scale-in: scaleIn 150ms ease;
-  --animate-scale-out: scaleOut 150ms ease;
+  --animate-enter-from-left: enterFromLeft 50ms ease;
+  --animate-enter-from-right: enterFromRight 50ms ease;
+  --animate-exit-to-left: exitToLeft 50ms ease;
+  --animate-exit-to-right: exitToRight 50ms ease;
+  --animate-scale-in: scaleIn 10ms ease;
+  --animate-scale-out: scaleOut 50ms ease;
   --animate-border-beam: border-beam 2s linear infinite;
 
   @keyframes enterFromRight {

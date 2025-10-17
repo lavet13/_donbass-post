@@ -627,7 +627,7 @@ const SidebarMobile: FC<ComponentProps<"div">> = (props) => {
         </div>
         <DrawerContent
           aria-describedby={undefined}
-          className="bg-accent-1 left-0 top-0 bottom-0 border-r-2 border-grayA-6 max-w-[300px] w-full"
+          className="bg-gray-2 left-0 top-0 bottom-0 max-w-[300px] w-full"
         >
           <VisuallyHidden>
             <DrawerTitle>

@@ -40,7 +40,7 @@ const NavigationMenuTrigger: FC<
         "flex flex-1 items-center justify-center gap-[2px] rounded-2xl",
         "relative overflow-hidden px-2.5 py-2.5 text-ellipsis whitespace-nowrap outline-none select-none",
         "text-accent-11 text-sm leading-none",
-        "[&_svg]:size-5 [&_svg]:duration-150 [&[data-state='open']>svg]:scale-110 [&[data-state='open']>svg]:rotate-15",
+        "[&_svg]:size-5 [&_svg]:duration-50 [&[data-state='open']>svg]:scale-110 [&[data-state='open']>svg]:rotate-15",
         "[&[data-state='open']]:bg-accentA-2",
         className,
       )}
@@ -78,8 +78,8 @@ const NavigationMenuViewport: FC<
         className={cn(
           "bg-background relative mt-0 origin-[top_center] overflow-hidden rounded-md",
           "shadow-5 h-[var(--radix-navigation-menu-viewport-height)] w-full min-w-[var(--radix-navigation-menu-viewport-width)]",
-          "[transition:width,height,150ms_ease]",
-          "data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out",
+          "[transition:width,height,50ms_ease]",
+          "data-[state=closed]:animate-scale-out",
           className,
         )}
         {...props}

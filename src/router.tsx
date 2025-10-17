@@ -37,7 +37,7 @@ function createRouter() {
     Wrap: ({ children }) => {
       return (
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider delayDuration={400}>{children}</TooltipProvider>
+          <TooltipProvider delayDuration={100}>{children}</TooltipProvider>
           <Toaster />
         </QueryClientProvider>
       );
