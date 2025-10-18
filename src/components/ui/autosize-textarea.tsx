@@ -73,6 +73,7 @@ export const AutosizeTextarea = forwardRef<
   ) => {
     const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
     const [value, setValue] = useControllableState({
+      defaultProp: "",
       prop: valueProp,
       onChange: onValueChange,
     });

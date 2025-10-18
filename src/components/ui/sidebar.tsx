@@ -155,7 +155,7 @@ const SidebarHeader: FC<ComponentProps<"div">> = ({ className, ...props }) => {
       data-slot="sidebar-header"
       data-sidebar="header"
       className={cn(
-        "sticky top-0 z-0 @max-[130px]:text-center flex @max-[130px]:justify-center justify-between gap-1 items-center mt-1 @min-[130px]:mr-1 @max-[130px]:mx-1",
+        "sticky top-0 z-0 mt-1 flex items-center justify-between gap-1 @max-[130px]:mx-1 @max-[130px]:justify-center @max-[130px]:text-center @min-[130px]:mr-1",
         className,
       )}
       {...props}
@@ -169,7 +169,7 @@ const SidebarFooter: FC<ComponentProps<"div">> = ({ className, ...props }) => {
       data-sidebar="footer"
       data-slot="sidebar-footer"
       className={cn(
-        "sticky bottom-0 z-10 pb-2 flex flex-col gap-4 justify-center px-[0.5rem] mx-1 mb-1 mt-2",
+        "sticky bottom-0 z-10 mx-1 mt-2 mb-1 flex flex-col justify-center gap-4 px-[0.5rem] pb-2",
         className,
       )}
       {...props}
@@ -183,7 +183,7 @@ const SidebarContent: FC<ComponentProps<"div">> = ({ className, ...props }) => {
       data-sidebar="content"
       data-slot="sidebar-content"
       className={cn(
-        "pt-2 flex-1 flex flex-col min-h-0 overflow-auto",
+        "flex min-h-0 flex-1 flex-col overflow-auto pt-2",
         className,
       )}
       {...props}
@@ -193,9 +193,9 @@ const SidebarContent: FC<ComponentProps<"div">> = ({ className, ...props }) => {
 
 const MainContent: FC<ComponentProps<"div">> = (props) => {
   return (
-    <main className="h-full flex flex-col grow shrink-0 overflow-y-auto">
+    <main className="flex h-full shrink-0 grow flex-col overflow-y-auto">
       <div
-        className="flex-1 flex flex-col max-h-screen overflow-y-auto"
+        className="flex max-h-screen flex-1 flex-col overflow-y-auto"
         {...props}
       />
     </main>
@@ -218,7 +218,7 @@ const SidebarMenuGroup: FC<ComponentProps<"div">> = ({
     <div
       data-sidebar="group"
       className={cn(
-        "flex w-full min-w-0 flex-col shrink-0 py-[2px] px-3",
+        "flex w-full min-w-0 shrink-0 flex-col px-3 py-[2px]",
         className,
       )}
       {...props}
@@ -232,7 +232,7 @@ const SidebarMenu: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
       data-slot="sidebar-menu"
       data-sidebar="menu"
       className={cn(
-        "flex w-full min-w-0 flex-col cursor-default gap-px",
+        "flex w-full min-w-0 cursor-default flex-col gap-px",
         className,
       )}
       {...props}
@@ -295,7 +295,7 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
         <li
           data-slot="sidebar-menu-item"
           data-sidebar="menu-item"
-          className={cn("relative flex flex-col list-none gap-px", className)}
+          className={cn("relative flex list-none flex-col gap-px", className)}
           {...props}
         >
           <HoverCard.Root openDelay={0} closeDelay={50}>
@@ -306,13 +306,13 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
               sideOffset={-5}
               className={cn(
                 "w-[240px]",
-                "outline-hidden z-0",
+                "z-0 outline-hidden",
 
                 // Invisible bridge for all sides
-                "data-[side=right]:before:content-[''] data-[side=right]:before:absolute data-[side=right]:before:right-full data-[side=right]:before:top-0 data-[side=right]:before:w-2 data-[side=right]:before:h-full data-[side=right]:before:bg-transparent",
-                "data-[side=left]:before:content-[''] data-[side=left]:before:absolute data-[side=left]:before:left-full data-[side=left]:before:top-0 data-[side=left]:before:w-2 data-[side=left]:before:h-full data-[side=left]:before:bg-transparent",
-                "data-[side=top]:before:content-[''] data-[side=top]:before:absolute data-[side=top]:before:bottom-full data-[side=top]:before:left-0 data-[side=top]:before:w-full data-[side=top]:before:h-2 data-[side=top]:before:bg-transparent",
-                "data-[side=bottom]:before:content-[''] data-[side=bottom]:before:absolute data-[side=bottom]:before:top-full data-[side=bottom]:before:left-0 data-[side=bottom]:before:w-full data-[side=bottom]:before:h-2 data-[side=bottom]:before:bg-transparent",
+                "data-[side=right]:before:absolute data-[side=right]:before:top-0 data-[side=right]:before:right-full data-[side=right]:before:h-full data-[side=right]:before:w-2 data-[side=right]:before:bg-transparent data-[side=right]:before:content-['']",
+                "data-[side=left]:before:absolute data-[side=left]:before:top-0 data-[side=left]:before:left-full data-[side=left]:before:h-full data-[side=left]:before:w-2 data-[side=left]:before:bg-transparent data-[side=left]:before:content-['']",
+                "data-[side=top]:before:absolute data-[side=top]:before:bottom-full data-[side=top]:before:left-0 data-[side=top]:before:h-2 data-[side=top]:before:w-full data-[side=top]:before:bg-transparent data-[side=top]:before:content-['']",
+                "data-[side=bottom]:before:absolute data-[side=bottom]:before:top-full data-[side=bottom]:before:left-0 data-[side=bottom]:before:h-2 data-[side=bottom]:before:w-full data-[side=bottom]:before:bg-transparent data-[side=bottom]:before:content-['']",
               )}
             >
               <Text
@@ -338,7 +338,7 @@ const SidebarMenuItem: FC<ComponentProps<"li"> & { label?: string }> = ({
         <li
           data-slot="sidebar-menu-item"
           data-sidebar="menu-item"
-          className={cn("relative flex flex-col list-none gap-px", className)}
+          className={cn("relative flex list-none flex-col gap-px", className)}
           {...props}
         >
           {children}
@@ -468,7 +468,7 @@ const SidebarMenuButton: FC<
           radius="full"
           variant="ghost"
           size="1"
-          className={cn("size-4 ml-1")}
+          className={cn("ml-1 size-4")}
         >
           <ChevronRight
             className={cn(
@@ -507,7 +507,7 @@ const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
         <ul
           data-slot="sidebar-menu-sub"
           data-sidebar="menu-sub"
-          className={cn("flex flex-col gap-3 w-full min-w-0", className)}
+          className={cn("flex w-full min-w-0 flex-col gap-3", className)}
           {...props}
         />
       </SidebarMenuSubContext>
@@ -516,12 +516,12 @@ const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
 
   return (
     <CollapsibleContent>
-      <div className="flex flex-row gap-1 mx-1">
+      <div className="mx-1 flex flex-row gap-1">
         <div
           onClick={toggleMenu}
-          className="cursor-pointer ms-[8px] me-[2px] py-1.5"
+          className="ms-[8px] me-[2px] cursor-pointer py-1.5"
         >
-          <div className="border-l border-grayA-6 h-full ms-[10px] me-[4px]" />
+          <div className="border-grayA-6 ms-[10px] me-[4px] h-full border-l" />
         </div>
 
         <SidebarMenuSubContext value={{ isInSubmenu: true }}>
@@ -529,7 +529,7 @@ const SidebarMenuSub: FC<ComponentProps<"ul">> = ({ className, ...props }) => {
             data-slot="sidebar-menu-sub"
             data-sidebar="menu-sub"
             className={cn(
-              "flex flex-col gap-3 py-3 mr-2 w-full min-w-0",
+              "mr-2 flex w-full min-w-0 flex-col gap-3 py-3",
               className,
             )}
             {...props}
@@ -579,7 +579,7 @@ const SidebarModeToggle: FC<
           data-slot="sidebar-menu-toggle"
           size="2"
           className={cn(
-            "text-accent-11 w-full rounded-full justify-center",
+            "text-accent-11 w-full justify-center rounded-full",
             className,
           )}
           {...props}
@@ -611,7 +611,7 @@ const SidebarMobile: FC<ComponentProps<"div">> = (props) => {
         <div className="sticky top-0 mx-1 mt-1">
           <DrawerTrigger asChild>
             <IconButton
-              className="@max-[130px]:w-full @min-[130px]:min-w-9 @min-[130px]:max-w-9 [&_svg]:size-5"
+              className="@max-[130px]:w-full @min-[130px]:max-w-9 @min-[130px]:min-w-9 [&_svg]:size-5"
               variant="soft"
               radius="full"
               size="2"
@@ -627,14 +627,14 @@ const SidebarMobile: FC<ComponentProps<"div">> = (props) => {
         </div>
         <DrawerContent
           aria-describedby={undefined}
-          className="bg-gray-2 left-0 top-0 bottom-0 max-w-[300px] w-full"
+          className="bg-gray-2 top-0 bottom-0 left-0 w-full max-w-[300px]"
         >
           <VisuallyHidden>
             <DrawerTitle>
               Личный кабинет пользователя ТК "Наша Почта"
             </DrawerTitle>
           </VisuallyHidden>
-          <div className="grow h-full w-full pt-1 flex flex-col" {...props} />
+          <div className="flex h-full w-full grow flex-col pt-1" {...props} />
         </DrawerContent>
       </Drawer>
       <SidebarOutlet />
@@ -661,7 +661,7 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel
           ref={panelRef}
-          className="bg-accentA-1 has-[~[data-resize-handle-active]]:duration-100 transition-[flex]"
+          className="bg-accentA-1 transition-[flex] has-[~[data-resize-handle-active]]:duration-100"
           collapsedSize={collapsedSize}
           collapsible
           defaultSize={expandedSize}
@@ -670,7 +670,7 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
           onResize={handleResize}
         >
           <div
-            className="h-full @container flex flex-col overflow-y-auto min-h-screen"
+            className="@container flex h-full min-h-screen flex-col overflow-y-auto"
             {...props}
           />
         </ResizablePanel>

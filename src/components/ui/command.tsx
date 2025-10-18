@@ -145,6 +145,7 @@ const CommandInput: FC<
   const composedRefs = useComposedRefs(inputRef, ref);
 
   const [value, setValue] = useControllableState({
+    defaultProp: "",
     prop: valueProp,
     onChange: onValueChange,
   });

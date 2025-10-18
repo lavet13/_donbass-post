@@ -58,6 +58,7 @@ export const Header: FC = () => {
             </MainSidebar>
           </div>
           <div className="absolute top-1/2 left-1/2 flex flex-1 shrink-0 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+            {/* Encapsulate the logic of Navigation Menu to make it compound, maintainable */}
             <MainNav navItems={navItems} />
           </div>
           <div className="flex flex-none items-center justify-end">

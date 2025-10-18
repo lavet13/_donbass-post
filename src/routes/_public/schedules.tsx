@@ -28,7 +28,14 @@ import {
   Truck,
   XIcon,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type FC } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FC,
+} from "react";
 import { Fragment } from "react/jsx-runtime";
 import {
   Button,
@@ -84,7 +91,7 @@ const SearchPage: FC = () => {
       data
         ?.flatMap((departmentType) => departmentType.items)
         .find((department) => department.id === departmentId),
-    [departmentId, isPending],
+    [departmentId, data],
   );
 
   const query =
@@ -133,22 +140,23 @@ const SearchPage: FC = () => {
     useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (selectedDepartmentRef) {
-        selectedDepartmentRef.scrollIntoView({
-          block: "center",
-          behavior: "instant",
-        });
+    if (!selectedDepartmentRef) return;
 
-        // Wait for the first scroll to complete, then scroll to top
-        setTimeout(() => {
-          document.documentElement.scrollIntoView({
-            block: "start",
-            behavior: "instant",
-          });
-        }, 0);
-      }
-    }, 0);
+    requestAnimationFrame(() => {
+      selectedDepartmentRef.scrollIntoView({
+        block: "center",
+        behavior: "smooth",
+        inline: "center",
+      });
+
+      requestAnimationFrame(() => {
+        document.documentElement.scrollIntoView({
+          block: "start",
+          behavior: "smooth",
+          inline: "center",
+        });
+      });
+    });
   }, [selectedDepartmentRef]);
 
   return (

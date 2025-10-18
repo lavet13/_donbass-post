@@ -54,7 +54,7 @@ const MainSidebar: FC<ComponentProps<"div">> = (props) => {
             <VisuallyHidden>
               <DrawerTitle>Боковое меню</DrawerTitle>
             </VisuallyHidden>
-            <div className="flex grow flex-col" {...props} />
+            <div className="flex min-h-0 grow flex-col" {...props} />
           </DrawerContent>
         </Drawer>
       ) : null}
@@ -125,24 +125,31 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isActive, setIsActive] = useState(false);
 
-  const updateActive = () => {
-    if (!buttonRef.current) return null;
-
-    const isActive = buttonRef.current.getAttribute("data-status") === "active";
-    setIsActive(isActive);
-  };
-
   useEffect(() => {
-    const mutationObserver = new MutationObserver(updateActive);
+    const button = buttonRef.current;
+    if (!button) return;
 
-    if (buttonRef.current) {
-      mutationObserver.observe(buttonRef.current, {
-        subtree: true,
-        attributeFilter: ["data-status"],
-      });
-    }
+    const updateActive = () => {
+      setIsActive(button.getAttribute("data-status") === "active");
+    };
 
-    updateActive();
+    const mutationObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (
+          mutation.type.includes("attribute") &&
+          mutation.attributeName === "data-status"
+        ) {
+          updateActive();
+          break;
+        }
+      }
+    });
+
+    mutationObserver.observe(button, {
+      attributeFilter: ["data-status"],
+    });
+
+    updateActive(); // Initial check
 
     return () => {
       mutationObserver.disconnect();
@@ -199,7 +206,7 @@ const MainSidebarHeader: FC<ComponentProps<"div">> = (props) => {
 const MainSidebarFooter: FC<ComponentProps<"div">> = (props) => {
   return (
     <div
-      className="sticky bottom-0 z-0 mx-1 mt-2 mb-1 flex flex-col justify-center gap-4 px-3.5 pt-4 pb-2"
+      className="sticky bottom-0 z-0 mx-1 mt-1 mb-1 flex min-h-0 shrink-0 flex-col justify-center gap-4 px-3.5 pt-4 pb-2"
       {...props}
     />
   );
@@ -210,7 +217,7 @@ const MainSidebarContent: FC<ComponentProps<typeof ScrollArea>> = ({
   ...props
 }) => {
   return (
-    <ScrollArea scrollbars="vertical" {...props}>
+    <ScrollArea className="min-h-0" scrollbars="vertical" {...props}>
       <div className="flex min-h-0 flex-1 flex-col items-start gap-3.5 px-4.5 pt-2">
         {children}
       </div>
