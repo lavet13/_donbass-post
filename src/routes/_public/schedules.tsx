@@ -28,14 +28,7 @@ import {
   Truck,
   XIcon,
 } from "lucide-react";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type FC,
-} from "react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { Fragment } from "react/jsx-runtime";
 import {
   Button,
@@ -135,28 +128,67 @@ const SearchPage: FC = () => {
     },
   });
 
-  const inputRef = useRef<HTMLInputElement>(null);
   const [selectedDepartmentRef, setSelectedDepartmentRef] =
     useState<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!selectedDepartmentRef) return;
 
-    requestAnimationFrame(() => {
+    const scrollSequence = async () => {
+      // First scroll
       selectedDepartmentRef.scrollIntoView({
-        block: "center",
         behavior: "smooth",
-        inline: "center",
+        block: "center",
       });
 
-      requestAnimationFrame(() => {
-        document.documentElement.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-          inline: "center",
-        });
+      // Wait for CSS transition/animation duration
+      await new Promise((resolve) => {
+        const duration = parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue(
+            "scroll-behavior",
+          ) === "smooth"
+            ? "500"
+            : "0",
+        );
+        setTimeout(resolve, duration);
       });
+
+      // Second scroll
+      document.documentElement.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    };
+
+    void scrollSequence();
+
+    const mutationObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "data-status"
+        ) {
+          const target = mutation.target as HTMLElement;
+          if (target.getAttribute("data-status") === "true") {
+            void scrollSequence();
+            break;
+          }
+        }
+      }
     });
+
+    const cardList = document.querySelector("[cmdk-list-sizer]");
+    if (cardList) {
+      mutationObserver.observe(cardList, {
+        subtree: true,
+        attributeFilter: ["data-status"],
+      });
+    }
+
+    return () => {
+      mutationObserver.disconnect();
+    };
   }, [selectedDepartmentRef]);
 
   return (
@@ -211,6 +243,9 @@ const SearchPage: FC = () => {
                                 title={name}
                                 role="option"
                                 aria-selected={id === field.state.value}
+                                data-status={
+                                  field.state.value === id ? true : undefined
+                                }
                                 value={id as string}
                                 key={id}
                                 onSelect={() => {
