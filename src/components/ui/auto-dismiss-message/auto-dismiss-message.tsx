@@ -106,8 +106,7 @@ const AutoDismissMessageContainer: FC<AutoDismissMessageContainerProps> = (
         "relative mb-2 flex flex-col gap-y-1 rounded-lg border p-3",
         context.variant === "success" &&
           "text-green-11 bg-green-3 border-green-6",
-        context.variant === "info" &&
-          "text-iris-11 bg-iris-3 border-iris-6",
+        context.variant === "info" && "text-iris-11 bg-iris-3 border-iris-6",
         context.variant === "warning" &&
           "text-orange-11 bg-orange-3 border-orange-6",
         context.variant === "error" &&

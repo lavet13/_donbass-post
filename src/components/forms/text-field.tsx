@@ -1,8 +1,15 @@
-import type { ChangeEvent, ComponentProps, FC } from "react";
+import {
+  useEffect,
+  useRef,
+  type ChangeEvent,
+  type ComponentProps,
+  type FC,
+} from "react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { TextField as _TextField } from "@radix-ui/themes";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { Input } from "@/components/ui/input";
+import { isMobile as isMobileDevice } from "react-device-detect";
 
 type TextFieldProps = ComponentProps<typeof Input> & {
   label?: string;
@@ -46,6 +53,7 @@ const TextField: FC<TextFieldProps> = ({
         </FormLabel>
       )}
       <Input
+        shouldFocus={isMobileDevice}
         id={formItemId}
         name={field.name}
         value={field.state.value}

@@ -34,7 +34,7 @@ const ShopCostCalculationOrderPage: FC = () => {
       };
 
       try {
-        // await sendShopCostCalculationOrder(payload);
+        await sendShopCostCalculationOrder(payload);
         formApi.reset();
 
         const entries = values || [];
@@ -93,12 +93,9 @@ const ShopCostCalculationOrderPage: FC = () => {
 
             if (status >= 500) {
               console.error("Server is out");
-              meta.onSubmit?.((prev) => ({
-                ...prev,
-                variant: "error",
-                isOpen: true,
-                extra: ["Сервер не отвечает. Попробуйте позже."],
-              }));
+              meta.setOpen?.(true);
+              meta.setMessage?.(["Сервер не отвечает. Попробуйте позже."]);
+              meta.setVariant?.("error");
             }
           } else if (error.request) {
             // The request was made but no response was received

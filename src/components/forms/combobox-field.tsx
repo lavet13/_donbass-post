@@ -1,4 +1,10 @@
-import { useState, Fragment, type ComponentProps, type FC } from "react";
+import {
+  useState,
+  Fragment,
+  type ComponentProps,
+  type FC,
+  useEffect,
+} from "react";
 import {
   Button,
   Tooltip,
@@ -156,6 +162,50 @@ const ComboboxGroupField: FC<
     );
   };
 
+  const [selectedDepartmentRef, setSelectedDepartmentRef] =
+    useState<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!selectedDepartmentRef) return;
+
+    const scrollInto = async () => {
+      // First scroll
+      selectedDepartmentRef.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
+    };
+
+    void scrollInto();
+
+    const mutationObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "data-status"
+        ) {
+          const target = mutation.target as HTMLElement;
+          if (target.getAttribute("data-status") === "true") {
+            void scrollInto();
+            break;
+          }
+        }
+      }
+    });
+
+    const cardList = document.querySelector("[cmdk-list-sizer]");
+    if (cardList) {
+      mutationObserver.observe(cardList, {
+        subtree: true,
+        attributeFilter: ["data-status"],
+      });
+    }
+
+    return () => {
+      mutationObserver.disconnect();
+    };
+  }, [selectedDepartmentRef]);
+
   const renderContent = (props: { shouldFocus?: boolean } = {}) => {
     const { shouldFocus = false } = props;
 
@@ -192,6 +242,14 @@ const ComboboxGroupField: FC<
                       value={value as string}
                       role="option"
                       aria-selected={value === field.state.value}
+                      data-status={
+                        field.state.value === value ? true : undefined
+                      }
+                      ref={(node) => {
+                        if (value === field.state.value) {
+                          setSelectedDepartmentRef(node);
+                        }
+                      }}
                       onSelect={() => {
                         field.handleChange(value);
                         setOpen(false);
@@ -283,7 +341,7 @@ const ComboboxGroupField: FC<
             role="listbox"
             sideOffset={2}
             style={{ width: `${bounds?.width}px` }}
-            className={`rounded-sm p-0`}
+            className="rounded-sm p-0"
           >
             {renderContent()}
           </Popover.Content>

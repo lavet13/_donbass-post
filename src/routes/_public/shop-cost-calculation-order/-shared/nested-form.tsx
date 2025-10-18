@@ -1,6 +1,6 @@
 import { withForm } from "@/hooks/form";
 import { defaultShopCostCalculationOrderOpts } from "@/routes/_public/shop-cost-calculation-order/-shared/shared-form";
-import React, { Fragment, useState, type ReactNode } from "react";
+import React, { Fragment } from "react";
 import { Button, Card, Heading, Separator, Tooltip } from "@radix-ui/themes";
 import { z } from "zod";
 import { getEmailErrorMessage } from "@/lib/utils";
@@ -31,13 +31,13 @@ export const ShopCostCalculationOrderForm = withForm({
       refetch: refetchPoints,
     } = usePointPostQuery();
 
-    const [open, setOpen] = useState(false);
-    const [message, setMessage] = useState<ReactNode | ReactNode[]>(null);
-
     const isDefaultValue = useStore(
       form.store,
       (state) => state.isDefaultValue,
     );
+
+    const { open, message, setOpen, setMessage, variant, setVariant } =
+      AutoDismissMessage.useAutoDismiss();
 
     useBlocker({
       shouldBlockFn: () => {
@@ -63,7 +63,7 @@ export const ShopCostCalculationOrderForm = withForm({
           <HighlightText>выкуп заказов</HighlightText>
         </TypographyH2>
         <AutoDismissMessage.Root
-          variant="info"
+          variant={variant}
           open={open}
           onOpenChange={setOpen}
           durationMs={60_000}
@@ -81,7 +81,7 @@ export const ShopCostCalculationOrderForm = withForm({
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              void form.handleSubmit({ setMessage, setOpen });
+              void form.handleSubmit({ setMessage, setOpen, setVariant });
             }}
           >
             <TypographyH3 className="sm:mb-1">Получатель</TypographyH3>

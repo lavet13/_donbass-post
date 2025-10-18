@@ -138,20 +138,8 @@ const SearchPage: FC = () => {
     const scrollSequence = async () => {
       // First scroll
       selectedDepartmentRef.scrollIntoView({
-        behavior: "smooth",
+        behavior: "instant",
         block: "center",
-      });
-
-      // Wait for CSS transition/animation duration
-      await new Promise((resolve) => {
-        const duration = parseFloat(
-          getComputedStyle(document.documentElement).getPropertyValue(
-            "scroll-behavior",
-          ) === "smooth"
-            ? "500"
-            : "0",
-        );
-        setTimeout(resolve, duration);
       });
 
       // Second scroll

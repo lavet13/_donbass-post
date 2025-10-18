@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from "react";
+import { useEffect, useRef, type FC, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 import { TextField } from "@radix-ui/themes";
@@ -9,16 +9,62 @@ const Input: FC<
     asChild?: boolean;
     leftElement?: ReactNode;
     rightElement?: ReactNode;
+    shouldFocus?: boolean;
   }
-> = ({ className, asChild, children, leftElement, rightElement, ...props }) => {
+> = ({
+  className,
+  asChild,
+  children,
+  leftElement,
+  shouldFocus = false,
+  rightElement,
+  ...props
+}) => {
   const Comp = asChild ? Slot.Root : TextField.Root;
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input || !shouldFocus) return;
+
+    const handleFocus = () => {
+      const headerHeightStr = getComputedStyle(document.documentElement)
+        .getPropertyValue("--header-height")
+        .trim();
+
+      let headerHeightPx;
+
+      if (headerHeightStr.endsWith("rem")) {
+        const remValue = parseFloat(headerHeightStr);
+        const rootFontSize = parseFloat(
+          getComputedStyle(document.documentElement).fontSize,
+        );
+        headerHeightPx = remValue * rootFontSize;
+      } else {
+        headerHeightPx = parseFloat(headerHeightStr);
+      }
+
+      const inputTop = input.getBoundingClientRect().top + window.scrollY;
+
+      window.scrollTo({
+        top: inputTop - headerHeightPx - 30,
+        behavior: "smooth",
+      });
+    };
+    input.addEventListener("focus", handleFocus);
+
+    return () => {
+      input.removeEventListener("focus", handleFocus);
+    };
+  }, [shouldFocus]);
 
   return (
     <Comp
+      ref={inputRef}
       data-slot="input"
       className={cn(
         "file:text-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent",
-        "has-[input[aria-invalid=true]]:shadow-[inset_0_0_0_var(--text-field-border-width)_var(--red-8)] has-[input[aria-invalid=true]]:caret-red-8",
+        "has-[input[aria-invalid=true]]:caret-red-8 has-[input[aria-invalid=true]]:shadow-[inset_0_0_0_var(--text-field-border-width)_var(--red-8)]",
         className,
       )}
       {...props}
