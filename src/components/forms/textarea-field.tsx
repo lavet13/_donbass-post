@@ -3,17 +3,19 @@ import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import type { AutosizeTextAreaRef } from "@/components/ui/autosize-textarea";
+import type { TextProps } from "@radix-ui/themes";
 
 type TextareaFieldProps = ComponentProps<typeof AutosizeTextarea> & {
   label?: string;
   ariaLabel?: string;
   shouldFocusOnMount?: boolean;
-};
+} & TextProps;
 
 const TextareaField: FC<TextareaFieldProps> = ({
   "aria-label": ariaLabelProp,
   ariaLabel,
   label,
+  color,
   shouldFocusOnMount,
   ...props
 }) => {
@@ -50,8 +52,13 @@ const TextareaField: FC<TextareaFieldProps> = ({
 
   return (
     <FormItem>
-      {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
+      {label && (
+        <FormLabel color={color} htmlFor={formItemId}>
+          {label}
+        </FormLabel>
+      )}
       <AutosizeTextarea
+        color={color}
         ref={textAreaRef}
         id={formItemId}
         name={field.name}

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { isMobile as isMobileDevice } from "react-device-detect";
+import type { TextProps } from "@radix-ui/themes";
 
 const NumericField: FC<
   Omit<NumericFormatProps, "size"> &
@@ -13,7 +14,7 @@ const NumericField: FC<
       label?: string;
       ariaLabel?: string;
       shouldFocusOnMount?: boolean;
-    }
+    } & TextProps
 > = ({
   label,
   labelStyles,
@@ -21,6 +22,7 @@ const NumericField: FC<
   ariaLabel,
   shouldFocusOnMount = false,
   size,
+  color,
   ...props
 }) => {
   const {
@@ -54,11 +56,12 @@ const NumericField: FC<
   return (
     <FormItem>
       {label && (
-        <FormLabel className={labelStyles} htmlFor={formItemId}>
+        <FormLabel color={color} className={labelStyles} htmlFor={formItemId}>
           {label}
         </FormLabel>
       )}
       <NumericFormat
+        color={color}
         getInputRef={inputRef}
         aria-label={defaultAriaLabel}
         aria-describedby={ariaDescribedBy}

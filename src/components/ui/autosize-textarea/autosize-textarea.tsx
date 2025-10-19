@@ -1,7 +1,7 @@
 import { useRef, forwardRef } from "react";
 import { useImperativeHandle } from "react";
 import { useControllableState } from "@/hooks/use-controllable-state";
-import { TextArea, type TextAreaProps } from "@radix-ui/themes";
+import { TextArea, type TextAreaProps, type TextProps } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
 import { useAutosizeTextArea } from ".";
 
@@ -17,7 +17,7 @@ export type AutosizeTextAreaProps = {
   minHeight?: number;
   value?: any;
   onValueChange?: (value: any) => void;
-} & TextAreaProps;
+} & TextAreaProps & TextProps;
 
 export const AutosizeTextarea = forwardRef<
   AutosizeTextAreaRef,

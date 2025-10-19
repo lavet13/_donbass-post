@@ -5,7 +5,7 @@ import type { DefaultInputComponentProps } from "react-phone-number-input";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { Input } from "@/components/ui/input";
 import { isMobile as isMobileDevice } from "react-device-detect";
-import type { TextField } from "@radix-ui/themes";
+import type { TextField, TextProps } from "@radix-ui/themes";
 
 const PhoneField: FC<
   Omit<TextField.RootProps, "value" | "onChange"> &
@@ -13,12 +13,13 @@ const PhoneField: FC<
       label?: string;
       ariaLabel?: string;
       shouldFocusOnMount?: boolean;
-    }
+    } & Omit<TextProps, "onChange">
 > = ({
   label,
   "aria-label": ariaLabelProp,
   shouldFocusOnMount,
   ariaLabel,
+  color,
   ...props
 }) => {
   const {
@@ -52,8 +53,13 @@ const PhoneField: FC<
 
   return (
     <FormItem>
-      {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
+      {label && (
+        <FormLabel color={color} htmlFor={formItemId}>
+          {label}
+        </FormLabel>
+      )}
       <RPNInput
+        color={color}
         shouldFocus={isMobileDevice}
         ref={inputRef}
         id={formItemId}

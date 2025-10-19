@@ -6,11 +6,9 @@ import { useFieldContext } from "@/hooks/form-context";
 import { cn } from "@/lib/utils";
 import { Text, type TextProps } from "@radix-ui/themes";
 
-export const FormLabel: FC<ComponentProps<typeof LabelPrimitive.Root>> = ({
-  className,
-  htmlFor,
-  ...props
-}) => {
+export const FormLabel: FC<
+  ComponentProps<typeof LabelPrimitive.Root> & TextProps
+> = ({ className, htmlFor, ...props }) => {
   const field = useFieldContext();
   const name = field.name;
   const hasErrors = !!field.state.meta.errors.length;
@@ -54,7 +52,7 @@ export const FormMessage: FC<TextProps> = ({ className, ...props }) => {
       wrap="balance"
       data-slot="form-message"
       className={cn(
-        "text-center sm:text-start text-red-11 text-sm sm:text-xs mt-0.5 leading-[15px]",
+        "text-red-11 mt-0.5 text-center text-sm leading-[15px] sm:text-start sm:text-xs",
         className,
       )}
       {...props}
@@ -64,10 +62,7 @@ export const FormMessage: FC<TextProps> = ({ className, ...props }) => {
   );
 };
 
-export const FormDescription: FC<TextProps> = ({
-  className,
-  ...props
-}) => {
+export const FormDescription: FC<TextProps> = ({ className, ...props }) => {
   return (
     <Text
       as="p"

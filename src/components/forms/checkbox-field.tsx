@@ -1,12 +1,15 @@
 import type { FC } from "react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Checkbox } from "@radix-ui/themes";
+import { Checkbox, type TextProps } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
 const CheckboxField: FC<
-  React.ComponentProps<"input"> & { label?: string; ariaLabel?: string }
-> = ({ label, ariaLabel, "aria-label": ariaLabelProp, className }) => {
+  React.ComponentProps<"input"> & {
+    label?: string;
+    ariaLabel?: string;
+  } & TextProps
+> = ({ label, color, ariaLabel, "aria-label": ariaLabelProp, className }) => {
   const {
     field,
     defaultAriaLabel,
@@ -22,12 +25,13 @@ const CheckboxField: FC<
   return (
     <FormItem
       className={cn(
-        "flex flex-col justify-center items-center my-2 gap-y-0.5 sm:gap-y-1",
+        "my-2 flex flex-col items-center justify-center gap-y-0.5 sm:gap-y-1",
         className,
       )}
     >
-      <div className="flex-1 flex items-center gap-2">
+      <div className="flex flex-1 items-center gap-2">
         <Checkbox
+          color={color}
           className="self-start"
           id={formItemId}
           name={field.name}
@@ -40,7 +44,15 @@ const CheckboxField: FC<
             field.handleChange(booleanValue);
           }}
         />
-        {label && <FormLabel className="font-regular m-0" htmlFor={formItemId}>{label}</FormLabel>}
+        {label && (
+          <FormLabel
+            color={color}
+            className="font-regular m-0"
+            htmlFor={formItemId}
+          >
+            {label}
+          </FormLabel>
+        )}
       </div>
       <FormMessage className="text-center" id={formMessageId} />
     </FormItem>

@@ -480,7 +480,7 @@ const SearchPage: FC = () => {
                                 {selectedDepartment.name}
                               </Heading>
                               {selectedDepartment.shortName && (
-                                <Text as="p" trim="start">
+                                <Text color="gray" as="p" trim="start">
                                   {selectedDepartment.shortName}
                                 </Text>
                               )}

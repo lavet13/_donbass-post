@@ -1,5 +1,5 @@
 import { Fragment, type FC } from "react";
-import { Select } from "@radix-ui/themes";
+import { Select, type TextProps } from "@radix-ui/themes";
 import { FormItem, FormLabel, FormMessage } from "../ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 
@@ -9,13 +9,14 @@ type SelectFieldProps = {
   label?: string;
   placeholder?: string;
   ariaLabel?: string;
-};
+} & TextProps;
 
 const SelectField: FC<SelectFieldProps> = ({
   label,
   placeholder,
   "aria-label": ariaLabelProp,
   ariaLabel,
+  color,
   options = [],
 }) => {
   const {
@@ -32,7 +33,11 @@ const SelectField: FC<SelectFieldProps> = ({
 
   return (
     <FormItem>
-      {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
+      {label && (
+        <FormLabel color={color} htmlFor={formItemId}>
+          {label}
+        </FormLabel>
+      )}
       <Select.Root value={field.state.value} onValueChange={field.handleChange}>
         <Select.Trigger
           title={field.state.value || placeholder}

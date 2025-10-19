@@ -35,6 +35,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { isMobile as isMobileDevice } from "react-device-detect";
 
 type EntryType = { label: string; value: string | number; name?: string };
 
@@ -93,7 +94,7 @@ const ComboboxGroupField: FC<
   const styles = getComputedStyle(document.documentElement);
   const sm = styles.getPropertyValue("--breakpoint-sm"); // 64rem
   const isMobile = useMediaQuery(`(max-width: ${sm})`);
-  modal = modal || isMobile;
+  modal = modal || isMobileDevice;
 
   const [buttonRef, bounds] = useMeasure<HTMLButtonElement>({
     dependencies: [isMobile],
