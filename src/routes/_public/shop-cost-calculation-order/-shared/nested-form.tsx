@@ -235,8 +235,10 @@ export const ShopCostCalculationOrderForm = withForm({
                               />
                               <div className="mt-2 flex items-center justify-between">
                                 <Tooltip content="Удалить магазин и товары">
-                                  <button
-                                    className="text-redA-11 hover:bg-redA-3 active:bg-redA-4 focus-visible:ring-red-8 pointer-events-auto relative -bottom-1 ml-auto inline-flex size-6 shrink-0 cursor-default items-center justify-center rounded-full outline-none focus-visible:ring-[2px] [&_svg]:size-3"
+                                  <Button
+                                    className="relative -bottom-1 mr-0 ml-auto shrink-0 p-1.5 [&_svg]:size-4"
+                                    radius="full"
+                                    variant="ghost"
                                     aria-label="Удалить магазин и товары"
                                     type="button"
                                     onClick={() =>
@@ -246,7 +248,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                     <AccessibleIcon label="Удалить магазин и товары">
                                       <X />
                                     </AccessibleIcon>
-                                  </button>
+                                  </Button>
                                 </Tooltip>
                               </div>
                             </Fragment>
@@ -304,8 +306,10 @@ export const ShopCostCalculationOrderForm = withForm({
                                                   Товар № {productIndex + 1}
                                                 </Heading>
                                                 <Tooltip content="Удалить товар">
-                                                  <button
-                                                    className="text-redA-11 hover:bg-redA-3 active:bg-redA-4 focus-visible:ring-red-8 pointer-events-auto relative -bottom-1 ml-auto inline-flex size-6 shrink-0 cursor-default items-center justify-center rounded-full outline-none focus-visible:ring-[2px] [&_svg]:size-3"
+                                                  <Button
+                                                    className="relative -bottom-1 mr-0 ml-auto shrink-0 p-1.5 [&_svg]:size-4"
+                                                    radius="full"
+                                                    variant="ghost"
                                                     aria-label="Удалить товар"
                                                     type="button"
                                                     onClick={() =>
@@ -317,7 +321,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                                     <AccessibleIcon label="Удалить товар">
                                                       <X />
                                                     </AccessibleIcon>
-                                                  </button>
+                                                  </Button>
                                                 </Tooltip>
                                               </div>
                                             )}

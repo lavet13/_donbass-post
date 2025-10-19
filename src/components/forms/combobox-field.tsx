@@ -174,6 +174,24 @@ const ComboboxGroupField: FC<
         behavior: "instant",
         block: "center",
       });
+
+      // Trigger cmdk's internal hover state
+      const pointerOver = new PointerEvent("pointerover", {
+        bubbles: true,
+        cancelable: true,
+        pointerId: 1,
+        pointerType: "mouse",
+      });
+
+      const pointerMove = new PointerEvent("pointermove", {
+        bubbles: true,
+        cancelable: true,
+        pointerId: 1,
+        pointerType: "mouse",
+      });
+
+      selectedDepartmentRef.dispatchEvent(pointerOver);
+      selectedDepartmentRef.dispatchEvent(pointerMove);
     };
 
     void scrollInto();
@@ -235,43 +253,45 @@ const ComboboxGroupField: FC<
             entries.map(({ label, items }, valuesIdx, entries) => (
               <Fragment key={valuesIdx}>
                 <CommandGroup heading={label}>
-                  {items.map(({ label, value }) => (
-                    <CommandItem
-                      title={label}
-                      key={value}
-                      value={value as string}
-                      role="option"
-                      aria-selected={value === field.state.value}
-                      data-status={
-                        field.state.value === value ? true : undefined
-                      }
-                      ref={(node) => {
-                        if (value === field.state.value) {
-                          setSelectedDepartmentRef(node);
+                  {items.map(({ label, value }) => {
+                    return (
+                      <CommandItem
+                        title={label}
+                        key={value}
+                        value={value as string}
+                        role="option"
+                        data-selected={value === field.state.value}
+                        data-status={
+                          field.state.value === value ? true : undefined
                         }
-                      }}
-                      onSelect={() => {
-                        field.handleChange(value);
-                        setOpen(false);
-                      }}
-                    >
-                      <span
-                        className={cn(
-                          value === field.state.value && "font-bold",
-                        )}
+                        ref={(node) => {
+                          if (value === field.state.value) {
+                            setSelectedDepartmentRef(node);
+                          }
+                        }}
+                        onSelect={() => {
+                          field.handleChange(value);
+                          setOpen(false);
+                        }}
                       >
-                        {label}
-                      </span>
-                      <CheckIcon
-                        className={cn(
-                          "ml-auto size-4",
-                          value === field.state.value
-                            ? "opacity-100"
-                            : "opacity-0",
-                        )}
-                      />
-                    </CommandItem>
-                  ))}
+                        <span
+                          className={cn(
+                            value === field.state.value && "font-bold",
+                          )}
+                        >
+                          {label}
+                        </span>
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto size-4",
+                            value === field.state.value
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                        />
+                      </CommandItem>
+                    );
+                  })}
                 </CommandGroup>
                 {valuesIdx !== entries.length - 1 && <CommandSeparator />}
               </Fragment>

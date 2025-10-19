@@ -40,7 +40,7 @@ export const Header: FC = () => {
   ];
 
   return (
-    <header className="bg-background/85 dark:bg-gray-2/80 sticky top-0 z-10 flex h-14 w-full backdrop-blur-3xl">
+    <header className="bg-background/80 dark:bg-gray-2/80 sticky top-0 z-10 flex h-14 w-full backdrop-blur-sm">
       <div className="flex w-full items-center px-3.5">
         <div className="relative flex h-full w-full items-center justify-between">
           <div className="flex flex-none items-center gap-3">

@@ -142,6 +142,24 @@ const SearchPage: FC = () => {
         block: "center",
       });
 
+      // Trigger cmdk's internal hover state
+      const pointerOver = new PointerEvent("pointerover", {
+        bubbles: true,
+        cancelable: true,
+        pointerId: 1,
+        pointerType: "mouse",
+      });
+
+      const pointerMove = new PointerEvent("pointermove", {
+        bubbles: true,
+        cancelable: true,
+        pointerId: 1,
+        pointerType: "mouse",
+      });
+
+      selectedDepartmentRef.dispatchEvent(pointerOver);
+      selectedDepartmentRef.dispatchEvent(pointerMove);
+
       // Second scroll
       document.documentElement.scrollIntoView({
         behavior: "smooth",
