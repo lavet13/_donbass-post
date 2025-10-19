@@ -1,55 +1,18 @@
-import { useEffect, useState, forwardRef, useRef } from "react";
+import { useRef, forwardRef } from "react";
 import { useImperativeHandle } from "react";
 import { useControllableState } from "@/hooks/use-controllable-state";
 import { TextArea, type TextAreaProps } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
-
-interface UseAutosizeTextAreaProps {
-  textAreaRef: React.RefObject<HTMLTextAreaElement | null>;
-  minHeight?: number;
-  maxHeight?: number;
-  triggerAutoSize: string;
-}
-
-export const useAutosizeTextArea = ({
-  textAreaRef,
-  triggerAutoSize,
-  maxHeight = Number.MAX_SAFE_INTEGER,
-  minHeight = 0,
-}: UseAutosizeTextAreaProps) => {
-  const [init, setInit] = useState(true);
-  useEffect(() => {
-    // We need to reset the height momentarily to get the correct scrollHeight for the textarea
-    const offsetBorder = 6;
-    const textAreaElement = textAreaRef.current;
-    if (textAreaElement) {
-      if (init) {
-        textAreaElement.style.minHeight = `${minHeight + offsetBorder}px`;
-        if (maxHeight > minHeight) {
-          textAreaElement.style.maxHeight = `${maxHeight}px`;
-        }
-        setInit(false);
-      }
-      textAreaElement.style.height = `${minHeight + offsetBorder}px`;
-      const scrollHeight = textAreaElement.scrollHeight;
-      // We then set the height directly, outside of the render loop
-      // Trying to set this with state or a ref will product an incorrect value.
-      if (scrollHeight > maxHeight) {
-        textAreaElement.style.height = `${maxHeight}px`;
-      } else {
-        textAreaElement.style.height = `${scrollHeight + offsetBorder}px`;
-      }
-    }
-  }, [textAreaRef.current, triggerAutoSize]);
-};
+import { useAutosizeTextArea } from ".";
 
 export type AutosizeTextAreaRef = {
   textArea: HTMLTextAreaElement;
+  focus: () => void;
   maxHeight: number;
   minHeight: number;
 };
 
-type AutosizeTextAreaProps = {
+export type AutosizeTextAreaProps = {
   maxHeight?: number;
   minHeight?: number;
   value?: any;

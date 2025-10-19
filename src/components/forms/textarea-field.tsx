@@ -2,6 +2,7 @@ import { useEffect, useRef, type ComponentProps, type FC } from "react";
 import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
+import type { AutosizeTextAreaRef } from "@/components/ui/autosize-textarea";
 
 type TextareaFieldProps = ComponentProps<typeof AutosizeTextarea> & {
   label?: string;
@@ -28,10 +29,12 @@ const TextareaField: FC<TextareaFieldProps> = ({
     ariaLabel: ariaLabelProp || ariaLabel,
   });
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const textAreaRef = useRef<
+    (HTMLTextAreaElement & AutosizeTextAreaRef) | null
+  >(null);
 
   useEffect(() => {
-    const input = inputRef.current;
+    const input = textAreaRef.current;
     if (!input) return;
 
     if (shouldFocusOnMount) {
@@ -49,7 +52,7 @@ const TextareaField: FC<TextareaFieldProps> = ({
     <FormItem>
       {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       <AutosizeTextarea
-        ref={inputRef}
+        ref={textAreaRef}
         id={formItemId}
         name={field.name}
         aria-label={defaultAriaLabel}
