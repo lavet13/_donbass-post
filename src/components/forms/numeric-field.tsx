@@ -4,14 +4,16 @@ import type { NumericFormatProps } from "react-number-format";
 import { Input } from "@/components/ui/input";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
+import { isMobile as isMobileDevice } from "react-device-detect";
 
 const NumericField: FC<
-  Omit<NumericFormatProps, 'size'> & Omit<ComponentProps<typeof Input>, 'type'> & {
-    labelStyles?: string;
-    label?: string;
-    ariaLabel?: string;
-    shouldFocusOnMount?: boolean;
-  }
+  Omit<NumericFormatProps, "size"> &
+    Omit<ComponentProps<typeof Input>, "type"> & {
+      labelStyles?: string;
+      label?: string;
+      ariaLabel?: string;
+      shouldFocusOnMount?: boolean;
+    }
 > = ({
   label,
   labelStyles,
@@ -21,7 +23,6 @@ const NumericField: FC<
   size,
   ...props
 }) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const {
     field,
     defaultAriaLabel,
@@ -33,15 +34,19 @@ const NumericField: FC<
     label,
     ariaLabel: ariaLabelProp || ariaLabel,
   });
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
+    const input = inputRef.current;
+    if (!input) return;
+
     if (shouldFocusOnMount) {
-      inputRef.current?.focus();
+      input.focus();
     }
 
     return () => {
       if (shouldFocusOnMount) {
-        inputRef.current?.blur();
+        input.blur();
       }
     };
   }, [shouldFocusOnMount]);
@@ -77,6 +82,7 @@ const NumericField: FC<
           field.handleChange(values.floatValue || 0);
         }}
         value={field.state.value || ""}
+        shouldFocus={isMobileDevice}
         {...props}
       />
       <FormMessage id={formMessageId} />

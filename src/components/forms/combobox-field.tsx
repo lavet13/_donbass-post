@@ -99,6 +99,34 @@ const ComboboxGroupField: FC<
     dependencies: [isMobile],
   });
 
+  const scrollIntoButton = () => {
+    if (!modal) return;
+
+    const headerHeightStr = getComputedStyle(document.documentElement)
+      .getPropertyValue("--header-height")
+      .trim();
+
+    let headerHeightPx;
+
+    if (headerHeightStr.endsWith("rem")) {
+      const remValue = parseFloat(headerHeightStr);
+      const rootFontSize = parseFloat(
+        getComputedStyle(document.documentElement).fontSize,
+      );
+      headerHeightPx = remValue * rootFontSize;
+    } else {
+      headerHeightPx = parseFloat(headerHeightStr);
+    }
+
+    const buttonTop =
+      buttonRef.current!.getBoundingClientRect().top + window.scrollY;
+
+    window.scrollTo({
+      behavior: "smooth",
+      top: buttonTop - headerHeightPx - 30,
+    });
+  };
+
   const renderTrigger = () => {
     return (
       <Button
@@ -272,6 +300,7 @@ const ComboboxGroupField: FC<
                         onSelect={() => {
                           field.handleChange(value);
                           setOpen(false);
+                          scrollIntoButton();
                         }}
                       >
                         <span

@@ -230,10 +230,6 @@
     src: url("/fonts/Inter/Inter-Bold.ttf") format("truetype");
   }
 
-  html {
-    @apply scroll-smooth;
-  }
-
   body {
     @apply lg:[--top-spacing:calc(var(--spacing)*4)];
     font-synthesis-weight: none;

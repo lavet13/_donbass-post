@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import {
   Button,
+  Callout,
   Card,
   IconButton,
   Popover,
@@ -1540,12 +1541,25 @@ export const PickUpPointDeliveryOrderForm = withForm({
               />
             </div>
 
-            <div className="text-accentA-11 mb-3 inline-flex w-full items-center justify-center gap-2 text-sm leading-none [&_svg]:size-4.5 [&_svg]:shrink-0 [&_svg]:self-start">
-              <TriangleAlert />
-              <Text className="leading-rx-4" as="p">
+            <Callout.Root
+              size="1"
+              variant="soft"
+              color="orange"
+              className="mb-3 items-center justify-center [&_svg]:size-4.5 [&_svg]:shrink-0"
+            >
+              <Callout.Icon>
+                <TriangleAlert />
+              </Callout.Icon>
+              <Callout.Text className="leading-rx-4">
                 Габариты указываются по самой большой позиции груза
-              </Text>
-            </div>
+              </Callout.Text>
+            </Callout.Root>
+            {/* <div className="text-orangeA-11 inline-flex w-full items-center justify-center gap-2 text-sm leading-none [&_svg]:size-4.5 [&_svg]:shrink-0 [&_svg]:self-start"> */}
+            {/*   <TriangleAlert /> */}
+            {/*   <Text className="leading-rx-4" as="p"> */}
+            {/*     Габариты указываются по самой большой позиции груза */}
+            {/*   </Text> */}
+            {/* </div> */}
 
             <form.AppField
               name="cargoData.description"

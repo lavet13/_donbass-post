@@ -3,6 +3,7 @@ import { useEffect, useRef, type FC, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { TextField } from "@radix-ui/themes";
 import { Slot } from "radix-ui";
+import { useComposedRefs } from "@/hooks/use-composed-refs";
 
 const Input: FC<
   TextField.RootProps & {
@@ -10,6 +11,7 @@ const Input: FC<
     leftElement?: ReactNode;
     rightElement?: ReactNode;
     shouldFocus?: boolean;
+    ref?: React.Ref<HTMLInputElement>;
   }
 > = ({
   className,
@@ -18,10 +20,12 @@ const Input: FC<
   leftElement,
   shouldFocus = false,
   rightElement,
+  ref,
   ...props
 }) => {
   const Comp = asChild ? Slot.Root : TextField.Root;
   const inputRef = useRef<HTMLInputElement>(null);
+  const composeRef = useComposedRefs(inputRef, ref);
 
   useEffect(() => {
     const input = inputRef.current;
@@ -60,7 +64,7 @@ const Input: FC<
 
   return (
     <Comp
-      ref={inputRef}
+      ref={composeRef}
       data-slot="input"
       className={cn(
         "file:text-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent",
