@@ -3,7 +3,7 @@ import type { ComponentProps, FC } from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
 const Drawer: FC<ComponentProps<typeof DrawerPrimitive.Root>> = (props) => {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
+  return <DrawerPrimitive.Root repositionInputs={false} data-slot="drawer" {...props} />;
 };
 
 const DrawerTrigger: FC<ComponentProps<typeof DrawerPrimitive.Trigger>> = ({
@@ -25,7 +25,7 @@ const DrawerContent: FC<ComponentProps<typeof DrawerPrimitive.Content>> = ({
 }) => {
   return (
     <DrawerPrimitive.Portal>
-      <DrawerPrimitive.Overlay className="fixed inset-0 bg-blackA-6" />
+      <DrawerPrimitive.Overlay className="bg-blackA-6 fixed inset-0" />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
         data-is-root-theme="true"
@@ -37,10 +37,10 @@ const DrawerContent: FC<ComponentProps<typeof DrawerPrimitive.Content>> = ({
         data-scaling="100%"
         className={cn(
           "radix-themes",
-          "group/drawer-content flex flex-col text-gray-12 bg-gray-2 fixed outline-none min-h-0",
+          "group/drawer-content text-gray-12 bg-gray-2 fixed flex min-h-0 flex-col outline-none",
 
           // removing blur
-          "transform-gpu backface-hidden will-change-auto",
+          "transform-gpu will-change-auto backface-hidden",
           "[font-smoothing:subpixel-antialiased] [text-rendering:optimizeLegibility]",
           "[-webkit-font-smoothing:subpixel-antialiased]",
           className,
@@ -59,7 +59,7 @@ const DrawerHandle: FC<ComponentProps<typeof DrawerPrimitive.Handle>> = ({
     <DrawerPrimitive.Handle
       data-slot="drawer-handle"
       className={cn(
-        "cursor-grab active:cursor-grabbing data-[vaul-handle]:bg-grayA-6! mx-auto mt-4 hidden h-2 w-[100px] mb-1 sm:mb-0 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block lg:data-[vaul-handle]:hidden!",
+        "data-[vaul-handle]:bg-grayA-6! mx-auto mt-4 mb-1 hidden h-2 w-[100px] shrink-0 cursor-grab rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block active:cursor-grabbing sm:mb-0 lg:data-[vaul-handle]:hidden!",
         className,
       )}
       {...props}
@@ -74,7 +74,7 @@ const DrawerTitle: FC<ComponentProps<typeof DrawerPrimitive.Title>> = ({
   return (
     <DrawerPrimitive.Title
       data-slot="drawer-title"
-      className={cn("font-medium mt-8", className)}
+      className={cn("mt-8 font-medium", className)}
       {...props}
     />
   );
@@ -86,7 +86,7 @@ const DrawerDescription: FC<
   return (
     <DrawerPrimitive.Description
       data-slot="drawer-description"
-      className={cn("leading-6 mt-2 text-grayA-11", className)}
+      className={cn("text-grayA-11 mt-2 leading-6", className)}
       {...props}
     />
   );

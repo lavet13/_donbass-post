@@ -42,11 +42,17 @@ const MainSidebar: FC<ComponentProps<"div">> = (props) => {
     <>
       {isMobile ? (
         <Drawer open={open} onOpenChange={setOpen} direction="left">
-          <Tooltip content="Меню">
+          {isMobileDevice ? (
             <DrawerTrigger asChild>
               <Trigger />
             </DrawerTrigger>
-          </Tooltip>
+          ) : (
+            <Tooltip content="Меню">
+              <DrawerTrigger asChild>
+                <Trigger />
+              </DrawerTrigger>
+            </Tooltip>
+          )}
           <DrawerContent
             aria-describedby={undefined}
             className="bg-gray-2 top-0 bottom-0 left-0 w-full max-w-[300px]"

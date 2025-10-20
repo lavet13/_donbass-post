@@ -352,7 +352,7 @@ const ComboboxGroupField: FC<
           <DrawerTrigger asChild>{renderTrigger()}</DrawerTrigger>
           <DrawerContent
             aria-describedby={undefined}
-            className="border-grayA-6 top-5 h-full! max-h-[calc(100vh-1.25rem)] w-full rounded-t-lg border lg:top-0 lg:max-h-full"
+            className="border-grayA-6 right-0 bottom-0 left-0 max-h-[80svh] w-full rounded-t-lg border"
             role="listbox"
           >
             <DrawerHandle />
@@ -362,7 +362,7 @@ const ComboboxGroupField: FC<
                 <VisuallyHidden>
                   <DrawerTitle>{searchInputPlaceholder}</DrawerTitle>
                 </VisuallyHidden>
-                {renderContent({ shouldFocus: true })}
+                {renderContent({ shouldFocus: false })}
               </div>
               <div
                 className="hover:bg-secondary/10 sticky top-0 shrink grow cursor-pointer"
