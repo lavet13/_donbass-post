@@ -17,7 +17,8 @@ export type AutosizeTextAreaProps = {
   minHeight?: number;
   value?: any;
   onValueChange?: (value: any) => void;
-} & TextAreaProps & TextProps;
+} & TextAreaProps &
+  TextProps;
 
 export const AutosizeTextarea = forwardRef<
   AutosizeTextAreaRef,
@@ -64,7 +65,7 @@ export const AutosizeTextarea = forwardRef<
         {...props}
         value={value}
         ref={textAreaRef}
-        className={cn("", className)}
+        className={cn("caret-accent-7 dark:caret-accent-11 has-[textarea[aria-invalid=true]]:caret-red-9 has-[textarea[aria-invalid=true]]:shadow-[inset_0_0_0_var(--text-area-border-width)_var(--red-8)]", className)}
         onChange={handleChange}
       />
     );

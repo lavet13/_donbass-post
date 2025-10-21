@@ -11,7 +11,25 @@ import {
   type ScrollAreaProps,
 } from "@radix-ui/themes";
 import { AccessibleIcon } from "@radix-ui/themes";
-import { useComposedRefs } from "@/hooks/use-composed-refs";
+import { composeRefs, useComposedRefs } from "@/hooks/use-composed-refs";
+import { createContext } from "@/hooks/create-context";
+
+/* -------------------------------------------------------------------------------------------------
+ * Command
+ * -----------------------------------------------------------------------------------------------*/
+
+const COMMAND_NAME = "Command";
+
+type CommandContextValue = {
+  listRef: React.RefObject<HTMLDivElement | null>;
+};
+
+const [CommandProvider, useCommandContext] =
+  createContext<CommandContextValue>(COMMAND_NAME);
+
+/* -------------------------------------------------------------------------------------------------
+ * CommandRoot
+ * -----------------------------------------------------------------------------------------------*/
 
 // https://github.com/pacocoursey/cmdk?tab=readme-ov-file
 const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
@@ -19,22 +37,33 @@ const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
   loop = false,
   ...props
 }) => {
+  const listRef = useRef<HTMLDivElement | null>(null);
+
   return (
-    <CommandPrimitive
-      data-slot="command"
-      loop={loop}
-      className={cn("", className)}
-      {...props}
-    />
+    <CommandProvider listRef={listRef}>
+      <CommandPrimitive
+        data-slot="command"
+        loop={loop}
+        className={cn("", className)}
+        {...props}
+      />
+    </CommandProvider>
   );
 };
+Command.displayName = COMMAND_NAME;
+
+const COMMAND_LIST_NAME = "CommandList";
 
 const CommandList: FC<
   ComponentProps<typeof CommandPrimitive.List> & {
     listStyles?: string;
     scrollProps?: ScrollAreaProps;
+    ref?: React.RefObject<HTMLDivElement>;
   }
-> = ({ className, scrollProps, listStyles, ...props }) => {
+> = ({ className, scrollProps, listStyles, ref, ...props }) => {
+  const context = useCommandContext(COMMAND_LIST_NAME);
+  const composedRefs = composeRefs(ref, context.listRef);
+
   return (
     <ScrollArea
       className={cn("h-[40vh] max-h-[300px]", className)}
@@ -43,6 +72,7 @@ const CommandList: FC<
       {...scrollProps}
     >
       <CommandPrimitive.List
+        ref={composedRefs}
         data-slot="command-list"
         className={cn(
           "pl-rx-1 pr-rx-3 scroll-py-1 overflow-x-hidden overflow-y-auto transition-[height] duration-100 ease-out outline-none",
@@ -53,6 +83,7 @@ const CommandList: FC<
     </ScrollArea>
   );
 };
+CommandList.displayName = COMMAND_LIST_NAME;
 
 const CommandGroup: FC<ComponentProps<typeof CommandPrimitive.Group>> = ({
   className,
@@ -122,6 +153,7 @@ const CommandSeparator: FC<
   );
 };
 
+const COMMAND_INPUT_NAME = "CommandInput";
 const CommandInput: FC<
   ComponentProps<typeof CommandPrimitive.Input> & {
     clearButton?: boolean;
@@ -141,6 +173,7 @@ const CommandInput: FC<
   ...props
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const context = useCommandContext(COMMAND_INPUT_NAME);
 
   const composedRefs = useComposedRefs(inputRef, ref);
 
@@ -168,6 +201,29 @@ const CommandInput: FC<
     }
   }, [shouldFocus]);
 
+  // Maintaining the scroll position at the top when searching for specific item
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    const handleInput = () => {
+      setTimeout(() => {
+        if (context.listRef.current) {
+          context.listRef.current.scrollIntoView({
+            block: "start",
+            behavior: "instant",
+          });
+        }
+      }, 0);
+    };
+
+    input.addEventListener("input", handleInput);
+
+    return () => {
+      input.removeEventListener("input", handleInput);
+    };
+  }, [context.listRef]);
+
   return (
     <div
       className={cn(
@@ -183,7 +239,7 @@ const CommandInput: FC<
         onValueChange={setValue}
         className={cn(
           "flex h-[30px] w-full bg-transparent py-3 text-sm outline-hidden",
-          "placeholder:text-grayA-11 caret-red-8 disabled:cursor-not-allowed disabled:opacity-50",
+          "placeholder:text-grayA-11 caret-accent-7 dark:caret-accent-11 disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
         {...props}
@@ -195,7 +251,7 @@ const CommandInput: FC<
             variant="ghost"
             radius="full"
             data-slot="command-input-clear"
-            className="text-red-11 hover:bg-redA-3 active:bg-redA-4 box-content h-fit shrink-0 rounded-full p-[6px] [&_svg]:size-4.5 mr-px"
+            className="text-red-11 hover:bg-redA-3 active:bg-redA-4 mr-px box-content h-fit shrink-0 rounded-full p-[6px] [&_svg]:size-4.5"
             onKeyDown={handleKeyDown}
             onClick={handleClear}
             type="button"
@@ -210,6 +266,7 @@ const CommandInput: FC<
     </div>
   );
 };
+CommandInput.displayName = COMMAND_INPUT_NAME;
 
 const CommandEmpty: FC<ComponentProps<typeof CommandPrimitive.Empty>> = ({
   className,

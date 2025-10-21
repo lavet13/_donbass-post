@@ -399,6 +399,7 @@ export const ShopCostCalculationOrderForm = withForm({
                                                 }}
                                                 children={(priceField) => (
                                                   <priceField.NumericField
+                                                    shouldSelect
                                                     suffix=" ₽"
                                                     thousandSeparator=" "
                                                     label="Цена"

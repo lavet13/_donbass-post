@@ -1,6 +1,12 @@
-import { useEffect, useRef, type FC, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  type FC,
+  type FocusEvent,
+  type ReactNode,
+} from "react";
 
-import { cn } from "@/lib/utils";
+import { cn, composeEventHandlers } from "@/lib/utils";
 import { TextField } from "@radix-ui/themes";
 import { Slot } from "radix-ui";
 import { useComposedRefs } from "@/hooks/use-composed-refs";
@@ -11,7 +17,8 @@ const Input: FC<
     leftElement?: ReactNode;
     rightElement?: ReactNode;
     shouldFocus?: boolean;
-    ref?: React.Ref<HTMLInputElement>;
+    shouldSelect?: boolean;
+    ref?: React.RefObject<HTMLInputElement>;
   }
 > = ({
   className,
@@ -19,6 +26,7 @@ const Input: FC<
   children,
   leftElement,
   shouldFocus = false,
+  shouldSelect = false,
   rightElement,
   ref,
   ...props
@@ -26,6 +34,12 @@ const Input: FC<
   const Comp = asChild ? Slot.Root : TextField.Root;
   const inputRef = useRef<HTMLInputElement>(null);
   const composeRef = useComposedRefs(inputRef, ref);
+
+  const handleSelect = (event: FocusEvent<HTMLInputElement>) => {
+    if (shouldSelect) {
+      event.target.setSelectionRange(0, event.target.value.length - 1);
+    }
+  };
 
   useEffect(() => {
     const input = inputRef.current;
@@ -66,9 +80,10 @@ const Input: FC<
     <Comp
       ref={composeRef}
       data-slot="input"
+      onFocus={composeEventHandlers(props.onFocus, handleSelect)}
       className={cn(
         "file:text-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent",
-        "has-[input[aria-invalid=true]]:caret-red-8 has-[input[aria-invalid=true]]:shadow-[inset_0_0_0_var(--text-field-border-width)_var(--red-8)]",
+        "caret-accent-7 dark:caret-accent-11 has-[input[aria-invalid=true]]:caret-red-9 has-[input[aria-invalid=true]]:shadow-[inset_0_0_0_var(--text-field-border-width)_var(--red-8)]",
         className,
       )}
       {...props}

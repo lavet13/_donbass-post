@@ -23,10 +23,10 @@ const RadioGroupItem: FC<ComponentProps<typeof RadioGroupPrimitive.Item>> = ({
   return (
     <RadioGroupPrimitive.Item
       className={cn(
-        "group relative cursor-pointer md:text-sm text-base leading-none text-center py-2 px-4 -mr-px",
-        "hover:cursor-pointer first-of-type:rounded-l-full last-of-type:rounded-r-full overflow-hidden hover:data-[state=unchecked]:z-1",
-        "data-[state=unchecked]:[box-shadow:inset_0_0_0_1px_var(--gray-a7)] data-[state=unchecked]:hover:[box-shadow:inset_0_0_0_1px_var(--accent-a8)] data-[state=unchecked]:hover:bg-accentA-3 data-[state=unchecked]:active:[box-shadow:inset_0_0_0_1px_var(--accent-a8)] data-[state=unchecked]:active:bg-accentA-5",
-        "-outline-offset-1 focus-visible:outline-accent-8 focus-visible:outline-[2px] focus-visible:z-1",
+        "group relative -mr-px cursor-pointer px-4 py-2 text-center text-base leading-none md:text-sm",
+        "overflow-hidden first-of-type:rounded-l-full last-of-type:rounded-r-full hover:cursor-pointer hover:data-[state=unchecked]:z-1",
+        "data-[state=unchecked]:hover:bg-accentA-3 data-[state=unchecked]:active:bg-accentA-5 data-[state=unchecked]:[box-shadow:inset_0_0_0_1px_var(--gray-a7)] data-[state=unchecked]:hover:[box-shadow:inset_0_0_0_1px_var(--accent-a8)] data-[state=unchecked]:active:[box-shadow:inset_0_0_0_1px_var(--accent-a8)]",
+        "focus-visible:outline-accent-8 -outline-offset-1 focus-visible:z-1 focus-visible:outline-[2px]",
         className,
       )}
       {...props}
@@ -40,8 +40,8 @@ const RadioGroupIndicator: FC<
   return (
     <RadioGroupPrimitive.Indicator
       className={cn(
-        "absolute top-0 left-0 flex items-center justify-center w-full h-full",
-        "bg-accentA-5 border border-accentA-8",
+        "absolute top-0 left-0 flex h-full w-full items-center justify-center",
+        "bg-accentA-5 border-accentA-8 border",
         "group-first-of-type:rounded-l-full group-last-of-type:rounded-r-full",
         className,
       )}
@@ -58,8 +58,8 @@ const RadioGroupLabel: FC<ComponentProps<typeof Label>> = ({
   return (
     <Label
       className={cn(
-        "cursor-pointer relative group-hover:text-accentA-11 group-active:text-accentA-11 group-data-[state=checked]:font-medium group-data-[state=checked]:text-accent-11 text-grayA-11 font-regular",
-        "relative group-active:top-[1px]",
+        "relative",
+        "group-hover:text-accentA-11 group-active:text-accentA-11 group-data-[state=checked]:text-accent-11 text-grayA-11 font-regular relative cursor-pointer",
         className,
       )}
       {...props}

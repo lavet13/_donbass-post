@@ -14,6 +14,7 @@ const NumericField: FC<
       label?: string;
       ariaLabel?: string;
       shouldFocusOnMount?: boolean;
+      shouldSelect?: boolean;
     } & TextProps
 > = ({
   label,
@@ -70,6 +71,7 @@ const NumericField: FC<
         name={field.name}
         type="tel"
         customInput={Input as any}
+        shouldSelect={props.shouldSelect}
         decimalScale={0}
         allowNegative={false}
         size={size as any}
