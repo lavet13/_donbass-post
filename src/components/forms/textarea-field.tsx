@@ -4,6 +4,7 @@ import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import type { AutosizeTextAreaRef } from "@/components/ui/autosize-textarea";
 import type { TextProps } from "@radix-ui/themes";
+import { isMobile as isMobileDevice } from "react-device-detect";
 
 type TextareaFieldProps = ComponentProps<typeof AutosizeTextarea> & {
   label?: string;
@@ -58,6 +59,7 @@ const TextareaField: FC<TextareaFieldProps> = ({
         </FormLabel>
       )}
       <AutosizeTextarea
+        shouldFocus={isMobileDevice}
         color={color}
         ref={textAreaRef}
         id={formItemId}

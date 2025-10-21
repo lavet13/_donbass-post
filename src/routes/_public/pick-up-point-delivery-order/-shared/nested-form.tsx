@@ -1548,45 +1548,41 @@ export const PickUpPointDeliveryOrderForm = withForm({
               size="1"
               variant="soft"
               color="orange"
-              className="mb-3 items-center [&_svg]:size-4.5 [&_svg]:shrink-0"
+              className="mb-3 justify-between items-center p-2 [&_svg]:size-4 [&_svg]:shrink-0"
             >
-              <Callout.Icon>
-                <TriangleAlert />
-              </Callout.Icon>
-              <div className="flex min-w-0 items-center gap-2">
-                <Callout.Text className="leading-rx-4">
-                  Габариты указываются по самой большой позиции груза
-                </Callout.Text>
-                <Popover.Root>
-                  <Popover.Trigger>
-                    <IconButton
-                      className="[&>svg]:size-3.5"
-                      color="orange"
-                      variant="ghost"
-                      size="1"
-                    >
-                      <CircleAlertIcon />
-                    </IconButton>
-                  </Popover.Trigger>
-                  <Popover.Content
-                    size="1"
-                    maxWidth="300px"
-                    align="end"
-                    side="bottom"
-                  >
-                    <Text
-                      color="orange"
-                      highContrast
-                      as="p"
-                      trim="both"
-                      size="1"
-                    >
-                      Если у вас несколько коробок разного размера, нужно
-                      указать размеры самой большой из них.
-                    </Text>
-                  </Popover.Content>
-                </Popover.Root>
+              <div className="flex items-center gap-2">
+                <Callout.Icon className="self-start">
+                  <TriangleAlert />
+                </Callout.Icon>
+                <div className="flex min-w-0 items-center gap-2">
+                  <Callout.Text wrap="balance" className="leading-rx-4">
+                    Габариты указываются по самой большой позиции груза
+                  </Callout.Text>
+                </div>
               </div>
+              <Popover.Root>
+                <Popover.Trigger>
+                  <IconButton
+                    className="ml-auto col-start-2 [&>svg]:size-3.5"
+                    color="orange"
+                    variant="ghost"
+                    size="1"
+                  >
+                    <CircleAlertIcon />
+                  </IconButton>
+                </Popover.Trigger>
+                <Popover.Content
+                  size="1"
+                  maxWidth="300px"
+                  align="end"
+                  side="bottom"
+                >
+                  <Text color="orange" highContrast as="p" trim="both" size="1">
+                    Если у вас несколько коробок разного размера, нужно указать
+                    размеры самой большой из них.
+                  </Text>
+                </Popover.Content>
+              </Popover.Root>
             </Callout.Root>
             {/* <div className="text-orangeA-11 inline-flex w-full items-center justify-center gap-2 text-sm leading-none [&_svg]:size-4.5 [&_svg]:shrink-0 [&_svg]:self-start"> */}
             {/*   <TriangleAlert /> */}

@@ -1,4 +1,4 @@
-import { useRef, forwardRef } from "react";
+import { useRef, forwardRef, useEffect } from "react";
 import { useImperativeHandle } from "react";
 import { useControllableState } from "@/hooks/use-controllable-state";
 import { TextArea, type TextAreaProps, type TextProps } from "@radix-ui/themes";
@@ -16,6 +16,7 @@ export type AutosizeTextAreaProps = {
   maxHeight?: number;
   minHeight?: number;
   value?: any;
+  shouldFocus?: boolean;
   onValueChange?: (value: any) => void;
 } & TextAreaProps &
   TextProps;
@@ -30,6 +31,7 @@ export const AutosizeTextarea = forwardRef<
       minHeight = 52,
       className,
       onValueChange,
+      shouldFocus = false,
       value: valueProp,
       ...props
     },
@@ -60,12 +62,50 @@ export const AutosizeTextarea = forwardRef<
       setValue(event.target.value);
     };
 
+    useEffect(() => {
+      const input = textAreaRef.current;
+      if (!input || !shouldFocus) return;
+
+      const handleFocus = () => {
+        const headerHeightStr = getComputedStyle(document.documentElement)
+          .getPropertyValue("--header-height")
+          .trim();
+
+        let headerHeightPx;
+
+        if (headerHeightStr.endsWith("rem")) {
+          const remValue = parseFloat(headerHeightStr);
+          const rootFontSize = parseFloat(
+            getComputedStyle(document.documentElement).fontSize,
+          );
+          headerHeightPx = remValue * rootFontSize;
+        } else {
+          headerHeightPx = parseFloat(headerHeightStr);
+        }
+
+        const inputTop = input.getBoundingClientRect().top + window.scrollY;
+
+        window.scrollTo({
+          top: inputTop - headerHeightPx - 30,
+          behavior: "smooth",
+        });
+      };
+      input.addEventListener("focus", handleFocus);
+
+      return () => {
+        input.removeEventListener("focus", handleFocus);
+      };
+    }, [shouldFocus]);
+
     return (
       <TextArea
         {...props}
         value={value}
         ref={textAreaRef}
-        className={cn("caret-accent-7 dark:caret-accent-11 has-[textarea[aria-invalid=true]]:caret-red-9 has-[textarea[aria-invalid=true]]:shadow-[inset_0_0_0_var(--text-area-border-width)_var(--red-8)]", className)}
+        className={cn(
+          "caret-accent-7 dark:caret-accent-11 has-[textarea[aria-invalid=true]]:caret-red-9 has-[textarea[aria-invalid=true]]:shadow-[inset_0_0_0_var(--text-area-border-width)_var(--red-8)]",
+          className,
+        )}
         onChange={handleChange}
       />
     );
