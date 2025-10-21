@@ -69,6 +69,7 @@ const PhoneField: FC<
         aria-describedby={ariaDescribedBy}
         aria-invalid={!!error}
         value={field.state.value}
+        smartCaret={false}
         onChange={(value) => field.handleChange(value || "")}
         {...props}
       />
