@@ -128,10 +128,6 @@ const ComboboxGroupField: FC<
     });
   };
 
-  const handleToggle = () => {
-    setOpen((open) => !open);
-  };
-
   const renderTrigger = () => {
     return (
       <Button
@@ -139,7 +135,7 @@ const ComboboxGroupField: FC<
         color="gray"
         ref={buttonRef}
         className={cn(
-          `justify-between [&_svg]:size-4`,
+          `relative justify-between [&_svg]:size-4`,
           `aria-invalid:shadow-[inset_0_0_0_1px_var(--red-8)]`,
           open && "bg-grayA-4",
           className,
@@ -204,15 +200,14 @@ const ComboboxGroupField: FC<
       <Command>
         <CommandInput
           {...(modal ? { inputContainer: "bg-gray-2 rounded-t-sm" } : {})}
-          isModal={modal}
           shouldFocus={shouldFocus}
           clearButton
           clearButtonTooltipMessage={searchClearButtonTooltipMessage}
           placeholder={searchInputPlaceholder}
         />
         <CommandList
+          {...(!modal ? { className: "h-[40vh] max-h-[300px]" } : {})}
           scrollProps={{ type: modal ? "auto" : "always" }}
-          className={cn(modal && `h-auto max-h-fit`)}
         >
           {isLoading && (
             <CommandLoading label={loadingMessage}>
@@ -293,46 +288,22 @@ const ComboboxGroupField: FC<
     <FormItem>
       {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       {modal ? (
-        <Drawer open={open} onOpenChange={handleToggle}>
+        <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>{renderTrigger()}</DrawerTrigger>
-          <DrawerContent
-            aria-describedby={undefined}
-            className={cn(
-              "border-grayA-6 right-0 bottom-0 left-0 max-h-[80dvh] w-full rounded-t-lg border",
-            )}
-            role="listbox"
-          >
-            <DrawerHandle />
-            <div className="flex w-full flex-1 overflow-y-auto">
-              <div className="sticky top-0 shrink grow" />
-              <div className="w-full max-w-4xl shrink-1">
+          <DrawerContent aria-describedby={undefined}>
+            <div className="flex-1 overflow-y-auto rounded-t-lg">
+              <div className="mx-auto max-w-md">
+                <DrawerHandle />
                 <VisuallyHidden>
                   <DrawerTitle>{searchInputPlaceholder}</DrawerTitle>
                 </VisuallyHidden>
                 {renderContent({ shouldFocus: true })}
               </div>
-              <div
-                className="hover:bg-secondary/10 sticky top-0 shrink grow cursor-pointer"
-                onClick={handleToggle}
-              >
-                <Tooltip content="Закрыть модальное окно">
-                  <button
-                    className="text-red-11 hover:bg-red-3 active:bg-red-4 focus-visible:ring-red-8 pointer-events-auto absolute top-1 left-1 ml-auto hidden size-8 shrink-0 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-[2px] lg:inline-flex [&_svg]:size-4"
-                    aria-label="Закрыть окно"
-                    type="button"
-                    onClick={handleToggle}
-                  >
-                    <AccessibleIcon label="Закрыть модальное окно">
-                      <X />
-                    </AccessibleIcon>
-                  </button>
-                </Tooltip>
-              </div>
             </div>
           </DrawerContent>
         </Drawer>
       ) : (
-        <Popover.Root open={open} onOpenChange={handleToggle}>
+        <Popover.Root open={open} onOpenChange={setOpen}>
           <Popover.Trigger>{renderTrigger()}</Popover.Trigger>
           <Popover.Content
             role="listbox"
