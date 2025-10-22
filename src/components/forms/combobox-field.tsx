@@ -4,7 +4,6 @@ import {
   type ComponentProps,
   type FC,
   useEffect,
-  type FocusEvent,
 } from "react";
 import {
   Button,
@@ -131,10 +130,6 @@ const ComboboxGroupField: FC<
 
   const [isFocused, setIsFocused] = useState(false);
 
-  const handleFocus = (event: FocusEvent<HTMLInputElement>) => {
-    setIsFocused(document.activeElement === event.currentTarget);
-  };
-
   const handleToggle = () => {
     setOpen((open) => !open);
     setIsFocused(false);
@@ -212,7 +207,9 @@ const ComboboxGroupField: FC<
       <Command>
         <CommandInput
           {...(modal ? { inputContainer: "bg-gray-2 rounded-t-sm" } : {})}
-          onFocus={handleFocus}
+          isModal={modal}
+          focus={isFocused}
+          onFocusChange={setIsFocused}
           shouldFocus={shouldFocus}
           clearButton
           clearButtonTooltipMessage={searchClearButtonTooltipMessage}
@@ -306,8 +303,9 @@ const ComboboxGroupField: FC<
           <DrawerContent
             aria-describedby={undefined}
             className={cn(
-              "border-grayA-6 right-0 bottom-0 left-0 max-h-[80svh] w-full rounded-t-lg border",
-              isFocused && "top-0 bottom-auto min-h-[100svh] rounded-t-none",
+              "border-grayA-6 max-h-[80svh] w-full rounded-t-lg border",
+              !isFocused && "right-0 bottom-0 left-0",
+              isFocused && "top-0 right-0 left-0 min-h-[100svh] rounded-t-none",
             )}
             role="listbox"
           >

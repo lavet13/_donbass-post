@@ -1,7 +1,7 @@
 import { useControllableState } from "@/hooks/use-controllable-state";
-import { cn } from "@/lib/utils";
+import { cn, composeEventHandlers } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
-import { SearchIcon, X } from "lucide-react";
+import { Minimize2Icon, SearchIcon, X } from "lucide-react";
 import { useEffect, useRef, type ComponentProps, type FC } from "react";
 import {
   IconButton,
@@ -11,7 +11,7 @@ import {
   type ScrollAreaProps,
 } from "@radix-ui/themes";
 import { AccessibleIcon } from "@radix-ui/themes";
-import { composeRefs, useComposedRefs } from "@/hooks/use-composed-refs";
+import { useComposedRefs } from "@/hooks/use-composed-refs";
 import { createContext } from "@/hooks/create-context";
 
 /* -------------------------------------------------------------------------------------------------
@@ -62,7 +62,6 @@ const CommandList: FC<
     ref?: React.RefObject<HTMLDivElement>;
   }
 > = ({ className, scrollProps, listStyles, ref, ...props }) => {
-
   return (
     <ScrollArea
       className={cn("h-[40vh] max-h-[300px]", className)}
@@ -159,16 +158,22 @@ const CommandInput: FC<
     clearButtonTooltipMessage?: string;
     inputContainer?: HTMLInputElement["className"];
     shouldFocus?: boolean;
+    focus?: boolean;
+    isModal?: boolean;
+    onFocusChange?: (focus: boolean) => void;
   }
 > = ({
   className,
   ref,
+  isModal,
   value: valueProp,
   clearButton = false,
   clearButtonTooltipMessage = "Очистить поле",
   inputContainer,
   shouldFocus = false,
   onValueChange,
+  focus: focusProp,
+  onFocusChange,
   ...props
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -180,6 +185,14 @@ const CommandInput: FC<
     defaultProp: "",
     prop: valueProp,
     onChange: onValueChange,
+    caller: COMMAND_INPUT_NAME,
+  });
+
+  const [focus, setFocus] = useControllableState({
+    defaultProp: false,
+    prop: focusProp,
+    onChange: onFocusChange,
+    caller: COMMAND_INPUT_NAME,
   });
 
   const handleClear = () => {
@@ -230,12 +243,26 @@ const CommandInput: FC<
         inputContainer,
       )}
     >
+      {focus && isModal && (
+        <IconButton
+          onClick={() => setFocus(false)}
+          className="text-red-11 hover:bg-redA-3 active:bg-redA-4 mr-px box-content h-fit shrink-0 rounded-full p-[6px] [&_svg]:size-4.5"
+          variant="ghost"
+          size="2"
+          radius="full"
+        >
+          <AccessibleIcon label="Назад">
+            <Minimize2Icon />
+          </AccessibleIcon>
+        </IconButton>
+      )}
       <SearchIcon className="text-gray-11 size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         data-slot="command-input"
         ref={composedRefs}
         value={value}
         onValueChange={setValue}
+        onFocus={composeEventHandlers(props.onFocus, () => setFocus(!focus))}
         className={cn(
           "flex h-[30px] w-full bg-transparent py-3 text-sm outline-hidden",
           "placeholder:text-grayA-11 caret-accent-7 dark:caret-accent-11 disabled:cursor-not-allowed disabled:opacity-50",
