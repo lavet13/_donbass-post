@@ -42,6 +42,7 @@ const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
   return (
     <CommandProvider listRef={listRef}>
       <CommandPrimitive
+        ref={listRef}
         data-slot="command"
         loop={loop}
         className={cn("", className)}
@@ -61,8 +62,6 @@ const CommandList: FC<
     ref?: React.RefObject<HTMLDivElement>;
   }
 > = ({ className, scrollProps, listStyles, ref, ...props }) => {
-  const context = useCommandContext(COMMAND_LIST_NAME);
-  const composedRefs = composeRefs(ref, context.listRef);
 
   return (
     <ScrollArea
@@ -72,7 +71,7 @@ const CommandList: FC<
       {...scrollProps}
     >
       <CommandPrimitive.List
-        ref={composedRefs}
+        ref={ref}
         data-slot="command-list"
         className={cn(
           "pl-rx-1 pr-rx-3 scroll-py-1 overflow-x-hidden overflow-y-auto transition-[height] duration-100 ease-out outline-none",
@@ -175,7 +174,7 @@ const CommandInput: FC<
   const inputRef = useRef<HTMLInputElement | null>(null);
   const context = useCommandContext(COMMAND_INPUT_NAME);
 
-  const composedRefs = useComposedRefs(inputRef, ref);
+  const composedRefs = useComposedRefs(ref, inputRef);
 
   const [value, setValue] = useControllableState({
     defaultProp: "",

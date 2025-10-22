@@ -4,6 +4,7 @@ import {
   type ComponentProps,
   type FC,
   useEffect,
+  type FocusEvent,
 } from "react";
 import {
   Button,
@@ -128,6 +129,17 @@ const ComboboxGroupField: FC<
     });
   };
 
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = (event: FocusEvent<HTMLInputElement>) => {
+    setIsFocused(document.activeElement === event.currentTarget);
+  };
+
+  const handleToggle = () => {
+    setOpen((open) => !open);
+    setIsFocused(false);
+  };
+
   const renderTrigger = () => {
     return (
       <Button
@@ -191,67 +203,7 @@ const ComboboxGroupField: FC<
     );
   };
 
-  const [selectedDepartmentRef, setSelectedDepartmentRef] =
-    useState<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!selectedDepartmentRef) return;
-
-    const scrollInto = async () => {
-      // First scroll
-      selectedDepartmentRef.scrollIntoView({
-        behavior: "instant",
-        block: "center",
-      });
-
-      // Trigger cmdk's internal hover state
-      const pointerOver = new PointerEvent("pointerover", {
-        bubbles: true,
-        cancelable: true,
-        pointerId: 1,
-        pointerType: "mouse",
-      });
-
-      const pointerMove = new PointerEvent("pointermove", {
-        bubbles: true,
-        cancelable: true,
-        pointerId: 1,
-        pointerType: "mouse",
-      });
-
-      selectedDepartmentRef.dispatchEvent(pointerOver);
-      selectedDepartmentRef.dispatchEvent(pointerMove);
-    };
-
-    void scrollInto();
-
-    const mutationObserver = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (
-          mutation.type === "attributes" &&
-          mutation.attributeName === "data-status"
-        ) {
-          const target = mutation.target as HTMLElement;
-          if (target.getAttribute("data-status") === "true") {
-            void scrollInto();
-            break;
-          }
-        }
-      }
-    });
-
-    const cardList = document.querySelector("[cmdk-list-sizer]");
-    if (cardList) {
-      mutationObserver.observe(cardList, {
-        subtree: true,
-        attributeFilter: ["data-status"],
-      });
-    }
-
-    return () => {
-      mutationObserver.disconnect();
-    };
-  }, [selectedDepartmentRef]);
+  const [, setSelectedDepartmentRef] = useScrollToSelectedItem();
 
   const renderContent = (props: { shouldFocus?: boolean } = {}) => {
     const { shouldFocus = false } = props;
@@ -260,6 +212,7 @@ const ComboboxGroupField: FC<
       <Command>
         <CommandInput
           {...(modal ? { inputContainer: "bg-gray-2 rounded-t-sm" } : {})}
+          onFocus={handleFocus}
           shouldFocus={shouldFocus}
           clearButton
           clearButtonTooltipMessage={searchClearButtonTooltipMessage}
@@ -348,14 +301,17 @@ const ComboboxGroupField: FC<
     <FormItem>
       {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       {modal ? (
-        <Drawer open={open} onOpenChange={setOpen}>
+        <Drawer open={open} onOpenChange={handleToggle}>
           <DrawerTrigger asChild>{renderTrigger()}</DrawerTrigger>
           <DrawerContent
             aria-describedby={undefined}
-            className="border-grayA-6 right-0 bottom-0 left-0 max-h-[80svh] w-full rounded-t-lg border"
+            className={cn(
+              "border-grayA-6 right-0 bottom-0 left-0 max-h-[80svh] w-full rounded-t-lg border",
+              isFocused && "top-0 bottom-auto min-h-[100svh] rounded-t-none",
+            )}
             role="listbox"
           >
-            <DrawerHandle />
+            {!isFocused && <DrawerHandle />}
             <div className="flex w-full flex-1 overflow-y-auto">
               <div className="sticky top-0 shrink grow" />
               <div className="w-full max-w-4xl shrink-1">
@@ -366,14 +322,14 @@ const ComboboxGroupField: FC<
               </div>
               <div
                 className="hover:bg-secondary/10 sticky top-0 shrink grow cursor-pointer"
-                onClick={() => setOpen(false)}
+                onClick={handleToggle}
               >
                 <Tooltip content="Закрыть модальное окно">
                   <button
                     className="text-red-11 hover:bg-red-3 active:bg-red-4 focus-visible:ring-red-8 pointer-events-auto absolute top-1 left-1 ml-auto hidden size-8 shrink-0 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-[2px] lg:inline-flex [&_svg]:size-4"
                     aria-label="Закрыть окно"
                     type="button"
-                    onClick={() => setOpen(false)}
+                    onClick={handleToggle}
                   >
                     <AccessibleIcon label="Закрыть модальное окно">
                       <X />
@@ -385,7 +341,7 @@ const ComboboxGroupField: FC<
           </DrawerContent>
         </Drawer>
       ) : (
-        <Popover.Root open={open} onOpenChange={setOpen}>
+        <Popover.Root open={open} onOpenChange={handleToggle}>
           <Popover.Trigger>{renderTrigger()}</Popover.Trigger>
           <Popover.Content
             role="listbox"
@@ -401,5 +357,72 @@ const ComboboxGroupField: FC<
     </FormItem>
   );
 };
+
+function useScrollToSelectedItem<T extends HTMLElement = HTMLDivElement>() {
+  const [selectedDepartmentRef, setSelectedDepartmentRef] = useState<T | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (!selectedDepartmentRef) return;
+
+    const scrollInto = async () => {
+      // First scroll
+      selectedDepartmentRef.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
+
+      // Trigger cmdk's internal hover state
+      const pointerOver = new PointerEvent("pointerover", {
+        bubbles: true,
+        cancelable: true,
+        pointerId: 1,
+        pointerType: "mouse",
+      });
+
+      const pointerMove = new PointerEvent("pointermove", {
+        bubbles: true,
+        cancelable: true,
+        pointerId: 1,
+        pointerType: "mouse",
+      });
+
+      selectedDepartmentRef.dispatchEvent(pointerOver);
+      selectedDepartmentRef.dispatchEvent(pointerMove);
+    };
+
+    void scrollInto();
+
+    const mutationObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "data-status"
+        ) {
+          const target = mutation.target as HTMLElement;
+          if (target.getAttribute("data-status") === "true") {
+            void scrollInto();
+            break;
+          }
+        }
+      }
+    });
+
+    const cardList = document.querySelector("[cmdk-list-sizer]");
+    if (cardList) {
+      mutationObserver.observe(cardList, {
+        subtree: true,
+        attributeFilter: ["data-status"],
+      });
+    }
+
+    return () => {
+      mutationObserver.disconnect();
+    };
+  }, [selectedDepartmentRef]);
+
+  return [selectedDepartmentRef, setSelectedDepartmentRef] as const;
+}
 
 export default ComboboxGroupField;
