@@ -128,11 +128,8 @@ const ComboboxGroupField: FC<
     });
   };
 
-  const [isFocused, setIsFocused] = useState(false);
-
   const handleToggle = () => {
     setOpen((open) => !open);
-    setIsFocused(false);
   };
 
   const renderTrigger = () => {
@@ -208,10 +205,6 @@ const ComboboxGroupField: FC<
         <CommandInput
           {...(modal ? { inputContainer: "bg-gray-2 rounded-t-sm" } : {})}
           isModal={modal}
-          focus={isFocused}
-          onFocusChange={(focus) => {
-            setIsFocused(focus);
-          }}
           shouldFocus={shouldFocus}
           clearButton
           clearButtonTooltipMessage={searchClearButtonTooltipMessage}
@@ -219,7 +212,7 @@ const ComboboxGroupField: FC<
         />
         <CommandList
           scrollProps={{ type: modal ? "auto" : "always" }}
-          className={cn(modal && `h-auto max-h-max`)}
+          className={cn(modal && `h-auto max-h-fit`)}
         >
           {isLoading && (
             <CommandLoading label={loadingMessage}>
@@ -305,20 +298,18 @@ const ComboboxGroupField: FC<
           <DrawerContent
             aria-describedby={undefined}
             className={cn(
-              "border-grayA-6 max-h-[80svh] w-full rounded-t-lg border",
-              !isFocused && "right-0 bottom-0 left-0",
-              isFocused && "top-0 right-0 left-0 max-h-[100dvh] rounded-t-none border-none",
+              "border-grayA-6 right-0 bottom-0 left-0 max-h-[80dvh] w-full rounded-t-lg border",
             )}
             role="listbox"
           >
-            {!isFocused && <DrawerHandle />}
+            <DrawerHandle />
             <div className="flex w-full flex-1 overflow-y-auto">
               <div className="sticky top-0 shrink grow" />
               <div className="w-full max-w-4xl shrink-1">
                 <VisuallyHidden>
                   <DrawerTitle>{searchInputPlaceholder}</DrawerTitle>
                 </VisuallyHidden>
-                {renderContent({ shouldFocus: false })}
+                {renderContent({ shouldFocus: true })}
               </div>
               <div
                 className="hover:bg-secondary/10 sticky top-0 shrink grow cursor-pointer"
