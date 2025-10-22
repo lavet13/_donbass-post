@@ -4,6 +4,7 @@ import {
   type ComponentProps,
   type FC,
   useEffect,
+  useCallback,
 } from "react";
 import {
   Button,
@@ -305,7 +306,7 @@ const ComboboxGroupField: FC<
             className={cn(
               "border-grayA-6 max-h-[80svh] w-full rounded-t-lg border",
               !isFocused && "right-0 bottom-0 left-0",
-              isFocused && "top-0 right-0 left-0 min-h-[100svh] rounded-t-none",
+              isFocused && "top-0 right-0 max-h-[100svh] left-0 rounded-t-none",
             )}
             role="listbox"
           >

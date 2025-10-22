@@ -1,5 +1,5 @@
 import { useControllableState } from "@/hooks/use-controllable-state";
-import { cn, composeEventHandlers } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
 import { Minimize2Icon, SearchIcon, X } from "lucide-react";
 import { useEffect, useRef, type ComponentProps, type FC } from "react";
@@ -11,7 +11,7 @@ import {
   type ScrollAreaProps,
 } from "@radix-ui/themes";
 import { AccessibleIcon } from "@radix-ui/themes";
-import { useComposedRefs } from "@/hooks/use-composed-refs";
+import { composeRefs, useComposedRefs } from "@/hooks/use-composed-refs";
 import { createContext } from "@/hooks/create-context";
 
 /* -------------------------------------------------------------------------------------------------
@@ -22,6 +22,7 @@ const COMMAND_NAME = "Command";
 
 type CommandContextValue = {
   listRef: React.RefObject<HTMLDivElement | null>;
+  commandRef: React.RefObject<HTMLDivElement | null>;
 };
 
 const [CommandProvider, useCommandContext] =
@@ -37,12 +38,13 @@ const Command: FC<ComponentProps<typeof CommandPrimitive>> = ({
   loop = false,
   ...props
 }) => {
+  const commandRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <CommandProvider listRef={listRef}>
+    <CommandProvider commandRef={commandRef} listRef={listRef}>
       <CommandPrimitive
-        ref={listRef}
+        ref={commandRef}
         data-slot="command"
         loop={loop}
         className={cn("", className)}
@@ -62,6 +64,9 @@ const CommandList: FC<
     ref?: React.RefObject<HTMLDivElement>;
   }
 > = ({ className, scrollProps, listStyles, ref, ...props }) => {
+  const context = useCommandContext(COMMAND_LIST_NAME);
+  const composedRefs = composeRefs(ref, context.listRef);
+
   return (
     <ScrollArea
       className={cn("h-[40vh] max-h-[300px]", className)}
@@ -70,7 +75,7 @@ const CommandList: FC<
       {...scrollProps}
     >
       <CommandPrimitive.List
-        ref={ref}
+        ref={composedRefs}
         data-slot="command-list"
         className={cn(
           "pl-rx-1 pr-rx-3 scroll-py-1 overflow-x-hidden overflow-y-auto transition-[height] duration-100 ease-out outline-none",
@@ -226,6 +231,12 @@ const CommandInput: FC<
             behavior: "instant",
           });
         }
+        if (context.commandRef.current) {
+          context.commandRef.current.scrollIntoView({
+            block: "start",
+            behavior: "instant",
+          });
+        }
       }, 0);
     };
 
@@ -234,7 +245,7 @@ const CommandInput: FC<
     return () => {
       input.removeEventListener("input", handleInput);
     };
-  }, [context.listRef]);
+  }, [context.listRef, context.commandRef]);
 
   return (
     <div
@@ -262,7 +273,7 @@ const CommandInput: FC<
         ref={composedRefs}
         value={value}
         onValueChange={setValue}
-        onFocus={composeEventHandlers(props.onFocus, () => setFocus(!focus))}
+        onFocus={() => setFocus(!focus)}
         className={cn(
           "flex h-[30px] w-full bg-transparent py-3 text-sm outline-hidden",
           "placeholder:text-grayA-11 caret-accent-7 dark:caret-accent-11 disabled:cursor-not-allowed disabled:opacity-50",
