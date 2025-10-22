@@ -1,7 +1,7 @@
 import { useControllableState } from "@/hooks/use-controllable-state";
 import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
-import { Minimize2Icon, SearchIcon, X } from "lucide-react";
+import { MinimizeIcon, SearchIcon, X } from "lucide-react";
 import { useEffect, useRef, type ComponentProps, type FC } from "react";
 import {
   IconButton,
@@ -202,6 +202,7 @@ const CommandInput: FC<
 
   const handleClear = () => {
     setValue("");
+    setFocus(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -263,7 +264,7 @@ const CommandInput: FC<
           radius="full"
         >
           <AccessibleIcon label="Назад">
-            <Minimize2Icon />
+            <MinimizeIcon />
           </AccessibleIcon>
         </IconButton>
       )}

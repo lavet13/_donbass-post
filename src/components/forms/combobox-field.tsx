@@ -4,7 +4,6 @@ import {
   type ComponentProps,
   type FC,
   useEffect,
-  useCallback,
 } from "react";
 import {
   Button,
@@ -210,7 +209,9 @@ const ComboboxGroupField: FC<
           {...(modal ? { inputContainer: "bg-gray-2 rounded-t-sm" } : {})}
           isModal={modal}
           focus={isFocused}
-          onFocusChange={setIsFocused}
+          onFocusChange={(focus) => {
+            setIsFocused(focus);
+          }}
           shouldFocus={shouldFocus}
           clearButton
           clearButtonTooltipMessage={searchClearButtonTooltipMessage}
@@ -218,7 +219,7 @@ const ComboboxGroupField: FC<
         />
         <CommandList
           scrollProps={{ type: modal ? "auto" : "always" }}
-          className={cn(modal && `h-auto max-h-fit`)}
+          className={cn(modal && `h-auto max-h-max`)}
         >
           {isLoading && (
             <CommandLoading label={loadingMessage}>
@@ -306,7 +307,7 @@ const ComboboxGroupField: FC<
             className={cn(
               "border-grayA-6 max-h-[80svh] w-full rounded-t-lg border",
               !isFocused && "right-0 bottom-0 left-0",
-              isFocused && "top-0 right-0 max-h-[100svh] left-0 rounded-t-none",
+              isFocused && "top-0 right-0 left-0 max-h-[100dvh] rounded-t-none border-none",
             )}
             role="listbox"
           >
