@@ -56,7 +56,7 @@ const NavigationMenuContent: FC<
     <NavigationMenuPrimitive.Content
       data-slot="navigation-menu-content"
       className={cn(
-        "bg-panel-translucent absolute top-0 left-0 w-auto",
+        "bg-panel-translucent absolute top-0 left-0 w-auto h-[80dvh] max-h-fit overflow-y-auto",
         "data-[motion=from-start]:animate-enter-from-left",
         "data-[motion=from-end]:animate-enter-from-right",
         "data-[motion=to-start]:animate-exit-to-left",

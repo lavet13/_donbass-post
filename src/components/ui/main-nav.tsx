@@ -108,7 +108,7 @@ const MainNav: FC<MainNavProps> = ({ navItems }) => {
                   <div className="p-4">
                     <Heading
                       weight="bold"
-                      className="px-3"
+                      className="sticky top-0 px-3 py-1 bg-gray-2"
                       mb="1"
                       as="h3"
                       size="3"

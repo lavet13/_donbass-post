@@ -288,7 +288,7 @@ const ComboboxGroupField: FC<
     <FormItem>
       {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
       {modal ? (
-        <Drawer shouldScaleBackground open={open} onOpenChange={setOpen}>
+        <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>{renderTrigger()}</DrawerTrigger>
           <DrawerContent aria-describedby={undefined}>
             <div className="flex-1 overflow-y-auto rounded-t-lg">
