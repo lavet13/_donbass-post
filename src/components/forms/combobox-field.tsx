@@ -35,7 +35,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { isMobile as isMobileDevice } from "react-device-detect";
+import { isMobile as isMobileDevice, isIOS } from "react-device-detect";
 
 type EntryType = { label: string; value: string | number; name?: string };
 
@@ -100,8 +100,9 @@ const ComboboxGroupField: FC<
     dependencies: [isMobile],
   });
 
-  const scrollIntoButton = () => {
-    if (!modal) return;
+  const scrollIntoButton = (props: { isModal?: boolean } = {}) => {
+    const { isModal = modal || isMobileDevice } = props;
+    if (!isModal) return;
 
     const headerHeightStr = getComputedStyle(document.documentElement)
       .getPropertyValue("--header-height")
@@ -206,7 +207,14 @@ const ComboboxGroupField: FC<
           placeholder={searchInputPlaceholder}
         />
         <CommandList
-          {...(!modal ? { className: "h-[40vh] max-h-[300px]" } : {})}
+          {...(!modal || isIOS
+            ? {
+                className: cn(
+                  "h-[40dvh] max-h-[300px]",
+                  isIOS && "h-[25dvh] max-h-[150px]",
+                ),
+              }
+            : {})}
           scrollProps={{ type: modal ? "auto" : "always" }}
         >
           {isLoading && (
@@ -287,7 +295,7 @@ const ComboboxGroupField: FC<
   return (
     <FormItem>
       {label && <FormLabel htmlFor={formItemId}>{label}</FormLabel>}
-      {modal ? (
+      {modal && !isIOS ? (
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>{renderTrigger()}</DrawerTrigger>
           <DrawerContent aria-describedby={undefined}>
@@ -303,7 +311,15 @@ const ComboboxGroupField: FC<
           </DrawerContent>
         </Drawer>
       ) : (
-        <Popover.Root open={open} onOpenChange={setOpen}>
+        <Popover.Root
+          open={open}
+          onOpenChange={(open) => {
+            setOpen(open);
+            if (open) {
+              scrollIntoButton({ isModal: true });
+            }
+          }}
+        >
           <Popover.Trigger>{renderTrigger()}</Popover.Trigger>
           <Popover.Content
             role="listbox"

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { TextField } from "@radix-ui/themes";
 import { Slot } from "radix-ui";
 import { useComposedRefs } from "@/hooks/use-composed-refs";
+import { isIOS } from "react-device-detect";
 
 const Input: FC<
   TextField.RootProps & {
@@ -34,7 +35,7 @@ const Input: FC<
 
   useEffect(() => {
     const input = inputRef.current;
-    if (!input || !shouldFocus) return;
+    if (!input || !shouldFocus || isIOS) return;
 
     const handleFocus = () => {
       const headerHeightStr = getComputedStyle(document.documentElement)
