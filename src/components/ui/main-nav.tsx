@@ -48,10 +48,12 @@ type NavItem = {
   label: string;
   triggerStyles?: string;
   icon: JSX.Element;
-  items: {
-    title: string;
-    links: readonly (LinkOptions & { label: string })[];
-  }[];
+  items:
+    | {
+        title?: string;
+        links: readonly (LinkOptions & { label: string })[];
+      }[]
+    | readonly (LinkOptions & { label: string })[];
 };
 
 type MainNavProps = {
@@ -95,66 +97,122 @@ const MainNav: FC<MainNavProps> = ({ navItems }) => {
     >
       <NavigationMenuList ref={setList}>
         {navItems.map(({ label, icon, items, triggerStyles }) => {
-          return (
-            <NavigationMenuItem key={label} value={label}>
-              <NavigationMenuTrigger
-                className={cn(
-                  items.some(({ links }) =>
-                    links.some((link) => link.to && pathname.includes(link.to)),
-                  ) &&
-                    "[&[data-state='open']]:bg-accentA-3 bg-accentA-2 [&>svg]:scale-110 [&>svg]:rotate-10",
-                  triggerStyles,
+          if (items.length > 0 && "links" in items[0]) {
+            const grouped = items as {
+              title?: string;
+              links: readonly (LinkOptions & { label: string })[];
+            }[];
+
+            return (
+              <NavigationMenuItem key={label} value={label}>
+                <NavigationMenuTrigger
+                  className={cn(
+                    grouped.some(({ links }) =>
+                      links.some(
+                        (link) => link.to && pathname.includes(link.to),
+                      ),
+                    ) &&
+                      "[&[data-state='open']]:bg-accentA-3 bg-accentA-2 [&>svg]:scale-110 [&>svg]:rotate-10",
+                    triggerStyles,
+                  )}
+                  ref={(node) => onNodeUpdate(node, label)}
+                >
+                  <>
+                    {icon}
+                    {grouped.some(({ links }) =>
+                      links.some(
+                        (link) => link.to && pathname.includes(link.to),
+                      ),
+                    ) && <BorderBeam />}
+                  </>
+                </NavigationMenuTrigger>
+                {!!items.length && (
+                  <NavigationMenuContent>
+                    <div className="relative pt-3">
+                      <Heading
+                        weight="bold"
+                        className="dark:bg-gray-2 bg-background sticky top-0 mb-1 px-7 pt-2 backdrop-blur-sm"
+                        mb="1"
+                        as="h3"
+                        size="3"
+                        wrap="balance"
+                      >
+                        {label}
+                      </Heading>
+                      <ul className="xs:w-[400px] m-0 grid w-[calc(100dvw-1.5rem)] shrink-0 list-none gap-x-[10px] gap-y-[4px] px-4 pb-4 sm:w-[600px] sm:grid-cols-2">
+                        {grouped.map(({ title, links }) => (
+                          <Fragment key={title}>
+                            {title && (
+                              <Heading
+                                mt="2"
+                                className="dark:bg-gray-2 bg-background sticky top-7.5 col-span-full pl-3"
+                                as="h4"
+                                size="1"
+                                wrap="balance"
+                                trim="start"
+                              >
+                                {title}
+                              </Heading>
+                            )}
+                            {links.map(({ to, label }) => (
+                              <ListItem key={to} to={to}>
+                                {label}
+                              </ListItem>
+                            ))}
+                          </Fragment>
+                        ))}
+                      </ul>
+                    </div>
+                  </NavigationMenuContent>
                 )}
-                ref={(node) => onNodeUpdate(node, label)}
-              >
-                <>
-                  {icon}
-                  {items.some(({ links }) =>
-                    links.some((link) => link.to && pathname.includes(link.to)),
-                  ) && <BorderBeam />}
-                </>
-              </NavigationMenuTrigger>
-              {!!items.length && (
-                <NavigationMenuContent>
-                  <div className="relative pt-3">
-                    <Heading
-                      weight="bold"
-                      className="dark:bg-gray-2 bg-background sticky top-0 mb-1 px-7 pt-2 backdrop-blur-sm"
-                      mb="1"
-                      as="h3"
-                      size="3"
-                      wrap="balance"
-                    >
-                      {label}
-                    </Heading>
-                    <ul className="xs:w-[400px] m-0 grid w-[calc(100dvw-1.5rem)] shrink-0 list-none gap-x-[10px] gap-y-[4px] px-4 pb-4 sm:w-[600px] sm:grid-cols-2">
-                      {items.map(({ title, links }) => (
-                        <Fragment key={title}>
-                          {title && (
-                            <Heading
-                              mt="2"
-                              className="dark:bg-gray-2 bg-background sticky top-7.5 col-span-full pl-3"
-                              as="h4"
-                              size="1"
-                              wrap="balance"
-                              trim="start"
-                            >
-                              {title}
-                            </Heading>
-                          )}
-                          {links.map(({ to, label }) => (
-                            <ListItem key={to} to={to}>
-                              {label}
-                            </ListItem>
-                          ))}
-                        </Fragment>
-                      ))}
-                    </ul>
-                  </div>
-                </NavigationMenuContent>
-              )}
-            </NavigationMenuItem>
-          );
+              </NavigationMenuItem>
+            );
+          } else {
+            const flat = items as readonly (LinkOptions & { label: string })[];
+
+            return (
+              <NavigationMenuItem key={label} value={label}>
+                <NavigationMenuTrigger
+                  className={cn(
+                    flat.some(({ to }) => to && pathname.includes(to)) &&
+                      "[&[data-state='open']]:bg-accentA-3 bg-accentA-2 [&>svg]:scale-110 [&>svg]:rotate-10",
+                    triggerStyles,
+                  )}
+                  ref={(node) => onNodeUpdate(node, label)}
+                >
+                  <>
+                    {icon}
+                    {flat.some(({ to }) => to && pathname.includes(to)) && (
+                      <BorderBeam />
+                    )}
+                  </>
+                </NavigationMenuTrigger>
+                {!!items.length && (
+                  <NavigationMenuContent>
+                    <div className="relative pt-3">
+                      <Heading
+                        weight="bold"
+                        className="dark:bg-gray-2 bg-background sticky top-0 mb-1 px-7 pt-2 backdrop-blur-sm"
+                        mb="1"
+                        as="h3"
+                        size="3"
+                        wrap="balance"
+                      >
+                        {label}
+                      </Heading>
+                      <ul className="xs:w-[400px] m-0 grid w-[calc(100dvw-1.5rem)] shrink-0 list-none gap-x-[10px] gap-y-[4px] px-4 pb-4 sm:w-[600px] sm:grid-cols-2">
+                        {flat.map(({ to, label }) => (
+                          <ListItem key={to} to={to}>
+                            {label}
+                          </ListItem>
+                        ))}
+                      </ul>
+                    </div>
+                  </NavigationMenuContent>
+                )}
+              </NavigationMenuItem>
+            );
+          }
         })}
       </NavigationMenuList>
 
