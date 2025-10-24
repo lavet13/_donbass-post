@@ -100,9 +100,8 @@ const ComboboxGroupField: FC<
     dependencies: [isMobile],
   });
 
-  const scrollIntoButton = (props: { isModal?: boolean } = {}) => {
-    const { isModal = modal || isMobileDevice } = props;
-    if (!isModal) return;
+  const scrollIntoButton = () => {
+    if (!modal) return;
 
     const headerHeightStr = getComputedStyle(document.documentElement)
       .getPropertyValue("--header-height")
@@ -315,8 +314,8 @@ const ComboboxGroupField: FC<
           open={open}
           onOpenChange={(open) => {
             setOpen(open);
-            if (open) {
-              scrollIntoButton({ isModal: true });
+            if (open && isMobileDevice) {
+              scrollIntoButton();
             }
           }}
         >
