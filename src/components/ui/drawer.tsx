@@ -31,31 +31,30 @@ const DrawerContent: FC<ComponentProps<typeof DrawerPrimitive.Content>> = ({
   className,
   ...props
 }) => {
-  const { resolvedTheme } = useTheme();
-
   return (
     <DrawerPrimitive.Portal>
       <DrawerPrimitive.Overlay className="bg-blackA-6 fixed inset-0" />
-      <Theme
-        appearance={resolvedTheme}
-        accentColor="red"
-        grayColor="gray"
-        panelBackground="translucent"
-      >
-        <DrawerPrimitive.Content
-          data-slot="drawer-content"
-          className={cn(
-            "text-gray-12 bg-gray-2 border-grayA-6 border",
-            "group/drawer-content fixed z-50 flex h-auto min-h-0 flex-col outline-none",
-            "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80dvh] data-[vaul-drawer-direction=top]:rounded-b-lg data-[vaul-drawer-direction=top]:border-b",
-            "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80dvh] data-[vaul-drawer-direction=bottom]:rounded-t-lg data-[vaul-drawer-direction=bottom]:border-t",
-            "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:sm:max-w-sm",
-            "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:sm:max-w-sm",
-            className,
-          )}
-          {...props}
-        />
-      </Theme>
+      <DrawerPrimitive.Content
+        data-slot="drawer-content"
+        data-is-root-theme="true"
+        data-accent-color="red"
+        data-gray-color="gray"
+        data-has-background="true"
+        data-panel-background="translucent"
+        data-radius="medium"
+        data-scaling="100%"
+        className={cn(
+          "radix-themes",
+          "text-gray-12 bg-gray-2 border-grayA-6 border",
+          "group/drawer-content fixed z-50 flex h-auto min-h-0 flex-col outline-none",
+          "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80dvh] data-[vaul-drawer-direction=top]:rounded-b-lg data-[vaul-drawer-direction=top]:border-b",
+          "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80dvh] data-[vaul-drawer-direction=bottom]:rounded-t-lg data-[vaul-drawer-direction=bottom]:border-t",
+          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:sm:max-w-sm",
+          "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:sm:max-w-sm",
+          className,
+        )}
+        {...props}
+      />
     </DrawerPrimitive.Portal>
   );
 };
