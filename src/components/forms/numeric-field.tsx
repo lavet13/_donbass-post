@@ -1,5 +1,4 @@
 import {
-  useEffect,
   useRef,
   type ComponentProps,
   type FC,
@@ -11,7 +10,6 @@ import type { NumericFormatProps } from "react-number-format";
 import { Input } from "@/components/ui/input";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
-import { isMobile as isMobileDevice } from "react-device-detect";
 import { composeEventHandlers } from "@/lib/utils";
 
 const NumericField: FC<
@@ -20,17 +18,14 @@ const NumericField: FC<
       labelStyles?: string;
       label?: string;
       ariaLabel?: string;
-      shouldFocusOnMount?: boolean;
-      shouldSelect?: boolean;
     }
 > = ({
   label,
   labelStyles,
   "aria-label": ariaLabelProp,
   ariaLabel,
-  shouldFocusOnMount = false,
-  size,
   shouldSelect,
+  size,
   color,
   ...props
 }) => {
@@ -56,21 +51,6 @@ const NumericField: FC<
       setTimeout(() => input.select(), 0);
     }
   };
-
-  useEffect(() => {
-    const input = inputRef.current;
-    if (!input) return;
-
-    if (shouldFocusOnMount) {
-      input.focus();
-    }
-
-    return () => {
-      if (shouldFocusOnMount) {
-        input.blur();
-      }
-    };
-  }, [shouldFocusOnMount]);
 
   return (
     <FormItem>
@@ -105,7 +85,6 @@ const NumericField: FC<
           field.handleChange(values.floatValue || 0);
         }}
         value={field.state.value || ""}
-        shouldFocus={isMobileDevice}
         {...props}
       />
       <FormMessage id={formMessageId} />

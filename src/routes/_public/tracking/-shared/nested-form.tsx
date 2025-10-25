@@ -66,8 +66,9 @@ export const CargoTrackingForm = withForm({
             children={(field) => (
               <field.TextField
                 className="w-full"
+                shouldSelect
                 rightElement={
-                  field.state.value.length ? (
+                  !!field.state.value.length && (
                     <TextField.Slot side="right">
                       <Tooltip content="Очистить поиск">
                         <IconButton
@@ -89,7 +90,7 @@ export const CargoTrackingForm = withForm({
                         </IconButton>
                       </Tooltip>
                     </TextField.Slot>
-                  ) : null
+                  )
                 }
                 placeholder="Трек ТК или ТТН"
               />

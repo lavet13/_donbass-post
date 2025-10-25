@@ -4,6 +4,7 @@ import { useControllableState } from "@/hooks/use-controllable-state";
 import { TextArea, type TextAreaProps, type TextProps } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
 import { useAutosizeTextArea } from ".";
+import { isIOS, isMobile as isMobileDevice } from "react-device-detect";
 
 export type AutosizeTextAreaRef = {
   textArea: HTMLTextAreaElement;
@@ -16,7 +17,8 @@ export type AutosizeTextAreaProps = {
   maxHeight?: number;
   minHeight?: number;
   value?: any;
-  shouldFocus?: boolean;
+  shouldFocusScrollInto?: boolean;
+  shouldFocusOnMount?: boolean;
   onValueChange?: (value: any) => void;
 } & TextAreaProps &
   TextProps;
@@ -31,7 +33,8 @@ export const AutosizeTextarea = forwardRef<
       minHeight = 52,
       className,
       onValueChange,
-      shouldFocus = false,
+      shouldFocusScrollInto = isMobileDevice,
+      shouldFocusOnMount = false,
       value: valueProp,
       ...props
     },
@@ -64,7 +67,22 @@ export const AutosizeTextarea = forwardRef<
 
     useEffect(() => {
       const input = textAreaRef.current;
-      if (!input || !shouldFocus) return;
+      if (!input) return;
+
+      if (shouldFocusOnMount) {
+        input.focus();
+      }
+
+      return () => {
+        if (shouldFocusOnMount) {
+          input.blur();
+        }
+      };
+    }, [shouldFocusOnMount]);
+
+    useEffect(() => {
+      const input = textAreaRef.current;
+      if (!input || !shouldFocusScrollInto || isIOS) return;
 
       const handleFocus = () => {
         const headerHeightStr = getComputedStyle(document.documentElement)
@@ -95,7 +113,7 @@ export const AutosizeTextarea = forwardRef<
       return () => {
         input.removeEventListener("focus", handleFocus);
       };
-    }, [shouldFocus]);
+    }, [shouldFocusScrollInto]);
 
     return (
       <TextArea

@@ -2,21 +2,26 @@ import {
   useEffect,
   useRef,
   type FC,
+  type FocusEvent,
+  type InputEvent,
   type ReactNode,
 } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn, composeEventHandlers } from "@/lib/utils";
 import { TextField } from "@radix-ui/themes";
 import { Slot } from "radix-ui";
 import { useComposedRefs } from "@/hooks/use-composed-refs";
 import { isIOS } from "react-device-detect";
+import { isMobile as isMobileDevice } from "react-device-detect";
 
 const Input: FC<
   TextField.RootProps & {
     asChild?: boolean;
     leftElement?: ReactNode;
     rightElement?: ReactNode;
-    shouldFocus?: boolean;
+    shouldFocusScrollInto?: boolean;
+    shouldSelect?: boolean;
+    shouldFocusOnMount?: boolean;
     ref?: React.RefObject<HTMLInputElement | null>;
   }
 > = ({
@@ -24,7 +29,9 @@ const Input: FC<
   asChild,
   children,
   leftElement,
-  shouldFocus = false,
+  shouldFocusScrollInto = isMobileDevice,
+  shouldFocusOnMount = false,
+  shouldSelect = false,
   rightElement,
   ref,
   ...props
@@ -33,9 +40,34 @@ const Input: FC<
   const inputRef = useRef<HTMLInputElement>(null);
   const composeRef = useComposedRefs(inputRef, ref);
 
+  const handleSelectWholeText = (
+    event: FocusEvent<HTMLInputElement> | InputEvent<HTMLInputElement>,
+  ) => {
+    if (shouldSelect) {
+      const input = event.currentTarget;
+
+      setTimeout(() => input.select(), 0);
+    }
+  };
+
   useEffect(() => {
     const input = inputRef.current;
-    if (!input || !shouldFocus || isIOS) return;
+    if (!input) return;
+
+    if (shouldFocusOnMount) {
+      input.focus();
+    }
+
+    return () => {
+      if (shouldFocusOnMount) {
+        input.blur();
+      }
+    };
+  }, [shouldFocusOnMount]);
+
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input || !shouldFocusScrollInto || isIOS) return;
 
     const handleFocus = () => {
       const headerHeightStr = getComputedStyle(document.documentElement)
@@ -66,10 +98,11 @@ const Input: FC<
     return () => {
       input.removeEventListener("focus", handleFocus);
     };
-  }, [shouldFocus]);
+  }, [shouldFocusScrollInto]);
 
   return (
     <Comp
+      onFocus={composeEventHandlers(props.onFocus, handleSelectWholeText)}
       ref={composeRef}
       data-slot="input"
       className={cn(

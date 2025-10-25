@@ -163,7 +163,7 @@ const CommandInput: FC<
     clearButtonTooltipMessage?: string;
     inputContainer?: HTMLInputElement["className"];
     shouldScroll?: boolean;
-    shouldFocus?: boolean;
+    shouldFocusOnMount?: boolean;
   }
 > = ({
   className,
@@ -172,7 +172,7 @@ const CommandInput: FC<
   clearButton = false,
   clearButtonTooltipMessage = "Очистить поле",
   inputContainer,
-  shouldFocus = false,
+  shouldFocusOnMount = false,
   shouldScroll = false,
   onValueChange,
   ...props
@@ -202,10 +202,19 @@ const CommandInput: FC<
   };
 
   useEffect(() => {
-    if (inputRef.current && shouldFocus) {
-      inputRef.current.focus();
+    const input = inputRef.current;
+    if (!input) return;
+
+    if (shouldFocusOnMount) {
+      input.focus();
     }
-  }, [shouldFocus]);
+
+    return () => {
+      if (shouldFocusOnMount) {
+        input.blur();
+      }
+    };
+  }, [shouldFocusOnMount]);
 
   // Maintaining the scroll position at the top when searching for specific item
   useEffect(() => {

@@ -1,10 +1,9 @@
-import { useEffect, useRef, type FC } from "react";
+import { type FC } from "react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import RPNInput from "react-phone-number-input/input";
 import type { DefaultInputComponentProps } from "react-phone-number-input";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { Input } from "@/components/ui/input";
-import { isMobile as isMobileDevice } from "react-device-detect";
 import type { TextField, TextProps } from "@radix-ui/themes";
 
 const PhoneField: FC<
@@ -12,12 +11,10 @@ const PhoneField: FC<
     DefaultInputComponentProps & {
       label?: string;
       ariaLabel?: string;
-      shouldFocusOnMount?: boolean;
     } & Omit<TextProps, "onChange">
 > = ({
   label,
   "aria-label": ariaLabelProp,
-  shouldFocusOnMount,
   ariaLabel,
   color,
   ...props
@@ -34,23 +31,6 @@ const PhoneField: FC<
     ariaLabel: ariaLabelProp || ariaLabel,
   });
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    const input = inputRef.current;
-    if (!input) return;
-
-    if (shouldFocusOnMount) {
-      input.focus();
-    }
-
-    return () => {
-      if (shouldFocusOnMount) {
-        input.blur();
-      }
-    };
-  }, [shouldFocusOnMount]);
-
   return (
     <FormItem>
       {label && (
@@ -60,8 +40,6 @@ const PhoneField: FC<
       )}
       <RPNInput
         color={color}
-        shouldFocus={isMobileDevice}
-        ref={inputRef}
         id={formItemId}
         name={field.name}
         inputComponent={Input}
@@ -69,7 +47,7 @@ const PhoneField: FC<
         aria-describedby={ariaDescribedBy}
         aria-invalid={!!error}
         value={field.state.value}
-        smartCaret={false}
+        smartCaret={false} // solved the bug with samsung androids
         onChange={(value) => field.handleChange(value || "")}
         {...props}
       />

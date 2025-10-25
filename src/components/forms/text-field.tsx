@@ -1,16 +1,14 @@
-import { useEffect, useRef, type ComponentProps, type FC } from "react";
+import { type ComponentProps, type FC } from "react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { TextField as _TextField } from "@radix-ui/themes";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { Input } from "@/components/ui/input";
-import { isMobile as isMobileDevice } from "react-device-detect";
 import { composeEventHandlers } from "@/lib/utils";
 
 type TextFieldProps = ComponentProps<typeof Input> & {
   label?: string;
   labelStyles?: string;
   ariaLabel?: string;
-  shouldFocusOnMount?: boolean;
 };
 
 const TextField: FC<TextFieldProps> = ({
@@ -18,7 +16,6 @@ const TextField: FC<TextFieldProps> = ({
   labelStyles,
   "aria-label": ariaLabelProp,
   ariaLabel,
-  shouldFocusOnMount = false,
   ...props
 }) => {
   const {
@@ -33,23 +30,6 @@ const TextField: FC<TextFieldProps> = ({
     ariaLabel: ariaLabelProp || ariaLabel,
   });
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    const input = inputRef.current;
-    if (!input) return;
-
-    if (shouldFocusOnMount) {
-      input.focus();
-    }
-
-    return () => {
-      if (shouldFocusOnMount) {
-        input.blur();
-      }
-    };
-  }, [shouldFocusOnMount]);
-
   return (
     <FormItem>
       {label && (
@@ -58,8 +38,6 @@ const TextField: FC<TextFieldProps> = ({
         </FormLabel>
       )}
       <Input
-        ref={inputRef}
-        shouldFocus={isMobileDevice}
         id={formItemId}
         name={field.name}
         value={field.state.value}

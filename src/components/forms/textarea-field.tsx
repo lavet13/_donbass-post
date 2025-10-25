@@ -1,15 +1,12 @@
-import { useEffect, useRef, type ComponentProps, type FC } from "react";
+import { type ComponentProps, type FC } from "react";
 import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
-import type { AutosizeTextAreaRef } from "@/components/ui/autosize-textarea";
 import type { TextProps } from "@radix-ui/themes";
-import { isMobile as isMobileDevice } from "react-device-detect";
 
 type TextareaFieldProps = ComponentProps<typeof AutosizeTextarea> & {
   label?: string;
   ariaLabel?: string;
-  shouldFocusOnMount?: boolean;
 } & TextProps;
 
 const TextareaField: FC<TextareaFieldProps> = ({
@@ -17,7 +14,6 @@ const TextareaField: FC<TextareaFieldProps> = ({
   ariaLabel,
   label,
   color,
-  shouldFocusOnMount,
   ...props
 }) => {
   const {
@@ -32,25 +28,6 @@ const TextareaField: FC<TextareaFieldProps> = ({
     ariaLabel: ariaLabelProp || ariaLabel,
   });
 
-  const textAreaRef = useRef<
-    (HTMLTextAreaElement & AutosizeTextAreaRef) | null
-  >(null);
-
-  useEffect(() => {
-    const input = textAreaRef.current;
-    if (!input) return;
-
-    if (shouldFocusOnMount) {
-      input.focus();
-    }
-
-    return () => {
-      if (shouldFocusOnMount) {
-        input.blur();
-      }
-    };
-  }, [shouldFocusOnMount]);
-
   return (
     <FormItem>
       {label && (
@@ -59,9 +36,7 @@ const TextareaField: FC<TextareaFieldProps> = ({
         </FormLabel>
       )}
       <AutosizeTextarea
-        shouldFocus={isMobileDevice}
         color={color}
-        ref={textAreaRef}
         id={formItemId}
         name={field.name}
         aria-label={defaultAriaLabel}

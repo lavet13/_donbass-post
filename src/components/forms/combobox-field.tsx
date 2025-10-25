@@ -193,14 +193,14 @@ const ComboboxGroupField: FC<
 
   const [, setSelectedDepartmentRef] = useScrollToSelectedItem();
 
-  const renderContent = (props: { shouldFocus?: boolean } = {}) => {
-    const { shouldFocus = false } = props;
+  const renderContent = (props: { shouldFocusOnMount?: boolean } = {}) => {
+    const { shouldFocusOnMount = false } = props;
 
     return (
       <Command>
         <CommandInput
           {...(modal ? { inputContainer: "bg-gray-2 rounded-t-sm" } : {})}
-          shouldFocus={shouldFocus}
+          shouldFocusOnMount={shouldFocusOnMount}
           shouldScroll
           clearButton
           clearButtonTooltipMessage={searchClearButtonTooltipMessage}
@@ -305,7 +305,7 @@ const ComboboxGroupField: FC<
                 <VisuallyHidden>
                   <DrawerTitle>{searchInputPlaceholder}</DrawerTitle>
                 </VisuallyHidden>
-                {renderContent({ shouldFocus: true })}
+                {renderContent({ shouldFocusOnMount: true })}
               </div>
             </div>
           </DrawerContent>
