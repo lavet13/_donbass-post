@@ -1,6 +1,4 @@
-import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
-import { Theme } from "@radix-ui/themes";
 import type { ComponentProps, FC } from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
