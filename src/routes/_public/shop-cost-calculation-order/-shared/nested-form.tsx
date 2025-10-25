@@ -58,7 +58,7 @@ export const ShopCostCalculationOrderForm = withForm({
     return (
       <div className="mx-auto w-full max-w-2xl">
         <div className="xs:h-2 h-4 shrink-0" />
-        <TypographyH2 className="pb-2 text-start sm:text-center">
+        <TypographyH2>
           Оформление заявки на просчет стоимости на{" "}
           <HighlightText>выкуп заказов</HighlightText>
         </TypographyH2>

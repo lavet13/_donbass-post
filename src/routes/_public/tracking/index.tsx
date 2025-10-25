@@ -1,3 +1,4 @@
+import { HighlightText } from "@/components/typography/highlight-text";
 import { TrackingPage } from "@/routes/_public/tracking/-shared";
 import { Flex, Text, Strong, Separator, Heading } from "@radix-ui/themes";
 import { createFileRoute } from "@tanstack/react-router";
@@ -19,8 +20,8 @@ function TrackingComponent() {
   return (
     <div className="mx-auto w-full">
       <div className="xs:h-2 h-4 shrink-0" />
-      <Heading align="center" mb="3">
-        Отслеживание
+      <Heading className="sm:mb-8 sm:mt-4" size="8" align="center" mb="3">
+        <HighlightText>Отслеживание</HighlightText>
       </Heading>
       <Flex direction="column">
         <Text wrap="balance" as="p" size="3" mb="1">

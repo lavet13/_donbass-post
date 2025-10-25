@@ -101,6 +101,10 @@ const SearchPage: FC = () => {
       replace: true,
       resetScroll: false,
     });
+    document.documentElement.scrollIntoView({
+      behavior: "instant",
+      block: "start",
+    });
   };
 
   const form = useAppForm({

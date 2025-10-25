@@ -162,6 +162,7 @@ const CommandInput: FC<
     clearButton?: boolean;
     clearButtonTooltipMessage?: string;
     inputContainer?: HTMLInputElement["className"];
+    shouldScroll?: boolean;
     shouldFocus?: boolean;
   }
 > = ({
@@ -172,6 +173,7 @@ const CommandInput: FC<
   clearButtonTooltipMessage = "Очистить поле",
   inputContainer,
   shouldFocus = false,
+  shouldScroll = false,
   onValueChange,
   ...props
 }) => {
@@ -208,7 +210,7 @@ const CommandInput: FC<
   // Maintaining the scroll position at the top when searching for specific item
   useEffect(() => {
     const input = inputRef.current;
-    if (!input) return;
+    if (!input || !shouldScroll) return;
 
     const handleInput = () => {
       setTimeout(() => {
@@ -234,7 +236,7 @@ const CommandInput: FC<
     return () => {
       input.removeEventListener("input", handleInput);
     };
-  }, [context.listRef, context.commandRef]);
+  }, [context.listRef, context.commandRef, shouldScroll]);
 
   return (
     <div

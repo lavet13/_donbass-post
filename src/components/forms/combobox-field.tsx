@@ -201,6 +201,7 @@ const ComboboxGroupField: FC<
         <CommandInput
           {...(modal ? { inputContainer: "bg-gray-2 rounded-t-sm" } : {})}
           shouldFocus={shouldFocus}
+          shouldScroll
           clearButton
           clearButtonTooltipMessage={searchClearButtonTooltipMessage}
           placeholder={searchInputPlaceholder}

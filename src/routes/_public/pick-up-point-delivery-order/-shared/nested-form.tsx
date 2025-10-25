@@ -194,7 +194,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
     return (
       <div className="mx-auto w-full max-w-2xl">
         <div className="xs:h-2 h-4 shrink-0" />
-        <TypographyH2 className="pb-2 text-start sm:text-center">
+        <TypographyH2>
           Online заявка <HighlightText>на забор груза</HighlightText> в ЛДНР и
           Запорожье
         </TypographyH2>
