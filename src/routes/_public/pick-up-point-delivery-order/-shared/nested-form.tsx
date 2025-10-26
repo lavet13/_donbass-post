@@ -30,10 +30,7 @@ import { TypographyH3 } from "@/components/typography/typographyH3";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import { useStore } from "@tanstack/react-form";
 import { useBlocker } from "@tanstack/react-router";
-import {
-  AutoDismissMessage,
-  type AutoDimissMessageProps,
-} from "@/components/auto-dismiss-message";
+import * as AutoDismissMessage from "@/components/ui/auto-dismiss-message";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { TypographyH2 } from "@/components/typography/typographyH2";
 import { HighlightText } from "@/components/typography/highlight-text";
@@ -119,13 +116,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
       },
     });
 
-    const [message, setMessage] = useState<AutoDimissMessageProps>({
-      title: "Регистрация успешно проведена!",
-      variant: "success",
-      onClose: () => setMessage((prev) => ({ ...prev, isOpen: false })),
-      isOpen: false,
-      durationMs: 60_000,
-    });
+    const { open, message, setOpen, setMessage, variant, setVariant } =
+      AutoDismissMessage.useAutoDismiss();
 
     const styles = getComputedStyle(document.documentElement);
     const smBreakpoint = styles.getPropertyValue("--breakpoint-sm");
@@ -203,10 +195,25 @@ export const PickUpPointDeliveryOrderForm = withForm({
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              form.handleSubmit({ onSubmit: setMessage });
+              void form.handleSubmit({ setMessage, setOpen, setVariant });
             }}
           >
-            <AutoDismissMessage {...message} />
+            <AutoDismissMessage.Root
+              variant={variant}
+              open={open}
+              onOpenChange={setOpen}
+              durationMs={60_000}
+            >
+              <AutoDismissMessage.Container>
+                <AutoDismissMessage.Title>
+                  Регистрация успешно проведена!
+                </AutoDismissMessage.Title>
+                <AutoDismissMessage.Content>
+                  {message}
+                </AutoDismissMessage.Content>
+                <AutoDismissMessage.Close />
+              </AutoDismissMessage.Container>
+            </AutoDismissMessage.Root>
             <TypographyH3>Отправитель</TypographyH3>
             <form.AppField
               name="sender.type"
@@ -1548,7 +1555,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               size="1"
               variant="soft"
               color="orange"
-              className="mb-3 justify-between items-center p-2 [&_svg]:size-4 [&_svg]:shrink-0"
+              className="mb-3 items-center justify-between p-2 [&_svg]:size-4 [&_svg]:shrink-0"
             >
               <div className="flex items-center gap-2">
                 <Callout.Icon className="self-start">
@@ -1563,7 +1570,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
               <Popover.Root>
                 <Popover.Trigger>
                   <IconButton
-                    className="ml-auto col-start-2 [&>svg]:size-3.5"
+                    className="col-start-2 ml-auto [&>svg]:size-3.5"
                     color="orange"
                     variant="ghost"
                     size="1"

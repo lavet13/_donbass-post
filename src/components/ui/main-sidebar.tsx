@@ -29,7 +29,8 @@ import { cn, composeEventHandlers } from "@/lib/utils";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { createContext } from "@/hooks/create-context";
 import { useControllableState } from "@/hooks/use-controllable-state";
-import { useComposedRefs } from "@/hooks/use-composed-refs";
+import { useComposedRefs } from "@radix-ui/react-compose-refs";
+// import { Presence } from "@radix-ui/react-presence";
 
 const MAIN_SIDEBAR_NAME = "MainSidebar";
 
@@ -134,26 +135,6 @@ const MainSidebarDesktop: FC<ComponentProps<"div">> = (props) => {
   );
 };
 MainSidebarDesktop.displayName = MAIN_SIDEBAR_DESKTOP_NAME;
-
-const Logo: FC<ComponentProps<typeof Link>> = ({ className, ...props }) => {
-  return (
-    <Link
-      className={cn(
-        "focus-visible:outline-accent-8 relative select-none focus-visible:outline-[2px] focus-visible:-outline-offset-1 rounded-sm",
-        className,
-      )}
-      to="/"
-      activeOptions={{ exact: true }}
-      {...props}
-    >
-      <img
-        className="h-full w-[220px]"
-        src={`${import.meta.env.BASE_URL}/logomini_np-bsd.png`}
-        alt={`Лого "Наша Почта - почта по-новому" Партнер "БСД"`}
-      />
-    </Link>
-  );
-};
 
 type TriggerProps = ComponentProps<typeof IconButton> & {
   Icon?: React.ForwardRefExoticComponent<
@@ -327,6 +308,10 @@ const MainSidebarFooter: FC<ComponentProps<"div">> = (props) => {
 };
 MainSidebarFooter.displayName = MAIN_SIDEBAR_FOOTER_NAME;
 
+const MAIN_SIDEBAR_PORTAL_NAME = "MainSidebarPortal";
+const MainSidebarPortal: FC = () => {};
+MainSidebarPortal.displayName = MAIN_SIDEBAR_PORTAL_NAME;
+
 const MAIN_SIDEBAR_CONTENT_NAME = "MainSidebarContent";
 const MainSidebarContent: FC<ComponentProps<typeof ScrollArea>> = ({
   children,
@@ -340,8 +325,8 @@ const MainSidebarContent: FC<ComponentProps<typeof ScrollArea>> = ({
     <ScrollArea
       className="min-h-0"
       scrollbars="vertical"
-      {...props}
       ref={composedRefs}
+      {...props}
     >
       <div className="flex min-h-0 flex-1 flex-col items-start gap-3.5 px-4.5 pt-2">
         {children}
@@ -350,6 +335,26 @@ const MainSidebarContent: FC<ComponentProps<typeof ScrollArea>> = ({
   );
 };
 MainSidebarContent.displayName = MAIN_SIDEBAR_CONTENT_NAME;
+
+const Logo: FC<ComponentProps<typeof Link>> = ({ className, ...props }) => {
+  return (
+    <Link
+      className={cn(
+        "focus-visible:outline-accent-8 relative rounded-sm select-none focus-visible:outline-[2px] focus-visible:-outline-offset-1",
+        className,
+      )}
+      to="/"
+      activeOptions={{ exact: true }}
+      {...props}
+    >
+      <img
+        className="h-full w-[220px]"
+        src={`${import.meta.env.BASE_URL}/logomini_np-bsd.png`}
+        alt={`Лого "Наша Почта - почта по-новому" Партнер "БСД"`}
+      />
+    </Link>
+  );
+};
 
 export {
   MainSidebar,

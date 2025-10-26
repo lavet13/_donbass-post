@@ -1,8 +1,13 @@
-import type { AutoDimissMessageProps } from "@/components/auto-dismiss-message";
+import type { AutoDismissMessageProps } from "@/components/ui/auto-dismiss-message";
 import { formOptions } from "@tanstack/react-form";
+import type { ReactNode } from "react";
 
 type FormMeta = {
-  onSubmit?: React.Dispatch<React.SetStateAction<AutoDimissMessageProps>>;
+  setMessage?: React.Dispatch<React.SetStateAction<ReactNode>>;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  setVariant?: React.Dispatch<
+    React.SetStateAction<AutoDismissMessageProps["variant"]>
+  >;
 };
 const defaultMeta: FormMeta = {};
 
