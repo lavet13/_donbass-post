@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { isMobile as isMobileDevice } from "react-device-detect";
-import { cn } from "@/lib/utils";
+import { cn, composeEventHandlers } from "@/lib/utils";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { createContext } from "@/hooks/create-context";
 import { useControllableState } from "@/hooks/use-controllable-state";
@@ -38,6 +38,8 @@ type MainSidebarContextValue = {
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   isMobile: boolean;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  contentRef: React.RefObject<HTMLDivElement | null>;
 };
 const [MainSidebarProvider, useMainSidebarContext] =
   createContext<MainSidebarContextValue>(MAIN_SIDEBAR_NAME);
@@ -50,6 +52,8 @@ type MainSidebarProps = {
 };
 
 const MainSidebar: FC<MainSidebarProps> = (props) => {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const { open: openProp, onOpenChange, defaultOpen, children } = props;
   const [open, setOpen] = useControllableState({
     prop: openProp,
@@ -72,6 +76,8 @@ const MainSidebar: FC<MainSidebarProps> = (props) => {
   const withProvider = useCallback(
     (children?: ReactNode) => (
       <MainSidebarProvider
+        triggerRef={triggerRef}
+        contentRef={contentRef}
         open={open}
         onOpenChange={setOpen}
         onOpenToggle={handleToggle}
@@ -132,7 +138,10 @@ MainSidebarDesktop.displayName = MAIN_SIDEBAR_DESKTOP_NAME;
 const Logo: FC<ComponentProps<typeof Link>> = ({ className, ...props }) => {
   return (
     <Link
-      className={cn("relative select-none", className)}
+      className={cn(
+        "focus-visible:outline-accent-8 relative select-none focus-visible:outline-[2px] focus-visible:-outline-offset-1 rounded-sm",
+        className,
+      )}
       to="/"
       activeOptions={{ exact: true }}
       {...props}
@@ -170,13 +179,12 @@ const MainSidebarTrigger: FC<TriggerProps> = ({
   ...triggerProps
 }) => {
   const context = useMainSidebarContext(MAIN_SIDEBAR_TRIGGER);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const composedRefs = useComposedRefs(buttonRef, ref);
+  const composedRefs = useComposedRefs(ref, context.triggerRef);
   Icon = Icon || (context.open ? X : Menu);
   shouldFocusOnMount = shouldFocusOnMount || context.open;
 
   useEffect(() => {
-    const button = buttonRef.current;
+    const button = context.triggerRef.current;
     if (!shouldFocusOnMount || !button) return;
 
     button.focus();
@@ -184,15 +192,15 @@ const MainSidebarTrigger: FC<TriggerProps> = ({
     return () => {
       button.blur();
     };
-  }, [shouldFocusOnMount]);
+  }, [shouldFocusOnMount, context.triggerRef]);
 
   const trigger = (
     <IconButton
-      ref={composedRefs}
       size="3"
       radius="full"
       variant="ghost"
-      onClick={context.onOpenToggle}
+      ref={composedRefs}
+      onClick={composeEventHandlers(triggerProps.onClick, context.onOpenToggle)}
       {...triggerProps}
     >
       <Icon size={18} {...iconProps} />
@@ -223,11 +231,13 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
   className,
   Icon,
   iconProps,
+  ref,
   ...props
 }) => {
   const context = useMainSidebarContext(MAIN_SIDEBAR_BUTTON_NAME);
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const composedRefs = useComposedRefs(ref, buttonRef);
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
@@ -263,8 +273,6 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
 
   return (
     <Button
-      ref={buttonRef}
-      onClick={context.onOpenToggle}
       radius="full"
       variant="ghost"
       size="3"
@@ -272,6 +280,8 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
         "data-[status=active]:bg-accentA-4 relative -mx-3 w-full items-center justify-start gap-1.5 px-3 [&>svg]:size-4.5 [&>svg]:shrink-0",
         className,
       )}
+      ref={composedRefs}
+      onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
       {...props}
     >
       {Icon && <Icon {...iconProps} />}
@@ -294,10 +304,15 @@ const MainSidebarHeader: FC<ComponentProps<"div">> = (props) => {
 MainSidebarHeader.displayName = MAIN_SIDEBAR_HEADER_NAME;
 
 const MAIN_SIDEBAR_LOGO_NAME = "MainSidebarLogo";
-const MainSidebarLogo: FC = () => {
+const MainSidebarLogo: FC<ComponentProps<typeof Logo>> = (props) => {
   const context = useMainSidebarContext(MAIN_SIDEBAR_LOGO_NAME);
 
-  return <Logo onClick={context.onOpenToggle} />;
+  return (
+    <Logo
+      onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
+      {...props}
+    />
+  );
 };
 MainSidebarLogo.displayName = MAIN_SIDEBAR_LOGO_NAME;
 
@@ -315,10 +330,19 @@ MainSidebarFooter.displayName = MAIN_SIDEBAR_FOOTER_NAME;
 const MAIN_SIDEBAR_CONTENT_NAME = "MainSidebarContent";
 const MainSidebarContent: FC<ComponentProps<typeof ScrollArea>> = ({
   children,
+  ref,
   ...props
 }) => {
+  const context = useMainSidebarContext(MAIN_SIDEBAR_CONTENT_NAME);
+  const composedRefs = useComposedRefs(ref, context.contentRef);
+
   return (
-    <ScrollArea className="min-h-0" scrollbars="vertical" {...props}>
+    <ScrollArea
+      className="min-h-0"
+      scrollbars="vertical"
+      {...props}
+      ref={composedRefs}
+    >
       <div className="flex min-h-0 flex-1 flex-col items-start gap-3.5 px-4.5 pt-2">
         {children}
       </div>
