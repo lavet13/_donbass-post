@@ -11,6 +11,8 @@ import {
   MainSidebarContent,
   MainSidebarFooter,
   MainSidebarHeader,
+  MainSidebarLogo,
+  MainSidebarTrigger,
 } from "@/components/ui/main-sidebar";
 
 export const Header: FC = () => {
@@ -45,7 +47,10 @@ export const Header: FC = () => {
         <div className="relative flex h-full w-full items-center justify-between">
           <div className="flex flex-none items-center gap-3">
             <MainSidebar>
-              <MainSidebarHeader />
+              <MainSidebarHeader>
+                <MainSidebarTrigger />
+                <MainSidebarLogo />
+              </MainSidebarHeader>
               <MainSidebarContent>
                 <MainSidebarButton Icon={Route} asChild>
                   <Link to="/tracking">Отслеживание</Link>
@@ -58,7 +63,7 @@ export const Header: FC = () => {
             </MainSidebar>
           </div>
           <div className="absolute top-1/2 left-1/2 flex flex-1 shrink-0 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-            {/* Encapsulate the logic of Navigation Menu to make it compound, maintainable */}
+            {/* Encapsulate the logic of Navigation Menu */}
             <MainNav navItems={navItems} />
           </div>
           <div className="flex flex-none items-center justify-end">

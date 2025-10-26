@@ -11,7 +11,7 @@ import {
   type ScrollAreaProps,
 } from "@radix-ui/themes";
 import { AccessibleIcon } from "@radix-ui/themes";
-import { composeRefs, useComposedRefs } from "@/hooks/use-composed-refs";
+import { useComposedRefs } from "@/hooks/use-composed-refs";
 import { createContext } from "@/hooks/create-context";
 
 /* -------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ const CommandList: FC<
   }
 > = ({ className, scrollProps, listStyles, ref, ...props }) => {
   const context = useCommandContext(COMMAND_LIST_NAME);
-  const composedRefs = composeRefs(ref, context.listRef);
+  const composedRefs = useComposedRefs(ref, context.listRef);
 
   return (
     <ScrollArea

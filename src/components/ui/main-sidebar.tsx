@@ -9,11 +9,13 @@ import {
 import { Link } from "@tanstack/react-router";
 import { Menu, X, type LucideProps } from "lucide-react";
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
   type ComponentProps,
   type FC,
+  type ReactNode,
 } from "react";
 import {
   Drawer,
@@ -24,13 +26,37 @@ import {
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { isMobile as isMobileDevice } from "react-device-detect";
 import { cn } from "@/lib/utils";
-import { atom, useAtom } from "jotai";
-import { BorderBeam } from "./border-beam";
+import { BorderBeam } from "@/components/ui/border-beam";
+import { createContext } from "@/hooks/create-context";
+import { useControllableState } from "@/hooks/use-controllable-state";
+import { useComposedRefs } from "@/hooks/use-composed-refs";
 
-const toggleMenuAtom = atom(false);
+const MAIN_SIDEBAR_NAME = "MainSidebar";
 
-const MainSidebar: FC<ComponentProps<"div">> = (props) => {
-  const [open, setOpen] = useAtom(toggleMenuAtom);
+type MainSidebarContextValue = {
+  open: boolean;
+  onOpenChange(open: boolean): void;
+  onOpenToggle(): void;
+  isMobile: boolean;
+};
+const [MainSidebarProvider, useMainSidebarContext] =
+  createContext<MainSidebarContextValue>(MAIN_SIDEBAR_NAME);
+
+type MainSidebarProps = {
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?(open: boolean): void;
+  children?: ReactNode;
+};
+
+const MainSidebar: FC<MainSidebarProps> = (props) => {
+  const { open: openProp, onOpenChange, defaultOpen, children } = props;
+  const [open, setOpen] = useControllableState({
+    prop: openProp,
+    defaultProp: defaultOpen ?? false,
+    onChange: onOpenChange,
+    caller: MAIN_SIDEBAR_NAME,
+  });
 
   const styles = getComputedStyle(document.documentElement);
   const middleBreakpoint = styles.getPropertyValue("--breakpoint-md");
@@ -38,36 +64,70 @@ const MainSidebar: FC<ComponentProps<"div">> = (props) => {
     useMediaQuery(`(max-width: calc(${middleBreakpoint} - 1px))`) ||
     isMobileDevice;
 
+  const handleToggle = useCallback(
+    () => setOpen((prevOpen) => !prevOpen),
+    [setOpen],
+  );
+
+  const withProvider = useCallback(
+    (children?: ReactNode) => (
+      <MainSidebarProvider
+        open={open}
+        onOpenChange={setOpen}
+        onOpenToggle={handleToggle}
+        isMobile={isMobile}
+      >
+        {children}
+      </MainSidebarProvider>
+    ),
+    [handleToggle, isMobile, open, setOpen],
+  );
+
+  if (isMobile) {
+    return withProvider(<MainSidebarMobile>{children}</MainSidebarMobile>);
+  }
+
+  return withProvider(<MainSidebarDesktop>{children}</MainSidebarDesktop>);
+};
+MainSidebar.displayName = MAIN_SIDEBAR_NAME;
+
+const MAIN_SIDEBAR_MOBILE_NAME = "MainSidebarMobile";
+const MainSidebarMobile: FC<ComponentProps<"div">> = (props) => {
+  const context = useMainSidebarContext(MAIN_SIDEBAR_MOBILE_NAME);
+
   return (
-    <>
-      {isMobile ? (
-        <Drawer open={open} onOpenChange={setOpen} direction="left">
-          {isMobileDevice ? (
-            <DrawerTrigger asChild>
-              <Trigger />
-            </DrawerTrigger>
-          ) : (
-            <Tooltip content="Меню">
-              <DrawerTrigger asChild>
-                <Trigger />
-              </DrawerTrigger>
-            </Tooltip>
-          )}
-          <DrawerContent
-            aria-describedby={undefined}
-            className="bg-gray-2 top-0 bottom-0 left-0 w-full max-w-[300px]"
-          >
-            <VisuallyHidden>
-              <DrawerTitle>Боковое меню</DrawerTitle>
-            </VisuallyHidden>
-            <div className="flex min-h-0 grow flex-col" {...props} />
-          </DrawerContent>
-        </Drawer>
-      ) : null}
-      <Logo className="hidden md:block" />
-    </>
+    <Drawer
+      open={context.open}
+      onOpenChange={context.onOpenChange}
+      direction="left"
+    >
+      <DrawerTrigger asChild>
+        <MainSidebarTrigger />
+      </DrawerTrigger>
+      <DrawerContent
+        aria-describedby={undefined}
+        className="bg-gray-2 top-0 bottom-0 left-0 w-full max-w-[300px]"
+      >
+        <VisuallyHidden>
+          <DrawerTitle>Боковое меню(сайдбар)</DrawerTitle>
+        </VisuallyHidden>
+        <div className="flex min-h-0 grow flex-col" {...props} />
+      </DrawerContent>
+    </Drawer>
   );
 };
+MainSidebarMobile.displayName = MAIN_SIDEBAR_MOBILE_NAME;
+
+const MAIN_SIDEBAR_DESKTOP_NAME = "MainSidebarDesktop";
+const MainSidebarDesktop: FC<ComponentProps<"div">> = (props) => {
+  return (
+    <div className="flex min-w-0 items-center gap-3" {...props}>
+      <MainSidebarTrigger />
+      <MainSidebarLogo />
+    </div>
+  );
+};
+MainSidebarDesktop.displayName = MAIN_SIDEBAR_DESKTOP_NAME;
 
 const Logo: FC<ComponentProps<typeof Link>> = ({ className, ...props }) => {
   return (
@@ -95,19 +155,57 @@ type TriggerProps = ComponentProps<typeof IconButton> & {
       Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
     >
   >;
+  showTooltip?: boolean;
+  shouldFocusOnMount?: boolean;
 };
 
-const Trigger: FC<TriggerProps> = ({
-  Icon = Menu,
+const MAIN_SIDEBAR_TRIGGER = "MainSidebarTrigger";
+const MainSidebarTrigger: FC<TriggerProps> = ({
+  Icon,
+  ref,
   iconProps,
+  content,
+  showTooltip = false,
+  shouldFocusOnMount = false,
   ...triggerProps
 }) => {
-  return (
-    <IconButton size="3" radius="full" variant="ghost" {...triggerProps}>
+  const context = useMainSidebarContext(MAIN_SIDEBAR_TRIGGER);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const composedRefs = useComposedRefs(buttonRef, ref);
+  Icon = Icon || (context.open ? X : Menu);
+  shouldFocusOnMount = shouldFocusOnMount || context.open;
+
+  useEffect(() => {
+    const button = buttonRef.current;
+    if (!shouldFocusOnMount || !button) return;
+
+    button.focus();
+
+    return () => {
+      button.blur();
+    };
+  }, [shouldFocusOnMount]);
+
+  const trigger = (
+    <IconButton
+      ref={composedRefs}
+      size="3"
+      radius="full"
+      variant="ghost"
+      onClick={context.onOpenToggle}
+      {...triggerProps}
+    >
       <Icon size={18} {...iconProps} />
     </IconButton>
   );
+
+  if (!showTooltip) {
+    return trigger;
+  }
+
+  return <Tooltip content={content}>{trigger}</Tooltip>;
 };
+MainSidebarTrigger.displayName = MAIN_SIDEBAR_TRIGGER;
 
 type MainSidebarButtonProps = ComponentProps<typeof Button> & {
   Icon?: React.ForwardRefExoticComponent<
@@ -120,14 +218,15 @@ type MainSidebarButtonProps = ComponentProps<typeof Button> & {
   >;
 };
 
+const MAIN_SIDEBAR_BUTTON_NAME = "MainSidebarButton";
 const MainSidebarButton: FC<MainSidebarButtonProps> = ({
   className,
   Icon,
   iconProps,
   ...props
 }) => {
-  const [, setOpen] = useAtom(toggleMenuAtom);
-  const handleToggle = () => setOpen((prev) => !prev);
+  const context = useMainSidebarContext(MAIN_SIDEBAR_BUTTON_NAME);
+
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isActive, setIsActive] = useState(false);
 
@@ -165,7 +264,7 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
   return (
     <Button
       ref={buttonRef}
-      onClick={handleToggle}
+      onClick={context.onOpenToggle}
       radius="full"
       variant="ghost"
       size="3"
@@ -181,34 +280,28 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
     </Button>
   );
 };
+MainSidebarButton.displayName = MAIN_SIDEBAR_BUTTON_NAME;
 
+const MAIN_SIDEBAR_HEADER_NAME = "MainSidebarHeader";
 const MainSidebarHeader: FC<ComponentProps<"div">> = (props) => {
-  const [, setOpen] = useAtom(toggleMenuAtom);
-
-  const handleToggle = () => setOpen((prev) => !prev);
-
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    triggerRef.current?.focus();
-  }, []);
-
   return (
     <div
       className="sticky top-0 z-0 flex min-w-0 items-center gap-3 px-3.5 pt-4 pb-2"
       {...props}
-    >
-      <Trigger
-        ref={triggerRef}
-        iconProps={{ size: 20 }}
-        Icon={X}
-        onClick={handleToggle}
-      />
-      <Logo onClick={handleToggle} />
-    </div>
+    />
   );
 };
+MainSidebarHeader.displayName = MAIN_SIDEBAR_HEADER_NAME;
 
+const MAIN_SIDEBAR_LOGO_NAME = "MainSidebarLogo";
+const MainSidebarLogo: FC = () => {
+  const context = useMainSidebarContext(MAIN_SIDEBAR_LOGO_NAME);
+
+  return <Logo onClick={context.onOpenToggle} />;
+};
+MainSidebarLogo.displayName = MAIN_SIDEBAR_LOGO_NAME;
+
+const MAIN_SIDEBAR_FOOTER_NAME = "MainSidebarFooter";
 const MainSidebarFooter: FC<ComponentProps<"div">> = (props) => {
   return (
     <div
@@ -217,7 +310,9 @@ const MainSidebarFooter: FC<ComponentProps<"div">> = (props) => {
     />
   );
 };
+MainSidebarFooter.displayName = MAIN_SIDEBAR_FOOTER_NAME;
 
+const MAIN_SIDEBAR_CONTENT_NAME = "MainSidebarContent";
 const MainSidebarContent: FC<ComponentProps<typeof ScrollArea>> = ({
   children,
   ...props
@@ -230,6 +325,7 @@ const MainSidebarContent: FC<ComponentProps<typeof ScrollArea>> = ({
     </ScrollArea>
   );
 };
+MainSidebarContent.displayName = MAIN_SIDEBAR_CONTENT_NAME;
 
 export {
   MainSidebar,
@@ -237,4 +333,6 @@ export {
   MainSidebarContent,
   MainSidebarFooter,
   MainSidebarButton,
+  MainSidebarLogo,
+  MainSidebarTrigger,
 };
