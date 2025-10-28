@@ -4,7 +4,8 @@ import { sidebarOpenAtom } from "@/components/ui/main-sidebar/atom";
 import { mainSidebarAtom } from "@/components/ui/main-sidebar/atom";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
+import { useEffect, useState } from "react";
 import { Fragment } from "react/jsx-runtime";
 
 export const Route = createFileRoute("/_public")({
@@ -12,9 +13,26 @@ export const Route = createFileRoute("/_public")({
 });
 
 function PublicLayout() {
-  const setMainSidebar = useSetAtom(mainSidebarAtom);
+  const [mainSidebarWidth, setMainSidebarWidth] = useState(0);
+  const [mainSidebar, setMainSidebar] = useAtom(mainSidebarAtom);
   const cookieSidebarState = useAtomValue(sidebarOpenAtom);
   const isSidebarOpen = cookieSidebarState === "open" ? true : false;
+
+  useEffect(() => {
+    if (!mainSidebar) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setMainSidebarWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(mainSidebar);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [mainSidebar]);
 
   return (
     <Fragment>
@@ -35,6 +53,14 @@ function PublicLayout() {
           <div className="container mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-6xl flex-1 flex-col">
             <Outlet />
           </div>
+          {isSidebarOpen && mainSidebar && (
+            <div
+              style={{
+                width: mainSidebarWidth,
+              }}
+              className="sticky top-[calc(var(--header-height))] flex h-[calc(100dvh-var(--header-height))] flex-col"
+            />
+          )}
         </main>
         <Footer />
       </div>
