@@ -46,6 +46,7 @@ import {
   Callout,
 } from "@radix-ui/themes";
 import { TypographyH2 } from "@/components/typography/typographyH2";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 type ScheduleSearch = {
   q?: string;
@@ -66,6 +67,10 @@ export const Route = createFileRoute("/_public/schedules")({
 });
 
 const SearchPage: FC = () => {
+  const styles = getComputedStyle(document.documentElement);
+  const largeBreakpoint = styles.getPropertyValue("--breakpoint-lg");
+  const isDesktop = useMediaQuery(`(min-width: ${largeBreakpoint})`);
+
   const { data, isPending, refetch } = usePointListQuery();
 
   const departmentId = useSearch({
@@ -203,7 +208,7 @@ const SearchPage: FC = () => {
 
   return (
     <div className="flex min-h-min w-full flex-1 items-start">
-      <div className="sticky top-[calc(var(--header-height)+1px)] flex min-w-[18rem] flex-col">
+      <div className="sticky top-[calc(var(--header-height)+1px)] flex min-w-[16rem] flex-col pr-1 lg:min-w-[18rem]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
