@@ -14,6 +14,7 @@ import {
   useRef,
   useState,
   type ComponentProps,
+  type ComponentPropsWithoutRef,
   type FC,
   type ReactNode,
 } from "react";
@@ -30,7 +31,13 @@ import { BorderBeam } from "@/components/ui/border-beam";
 import { createContext } from "@/hooks/create-context";
 import { useControllableState } from "@/hooks/use-controllable-state";
 import { useComposedRefs } from "@radix-ui/react-compose-refs";
-// import { Presence } from "@radix-ui/react-presence";
+import { Portal as PortalPrimitive } from "@radix-ui/react-portal";
+import { Presence } from "@radix-ui/react-presence";
+import { useAtom, useAtomValue } from "jotai";
+import {
+  mainSidebarAtom,
+  sidebarOpenAtom,
+} from "@/components/ui/main-sidebar/atom";
 
 const MAIN_SIDEBAR_NAME = "MainSidebar";
 
@@ -56,18 +63,30 @@ const MainSidebar: FC<MainSidebarProps> = (props) => {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const { open: openProp, onOpenChange, defaultOpen, children } = props;
-  const [open, setOpen] = useControllableState({
-    prop: openProp,
-    defaultProp: defaultOpen ?? false,
-    onChange: onOpenChange,
-    caller: MAIN_SIDEBAR_NAME,
-  });
-
   const styles = getComputedStyle(document.documentElement);
   const middleBreakpoint = styles.getPropertyValue("--breakpoint-md");
   const isMobile =
     useMediaQuery(`(max-width: calc(${middleBreakpoint} - 1px))`) ||
     isMobileDevice;
+
+  const [cookieState, setCookieState] = useAtom(sidebarOpenAtom);
+
+  const [open, setOpen] = useControllableState({
+    prop: openProp,
+    defaultProp: defaultOpen ?? false,
+    onChange: (open) => {
+      onOpenChange?.(open);
+      setCookieState(open ? "open" : "closed");
+    },
+    caller: MAIN_SIDEBAR_NAME,
+  });
+
+  useEffect(() => {
+    if (!isMobile) {
+      setOpen(cookieState === "open" ? true : false);
+    }
+    // eslint-disable-next-line
+  }, []);
 
   const handleToggle = useCallback(
     () => setOpen((prevOpen) => !prevOpen),
@@ -100,6 +119,7 @@ MainSidebar.displayName = MAIN_SIDEBAR_NAME;
 
 const MAIN_SIDEBAR_MOBILE_NAME = "MainSidebarMobile";
 const MainSidebarMobile: FC<ComponentProps<"div">> = (props) => {
+  const { children, ...sidebarProps } = props;
   const context = useMainSidebarContext(MAIN_SIDEBAR_MOBILE_NAME);
 
   return (
@@ -118,7 +138,13 @@ const MainSidebarMobile: FC<ComponentProps<"div">> = (props) => {
         <VisuallyHidden>
           <DrawerTitle>Боковое меню(сайдбар)</DrawerTitle>
         </VisuallyHidden>
-        <div className="flex min-h-0 grow flex-col" {...props} />
+        <div className="flex min-h-0 grow flex-col" {...sidebarProps}>
+          <MainSidebarHeader>
+            <MainSidebarTrigger />
+            <MainSidebarLogo />
+          </MainSidebarHeader>
+          {children}
+        </div>
       </DrawerContent>
     </Drawer>
   );
@@ -127,11 +153,32 @@ MainSidebarMobile.displayName = MAIN_SIDEBAR_MOBILE_NAME;
 
 const MAIN_SIDEBAR_DESKTOP_NAME = "MainSidebarDesktop";
 const MainSidebarDesktop: FC<ComponentProps<"div">> = (props) => {
+  const { children, ...sidebarProps } = props;
+  const container = useAtomValue(mainSidebarAtom);
+
   return (
-    <div className="flex min-w-0 items-center gap-3" {...props}>
-      <MainSidebarTrigger />
-      <MainSidebarLogo />
-    </div>
+    <>
+      <div className="flex min-w-0 items-center gap-3">
+        <MainSidebarTrigger />
+        <MainSidebarLogo />
+      </div>
+      <MainSidebarPortal container={container}>
+        <div
+          className="flex flex-1 flex-col"
+          data-slot="main-sidebar"
+          data-is-root-theme="true"
+          data-accent-color="red"
+          data-gray-color="gray"
+          data-has-background="true"
+          data-panel-background="translucent"
+          data-radius="medium"
+          data-scaling="100%"
+          {...sidebarProps}
+        >
+          {children}
+        </div>
+      </MainSidebarPortal>
+    </>
   );
 };
 MainSidebarDesktop.displayName = MAIN_SIDEBAR_DESKTOP_NAME;
@@ -262,7 +309,10 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
         className,
       )}
       ref={composedRefs}
-      onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
+      onClick={composeEventHandlers(
+        props.onClick,
+        context.isMobile ? context.onOpenToggle : undefined,
+      )}
       {...props}
     >
       {Icon && <Icon {...iconProps} />}
@@ -290,7 +340,10 @@ const MainSidebarLogo: FC<ComponentProps<typeof Logo>> = (props) => {
 
   return (
     <Logo
-      onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
+      onClick={composeEventHandlers(
+        props.onClick,
+        context.isMobile ? context.onOpenToggle : undefined,
+      )}
       {...props}
     />
   );
@@ -309,7 +362,37 @@ const MainSidebarFooter: FC<ComponentProps<"div">> = (props) => {
 MainSidebarFooter.displayName = MAIN_SIDEBAR_FOOTER_NAME;
 
 const MAIN_SIDEBAR_PORTAL_NAME = "MainSidebarPortal";
-const MainSidebarPortal: FC = () => {};
+
+type PortalProps = ComponentPropsWithoutRef<typeof PortalPrimitive>;
+type MainSidebarPortalProps = PortalProps & {
+  children?: ReactNode;
+  /**
+   * Specify a container element to portal the content into.
+   */
+  container?: PortalProps["container"];
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+};
+
+const MainSidebarPortal: FC<MainSidebarPortalProps> = (props) => {
+  const { container, children, forceMount } = props;
+  const context = useMainSidebarContext(MAIN_SIDEBAR_PORTAL_NAME);
+
+  if (context.isMobile) {
+    return null;
+  }
+
+  return (
+    <Presence present={forceMount || context.open}>
+      <PortalPrimitive asChild container={container}>
+        {children}
+      </PortalPrimitive>
+    </Presence>
+  );
+};
 MainSidebarPortal.displayName = MAIN_SIDEBAR_PORTAL_NAME;
 
 const MAIN_SIDEBAR_CONTENT_NAME = "MainSidebarContent";

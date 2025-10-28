@@ -9,10 +9,6 @@ import {
   MainSidebar,
   MainSidebarButton,
   MainSidebarContent,
-  MainSidebarFooter,
-  MainSidebarHeader,
-  MainSidebarLogo,
-  MainSidebarTrigger,
 } from "@/components/ui/main-sidebar";
 
 export const Header: FC = () => {
@@ -42,15 +38,11 @@ export const Header: FC = () => {
   ];
 
   return (
-    <header className="bg-background/80 dark:bg-gray-2/80 sticky top-0 z-10 flex h-14 w-full backdrop-blur-sm">
+    <header className="bg-background/80 dark:background/80 sticky top-0 z-10 flex h-14 w-full backdrop-blur-sm">
       <div className="flex w-full items-center px-3.5">
         <div className="relative flex h-full w-full items-center justify-between">
           <div className="flex flex-none items-center gap-3">
             <MainSidebar>
-              <MainSidebarHeader>
-                <MainSidebarTrigger />
-                <MainSidebarLogo />
-              </MainSidebarHeader>
               <MainSidebarContent>
                 <MainSidebarButton Icon={Route} asChild>
                   <Link to="/tracking">Отслеживание</Link>
@@ -59,7 +51,6 @@ export const Header: FC = () => {
                   <Link to="/schedules">Расписание</Link>
                 </MainSidebarButton>
               </MainSidebarContent>
-              <MainSidebarFooter />
             </MainSidebar>
           </div>
           <div className="absolute top-1/2 left-1/2 flex flex-1 shrink-0 -translate-x-1/2 -translate-y-1/2 items-center justify-center">

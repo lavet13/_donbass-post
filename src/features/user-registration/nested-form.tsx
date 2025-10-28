@@ -3,30 +3,37 @@ import { defaultUserRegistrationOpts } from "@/features/user-registration/shared
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import ru from "react-phone-number-input/locale/ru.json";
 import { isPasswordValid } from "@/lib/utils";
-import { Fragment, useState } from "react";
-import { AutoDismissMessage, type AutoDimissMessageProps } from "@/components/auto-dismiss-message";
+import { Fragment } from "react";
+import * as AutoDismissMessage from "@/components/ui/auto-dismiss-message";
 
 export const UserRegistrationForm = withForm({
   ...defaultUserRegistrationOpts,
   render: function Render({ form }) {
-    const [message, setMessage] = useState<AutoDimissMessageProps>({
-      isOpen: false,
-      variant: "error",
-      onClose() {
-        setMessage((prev) => ({ ...prev, isOpen: false }));
-      },
-      durationMs: 10_000,
-    });
+    const { open, message, setOpen, setMessage, variant, setVariant } =
+      AutoDismissMessage.useAutoDismiss({
+        variant: "error",
+        durationMs: 20_000,
+      });
 
     return (
       <Fragment>
-        <AutoDismissMessage {...message} />
+        <AutoDismissMessage.Root
+          variant={variant}
+          open={open}
+          onOpenChange={setOpen}
+        >
+          <AutoDismissMessage.Container>
+            <AutoDismissMessage.Title>Ошибка!</AutoDismissMessage.Title>
+            <AutoDismissMessage.Content>{message}</AutoDismissMessage.Content>
+            <AutoDismissMessage.Close />
+          </AutoDismissMessage.Container>
+        </AutoDismissMessage.Root>
         <form
           className="flex flex-col gap-1"
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            void form.handleSubmit({ onSubmit: setMessage });
+            void form.handleSubmit({ setMessage, setOpen, setVariant });
           }}
         >
           <form.AppField
