@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { composeEventHandlers } from "@/lib/utils";
+import { isMobile as isMobileDevice } from "react-device-detect";
 
 const NumericField: FC<
   Omit<NumericFormatProps, "size"> &
@@ -18,6 +19,7 @@ const NumericField: FC<
       labelStyles?: string;
       label?: string;
       ariaLabel?: string;
+      shouldFocusScrollInto?: boolean;
     }
 > = ({
   label,
@@ -25,6 +27,7 @@ const NumericField: FC<
   "aria-label": ariaLabelProp,
   ariaLabel,
   shouldSelect,
+  shouldFocusScrollInto = isMobileDevice,
   size,
   color,
   ...props
@@ -49,6 +52,32 @@ const NumericField: FC<
       const input = event.currentTarget;
 
       setTimeout(() => input.select(), 0);
+    }
+    if (shouldFocusScrollInto) {
+      const input = event.currentTarget;
+
+      const headerHeightStr = getComputedStyle(document.documentElement)
+        .getPropertyValue("--header-height")
+        .trim();
+
+      let headerHeightPx;
+
+      if (headerHeightStr.endsWith("rem")) {
+        const remValue = parseFloat(headerHeightStr);
+        const rootFontSize = parseFloat(
+          getComputedStyle(document.documentElement).fontSize,
+        );
+        headerHeightPx = remValue * rootFontSize;
+      } else {
+        headerHeightPx = parseFloat(headerHeightStr);
+      }
+
+      const inputTop = input.getBoundingClientRect().top + window.scrollY;
+
+      window.scrollTo({
+        top: inputTop - headerHeightPx - 30,
+        behavior: "smooth",
+      });
     }
   };
 

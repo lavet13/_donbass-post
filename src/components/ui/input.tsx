@@ -40,7 +40,7 @@ const Input: FC<
   const inputRef = useRef<HTMLInputElement>(null);
   const composeRef = useComposedRefs(inputRef, ref);
 
-  const handleSelectWholeText = (
+  const handleFocus = (
     event: FocusEvent<HTMLInputElement> | InputEvent<HTMLInputElement>,
   ) => {
     if (shouldSelect) {
@@ -48,28 +48,9 @@ const Input: FC<
 
       setTimeout(() => input.select(), 0);
     }
-  };
+    if (shouldFocusScrollInto && !isIOS) {
+      const input = event.currentTarget;
 
-  useEffect(() => {
-    const input = inputRef.current;
-    if (!input) return;
-
-    if (shouldFocusOnMount) {
-      input.focus();
-    }
-
-    return () => {
-      if (shouldFocusOnMount) {
-        input.blur();
-      }
-    };
-  }, [shouldFocusOnMount]);
-
-  useEffect(() => {
-    const input = inputRef.current;
-    if (!input || !shouldFocusScrollInto || isIOS) return;
-
-    const handleFocus = () => {
       const headerHeightStr = getComputedStyle(document.documentElement)
         .getPropertyValue("--header-height")
         .trim();
@@ -92,17 +73,27 @@ const Input: FC<
         top: inputTop - headerHeightPx - 30,
         behavior: "smooth",
       });
-    };
-    input.addEventListener("focus", handleFocus);
+    }
+  };
+
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    if (shouldFocusOnMount) {
+      input.focus();
+    }
 
     return () => {
-      input.removeEventListener("focus", handleFocus);
+      if (shouldFocusOnMount) {
+        input.blur();
+      }
     };
-  }, [shouldFocusScrollInto]);
+  }, [shouldFocusOnMount]);
 
   return (
     <Comp
-      onFocus={composeEventHandlers(props.onFocus, handleSelectWholeText)}
+      onFocus={composeEventHandlers(props.onFocus, handleFocus)}
       ref={composeRef}
       data-slot="input"
       className={cn(

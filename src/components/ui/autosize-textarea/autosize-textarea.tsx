@@ -2,7 +2,7 @@ import { useRef, forwardRef, useEffect } from "react";
 import { useImperativeHandle } from "react";
 import { useControllableState } from "@/hooks/use-controllable-state";
 import { TextArea, type TextAreaProps, type TextProps } from "@radix-ui/themes";
-import { cn } from "@/lib/utils";
+import { cn, composeEventHandlers } from "@/lib/utils";
 import { useAutosizeTextArea } from ".";
 import { isIOS, isMobile as isMobileDevice } from "react-device-detect";
 
@@ -18,6 +18,7 @@ export type AutosizeTextAreaProps = {
   minHeight?: number;
   value?: any;
   shouldFocusScrollInto?: boolean;
+  shouldSelect?: boolean;
   shouldFocusOnMount?: boolean;
   onValueChange?: (value: any) => void;
 } & TextAreaProps &
@@ -34,6 +35,7 @@ export const AutosizeTextarea = forwardRef<
       className,
       onValueChange,
       shouldFocusScrollInto = isMobileDevice,
+      shouldSelect = false,
       shouldFocusOnMount = false,
       value: valueProp,
       ...props
@@ -65,26 +67,15 @@ export const AutosizeTextarea = forwardRef<
       setValue(event.target.value);
     };
 
-    useEffect(() => {
-      const input = textAreaRef.current;
-      if (!input) return;
+    const handleFocus = (event: React.FocusEvent<HTMLTextAreaElement>) => {
+      if (shouldSelect) {
+        const input = event.currentTarget;
 
-      if (shouldFocusOnMount) {
-        input.focus();
+        setTimeout(() => input.select(), 0);
       }
+      if (shouldFocusScrollInto && !isIOS) {
+        const input = event.currentTarget;
 
-      return () => {
-        if (shouldFocusOnMount) {
-          input.blur();
-        }
-      };
-    }, [shouldFocusOnMount]);
-
-    useEffect(() => {
-      const input = textAreaRef.current;
-      if (!input || !shouldFocusScrollInto || isIOS) return;
-
-      const handleFocus = () => {
         const headerHeightStr = getComputedStyle(document.documentElement)
           .getPropertyValue("--header-height")
           .trim();
@@ -107,24 +98,41 @@ export const AutosizeTextarea = forwardRef<
           top: inputTop - headerHeightPx - 30,
           behavior: "smooth",
         });
-      };
-      input.addEventListener("focus", handleFocus);
+      }
+    };
+
+    useEffect(() => {
+      const input = textAreaRef.current;
+      if (!input) return;
+
+      if (shouldFocusOnMount) {
+        input.focus();
+      }
 
       return () => {
-        input.removeEventListener("focus", handleFocus);
+        if (shouldFocusOnMount) {
+          input.blur();
+        }
       };
-    }, [shouldFocusScrollInto]);
+    }, [shouldFocusOnMount]);
 
     return (
       <TextArea
         {...props}
         value={value}
         ref={textAreaRef}
+        onFocus={composeEventHandlers(
+          props.onFocus as React.FocusEventHandler<HTMLTextAreaElement>,
+          handleFocus,
+        )}
         className={cn(
           "caret-accent-7 dark:caret-accent-11 has-[textarea[aria-invalid=true]]:caret-red-9 has-[textarea[aria-invalid=true]]:shadow-[inset_0_0_0_var(--text-area-border-width)_var(--red-8)]",
           className,
         )}
-        onChange={handleChange}
+        onChange={composeEventHandlers(
+          props.onChange as React.ChangeEventHandler<HTMLTextAreaElement>,
+          handleChange,
+        )}
       />
     );
   },
