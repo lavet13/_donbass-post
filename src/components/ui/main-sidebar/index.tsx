@@ -305,8 +305,7 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
       variant="ghost"
       size="3"
       className={cn(
-        context.isMobile && "w-full",
-        "data-[status=active]:bg-accentA-4 relative -mx-3 items-center justify-start gap-1.5 px-3 [&>svg]:size-4.5 [&>svg]:shrink-0",
+        "data-[status=active]:bg-accentA-4 relative -mx-3 items-center justify-start gap-1.5 px-3 [&>svg]:size-4.5 [&>svg]:shrink-0 w-full",
         className,
       )}
       ref={composedRefs}
