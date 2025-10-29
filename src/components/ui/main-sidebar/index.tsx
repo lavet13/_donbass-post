@@ -9,6 +9,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { Menu, X, type LucideProps } from "lucide-react";
 import {
+  isValidElement,
   useCallback,
   useEffect,
   useRef,
@@ -46,6 +47,7 @@ type MainSidebarContextValue = {
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   isMobile: boolean;
+  isTablet: boolean;
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   contentRef: React.RefObject<HTMLDivElement | null>;
 };
@@ -68,6 +70,9 @@ const MainSidebar: FC<MainSidebarProps> = (props) => {
   const isMobile =
     useMediaQuery(`(max-width: calc(${middleBreakpoint} - 1px))`) ||
     isMobileDevice;
+
+  const largeBreakpoint = styles.getPropertyValue("--breakpoint-lg");
+  const isTablet = useMediaQuery(`(max-width: ${largeBreakpoint})`);
 
   const [cookieState, setCookieState] = useAtom(sidebarOpenAtom);
 
@@ -102,11 +107,12 @@ const MainSidebar: FC<MainSidebarProps> = (props) => {
         onOpenChange={setOpen}
         onOpenToggle={handleToggle}
         isMobile={isMobile}
+        isTablet={isTablet}
       >
         {children}
       </MainSidebarProvider>
     ),
-    [handleToggle, isMobile, open, setOpen],
+    [handleToggle, isMobile, open, setOpen, isTablet],
   );
 
   if (isMobile) {
@@ -305,7 +311,8 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
       variant="ghost"
       size="3"
       className={cn(
-        "data-[status=active]:bg-accentA-4 relative -mx-3 items-center justify-start gap-1.5 px-3 [&>svg]:size-4.5 [&>svg]:shrink-0 w-full",
+        "data-[status=active]:bg-accentA-4 relative -mx-3 w-full items-center justify-start gap-1.5 px-3 [&>svg]:size-4.5 [&>svg]:shrink-0",
+        context.isTablet && !context.isMobile && "flex-col rounded-xl text-[10px]/1 font-bold px-2 -mx-2",
         className,
       )}
       ref={composedRefs}
@@ -411,7 +418,7 @@ const MainSidebarContent: FC<ComponentProps<typeof ScrollArea>> = ({
       ref={composedRefs}
       {...props}
     >
-      <div className="flex min-h-0 flex-1 flex-col items-start gap-3.5 px-4.5 pt-2">
+      <div className={cn("flex min-h-0 flex-1 flex-col items-start gap-3.5 px-4.5 pt-2 ", context.isTablet && !context.isMobile && "px-2.5")}>
         {children}
       </div>
     </ScrollArea>

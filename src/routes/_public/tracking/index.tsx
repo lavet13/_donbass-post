@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_public/tracking/")({
 
 function TrackingComponent() {
   return (
-    <div className="mx-auto w-full">
+    <div className="mx-auto w-full mx-auto max-w-2xl">
       <div className="xs:h-2 h-4 shrink-0" />
       <Heading className="sm:mb-8 sm:mt-4" size="8" align="center" mb="3">
         <HighlightText>Отслеживание</HighlightText>

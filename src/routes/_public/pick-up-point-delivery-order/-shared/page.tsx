@@ -77,7 +77,9 @@ const PickUpPointDeliveryOrderPage: FC = () => {
 
   return (
     <Suspend>
-      <PickUpPointDeliveryOrderForm form={form} />
+      <div className="mx-auto w-full max-w-2xl">
+        <PickUpPointDeliveryOrderForm form={form} />
+      </div>
     </Suspend>
   );
 };

@@ -56,7 +56,7 @@ export const ShopCostCalculationOrderForm = withForm({
     const isMobile = useMediaQuery(`(max-width: ${smBreakpoint})`);
 
     return (
-      <div className="mx-auto w-full max-w-2xl">
+      <>
         <div className="xs:h-2 h-4 shrink-0" />
         <TypographyH2>
           Оформление заявки на просчет стоимости на{" "}
@@ -476,7 +476,7 @@ export const ShopCostCalculationOrderForm = withForm({
             </div>
           </form>
         </Card>
-      </div>
+      </>
     );
   },
 });

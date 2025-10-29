@@ -184,7 +184,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
     }, [form, isError, error]);
 
     return (
-      <div className="mx-auto w-full max-w-2xl">
+      <>
         <div className="xs:h-2 h-4 shrink-0" />
         <TypographyH2>
           Online заявка <HighlightText>на забор груза</HighlightText> в ЛДНР и
@@ -1819,7 +1819,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
             </div>
           </form>
         </Card>
-      </div>
+      </>
     );
   },
 });

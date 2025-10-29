@@ -115,7 +115,9 @@ const ShopCostCalculationOrderPage: FC = () => {
 
   return (
     <Suspend>
-      <ShopCostCalculationOrderForm form={form} />
+      <div className="mx-auto w-full max-w-2xl">
+        <ShopCostCalculationOrderForm form={form} />
+      </div>
     </Suspend>
   );
 };

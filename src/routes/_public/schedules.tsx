@@ -208,7 +208,7 @@ const SearchPage: FC = () => {
 
   return (
     <div className="flex min-h-min w-full flex-1 items-start">
-      <div className="sticky top-[calc(var(--header-height)+1px)] flex min-w-[16rem] flex-col pr-1 lg:min-w-[18rem]">
+      <div className="sticky top-[calc(var(--header-height)+1px)] flex min-w-[17rem] flex-col pr-1 lg:min-w-[18rem]">
         <form
           onSubmit={(e) => {
             e.preventDefault();

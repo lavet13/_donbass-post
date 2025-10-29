@@ -23,34 +23,26 @@ function PublicLayout() {
       resolvedLocation,
     }),
   });
-
   const isSchedulesPage =
     routerState.resolvedLocation?.pathname.includes("/schedules");
-
   const [mainSidebarWidth, setMainSidebarWidth] = useState(0);
   const [mainSidebar, setMainSidebar] = useAtom(mainSidebarAtom);
   const cookieSidebarState = useAtomValue(sidebarOpenAtom);
   const isSidebarOpen = cookieSidebarState === "open" ? true : false;
-
   const styles = getComputedStyle(document.documentElement);
   const middleBreakpoint = styles.getPropertyValue("--breakpoint-md");
   const isDesktop = useMediaQuery(
     `(min-width: calc(${middleBreakpoint} - 1px))`,
   );
-  const largeBreakpoint = styles.getPropertyValue("--breakpoint-lg");
-  const isBeyondDesktop = useMediaQuery(`(min-width: ${largeBreakpoint})`);
 
   useEffect(() => {
     if (!mainSidebar) return;
-
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         setMainSidebarWidth(entry.contentRect.width);
       }
     });
-
     resizeObserver.observe(mainSidebar);
-
     return () => {
       resizeObserver.disconnect();
     };
@@ -62,22 +54,44 @@ function PublicLayout() {
         <Header />
         <main className="flex min-w-0 flex-1">
           {isSidebarOpen && (
+            <>
+              {/* Placeholder to maintain space in the flow */}
+              <div
+                style={{
+                  width: `${mainSidebarWidth}px`,
+                  flexGrow: 0,
+                  flexShrink: 0,
+                }}
+                className="min-w-0"
+              />
+              {/* Fixed sidebar */}
+              <div
+                ref={(node) => setMainSidebar(node)}
+                id="main-sidebar-desktop"
+                className={cn(
+                  "fixed top-[calc(var(--header-height))]",
+                  "flex h-[calc(100dvh-var(--header-height))] flex-col",
+                  "bg-background/80 dark:bg-background/80 min-w-0 backdrop-blur-sm",
+                )}
+                style={{
+                  flexGrow: 0,
+                  flexShrink: 0,
+                }}
+              />
+            </>
+          )}
+          {isSidebarOpen && mainSidebar && isDesktop && (
             <div
-              ref={(node) => setMainSidebar(node)}
-              id="main-sidebar-desktop"
-              className={cn(
-                "sticky top-[calc(var(--header-height))]",
-                "flex h-[calc(100dvh-var(--header-height))] flex-col pr-2",
-                "bg-background/80 dark:bg-background/80 backdrop-blur-sm min-w-0",
-              )}
               style={{
+                width: `${mainSidebarWidth}px`,
                 flexGrow: 0,
-                flexShrink: 0,
+                flexShrink: isSchedulesPage ? 4.5 : 10,
               }}
+              className="min-w-0"
             />
           )}
           <div
-            className="container mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-6xl min-w-0 flex-col"
+            className="xs:px-4 container mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-6xl min-w-0 flex-col px-3"
             style={{
               flexGrow: 0,
               flexShrink: 1,
@@ -90,15 +104,9 @@ function PublicLayout() {
               style={{
                 width: `${mainSidebarWidth}px`,
                 flexGrow: 0,
-                flexShrink: isSchedulesPage
-                  ? 2.4
-                  : isBeyondDesktop
-                    ? 0
-                    : isDesktop
-                      ? 1
-                      : undefined,
+                flexShrink: isSchedulesPage ? 4.5 : 0,
               }}
-              className="sticky top-[calc(var(--header-height))] min-w-0 h-[calc(100dvh-var(--header-height))]"
+              className="min-w-0"
             />
           )}
         </main>
