@@ -25,7 +25,7 @@ const CheckboxField: FC<
   return (
     <FormItem
       className={cn(
-        "my-2 flex flex-col items-center justify-center gap-y-0.5 sm:gap-y-1",
+        "my-2 flex flex-col items-start justify-center gap-y-0.5 sm:gap-y-1",
         className,
       )}
     >

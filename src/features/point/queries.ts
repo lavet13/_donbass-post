@@ -83,14 +83,26 @@ async function fetchListPoints() {
   const mobilePoints = points.filter((point) => point.mobilePoint);
   const staticPoints = points.filter((point) => !point.mobilePoint);
 
+  const mobile = mobilePoints.map(({ id, name, ...otherProps }) => ({
+    value: id,
+    label: name,
+    ...otherProps,
+  }));
+
+  const stationary = staticPoints.map(({ id, name, ...otherProps }) => ({
+    value: id,
+    label: name,
+    ...otherProps,
+  }));
+
   return [
     {
       label: "Стационарные отделения",
-      items: staticPoints,
+      items: stationary,
     },
     {
       label: "Мобильные отделения",
-      items: mobilePoints,
+      items: mobile,
     },
   ];
 }

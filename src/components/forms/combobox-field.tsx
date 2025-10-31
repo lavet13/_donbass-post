@@ -186,7 +186,7 @@ const ComboboxGroupField: FC<
             </span>
           </Tooltip>
         )}
-        <ChevronsUpDownIcon className="pointer-events-none ml-auto" />
+        <ChevronsUpDownIcon className="shrink-0 pointer-events-none ml-auto" />
       </Button>
     );
   };

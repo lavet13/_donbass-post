@@ -35,6 +35,12 @@ function PublicLayout() {
     `(min-width: calc(${middleBreakpoint} - 1px))`,
   );
 
+  const extraLargeBreakpoint = styles.getPropertyValue("--breakpoint-2xl");
+  const isBeyondDesktop = useMediaQuery(
+    `(max-width: calc(${extraLargeBreakpoint} - 1px))`,
+  );
+  console.log({ isDesktop, isBeyondDesktop });
+
   useEffect(() => {
     if (!mainSidebar) return;
     const resizeObserver = new ResizeObserver((entries) => {
@@ -80,12 +86,12 @@ function PublicLayout() {
               />
             </>
           )}
-          {isSidebarOpen && mainSidebar && isSchedulesPage && (
+          {isSidebarOpen && mainSidebar && isDesktop && !isBeyondDesktop && (
             <div
               style={{
                 width: `${mainSidebarWidth}px`,
                 flexGrow: 0,
-                flexShrink: !isDesktop ? 4.5 : 999,
+                flexShrink: isSchedulesPage ? 4.5 : 33,
               }}
               className="min-w-0"
             />

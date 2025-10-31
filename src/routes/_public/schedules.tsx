@@ -69,9 +69,12 @@ export const Route = createFileRoute("/_public/schedules")({
 const SearchPage: FC = () => {
   const styles = getComputedStyle(document.documentElement);
   const largeBreakpoint = styles.getPropertyValue("--breakpoint-lg");
+  const smallBreakpoint = styles.getPropertyValue("--breakpoint-md");
   const isDesktop = useMediaQuery(`(min-width: ${largeBreakpoint})`);
 
-  const { data, isPending, refetch } = usePointListQuery();
+  const isMobile = useMediaQuery(`(max-width: ${smallBreakpoint})`);
+
+  const { data, isPending, refetch, isLoading } = usePointListQuery();
 
   const departmentId = useSearch({
     from: Route.id,
@@ -88,7 +91,7 @@ const SearchPage: FC = () => {
     () =>
       data
         ?.flatMap((departmentType) => departmentType.items)
-        .find((department) => department.id === departmentId),
+        .find((department) => department.value === departmentId),
     [departmentId, data],
   );
 
@@ -118,7 +121,7 @@ const SearchPage: FC = () => {
     },
     onSubmit: async ({ value }) => {
       await navigate({
-        resetScroll: false,
+        resetScroll: true,
         search: (prev) => {
           return {
             ...prev,
@@ -207,131 +210,178 @@ const SearchPage: FC = () => {
   }, [selectedDepartmentRef]);
 
   return (
-    <div className="flex min-h-min w-full flex-1 items-start">
-      <div className="sticky top-[calc(var(--header-height)+1px)] flex min-w-[17rem] flex-col pr-1 lg:min-w-[18rem]">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            void form.handleSubmit();
-          }}
-          className="w-full flex-1 overflow-y-auto"
-        >
-          <form.AppField
-            name="id"
-            children={(field) => {
-              return (
-                <Command shouldFilter={!isPending}>
-                  <CommandInput
-                    inputContainer="bg-background mr-rx-1"
-                    value={query}
-                    onValueChange={handleSearchQuery}
-                    ref={inputRef}
-                    clearButton
-                    placeholder="Найти отделение..."
-                  />
-                  <CommandList
-                    scrollProps={{
-                      type: "hover",
-                    }}
-                    listStyles="pb-rx-9"
-                    className="h-[calc(100svh-var(--header-height)-var(--combobox-input-height))] max-h-max min-h-0"
-                  >
-                    {isPending && (
-                      <CommandLoading label="Загружаем отделения...">
-                        Загружаем отделения...
-                      </CommandLoading>
-                    )}
-                    {!!data?.length && <CommandEmpty>Не найдено</CommandEmpty>}
-                    {!isPending &&
-                      data?.length !== 0 &&
-                      data?.map(({ label, items }, valuesIdx, entries) => (
-                        <Fragment key={valuesIdx}>
-                          <CommandGroup heading={label}>
-                            {items.map(({ id, name }) => (
-                              <CommandItem
-                                ref={(node) => {
-                                  if (id === field.state.value) {
-                                    setSelectedDepartmentRef(node);
-                                  }
-                                }}
-                                title={name}
-                                role="option"
-                                aria-selected={id === field.state.value}
-                                data-status={
-                                  field.state.value === id ? true : undefined
-                                }
-                                value={id as string}
-                                key={id}
-                                onSelect={() => {
-                                  field.handleChange(id);
-                                }}
-                              >
-                                <span
-                                  className={cn(
-                                    id === field.state.value && "font-bold",
-                                  )}
-                                >
-                                  {name}
-                                </span>
-                                <CheckIcon
-                                  className={cn(
-                                    "ml-auto size-4",
-                                    id === field.state.value
-                                      ? "opacity-100"
-                                      : "opacity-0",
-                                  )}
-                                />
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                          {valuesIdx !== entries.length - 1 && (
-                            <CommandSeparator />
-                          )}
-                        </Fragment>
-                      ))}
-
-                    {!data?.length && !isPending && refetch && (
-                      <p className="text-muted-foreground flex flex-col items-center justify-center py-2 text-center text-sm">
-                        Не удалось загрузить отделения
-                        <Button
-                          variant="outline"
-                          radius="full"
-                          size="2"
-                          onClick={refetch as () => void}
-                        >
-                          Повторить запрос
-                        </Button>
-                      </p>
-                    )}
-                  </CommandList>
-                </Command>
-              );
+    <div
+      className={cn(
+        "flex min-h-min w-full flex-1 items-start justify-start",
+        !isDesktop && "flex-col",
+      )}
+    >
+      {!isDesktop && (
+        <div className="bg-background/80 sticky top-[calc(var(--header-height))] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-md backdrop-blur-sm md:px-0">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void form.handleSubmit();
             }}
-          />
-        </form>
-      </div>
+            className="w-full flex-1 overflow-y-auto"
+          >
+            <form.AppField
+              name="id"
+              children={(field) => {
+                return (
+                  <field.ComboboxField
+                    className="rounded-md"
+                    placeholder="Выберите отделение"
+                    loadingMessage="Загружаем отделения"
+                    ariaLabel="Выбрать пункт выдачи из списка"
+                    searchEmptyMessage="Таких отделений нет"
+                    searchInputPlaceholder="Найти отделение..."
+                    refetch={refetch}
+                    isLoading={isLoading}
+                    values={data}
+                  />
+                );
+              }}
+            />
+          </form>
+        </div>
+      )}
+
+      {isDesktop && (
+        <div className="sticky top-[calc(var(--header-height)+1px)] flex min-w-[17rem] flex-col pr-1 lg:min-w-[18rem]">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void form.handleSubmit();
+            }}
+            className="w-full flex-1 overflow-y-auto"
+          >
+            <form.AppField
+              name="id"
+              children={(field) => {
+                return (
+                  <Command shouldFilter={!isPending}>
+                    <CommandInput
+                      inputContainer="bg-background mr-rx-1"
+                      value={query}
+                      onValueChange={handleSearchQuery}
+                      ref={inputRef}
+                      clearButton
+                      placeholder="Найти отделение..."
+                    />
+                    <CommandList
+                      scrollProps={{
+                        type: "hover",
+                      }}
+                      listStyles="pb-rx-9"
+                      className="h-[calc(100dvh-var(--header-height)-var(--combobox-input-height))] max-h-max min-h-0"
+                    >
+                      {isPending && (
+                        <CommandLoading label="Загружаем отделения...">
+                          Загружаем отделения...
+                        </CommandLoading>
+                      )}
+                      {!!data?.length && (
+                        <CommandEmpty>Не найдено</CommandEmpty>
+                      )}
+                      {!isPending &&
+                        data?.length !== 0 &&
+                        data?.map(({ label, items }, valuesIdx, entries) => (
+                          <Fragment key={valuesIdx}>
+                            <CommandGroup heading={label}>
+                              {items.map(({ value, label }) => (
+                                <CommandItem
+                                  ref={(node) => {
+                                    if (value === field.state.value) {
+                                      setSelectedDepartmentRef(node);
+                                    }
+                                  }}
+                                  title={label}
+                                  role="option"
+                                  aria-selected={value === field.state.value}
+                                  data-status={
+                                    field.state.value === value
+                                      ? true
+                                      : undefined
+                                  }
+                                  value={value as string}
+                                  key={value}
+                                  onSelect={() => {
+                                    field.handleChange(value);
+                                  }}
+                                >
+                                  <span
+                                    className={cn(
+                                      value === field.state.value &&
+                                        "font-bold",
+                                    )}
+                                  >
+                                    {label}
+                                  </span>
+                                  <CheckIcon
+                                    className={cn(
+                                      "ml-auto size-4",
+                                      value === field.state.value
+                                        ? "opacity-100"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                            {valuesIdx !== entries.length - 1 && (
+                              <CommandSeparator />
+                            )}
+                          </Fragment>
+                        ))}
+
+                      {!data?.length && !isPending && refetch && (
+                        <p className="text-muted-foreground flex flex-col items-center justify-center py-2 text-center text-sm">
+                          Не удалось загрузить отделения
+                          <Button
+                            variant="outline"
+                            radius="full"
+                            size="2"
+                            onClick={refetch as () => void}
+                          >
+                            Повторить запрос
+                          </Button>
+                        </p>
+                      )}
+                    </CommandList>
+                  </Command>
+                );
+              }}
+            />
+          </form>
+        </div>
+      )}
 
       <div className="h-full w-full">
         <div className="flex items-stretch text-[1.05rem] sm:text-[15px] xl:w-full">
           <div className="flex min-w-0 flex-1 flex-col">
-            <div className="mx-auto flex w-full max-w-3xl min-w-0 flex-1 flex-col gap-8 px-4 py-6 md:px-0 lg:py-8">
+            <div className="mx-auto flex w-full max-w-3xl min-w-0 flex-1 flex-col gap-8 px-0 py-6 lg:py-8">
               {!selectedDepartment && (
                 <Card
                   variant="classic"
-                  size="4"
+                  size={isMobile ? "2" : "4"}
                   className="flex min-h-[300px] flex-col items-center justify-center text-center"
                 >
                   <Box pb="6" className="relative">
                     <div className="bg-grayA-2 border-grayA-6 rounded-full border-1 p-6">
-                      <Search size={40} className="text-gray-11" />
+                      <Search
+                        size={40}
+                        className="dark:text-accent-11 text-gray-11"
+                      />
                     </div>
                     <div className="bg-grayA-4 absolute -top-1 -right-1 h-3 w-3 animate-pulse rounded-full" />
                     <div className="bg-grayA-4 absolute -bottom-1 -left-1 h-2 w-2 animate-pulse rounded-full delay-300" />
                   </Box>
 
-                  <Box pb="4">
-                    <TypographyH2 className="text-grayA-12 mb-1 text-3xl font-bold">
+                  <Box pb={isMobile ? "1" : "4"}>
+                    <TypographyH2 className="text-grayA-12 xs:mb-1 mb-0 px-0 text-center text-3xl font-bold">
                       Выберите отделение
                     </TypographyH2>
                   </Box>
@@ -361,7 +411,7 @@ const SearchPage: FC = () => {
               {selectedDepartment && (
                 <div className="space-y-6">
                   {/* Header Section */}
-                  <Card size="3">
+                  <Card size={isMobile ? "2" : "3"}>
                     {/* Large Header Image */}
                     {selectedDepartment.image && (
                       <Inset
@@ -385,7 +435,7 @@ const SearchPage: FC = () => {
                             <button className="group relative h-full w-full cursor-pointer duration-200 hover:scale-105">
                               <img
                                 src={`https://workplace-post.ru/assets/point-image/${selectedDepartment.image}`}
-                                alt={selectedDepartment.name}
+                                alt={selectedDepartment.label}
                                 className="h-80 w-full object-cover transition-all"
                               />
                               <div className="from-accentA-9/40 via-accentA-9/20 absolute inset-0 bg-gradient-to-t to-transparent" />
@@ -415,7 +465,7 @@ const SearchPage: FC = () => {
                               >
                                 <img
                                   src={`https://workplace-post.ru/assets/point-image/${selectedDepartment.image}`}
-                                  alt={selectedDepartment.name}
+                                  alt={selectedDepartment.label}
                                   className="h-full w-full object-cover"
                                 />
                               </Inset>
@@ -430,7 +480,7 @@ const SearchPage: FC = () => {
                                 as="h3"
                                 weight="bold"
                               >
-                                {selectedDepartment.name}
+                                {selectedDepartment.label}
                               </Heading>
                               <Text as="p" size="3">
                                 {selectedDepartment.address}
@@ -451,13 +501,13 @@ const SearchPage: FC = () => {
                       </Inset>
                     )}
 
-                    <div className="flex items-start gap-4">
+                    <div className="xs:flex-row xs:items-start flex flex-col items-stretch gap-4">
                       {/* Small Department Image (fallback when no main image) */}
                       {!selectedDepartment.image && (
                         <div className="flex-shrink-0">
                           <Card
-                            size="2"
-                            className="h-24 w-24 overflow-hidden"
+                            size={isMobile ? "2" : "3"}
+                            className="xs:h-24 xs:w-24 h-full w-full overflow-hidden"
                             title="Нет изображения"
                           >
                             <div className="flex h-full w-full flex-col items-center justify-center space-y-1.5">
@@ -477,7 +527,7 @@ const SearchPage: FC = () => {
 
                       {/* Department Info */}
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="xs:flex-row flex flex-col-reverse items-start justify-between gap-4">
                           <div className="min-w-0">
                             <div className="mb-3 flex flex-col space-y-2 sm:mb-4">
                               <Heading
@@ -486,7 +536,7 @@ const SearchPage: FC = () => {
                                 weight="bold"
                                 trim="end"
                               >
-                                {selectedDepartment.name}
+                                {selectedDepartment.label}
                               </Heading>
                               {selectedDepartment.shortName && (
                                 <Text color="gray" as="p" trim="start">
@@ -527,12 +577,12 @@ const SearchPage: FC = () => {
                           </div>
 
                           {/* Status Badges */}
-                          <div className="flex min-w-fit flex-col gap-0.5">
+                          <div className="xs:min-w-fit xs:w-auto flex w-full flex-col gap-0.5">
                             {selectedDepartment.temporarilyClosed ? (
                               <Flex
                                 align="center"
                                 gap="2"
-                                className="bg-grayA-1 text-gray-11 rounded-full px-3 py-1.5"
+                                className="bg-grayA-1 text-gray-11 justify-center rounded-full px-3 py-1.5"
                               >
                                 <AlertCircle className="shrink-0" size={16} />
                                 <Text weight="medium" size="1">
@@ -543,7 +593,7 @@ const SearchPage: FC = () => {
                               <Flex
                                 align="center"
                                 gap="2"
-                                className="text-accent-11 bg-accentA-3 rounded-full px-3 py-1.5"
+                                className="text-accent-11 bg-accentA-3 justify-center rounded-full px-3 py-1.5"
                               >
                                 <CheckCircle className="shrink-0" size={16} />
                                 <Text weight="medium" size="1">
@@ -553,7 +603,7 @@ const SearchPage: FC = () => {
                             ) : (
                               <Flex
                                 align="center"
-                                className="bg-grayA-1 text-gray-11 gap-1.5 rounded-full px-3 py-1.5"
+                                className="bg-grayA-1 text-gray-11 justify-center gap-1.5 rounded-full px-3 py-1.5"
                               >
                                 <Clock className="shrink-0" size={16} />
                                 <Text weight="medium" size="1">
@@ -565,7 +615,7 @@ const SearchPage: FC = () => {
                             {selectedDepartment.mobilePoint && (
                               <Flex
                                 align="center"
-                                className="bg-grayA-2 text-gray-12 gap-1.5 rounded-full px-3 py-1.5"
+                                className="bg-grayA-2 text-gray-12 justify-center gap-1.5 rounded-full px-3 py-1.5"
                               >
                                 <Truck size={12} />
                                 <Text weight="medium" size="1">
@@ -597,10 +647,14 @@ const SearchPage: FC = () => {
 
                   {/* Schedule Section */}
                   {!selectedDepartment.mobilePoint && (
-                    <Card size="3">
+                    <Card size={isMobile ? "2" : "3"}>
                       <div className="text-card-foreground mb-4 flex items-center gap-2">
-                        <Clock size={22} />
-                        <Heading weight="bold" as="h2" size="6">
+                        <Clock className="xs:size-6 size-5" />
+                        <Heading
+                          className="xs:text-2xl text-lg"
+                          weight="bold"
+                          as="h2"
+                        >
                           Расписание работы
                         </Heading>
                       </div>
@@ -636,14 +690,15 @@ const SearchPage: FC = () => {
                             <Card
                               key={key}
                               className={cn(
-                                "flex items-center justify-between rounded-md px-4 py-2",
+                                "xs:px-4 flex items-center justify-between rounded-md px-2 py-2",
                                 isToday &&
                                   "[&.rt-Card:where(.rt-variant-surface)::after]:[box-shadow:0_0_0_1px_color-mix(in_oklab,_var(--accent-a5),_var(--gray-5)_25%)]",
                                 !isToday && "",
                               )}
                             >
                               <div className="flex items-center gap-3">
-                                <span
+                                <Text
+                                  size={isMobile ? "2" : "3"}
                                   className={cn(
                                     "font-medium",
                                     isToday && "text-accent-11",
@@ -651,7 +706,7 @@ const SearchPage: FC = () => {
                                   )}
                                 >
                                   {label}
-                                </span>
+                                </Text>
                                 {isToday && (
                                   <Text
                                     size="1"
@@ -663,8 +718,9 @@ const SearchPage: FC = () => {
                                 )}
                               </div>
                               <Text
+                                size={isMobile ? "1" : "3"}
                                 className={cn(
-                                  "text-grayA-11 text-sm font-normal",
+                                  "text-grayA-11 font-normal",
                                   isToday && "text-accent-11 font-medium",
                                 )}
                               >
@@ -679,15 +735,19 @@ const SearchPage: FC = () => {
 
                   {/* Map Section */}
                   {selectedDepartment.map && (
-                    <Card size="3">
+                    <Card size={isMobile ? "2" : "3"}>
                       <Flex align="center" gap="2" className="mb-4">
-                        <MapPinned size={22} />
-                        <Heading as="h2" weight="bold" size="6">
+                        <MapPinned className="xs:size-5 size-4.5" />
+                        <Heading
+                          className="xs:text-2xl text-lg"
+                          as="h2"
+                          weight="bold"
+                        >
                           Расположение на карте
                         </Heading>
                       </Flex>
                       <Card
-                        size="4"
+                        size={isMobile ? "2" : "3"}
                         className="bg-grayA-2 flex min-h-[300px] items-center justify-center overflow-hidden"
                       >
                         {/* You can replace this with actual map implementation */}
