@@ -46,7 +46,7 @@ export const Footer: FC = () => {
       )}
       <footer
         className={cn(
-          "bg-gray-2 border-grayA-6 flex flex-1 items-center justify-center rounded-t-2xl border-x border-t pt-6 pb-2",
+          "bg-gray-2 border-grayA-6 flex flex-1 items-center justify-center rounded-t-lg xs:rounded-t-xl border-x border-t pt-6 pb-2",
         )}
       >
         <Text>&copy; {currentYear} - Наша Почта</Text>

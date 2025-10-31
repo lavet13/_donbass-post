@@ -325,12 +325,7 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
       {...props}
     >
       {Icon && (
-        <Icon
-          {...(isActive
-            ? { strokeWidth: 3 }
-            : {})}
-          {...iconProps}
-        />
+        <Icon {...iconProps} />
       )}
       <Slottable>{props.children}</Slottable>
       {isActive && <BorderBeam />}
