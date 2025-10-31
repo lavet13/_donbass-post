@@ -9,7 +9,6 @@ import {
 import { Link } from "@tanstack/react-router";
 import { Menu, X, type LucideProps } from "lucide-react";
 import {
-  isValidElement,
   useCallback,
   useEffect,
   useRef,
