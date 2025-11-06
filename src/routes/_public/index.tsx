@@ -8,7 +8,10 @@ export const Route = createFileRoute("/_public/")({
 function IndexComponent() {
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <Text>Hello client</Text>
+      <Text>
+        Hello client {process.env.GITHUB_PAGES}{" "}
+        {process.env.GITHUB_PAGES === "true"}
+      </Text>
     </div>
   );
 }
