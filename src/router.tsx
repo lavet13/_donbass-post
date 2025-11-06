@@ -31,7 +31,7 @@ function createRouter() {
     // This will ensure that the loader is always called when the route is preloaded or visited
     defaultPreloadStaleTime: 0, // @see (link: https://tanstack.com/router/latest/docs/framework/react/guide/preloading#preloading-with-external-libraries)
 
-    basepath: process.env.GITHUB_PAGES === "true" ? "/_donbass-post/" : "/user/", // @see (link: https://tanstack.com/router/v1/docs/framework/react/api/router/RouterOptionsType#basepath-property)
+    basepath: import.meta.env.VITE_GITHUB_PAGES === "true" ? "/_donbass-post/" : "/user/", // @see (link: https://tanstack.com/router/v1/docs/framework/react/api/router/RouterOptionsType#basepath-property)
 
     // Optionally, we can use `Wrap` to wrap our router in the loader client provider
     Wrap: ({ children }) => {
