@@ -80,16 +80,6 @@ function PublicLayout() {
               />
             </>
           )}
-          {isSidebarOpen && mainSidebar && isSchedulesPage && (
-            <div
-              style={{
-                width: `${mainSidebarWidth}px`,
-                flexGrow: 0,
-                flexShrink: !isDesktop ? 4.5 : 999,
-              }}
-              className="min-w-0"
-            />
-          )}
           <div
             className="xs:px-4 container mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-6xl min-w-0 flex-col px-3"
             style={{

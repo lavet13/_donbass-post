@@ -435,7 +435,6 @@ const MainSidebarContent: FC<ComponentProps<typeof ScrollArea>> = ({
 MainSidebarContent.displayName = MAIN_SIDEBAR_CONTENT_NAME;
 
 const Logo: FC<ComponentProps<typeof Link>> = ({ className, ...props }) => {
-  console.log(import.meta.env.BASE_URL);
   return (
     <Link
       className={cn(

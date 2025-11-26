@@ -217,7 +217,7 @@ const SearchPage: FC = () => {
       )}
     >
       {!isDesktop && (
-        <div className="bg-background/80 sticky top-[calc(var(--header-height))] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-md backdrop-blur-sm md:px-0">
+        <div className="bg-background/80 sticky top-[calc(var(--header-height)+3px)] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-full backdrop-blur-sm md:px-0 dark:shadow-[0_-6px_7px_0_var(--accent-a3)] shadow-[0_-6px_12px_0_var(--accent-a3)]">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -231,8 +231,8 @@ const SearchPage: FC = () => {
               children={(field) => {
                 return (
                   <field.ComboboxField
-                    className="rounded-md"
-                    placeholder="Выберите отделение"
+                    className="rounded-full"
+                    placeholder="Найти отделение..."
                     loadingMessage="Загружаем отделения"
                     ariaLabel="Выбрать пункт выдачи из списка"
                     searchEmptyMessage="Таких отделений нет"
@@ -240,6 +240,8 @@ const SearchPage: FC = () => {
                     refetch={refetch}
                     isLoading={isLoading}
                     values={data}
+                    value={query}
+                    onValueChange={handleSearchQuery}
                   />
                 );
               }}

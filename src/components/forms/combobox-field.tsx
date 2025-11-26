@@ -44,6 +44,8 @@ const ComboboxGroupField: FC<
     searchEmptyMessage?: string;
     searchInputPlaceholder?: string;
     searchClearButtonTooltipMessage?: string;
+    value?: string;
+    onValueChange: ((search: string) => void) | undefined;
     isLoading?: boolean;
     values?: { label: string; items: EntryType[] }[];
     placeholder: string;
@@ -71,6 +73,8 @@ const ComboboxGroupField: FC<
   "aria-label": ariaLabelProp,
   ariaLabel,
   modal = false,
+  value,
+  onValueChange,
   ...props
 }) => {
   const {
@@ -202,6 +206,8 @@ const ComboboxGroupField: FC<
           {...(modal ? { inputContainer: "bg-gray-2 rounded-t-sm" } : {})}
           shouldFocusOnMount={shouldFocusOnMount}
           shouldScroll
+          value={value}
+          onValueChange={onValueChange}
           clearButton
           clearButtonTooltipMessage={searchClearButtonTooltipMessage}
           placeholder={searchInputPlaceholder}
