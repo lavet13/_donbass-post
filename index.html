@@ -7,6 +7,16 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"
     />
+    <!-- Github Pages workaround -->
+    <script>
+      const redirect = sessionStorage.getItem("redirect");
+
+      if (redirect) {
+        sessionStorage.removeItem("redirect");
+        window.history.replaceState(null, null, redirect);
+      }
+    </script>
+    <!-- Github Pages workaround -->
     <title>Наша Почта</title>
   </head>
   <body>
