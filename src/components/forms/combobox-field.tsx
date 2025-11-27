@@ -45,7 +45,7 @@ const ComboboxGroupField: FC<
     searchInputPlaceholder?: string;
     searchClearButtonTooltipMessage?: string;
     value?: string;
-    onValueChange: ((search: string) => void) | undefined;
+    onValueChange?: ((search: string) => void) | undefined;
     isLoading?: boolean;
     values?: { label: string; items: EntryType[] }[];
     placeholder: string;
