@@ -56,9 +56,11 @@ const ComboboxGroupField: FC<
     refetchErrorMessage?: string;
     refetch?: () => void;
     ariaLabel?: string;
+    popoverStyles?: string;
   }
 > = ({
   className,
+  popoverStyles,
   placeholder,
   label,
   searchEmptyMessage = "Не найдено.",
@@ -331,7 +333,7 @@ const ComboboxGroupField: FC<
             role="listbox"
             sideOffset={2}
             style={{ width: `${bounds?.width}px` }}
-            className="rounded-sm p-0"
+            className={cn("rounded-sm p-0", popoverStyles)}
           >
             {renderContent()}
           </Popover.Content>

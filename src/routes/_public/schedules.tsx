@@ -232,6 +232,7 @@ const SearchPage: FC = () => {
                 return (
                   <field.ComboboxField
                     className="rounded-full"
+                    popoverStyles="rounded-lg"
                     placeholder="Найти отделение..."
                     loadingMessage="Загружаем отделения"
                     ariaLabel="Выбрать пункт выдачи из списка"

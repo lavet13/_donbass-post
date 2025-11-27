@@ -81,7 +81,7 @@ function PublicLayout() {
             </>
           )}
           <div
-            className="xs:px-4 container mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-6xl min-w-0 flex-col px-3"
+            className="xs:px-4 container mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-7xl min-w-0 flex-col px-3"
             style={{
               flexGrow: 0,
               flexShrink: 1,
