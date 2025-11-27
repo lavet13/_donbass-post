@@ -217,7 +217,7 @@ const SearchPage: FC = () => {
       )}
     >
       {!isDesktop && (
-        <div className="bg-background/80 sticky top-[calc(var(--header-height)+3px)] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-full backdrop-blur-sm md:px-0 dark:shadow-[0_-6px_7px_0_var(--accent-a3)] shadow-[0_-6px_12px_0_var(--accent-a3)]">
+        <div className="bg-background/80 sticky top-[calc(var(--header-height)+3px)] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-full backdrop-blur-sm md:px-0 shadow-[0_-2px_10px_2px_var(--accent-a3)]">
           <form
             onSubmit={(e) => {
               e.preventDefault();
