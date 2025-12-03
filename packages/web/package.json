@@ -16,7 +16,7 @@
     "@radix-ui/themes": "^3.2.1",
     "@tailwindcss/vite": "^4.1.13",
     "@tanem/react-nprogress": "^5.0.55",
-    "@tanstack/react-form": "^1.27.0",
+    "@tanstack/react-form": "^1.23.0",
     "@tanstack/react-query": "^5.90.1",
     "@tanstack/react-query-devtools": "^5.90.1",
     "@tanstack/react-router": "^1.131.50",

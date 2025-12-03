@@ -141,18 +141,18 @@ export const PickUpPointDeliveryOrderForm = withForm({
             };
 
             if (status === 400) {
-              form.fieldInfo["sender.pointFrom"]?.instance?.setErrorMap({
-                onChange: errors["pointFrom"] && russianFieldNames["pointFrom"],
-              });
-              form.fieldInfo["recipient.pointTo"]?.instance?.setErrorMap({
-                onChange: errors["pointTo"] && russianFieldNames["pointTo"],
-              });
-              form.fieldInfo[
-                "recipient.deliveryCompany"
-              ]?.instance?.setErrorMap({
-                onChange:
-                  errors["deliveryCompany"] &&
-                  russianFieldNames["deliveryCompany"],
+              form.setErrorMap({
+                onChange: {
+                  fields: {
+                    "sender.pointFrom":
+                      errors["pointFrom"] && russianFieldNames["pointFrom"],
+                    "recipient.pointTo":
+                      errors["pointTo"] && russianFieldNames["pointTo"],
+                    "recipient.deliveryCompany":
+                      errors["deliveryCompany"] &&
+                      russianFieldNames["deliveryCompany"],
+                  },
+                },
               });
 
               const messages = [];
