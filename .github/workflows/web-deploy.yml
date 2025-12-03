@@ -41,7 +41,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build
-        run: yarn build
+        run: yarn workspace @donbass-post/web build
         env:
           VITE_GITHUB_PAGES: true
 
@@ -52,7 +52,7 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           # Upload dist folder
-          path: './dist'
+          path: './packages/web/dist'
 
       - name: Deploy to GitHub Pages
         id: deployment
