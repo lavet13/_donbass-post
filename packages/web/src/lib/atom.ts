@@ -1,4 +1,4 @@
-import type { CookieAttributes } from "node_modules/@types/js-cookie";
+import type { CookieAttributes } from "js-cookie";
 import Cookies from "js-cookie";
 import { atomWithStorage } from "jotai/utils";
 

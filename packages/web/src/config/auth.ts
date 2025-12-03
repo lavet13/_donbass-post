@@ -1,4 +1,4 @@
-import type { CookieAttributes } from "node_modules/@types/js-cookie";
+import type { CookieAttributes } from "js-cookie";
 
 /**
  * Authentication configuration object containing all auth-related settings

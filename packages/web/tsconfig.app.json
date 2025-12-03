@@ -34,12 +34,15 @@
         "./src/*"
       ],
       "ymaps3": [
-        "./node_modules/@yandex/ymaps3-types"
+        "../../node_modules/@yandex/ymaps3-types"
+      ],
+      "js-cookie": [
+        "../../node_modules/@types/js-cookie"
       ]
     },
     "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/@yandex/ymaps3-types"
+      "../../node_modules/@types",
+      "../../node_modules/@yandex/ymaps3-types"
     ]
   },
   "include": [
