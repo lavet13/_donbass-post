@@ -67,6 +67,8 @@ export default defineConfig({
             "@tanstack/react-form-devtools",
           ],
 
+          devtools: ["@tanstack/react-devtools"],
+
           // Styling and class utilities
           styling: ["class-variance-authority", "tailwind-merge", "clsx"],
 
