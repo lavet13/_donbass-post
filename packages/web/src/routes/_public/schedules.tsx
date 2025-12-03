@@ -217,7 +217,7 @@ const SearchPage: FC = () => {
       )}
     >
       {!isDesktop && (
-        <div className="bg-background/80 sticky top-[calc(var(--header-height)+3px)] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-full backdrop-blur-sm md:px-0 shadow-[0_-2px_10px_2px_var(--accent-a3)]">
+        <div className="bg-background/80 sticky top-[calc(var(--header-height)+3px)] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-full shadow-[0_2px_6px_2px_var(--gray-a3)] backdrop-blur-sm md:px-0">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -507,7 +507,7 @@ const SearchPage: FC = () => {
                     <div className="xs:flex-row xs:items-start flex flex-col items-stretch gap-4">
                       {/* Small Department Image (fallback when no main image) */}
                       {!selectedDepartment.image && (
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <Card
                             size={isMobile ? "2" : "3"}
                             className="xs:h-24 xs:w-24 h-full w-full overflow-hidden"
