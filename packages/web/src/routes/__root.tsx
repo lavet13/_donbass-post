@@ -10,6 +10,8 @@ import type { QueryClient } from "@tanstack/react-query";
 import type { useAuth } from "@/hooks/use-auth";
 import { Fragment } from "react/jsx-runtime";
 import { NProgress } from "@/components/nprogress";
+import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
 
 type MyRouterContext = {
   queryClient: QueryClient;
@@ -28,7 +30,11 @@ function RootComponent() {
       <Outlet />
       <Scripts />
       <TanStackRouterDevtools position="bottom-right" initialIsOpen={false} />
-      <ReactQueryDevtools initialIsOpen={false} />
+      <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
+      <TanStackDevtools
+        plugins={[formDevtoolsPlugin()]}
+        eventBusConfig={{ debug: true }}
+      />
     </Fragment>
   );
 }

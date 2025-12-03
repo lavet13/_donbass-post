@@ -61,7 +61,11 @@ export default defineConfig({
           ],
 
           // Form validation and schema
-          form: ["zod", "@tanstack/react-form"],
+          form: [
+            "zod",
+            "@tanstack/react-form",
+            "@tanstack/react-form-devtools",
+          ],
 
           // Styling and class utilities
           styling: ["class-variance-authority", "tailwind-merge", "clsx"],
