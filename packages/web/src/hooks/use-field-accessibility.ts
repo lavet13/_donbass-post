@@ -1,5 +1,6 @@
-import { useId } from "react";
+import { useEffect, useId } from "react";
 import { useFieldContext } from "./form-context";
+import { isFilled } from "@/lib/utils";
 
 type UseFieldAccessibilityProps = {
   label?: string;
@@ -24,6 +25,22 @@ export const useFieldAccessibility = <T extends string | number | boolean>({
   const ariaDescribedBy = error
     ? `${formDescriptionId} ${formMessageId}`
     : `${formDescriptionId}`;
+
+  useEffect(() => {
+    if (isFilled(field.state.value)) {
+      // revalidate the field(essentially trigger the error)
+      field.validate("change");
+    }
+
+    return () => {
+      field.form.setFieldMeta(field.name, (prev) => ({
+        ...prev,
+        errors: [],
+        errorMap: {},
+      }));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     field,

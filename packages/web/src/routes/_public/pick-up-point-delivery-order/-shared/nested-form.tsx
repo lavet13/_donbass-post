@@ -125,63 +125,61 @@ export const PickUpPointDeliveryOrderForm = withForm({
     const isMobile = useMediaQuery(`(max-width: ${smBreakpoint})`);
 
     useEffect(() => {
-      if (isError) {
-        if (isAxiosError(error)) {
-          if (error.response) {
-            const status = error.response.status;
-            const errors = error.response?.data.message[0] as unknown as Record<
-              string,
-              string
-            >;
+      if (isError && isAxiosError(error)) {
+        if (error.response) {
+          const status = error.response.status;
+          const errors = error.response?.data.message[0] as unknown as Record<
+            string,
+            string
+          >;
 
-            const russianFieldNames: Record<string, string> = {
-              pointFrom: "Населенный пункт отправителя должен быть заполнен!",
-              pointTo: "Населенный пункт получателя должен быть заполнен!",
-              deliveryCompany: "Транспортная компания должна быть заполнена!",
-            };
+          const russianFieldNames: Record<string, string> = {
+            pointFrom: "Населенный пункт отправителя должен быть заполнен!",
+            pointTo: "Населенный пункт получателя должен быть заполнен!",
+            deliveryCompany: "Транспортная компания должна быть заполнена!",
+          };
 
-            if (status === 400) {
-              form.setErrorMap({
-                onChange: {
-                  fields: {
-                    "sender.pointFrom":
-                      errors["pointFrom"] && russianFieldNames["pointFrom"],
-                    "recipient.pointTo":
-                      errors["pointTo"] && russianFieldNames["pointTo"],
-                    "recipient.deliveryCompany":
-                      errors["deliveryCompany"] &&
-                      russianFieldNames["deliveryCompany"],
-                  },
+          if (status === 400) {
+            form.setErrorMap({
+              onChange: {
+                fields: {
+                  "sender.pointFrom":
+                    errors["pointFrom"] && russianFieldNames["pointFrom"],
+                  "recipient.pointTo":
+                    errors["pointTo"] && russianFieldNames["pointTo"],
+                  "recipient.deliveryCompany":
+                    errors["deliveryCompany"] &&
+                    russianFieldNames["deliveryCompany"],
                 },
-              });
+              },
+            });
 
-              const messages = [];
-              for (const errorName in errors) {
-                const message = russianFieldNames[errorName];
-                messages.push(`${message}`);
-              }
-
-              sonner({
-                title: "Просчёт стоимости",
-                description: messages.map((message) => (
-                  <Text
-                    key={message}
-                    as="p"
-                    size="1"
-                    className="text-accent-11 mt-1"
-                  >
-                    {message}
-                  </Text>
-                )),
-                button: {
-                  label: "Понятно",
-                },
-              });
+            const messages = [];
+            for (const errorName in errors) {
+              const message = russianFieldNames[errorName];
+              messages.push(`${message}`);
             }
+
+            sonner({
+              title: "Просчёт стоимости",
+              description: messages.map((message) => (
+                <Text
+                  key={message}
+                  as="p"
+                  size="1"
+                  className="text-accent-11 mt-1"
+                >
+                  {message}
+                </Text>
+              )),
+              button: {
+                label: "Понятно",
+              },
+            });
           }
         }
       }
-    }, [form, isError, error]);
+    }, [form, isError, error, calculateParams]);
 
     return (
       <>
@@ -1727,8 +1725,8 @@ export const PickUpPointDeliveryOrderForm = withForm({
               )}
 
             <Separator size="2" className="sm:my-rx-4 my-rx-3 mx-auto" />
-
             <TypographyH3 className="text-primary">Оплата</TypographyH3>
+
             <div className="mb-rx-6 mt-2 flex flex-col gap-x-4 gap-y-2 sm:grid sm:grid-cols-2">
               <form.AppField
                 name="cargoData.shippingPayment"

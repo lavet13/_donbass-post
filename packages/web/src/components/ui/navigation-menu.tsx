@@ -78,7 +78,7 @@ const NavigationMenuViewport: FC<
         className={cn(
           "bg-background relative mt-0 origin-[top_center] overflow-hidden rounded-md",
           "shadow-5 h-[var(--radix-navigation-menu-viewport-height)] w-full min-w-[var(--radix-navigation-menu-viewport-width)]",
-          "[transition:width,height,50ms_ease]",
+          "[transition:width,height,200ms_ease]",
           "data-[state=closed]:animate-scale-out",
           className,
         )}
@@ -104,9 +104,9 @@ const NavigationMenuLink: FC<
       data-slot="navigation-menu-link"
       className={cn(
         "focus-visible:outline-accent-8 block leading-none no-underline select-none focus-visible:outline-[2px] focus-visible:-outline-offset-1",
-        "rounded-sm px-3 py-2",
+        "rounded-sm px-3 py-2 h-full",
         "data-[status=active]:text-accent-11 text-gray-12 hover:bg-accentA-2 active:text-accent-11 active:bg-accentA-3",
-        "data-[status=active]:bg-accentA-3",
+        "data-[status=active]:bg-accentA-3 data-[status=active]:underline underline-offset-4",
         className,
       )}
       {...props}

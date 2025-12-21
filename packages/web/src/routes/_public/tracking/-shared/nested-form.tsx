@@ -66,7 +66,6 @@ export const CargoTrackingForm = withForm({
             children={(field) => (
               <field.TextField
                 className="w-full"
-                shouldSelect
                 rightElement={
                   !!field.state.value.length && (
                     <TextField.Slot side="right">

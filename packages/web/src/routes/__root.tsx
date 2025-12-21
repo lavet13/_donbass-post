@@ -30,10 +30,11 @@ function RootComponent() {
       <Outlet />
       <Scripts />
       <TanStackRouterDevtools position="bottom-right" initialIsOpen={false} />
-      <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
+      <ReactQueryDevtools initialIsOpen={false} />
+
+      {/* To open formDevtools use hotkey Shift + A */}
       <TanStackDevtools
         plugins={[formDevtoolsPlugin()]}
-        eventBusConfig={{ debug: true }}
       />
     </Fragment>
   );

@@ -18,6 +18,7 @@ import { Route as AuthenticatedDashboardRouteRouteImport } from './routes/_authe
 import { Route as PublicTrackingIndexRouteImport } from './routes/_public/tracking/index'
 import { Route as PublicShopCostCalculationOrderIndexRouteImport } from './routes/_public/shop-cost-calculation-order/index'
 import { Route as PublicPickUpPointDeliveryOrderIndexRouteImport } from './routes/_public/pick-up-point-delivery-order/index'
+import { Route as PublicOnlinePickupRfIndexRouteImport } from './routes/_public/online-pickup-rf/index'
 import { Route as AuthenticatedDashboardRequestsIndexRouteImport } from './routes/_authenticated/dashboard/requests/index'
 import { Route as AuthenticatedDashboardRequestsShopCostCalculationOrderRouteImport } from './routes/_authenticated/dashboard/requests/shop-cost-calculation-order'
 import { Route as AuthenticatedDashboardRequestsPickUpPointDeliveryOrderRouteImport } from './routes/_authenticated/dashboard/requests/pick-up-point-delivery-order'
@@ -68,6 +69,12 @@ const PublicPickUpPointDeliveryOrderIndexRoute =
     path: '/pick-up-point-delivery-order/',
     getParentRoute: () => PublicRouteRoute,
   } as any)
+const PublicOnlinePickupRfIndexRoute =
+  PublicOnlinePickupRfIndexRouteImport.update({
+    id: '/online-pickup-rf/',
+    path: '/online-pickup-rf/',
+    getParentRoute: () => PublicRouteRoute,
+  } as any)
 const AuthenticatedDashboardRequestsIndexRoute =
   AuthenticatedDashboardRequestsIndexRouteImport.update({
     id: '/requests/',
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof PublicAuthRoute
   '/schedules': typeof PublicSchedulesRoute
   '/': typeof PublicIndexRoute
+  '/online-pickup-rf': typeof PublicOnlinePickupRfIndexRoute
   '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderIndexRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderIndexRoute
   '/tracking': typeof PublicTrackingIndexRoute
@@ -104,6 +112,7 @@ export interface FileRoutesByTo {
   '/auth': typeof PublicAuthRoute
   '/schedules': typeof PublicSchedulesRoute
   '/': typeof PublicIndexRoute
+  '/online-pickup-rf': typeof PublicOnlinePickupRfIndexRoute
   '/pick-up-point-delivery-order': typeof PublicPickUpPointDeliveryOrderIndexRoute
   '/shop-cost-calculation-order': typeof PublicShopCostCalculationOrderIndexRoute
   '/tracking': typeof PublicTrackingIndexRoute
@@ -119,6 +128,7 @@ export interface FileRoutesById {
   '/_public/auth': typeof PublicAuthRoute
   '/_public/schedules': typeof PublicSchedulesRoute
   '/_public/': typeof PublicIndexRoute
+  '/_public/online-pickup-rf/': typeof PublicOnlinePickupRfIndexRoute
   '/_public/pick-up-point-delivery-order/': typeof PublicPickUpPointDeliveryOrderIndexRoute
   '/_public/shop-cost-calculation-order/': typeof PublicShopCostCalculationOrderIndexRoute
   '/_public/tracking/': typeof PublicTrackingIndexRoute
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/schedules'
     | '/'
+    | '/online-pickup-rf'
     | '/pick-up-point-delivery-order'
     | '/shop-cost-calculation-order'
     | '/tracking'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/schedules'
     | '/'
+    | '/online-pickup-rf'
     | '/pick-up-point-delivery-order'
     | '/shop-cost-calculation-order'
     | '/tracking'
@@ -159,6 +171,7 @@ export interface FileRouteTypes {
     | '/_public/auth'
     | '/_public/schedules'
     | '/_public/'
+    | '/_public/online-pickup-rf/'
     | '/_public/pick-up-point-delivery-order/'
     | '/_public/shop-cost-calculation-order/'
     | '/_public/tracking/'
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicPickUpPointDeliveryOrderIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/_public/online-pickup-rf/': {
+      id: '/_public/online-pickup-rf/'
+      path: '/online-pickup-rf'
+      fullPath: '/online-pickup-rf'
+      preLoaderRoute: typeof PublicOnlinePickupRfIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
     '/_authenticated/dashboard/requests/': {
       id: '/_authenticated/dashboard/requests/'
       path: '/requests'
@@ -298,6 +318,7 @@ interface PublicRouteRouteChildren {
   PublicAuthRoute: typeof PublicAuthRoute
   PublicSchedulesRoute: typeof PublicSchedulesRoute
   PublicIndexRoute: typeof PublicIndexRoute
+  PublicOnlinePickupRfIndexRoute: typeof PublicOnlinePickupRfIndexRoute
   PublicPickUpPointDeliveryOrderIndexRoute: typeof PublicPickUpPointDeliveryOrderIndexRoute
   PublicShopCostCalculationOrderIndexRoute: typeof PublicShopCostCalculationOrderIndexRoute
   PublicTrackingIndexRoute: typeof PublicTrackingIndexRoute
@@ -307,6 +328,7 @@ const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicAuthRoute: PublicAuthRoute,
   PublicSchedulesRoute: PublicSchedulesRoute,
   PublicIndexRoute: PublicIndexRoute,
+  PublicOnlinePickupRfIndexRoute: PublicOnlinePickupRfIndexRoute,
   PublicPickUpPointDeliveryOrderIndexRoute:
     PublicPickUpPointDeliveryOrderIndexRoute,
   PublicShopCostCalculationOrderIndexRoute:

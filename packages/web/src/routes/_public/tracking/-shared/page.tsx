@@ -2,8 +2,11 @@ import { useAppForm } from "@/hooks/form";
 import { Fragment, useEffect, useState, type FC } from "react";
 import { defaultCargoTrackingOpts } from "@/routes/_public/tracking/-shared/shared-form";
 import { CargoTrackingForm } from "@/routes/_public/tracking/-shared/nested-form";
-import { useCargoTrackingQuery } from "@/features/cargo-tracking/queries";
-import { keepPreviousData } from "@tanstack/react-query";
+import {
+  cargoTrackingKeys,
+  useCargoTrackingQuery,
+} from "@/features/cargo-tracking/queries";
+import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
@@ -46,6 +49,7 @@ import { useTrackingRostovQuery } from "@/features/tracking/queries";
 import { useInternetMagazinePromo } from "@/features/im-tracking/queries";
 
 const TrackingPage: FC = () => {
+  const queryClient = useQueryClient();
   const query =
     useSearch({ from: Route.id, select: (search) => search.q }) ?? "";
   const navigate = useNavigate();
@@ -140,6 +144,14 @@ const TrackingPage: FC = () => {
     (data?.data && data.data.message !== "Нет данных о грузе" && query) ||
     (rostovData && query) ||
     (promoData && query);
+
+  useEffect(() => {
+    if (promoData) {
+      queryClient.ensureQueryData(cargoTrackingKeys.tracking(`${query}//`));
+    }
+
+    // eslint-disable-next-line
+  }, [promoData]);
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-1">

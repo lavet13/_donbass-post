@@ -22,6 +22,10 @@ export const Header: FC = () => {
           label: "Адресный забор/доставка груза в ЛДНР и Запорожье",
           to: "/pick-up-point-delivery-order",
         },
+        {
+          label: "Забор по России доставка в ЛДНР",
+          to: "/online-pickup-rf",
+        },
       ]),
     },
     {

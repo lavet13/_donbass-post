@@ -26,15 +26,13 @@ const SubmitButton: FC<
         state.canSubmit,
         state.isSubmitting,
         state.isDefaultValue,
-        state.values.accepted,
       ]}
-      children={([canSubmit, isSubmitting, isDefaultValue, isAccepted]) => {
-        isAccepted = isAccepted ?? true;
-
+      children={([canSubmit, isSubmitting]) => {
+        console.log({ loading, isSubmitting });
         return (
           <Button
             type="submit"
-            disabled={!canSubmit || isDefaultValue || !isAccepted || loading}
+            disabled={!canSubmit || loading}
             className={cn("", className)}
             variant={variant}
             {...props}

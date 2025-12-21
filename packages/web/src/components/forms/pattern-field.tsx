@@ -5,16 +5,16 @@ import {
   type FocusEvent,
   type InputEvent,
 } from "react";
-import { NumericFormat } from "react-number-format";
-import type { NumericFormatProps } from "react-number-format";
+import { PatternFormat } from "react-number-format";
+import type { PatternFormatProps } from "react-number-format";
 import { Input } from "@/components/ui/input";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { composeEventHandlers } from "@/lib/utils";
 import { isMobile as isMobileDevice } from "react-device-detect";
 
-const NumericField: FC<
-  Omit<NumericFormatProps, "size"> &
+const PatternField: FC<
+  Omit<PatternFormatProps, "size"> &
     Omit<ComponentProps<typeof Input>, "type"> & {
       labelStyles?: string;
       label?: string;
@@ -39,7 +39,7 @@ const NumericField: FC<
     formMessageId,
     formItemId,
     ariaDescribedBy,
-  } = useFieldAccessibility<number>({
+  } = useFieldAccessibility<string>({
     label,
     ariaLabel: ariaLabelProp || ariaLabel,
   });
@@ -91,7 +91,7 @@ const NumericField: FC<
           {label}
         </FormLabel>
       )}
-      <NumericFormat
+      <PatternFormat
         color={color}
         onFocus={composeEventHandlers(props.onFocus, handleSelectText)}
         getInputRef={inputRef}
@@ -102,19 +102,9 @@ const NumericField: FC<
         name={field.name}
         type="tel"
         customInput={Input as any}
-        decimalScale={0}
-        allowNegative={false}
         size={size as any}
-        isAllowed={(values) => {
-          const floatValue = values.floatValue;
-
-          return (
-            typeof floatValue === "undefined" ||
-            (floatValue >= 0 && floatValue <= 999_999_999)
-          );
-        }}
         onValueChange={(values) => {
-          field.handleChange(values.floatValue || 0);
+          field.handleChange(values.formattedValue || "");
         }}
         value={field.state.value || ""}
         {...props}
@@ -124,4 +114,4 @@ const NumericField: FC<
   );
 };
 
-export default NumericField;
+export default PatternField;

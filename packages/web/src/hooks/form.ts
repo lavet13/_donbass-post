@@ -5,6 +5,7 @@ import TextField from "@/components/forms/text-field";
 import PasswordField from "@/components/forms/password-field";
 import CheckboxField from "@/components/forms/checkbox-field";
 import NumericField from "@/components/forms/numeric-field";
+import PatternField from "@/components/forms/pattern-field";
 import PhoneField from "@/components/forms/phone-field";
 import ComboboxField from "@/components/forms/combobox-field";
 import RadioGroupField from "@/components/forms/radio-group-field";
@@ -21,6 +22,7 @@ export const { useAppForm, withForm } = createFormHook({
     TextField,
     CheckboxField,
     NumericField,
+    PatternField,
     PhoneField,
     ComboboxField,
     PasswordField,

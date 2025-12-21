@@ -158,3 +158,49 @@ export function composeEventHandlers<E extends { defaultPrevented: boolean }>(
     }
   };
 }
+
+export function validatePickupTime(
+  value: string | undefined,
+): string | undefined {
+  if (!value) {
+    return "Пожалуйста, укажите время";
+  }
+
+  const match = value.match(/с\s*(\d{2}):(\d{2})\s*до\s*(\d{2}):(\d{2})/);
+
+  if (!match) {
+    return "Заполните до конца";
+  }
+
+  const [, startHour, startMinute, endHour, endMinute] = match;
+
+  const startHourNum = parseInt(startHour);
+  const startMinuteNum = parseInt(startMinute);
+  const endHourNum = parseInt(endHour);
+  const endMinuteNum = parseInt(endMinute);
+
+  // Convert to minutes for comparison
+  const startTotalMinutes = startHourNum * 60 + startMinuteNum;
+  const endTotalMinutes = endHourNum * 60 + endMinuteNum;
+
+  // Check if duration is at least 2 hours (120 minutes)
+  const durationMinutes = Math.abs(endTotalMinutes - startTotalMinutes);
+  if (durationMinutes < 120) {
+    return "Промежуток времени должен быть не менее 2-х часов";
+  }
+
+  return undefined;
+}
+
+/**
+ * Checks if a value is "filled" (has meaningful content)
+ */
+export function isFilled(value: unknown): boolean {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim().length > 0;
+  if (typeof value === "number") return !Number.isNaN(value);
+  if (typeof value === "boolean") return true; // booleans are always "filled"
+  if (Array.isArray(value)) return value.length > 0;
+  if (typeof value === "object") return Object.keys(value).length > 0;
+  return false;
+}

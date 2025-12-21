@@ -88,11 +88,11 @@
     }
   }
 
-  --animate-enter-from-left: enterFromLeft 50ms ease;
-  --animate-enter-from-right: enterFromRight 50ms ease;
-  --animate-exit-to-left: exitToLeft 50ms ease;
-  --animate-exit-to-right: exitToRight 50ms ease;
-  --animate-scale-in: scaleIn 10ms ease;
+  --animate-enter-from-left: enterFromLeft 100ms ease;
+  --animate-enter-from-right: enterFromRight 100ms ease;
+  --animate-exit-to-left: exitToLeft 100ms ease;
+  --animate-exit-to-right: exitToRight 100ms ease;
+  --animate-scale-in: scaleIn 50ms ease;
   --animate-scale-out: scaleOut 50ms ease;
   --animate-border-beam: border-beam 2s linear infinite;
 
