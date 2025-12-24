@@ -79,7 +79,7 @@ const NavigationMenuViewport: FC<
           "bg-background relative mt-0 origin-[top_center] overflow-hidden rounded-md",
           "shadow-5 h-[var(--radix-navigation-menu-viewport-height)] w-full min-w-[var(--radix-navigation-menu-viewport-width)]",
           "[transition:width,height,200ms_ease]",
-          "data-[state=closed]:animate-scale-out",
+          "data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out",
           className,
         )}
         {...props}
