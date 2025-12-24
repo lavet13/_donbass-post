@@ -33,9 +33,9 @@ function RootComponent() {
       <ReactQueryDevtools initialIsOpen={false} />
 
       {/* To open formDevtools use hotkey Shift + A */}
-      <TanStackDevtools
-        plugins={[formDevtoolsPlugin()]}
-      />
+      {import.meta.env.DEV && (
+        <TanStackDevtools plugins={[formDevtoolsPlugin()]} />
+      )}
     </Fragment>
   );
 }
