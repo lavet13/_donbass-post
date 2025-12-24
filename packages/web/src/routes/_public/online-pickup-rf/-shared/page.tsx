@@ -7,7 +7,7 @@ import { OnlinePickupRFForm } from "./nested-form";
 const OnlinePickupRFPage: FC = () => {
   const form = useAppForm({
     ...defaultOnlinePickupRFOpts,
-    onSubmit: async ({ value, formApi, meta }) => {
+    onSubmit: async ({ value, formApi }) => {
       try {
         console.log({ value });
         formApi.reset();

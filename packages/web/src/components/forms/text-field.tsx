@@ -1,4 +1,4 @@
-import { useEffect, type ComponentProps, type FC } from "react";
+import { type ComponentProps, type FC } from "react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { TextField as _TextField } from "@radix-ui/themes";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
