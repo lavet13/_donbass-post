@@ -87,6 +87,16 @@
   --radius-item: max(var(--radius-2), var(--radius-full));
   --radius-full: 9999px;
 
+  --leading-1: var(--line-height-1);
+  --leading-2: var(--line-height-2);
+  --leading-3: var(--line-height-3);
+  --leading-4: var(--line-height-4);
+  --leading-5: var(--line-height-5);
+  --leading-6: var(--line-height-6);
+  --leading-7: var(--line-height-7);
+  --leading-8: var(--line-height-8);
+  --leading-9: var(--line-height-9);
+
   /* shadow */
   --shadow-1: var(--shadow-1);
   --shadow-2: var(--shadow-2);
@@ -521,7 +531,6 @@
 @import "@radix-ui/themes/components.css" layer(radix-themes);
 @import "@radix-ui/themes/utilities.css" layer(radix-themes);
 
-
 @layer base {
   @font-face {
     font-family: Inter;
@@ -588,12 +597,12 @@
     }
   }
 
-  /* @media (max-width: 768px) { */
-  /*   .rt-BaseDialogScrollPadding { */
-  /*     padding: 0; */
-  /*     margin: 0; */
-  /*   } */
-  /* } */
+  @media (max-width: 768px) {
+    .rt-BaseDialogScrollPadding {
+      padding: 0;
+      margin: 0;
+    }
+  }
 
   .rt-TextFieldRoot {
     z-index: 1;
