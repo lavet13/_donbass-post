@@ -1,5 +1,5 @@
 import type { AutoDismissMessageProps } from "@/components/ui/auto-dismiss-message";
-import { formOptions, revalidateLogic } from "@tanstack/react-form";
+import { formOptions } from "@tanstack/react-form";
 import type { ReactNode } from "react";
 
 type FormMeta = {
@@ -13,7 +13,6 @@ const defaultMeta: FormMeta = {};
 
 export const defaultPickUpPointDeliveryOrderOpts = formOptions({
   onSubmitMeta: defaultMeta,
-  validationLogic: revalidateLogic(),
   defaultValues: {
     sender: {
       type: "" as "individual" | "company" | "",
