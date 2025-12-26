@@ -217,7 +217,7 @@ const SearchPage: FC = () => {
       )}
     >
       {!isDesktop && (
-        <div className="bg-background/80 sticky top-[calc(var(--header-height)+3px)] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-full backdrop-blur-sm md:px-0">
+        <div className="bg-background sticky top-[calc(var(--header-height)+3px)] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-full md:px-0">
           <form
             onSubmit={(e) => {
               e.preventDefault();

@@ -151,7 +151,7 @@ const ComboboxGroupField: FC<
         color="gray"
         ref={buttonRef}
         className={cn(
-          `relative justify-between [&_svg]:size-4`,
+          `relative justify-between [&_svg]:size-4 bg-[var(--color-surface)]`,
           `aria-invalid:shadow-[inset_0_0_0_1px_var(--red-8)]`,
           showAddress && selectedEntry?.address && "h-auto py-2",
           open && "bg-grayA-4",

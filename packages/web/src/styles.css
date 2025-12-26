@@ -70,6 +70,49 @@
   --spacing-rx-8: var(--space-8);
   --spacing-rx-9: var(--space-9);
 
+  /* font size */
+  --text-1: var(--font-size-1);
+  --text-2: var(--font-size-2);
+  --text-3: var(--font-size-3);
+  --text-4: var(--font-size-4);
+  --text-5: var(--font-size-5);
+  --text-6: var(--font-size-6);
+  --text-7: var(--font-size-7);
+  --text-8: var(--font-size-8);
+  --text-9: var(--font-size-9);
+
+  /* line height */
+  --text-1--line-height: var(--line-height-1);
+  --text-2--line-height: var(--line-height-2);
+  --text-3--line-height: var(--line-height-3);
+  --text-4--line-height: var(--line-height-4);
+  --text-5--line-height: var(--line-height-5);
+  --text-6--line-height: var(--line-height-6);
+  --text-7--line-height: var(--line-height-7);
+  --text-8--line-height: var(--line-height-8);
+  --text-9--line-height: var(--line-height-9);
+
+  /* letter spacing */
+  --text-1--letter-spacing: var(--letter-spacing-1);
+  --text-2--letter-spacing: var(--letter-spacing-2);
+  --text-3--letter-spacing: var(--letter-spacing-3);
+  --text-4--letter-spacing: var(--letter-spacing-4);
+  --text-5--letter-spacing: var(--letter-spacing-5);
+  --text-6--letter-spacing: var(--letter-spacing-6);
+  --text-7--letter-spacing: var(--letter-spacing-7);
+  --text-8--letter-spacing: var(--letter-spacing-8);
+  --text-9--letter-spacing: var(--letter-spacing-9);
+
+  /* border radius */
+  --radius-1: var(--radius-1);
+  --radius-2: var(--radius-2);
+  --radius-3: var(--radius-3);
+  --radius-4: var(--radius-4);
+  --radius-5: var(--radius-5);
+  --radius-6: var(--radius-6);
+  --radius-item: max(var(--radius-2), var(--radius-full));
+  --radius-full: 9999px;
+
   /* font weight */
   --font-weight-light: 300;
   --font-weight-regular: 400;
