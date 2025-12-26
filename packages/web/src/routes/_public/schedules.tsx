@@ -517,7 +517,7 @@ const SearchPage: FC = () => {
                             <div className="flex h-full w-full flex-col items-center justify-center space-y-1.5">
                               <ImageOff size={40} className="text-primary" />
                               <Text
-                                className="leading-rx-3"
+                                className="leading-3"
                                 align="center"
                                 trim="both"
                                 size="1"
@@ -533,7 +533,7 @@ const SearchPage: FC = () => {
                       <div className="min-w-0 flex-1">
                         <div className="xs:flex-row flex flex-col-reverse items-start justify-between gap-4">
                           <div className="min-w-0">
-                            <div className="mb-3 flex flex-col space-y-2 sm:mb-4">
+                            <div className="mb-4 flex flex-col space-y-2 sm:mb-4">
                               <Heading
                                 as="h1"
                                 size={selectedDepartment.image ? "7" : "6"}
@@ -557,7 +557,7 @@ const SearchPage: FC = () => {
                                 trim="both"
                                 size="2"
                                 as="p"
-                                className="leading-2"
+                                className="leading-4"
                               >
                                 {selectedDepartment.address}
                               </Text>
@@ -569,11 +569,21 @@ const SearchPage: FC = () => {
                                   size={16}
                                   className="shrink-0 self-start"
                                 />
-                                <Text size="2" trim="both" as="p">
+                                <Text
+                                  className="leading-4"
+                                  size="2"
+                                  trim="both"
+                                  as="p"
+                                >
                                   {selectedDepartment.city.name}
                                 </Text>
                                 <Separator orientation="vertical" />
-                                <Text size="2" trim="both" as="p">
+                                <Text
+                                  className="leading-4"
+                                  size="2"
+                                  trim="both"
+                                  as="p"
+                                >
                                   {selectedDepartment.deliveryCompany.name}
                                 </Text>
                               </Flex>
@@ -653,9 +663,9 @@ const SearchPage: FC = () => {
                   {!selectedDepartment.mobilePoint && (
                     <Card size={isMobile ? "2" : "3"}>
                       <div className="text-card-foreground mb-4 flex items-center gap-2">
-                        <Clock className="xs:size-6 size-5" />
+                        <Clock className="xs:size-6 size-5 shrink-0" />
                         <Heading
-                          className="xs:text-2xl text-lg"
+                          className="xs:text-2xl text-lg leading-4"
                           weight="bold"
                           as="h2"
                         >
@@ -700,7 +710,7 @@ const SearchPage: FC = () => {
                                 !isToday && "",
                               )}
                             >
-                              <div className="flex items-center gap-3">
+                              <div className="flex min-w-0 shrink items-center gap-1">
                                 <Text
                                   size={isMobile ? "2" : "3"}
                                   className={cn(
@@ -714,14 +724,16 @@ const SearchPage: FC = () => {
                                 {isToday && (
                                   <Text
                                     size="1"
+                                    truncate
                                     // trim="both"
-                                    className="text-accent-11 bg-accentA-3 rounded-full px-2 py-0.5 font-bold"
+                                    className="hidden min-[320px]:inline-block text-accent-11 bg-accentA-3 rounded-full px-2 py-0.5 font-bold"
                                   >
                                     Сегодня
                                   </Text>
                                 )}
                               </div>
                               <Text
+                                wrap="nowrap"
                                 size={isMobile ? "1" : "3"}
                                 className={cn(
                                   "text-grayA-11 font-normal",
@@ -741,9 +753,9 @@ const SearchPage: FC = () => {
                   {selectedDepartment.map && (
                     <Card size={isMobile ? "2" : "3"}>
                       <Flex align="center" gap="2" className="mb-4">
-                        <MapPinned className="xs:size-5 size-4.5" />
+                        <MapPinned className="xs:size-5 size-4.5 shrink-0" />
                         <Heading
-                          className="xs:text-2xl text-lg"
+                          className="xs:text-2xl text-lg leading-4"
                           as="h2"
                           weight="bold"
                         >
