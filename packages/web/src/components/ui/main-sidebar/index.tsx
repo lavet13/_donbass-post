@@ -313,7 +313,7 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
         "data-[status=active]:bg-accentA-4 relative -mx-3 w-full items-center justify-start gap-1.5 px-3 [&>svg]:size-4.5 [&>svg]:shrink-0",
         context.isTablet &&
           !context.isMobile &&
-          "-mx-2 flex-col rounded-xl px-2 text-[10px]/1 font-bold",
+          "-mx-2 flex-col rounded-xl px-2 text-[12px]/2",
         className,
       )}
       ref={composedRefs}
