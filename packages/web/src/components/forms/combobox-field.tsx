@@ -11,6 +11,7 @@ import {
   VisuallyHidden,
   Popover,
   AccessibleIcon,
+  Text,
 } from "@radix-ui/themes";
 import {
   Command,
@@ -37,7 +38,12 @@ import {
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { isMobile as isMobileDevice, isIOS } from "react-device-detect";
 
-type EntryType = { label: string; value: string | number; name?: string };
+type EntryType = {
+  label: string;
+  value: string | number;
+  name?: string;
+  address?: string;
+};
 
 const ComboboxGroupField: FC<
   ComponentProps<typeof Button> & {
@@ -57,6 +63,7 @@ const ComboboxGroupField: FC<
     refetch?: () => void;
     ariaLabel?: string;
     popoverStyles?: string;
+    showAddress?: boolean;
   }
 > = ({
   className,
@@ -75,6 +82,7 @@ const ComboboxGroupField: FC<
   "aria-label": ariaLabelProp,
   ariaLabel,
   modal = false,
+  showAddress = true,
   value,
   onValueChange,
   ...props
@@ -96,6 +104,8 @@ const ComboboxGroupField: FC<
   const selectedEntry = allEntries.find(
     (entry) => entry.value === field.state.value,
   );
+
+  console.log({ selectedEntry });
 
   const styles = getComputedStyle(document.documentElement);
   const sm = styles.getPropertyValue("--breakpoint-sm"); // 64rem
@@ -143,6 +153,7 @@ const ComboboxGroupField: FC<
         className={cn(
           `relative justify-between [&_svg]:size-4`,
           `aria-invalid:shadow-[inset_0_0_0_1px_var(--red-8)]`,
+          showAddress && selectedEntry?.address && "h-auto py-2",
           open && "bg-grayA-4",
           className,
         )}
@@ -157,42 +168,51 @@ const ComboboxGroupField: FC<
         title={selectedEntry?.label}
         {...props}
       >
-        <div className="flex min-w-0 shrink items-center">
-          {!selectedEntry ? (
-            <span className="truncate text-sm">{placeholder}</span>
-          ) : (
-            <span className="text-grayA-12 truncate text-sm font-medium">
-              {selectedEntry.name || selectedEntry.label}
-            </span>
+        <div className="flex h-full w-full min-w-0 shrink flex-col gap-rx-1">
+          <div className="gap-rx-2 flex min-w-0 flex-1 shrink items-center">
+            <div className="flex min-w-0 shrink items-center">
+              {!selectedEntry ? (
+                <span className="truncate text-sm">{placeholder}</span>
+              ) : (
+                <span className="text-grayA-12 truncate text-sm font-medium">
+                  {selectedEntry.name || selectedEntry.label}
+                </span>
+              )}
+            </div>
+
+            {/* Clear the selected entry */}
+            {selectedEntry && (
+              <Tooltip content={selectedEntryClearTooltipMessage}>
+                <span
+                  tabIndex={0}
+                  className="rt-reset rt-BaseButton rt-r-size-1 rt-variant-ghost rt-IconButton pointer-events-auto shrink-0 rounded-full [&_svg]:size-5!"
+                  aria-label={selectedEntryClearTooltipMessage}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    field.handleChange("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      field.handleChange("");
+                      buttonRef.current?.focus();
+                    }
+                  }}
+                >
+                  <AccessibleIcon label={selectedEntryClearTooltipMessage}>
+                    <X />
+                  </AccessibleIcon>
+                </span>
+              </Tooltip>
+            )}
+          </div>
+          {showAddress && selectedEntry?.address && (
+            <Text className="leading-3" align="left" wrap="pretty" trim="both" mb="1" size="1" color="gray">
+              {selectedEntry.address}
+            </Text>
           )}
         </div>
-
-        {/* Clear the selected entry */}
-        {selectedEntry && (
-          <Tooltip content={selectedEntryClearTooltipMessage}>
-            <span
-              tabIndex={0}
-              className="rt-reset rt-BaseButton rt-r-size-1 rt-variant-ghost rt-IconButton pointer-events-auto shrink-0 rounded-full [&_svg]:size-5!"
-              aria-label={selectedEntryClearTooltipMessage}
-              onClick={(e) => {
-                e.preventDefault();
-                field.handleChange("");
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  field.handleChange("");
-                  buttonRef.current?.focus();
-                }
-              }}
-            >
-              <AccessibleIcon label={selectedEntryClearTooltipMessage}>
-                <X />
-              </AccessibleIcon>
-            </span>
-          </Tooltip>
-        )}
-        <ChevronsUpDownIcon className="shrink-0 pointer-events-none ml-auto" />
+        <ChevronsUpDownIcon className="pointer-events-none ml-auto shrink-0" />
       </Button>
     );
   };

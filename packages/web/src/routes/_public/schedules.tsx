@@ -217,7 +217,7 @@ const SearchPage: FC = () => {
       )}
     >
       {!isDesktop && (
-        <div className="bg-background/80 sticky top-[calc(var(--header-height)+3px)] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-full shadow-[0_2px_6px_2px_var(--gray-a3)] backdrop-blur-sm md:px-0">
+        <div className="bg-background/80 sticky top-[calc(var(--header-height)+3px)] z-1 mx-auto flex w-full max-w-3xl flex-col rounded-full backdrop-blur-sm md:px-0">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -231,6 +231,7 @@ const SearchPage: FC = () => {
               children={(field) => {
                 return (
                   <field.ComboboxField
+                    showAddress={false}
                     className="rounded-full"
                     popoverStyles="rounded-lg"
                     placeholder="Найти отделение..."

@@ -25,7 +25,6 @@ import z from "zod";
 import { Fragment } from "react/jsx-runtime";
 import { Toggle } from "@/components/ui/toggle";
 import { usePointPostQuery } from "@/features/point/queries";
-import { useStore } from "@tanstack/react-form";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -43,9 +42,6 @@ export const OnlinePickupRFForm = withForm({
       refetch: refetchPoints,
     } = usePointPostQuery();
 
-    const errors = useStore(form.store, (state) => state.errorMap);
-    console.log(errors);
-
     return (
       <>
         <div className="xs:h-2 h-4 shrink-0" />
@@ -57,7 +53,7 @@ export const OnlinePickupRFForm = withForm({
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              void form.handleSubmit({});
+              void form.handleSubmit();
             }}
           >
             <TypographyH3 className="sm:mb-1">
@@ -262,7 +258,7 @@ export const OnlinePickupRFForm = withForm({
               <form.AppField
                 name="pickupTime"
                 validators={{
-                  onChange: ({ value }) => {
+                  onSubmit: ({ value }) => {
                     if (!/\d/.test(value)) {
                       return "Заполните поле!";
                     }

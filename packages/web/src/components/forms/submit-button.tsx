@@ -22,13 +22,10 @@ const SubmitButton: FC<
 
   return (
     <form.Subscribe
-      selector={(state) => [
-        state.canSubmit,
-        state.isSubmitting,
-        state.isDefaultValue,
-      ]}
+      selector={(state) => [state.canSubmit, state.isSubmitting]}
       children={([canSubmit, isSubmitting]) => {
         console.log({ loading, isSubmitting });
+
         return (
           <Button
             type="submit"
