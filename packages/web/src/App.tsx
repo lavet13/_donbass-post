@@ -13,7 +13,7 @@ export default function App() {
       appearance={resolvedTheme}
       accentColor="red"
       grayColor="gray"
-      panelBackground="translucent"
+      panelBackground="solid"
     >
       <RouterProvider router={router} context={{ auth }} />
     </Theme>

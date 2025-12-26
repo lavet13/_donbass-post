@@ -105,8 +105,6 @@ const ComboboxGroupField: FC<
     (entry) => entry.value === field.state.value,
   );
 
-  console.log({ selectedEntry });
-
   const styles = getComputedStyle(document.documentElement);
   const sm = styles.getPropertyValue("--breakpoint-sm"); // 64rem
   const isMobile = useMediaQuery(`(max-width: ${sm})`);
