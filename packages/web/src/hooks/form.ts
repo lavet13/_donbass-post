@@ -1,5 +1,6 @@
 import { createFormHook } from "@tanstack/react-form";
 import { fieldContext, formContext } from "@/hooks/form-context";
+import { isIOS } from "react-device-detect";
 
 import TextField from "@/components/forms/text-field";
 import PasswordField from "@/components/forms/password-field";
@@ -13,6 +14,69 @@ import SegmentedControlField from "@/components/forms/segmented-control-field";
 import TextareaField from "@/components/forms/textarea-field";
 import SelectField from "@/components/forms/select-field";
 import SubmitButton from "@/components/forms/submit-button";
+
+const scrollInto = (node: HTMLElement) => {
+  const headerHeightStr = getComputedStyle(document.documentElement)
+    .getPropertyValue("--header-height")
+    .trim();
+  let headerHeightPx;
+  if (headerHeightStr.endsWith("rem")) {
+    const remValue = parseFloat(headerHeightStr);
+    const rootFontSize = parseFloat(
+      getComputedStyle(document.documentElement).fontSize,
+    );
+    headerHeightPx = remValue * rootFontSize;
+  } else {
+    headerHeightPx = parseFloat(headerHeightStr);
+  }
+  const buttonTop = node.getBoundingClientRect().top + window.scrollY;
+  window.scrollTo({
+    top: buttonTop - headerHeightPx - 30,
+    behavior: "smooth",
+  });
+};
+
+export const defaultOnSubmitInvalid = () => {
+  const invalidThing = document.querySelector(`[aria-invalid="true"]`) as
+    | HTMLElement
+    | null
+    | undefined;
+  if (!invalidThing) return;
+
+  if (invalidThing.nodeName === "BUTTON") {
+    const button = invalidThing as HTMLButtonElement;
+    button.click();
+    if (!isIOS) {
+      scrollInto(button);
+    }
+
+    if (button.hasAttribute("data-radix-collection-item")) {
+      setTimeout(() => {
+        const radioGroup = button.parentElement as HTMLDivElement | null;
+        if (!radioGroup || radioGroup.getAttribute("role") !== "radiogroup") {
+          return null;
+        }
+
+        const formItem = radioGroup.parentElement as HTMLDivElement | null;
+        if (!formItem || formItem.getAttribute("data-slot") !== "form-item")
+          return null;
+
+        const formContainer = formItem.parentElement as HTMLDivElement;
+        if (!formContainer) return null;
+
+        const input = formContainer.querySelector(
+          `input[data-slot]`,
+        ) as HTMLInputElement | null;
+        if (!input) return null;
+        input.focus();
+        scrollInto(input);
+      }, 0);
+    }
+  } else if (invalidThing.nodeName === "INPUT") {
+    const input = invalidThing as HTMLInputElement;
+    input.focus();
+  }
+};
 
 // https://tanstack.com/form/latest/docs/framework/react/guides/form-composition
 export const { useAppForm, withForm } = createFormHook({

@@ -1,6 +1,21 @@
 import { formOptions } from "@tanstack/react-form";
+import { defaultOnSubmitInvalid } from "@/hooks/form";
+import type { ReactNode } from "react";
+import type { AutoDismissMessageProps } from "@/components/ui/auto-dismiss-message";
+
+type FormMeta = {
+  setMessage?: React.Dispatch<React.SetStateAction<ReactNode>>;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  setVariant?: React.Dispatch<
+    React.SetStateAction<AutoDismissMessageProps["variant"]>
+  >;
+};
+
+const defaultMeta: FormMeta = {};
 
 export const defaultOnlinePickupRFOpts = formOptions({
+  onSubmitMeta: defaultMeta,
+  onSubmitInvalid: defaultOnSubmitInvalid,
   defaultValues: {
     surnameSender: "",
     nameSender: "",

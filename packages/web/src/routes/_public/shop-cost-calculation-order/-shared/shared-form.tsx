@@ -1,4 +1,5 @@
 import type { AutoDismissMessageProps } from "@/components/ui/auto-dismiss-message";
+import { defaultOnSubmitInvalid } from "@/hooks/form";
 import { formOptions } from "@tanstack/react-form";
 import type { ReactNode } from "react";
 
@@ -14,6 +15,7 @@ const defaultMeta: FormMeta = {};
 
 export const defaultShopCostCalculationOrderOpts = formOptions({
   onSubmitMeta: defaultMeta,
+  onSubmitInvalid: defaultOnSubmitInvalid,
   defaultValues: {
     shopCostCalculationOrder: {
       name: "",
