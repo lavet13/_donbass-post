@@ -15,7 +15,7 @@ import TextareaField from "@/components/forms/textarea-field";
 import SelectField from "@/components/forms/select-field";
 import SubmitButton from "@/components/forms/submit-button";
 
-const scrollInto = (node: HTMLElement) => {
+const scrollInto = (node: HTMLElement, { top = 0 }: { top?: number } = {}) => {
   const headerHeightStr = getComputedStyle(document.documentElement)
     .getPropertyValue("--header-height")
     .trim();
@@ -31,7 +31,7 @@ const scrollInto = (node: HTMLElement) => {
   }
   const buttonTop = node.getBoundingClientRect().top + window.scrollY;
   window.scrollTo({
-    top: buttonTop - headerHeightPx - 30,
+    top: buttonTop - headerHeightPx - 30 - top,
     behavior: "smooth",
   });
 };
@@ -70,7 +70,7 @@ export const defaultOnSubmitInvalid = () => {
         if (!input) return null;
         input.focus();
         if (!isIOS) {
-          scrollInto(input);
+          scrollInto(input, { top: 67 });
         }
       }, 0);
     }
