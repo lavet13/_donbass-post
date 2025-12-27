@@ -69,7 +69,9 @@ export const defaultOnSubmitInvalid = () => {
         ) as HTMLInputElement | null;
         if (!input) return null;
         input.focus();
-        scrollInto(input);
+        if (!isIOS) {
+          scrollInto(input);
+        }
       }, 0);
     }
   } else if (invalidThing.nodeName === "INPUT") {
