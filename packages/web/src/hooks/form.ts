@@ -1,6 +1,5 @@
 import { createFormHook } from "@tanstack/react-form";
 import { fieldContext, formContext } from "@/hooks/form-context";
-import { isIOS } from "react-device-detect";
 
 import TextField from "@/components/forms/text-field";
 import PasswordField from "@/components/forms/password-field";
@@ -36,52 +35,64 @@ const scrollInto = (node: HTMLElement, { top = 0 }: { top?: number } = {}) => {
   });
 };
 
-export const defaultOnSubmitInvalid = () => {
-  const invalidThing = document.querySelector(`[aria-invalid="true"]`) as
-    | HTMLElement
-    | null
-    | undefined;
-  if (!invalidThing) return;
+const handleRadioGroupFocus = (button: HTMLButtonElement) => {
+  const radioGroup = button.parentElement as HTMLDivElement | null;
+  if (!radioGroup || radioGroup.getAttribute("role") !== "radiogroup")
+    return null;
 
-  if (invalidThing.nodeName === "BUTTON") {
-    const button = invalidThing as HTMLButtonElement;
-    button.click();
-    if (!isIOS) {
-      scrollInto(button);
-    }
+  const formItem = radioGroup.parentElement as HTMLDivElement | null;
+  if (!formItem || formItem.getAttribute("data-slot") !== "form-item")
+    return null;
 
-    if (button.hasAttribute("data-radix-collection-item")) {
-      setTimeout(() => {
-        const radioGroup = button.parentElement as HTMLDivElement | null;
-        if (!radioGroup || radioGroup.getAttribute("role") !== "radiogroup") {
-          return null;
-        }
+  const formContainer = formItem.parentElement as HTMLDivElement;
+  if (!formContainer) return null;
 
-        const formItem = radioGroup.parentElement as HTMLDivElement | null;
-        if (!formItem || formItem.getAttribute("data-slot") !== "form-item")
-          return null;
-
-        const formContainer = formItem.parentElement as HTMLDivElement;
-        if (!formContainer) return null;
-
-        const input = formContainer.querySelector(
-          `input[data-slot]`,
-        ) as HTMLInputElement | null;
-        if (!input) return null;
-        input.focus();
-        if (!isIOS) {
-          scrollInto(input, { top: 67 });
-        }
-      }, 0);
-    }
-  } else if (invalidThing.nodeName === "INPUT") {
-    const input = invalidThing as HTMLInputElement;
+  const input = formContainer.querySelector(
+    `input[data-slot]`,
+  ) as HTMLInputElement | null;
+  if (input) {
     input.focus();
+    return;
+  }
+
+  const combobox = formContainer.querySelector(
+    'button[role="combobox"]',
+  ) as HTMLButtonElement | null;
+  if (combobox) {
+    combobox.click();
   }
 };
 
+const nodeHandlers = {
+  BUTTON: (node: HTMLElement) => {
+    const button = node as HTMLButtonElement;
+    button.click();
+    scrollInto(button);
+
+    if (button.hasAttribute("data-radix-collection-item")) {
+      setTimeout(() => handleRadioGroupFocus(button), 0);
+    }
+  },
+  INPUT: (node: HTMLElement) => {
+    const input = node as HTMLInputElement;
+    input.focus();
+  },
+};
+
+export const defaultOnSubmitInvalid = () => {
+  const invalidNode = document.querySelector(`[aria-invalid="true"]`) as
+    | HTMLElement
+    | null
+    | undefined;
+  if (!invalidNode) return;
+
+  const handler =
+    nodeHandlers[invalidNode.nodeName as keyof typeof nodeHandlers];
+  handler?.(invalidNode);
+};
+
 // https://tanstack.com/form/latest/docs/framework/react/guides/form-composition
-export const { useAppForm, withForm } = createFormHook({
+export const { useAppForm, withForm, withFieldGroup } = createFormHook({
   fieldContext,
   formContext,
   fieldComponents: {

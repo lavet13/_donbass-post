@@ -15,6 +15,7 @@ import { HighlightText } from "@/components/typography/highlight-text";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { TypographyH3 } from "@/components/typography/typographyH3";
 import * as AutoDismissMessage from "@/components/ui/auto-dismiss-message";
+import { FieldGroupAcceptedField } from "@/components/forms/field-groups/accepted-field";
 
 // https://colinhacks.com/essays/reasonable-email-regex
 // Исходный regex из Zod:
@@ -462,11 +463,9 @@ export const ShopCostCalculationOrderForm = withForm({
               }}
             />
 
-            <form.AppField
-              name="accepted"
-              children={(field) => (
-                <field.CheckboxField label="Подтверждаю, что мне исполнилось 14 лет, и ознакомился с правилами предоставления услуг" />
-              )}
+            <FieldGroupAcceptedField
+              form={form}
+              fields={{ accepted: "accepted" }}
             />
 
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-2">

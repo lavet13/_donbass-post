@@ -39,6 +39,7 @@ import type { CalculateGlobalParams } from "@/features/delivery-rate/types";
 import { keepPreviousData } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { sonner } from "@/components/ui/toast";
+import { FieldGroupAcceptedField } from "@/components/forms/field-groups/accepted-field";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 
@@ -1759,11 +1760,9 @@ export const PickUpPointDeliveryOrderForm = withForm({
               />
             </div>
 
-            <form.AppField
-              name="accepted"
-              children={(field) => (
-                <field.CheckboxField label="Подтверждаю, что мне исполнилось 14 лет, и ознакомился с правилами предоставления услуг" />
-              )}
+            <FieldGroupAcceptedField
+              form={form}
+              fields={{ accepted: "accepted" }}
             />
 
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-2">
