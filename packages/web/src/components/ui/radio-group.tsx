@@ -10,7 +10,7 @@ const RadioGroup: FC<ComponentProps<typeof RadioGroupPrimitive.Root>> = ({
   return (
     <RadioGroupPrimitive.Root
       data-slot="radio-group"
-      className={cn("flex h-[30px]", className)}
+      className={cn("flex min-h-[30px]", className)}
       {...props}
     />
   );
@@ -23,10 +23,10 @@ const RadioGroupItem: FC<ComponentProps<typeof RadioGroupPrimitive.Item>> = ({
   return (
     <RadioGroupPrimitive.Item
       className={cn(
-        "group relative -mr-px cursor-pointer px-4 py-2 text-center text-base leading-none md:text-sm",
+        "group relative -mr-px min-h-max min-w-0 cursor-pointer px-4 py-2 text-center text-base leading-none md:text-sm",
         "overflow-hidden first-of-type:rounded-l-full last-of-type:rounded-r-full hover:cursor-pointer hover:data-[state=unchecked]:z-1",
         "data-[state=unchecked]:hover:bg-accentA-3 data-[state=unchecked]:active:bg-accentA-5 data-[state=unchecked]:[box-shadow:inset_0_0_0_1px_var(--gray-a7)] data-[state=unchecked]:hover:[box-shadow:inset_0_0_0_1px_var(--accent-a8)] data-[state=unchecked]:active:[box-shadow:inset_0_0_0_1px_var(--accent-a8)]",
-        "focus-visible:outline-accent-8 -outline-offset-1 focus-visible:z-1 focus-visible:outline-[2px]",
+        "focus-visible:outline-accent-8 flex-auto -outline-offset-1 focus-visible:z-1 focus-visible:outline-[2px]",
         className,
       )}
       {...props}
@@ -58,13 +58,13 @@ const RadioGroupLabel: FC<ComponentProps<typeof Label>> = ({
   return (
     <Label
       className={cn(
-        "relative",
+        "relative wrap-break-word",
         "group-hover:text-accentA-11 group-active:text-accentA-11 group-data-[state=checked]:text-accent-11 text-grayA-11 font-regular relative cursor-pointer",
         className,
       )}
       {...props}
     >
-      <span className="truncate">{children}</span>
+      <span>{children}</span>
     </Label>
   );
 };

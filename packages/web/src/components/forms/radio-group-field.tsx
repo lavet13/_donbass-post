@@ -47,7 +47,7 @@ const RadioGroupField: FC<RadioGroupFieldProps> = ({
         {options.map(({ value, label }, idx) => (
           <RadioGroupItem
             className={cn(
-              "flex-1 inline-flex items-center justify-center sm:inline-flex sm:flex-none",
+              "flex-auto inline-flex items-center justify-center sm:inline-flex sm:flex-none",
               stretched && "sm:flex-auto",
             )}
             key={value}
