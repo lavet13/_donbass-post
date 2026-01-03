@@ -2,20 +2,18 @@
   "name": "donbass-post-monorepo",
   "private": true,
   "workspaces": [
+    "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm-run-all -p -l dev:*",
-    "build": "npm-run-all -p -l build:*",
-    "preview": "npm-run-all -p -l preview:*",
-    "lint": "npm-run-all -p -l lint:*",
-
-    "dev:web": "yarn workspace @donbass-post/web dev",
-    "build:web": "yarn workspace @donbass-post/web build",
-    "preview:web": "yarn workspace @donbass-post/web preview",
-    "lint:web": "yarn workspace @donbass-post/web lint"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "preview": "turbo run preview",
+    "lint": "turbo run lint",
+    "check-types": "turbo run check-types"
   },
+  "packageManager": "yarn@1.22.22",
   "devDependencies": {
-    "npm-run-all": "^4.1.5"
+    "turbo": "^2.7.2"
   }
 }

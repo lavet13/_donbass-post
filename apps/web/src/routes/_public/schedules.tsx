@@ -47,6 +47,19 @@ import {
 } from "@radix-ui/themes";
 import { TypographyH2 } from "@/components/typography/typographyH2";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import {
+  YMap,
+  YMapComponentsProvider,
+  YMapControls,
+  YMapDefaultFeaturesLayer,
+  YMapDefaultSchemeLayer,
+  YMapGeolocationControl,
+  YMapListener,
+  YMapZoomControl,
+} from "ymap3-components";
+import { useTheme } from "@/hooks/use-theme";
+import type { YMapLocation } from "@yandex/ymaps3-types/imperative/YMap";
+import type { MapEventUpdateHandler } from "ymaps3";
 
 type ScheduleSearch = {
   q?: string;
@@ -67,6 +80,18 @@ export const Route = createFileRoute("/_public/schedules")({
 });
 
 const SearchPage: FC = () => {
+  const [location, setLocation] = useState<YMapLocation>({
+    center: [37.95, 55.65],
+    zoom: 7.5,
+  });
+
+  const { resolvedTheme } = useTheme();
+  const onUpdate: MapEventUpdateHandler = ({ mapInAction, location }) => {
+    if (!mapInAction) {
+      setLocation({ center: location.center, zoom: location.zoom });
+    }
+  };
+
   const styles = getComputedStyle(document.documentElement);
   const largeBreakpoint = styles.getPropertyValue("--breakpoint-lg");
   const smallBreakpoint = styles.getPropertyValue("--breakpoint-md");
@@ -726,7 +751,7 @@ const SearchPage: FC = () => {
                                     size="1"
                                     truncate
                                     // trim="both"
-                                    className="hidden min-[320px]:inline-block text-accent-11 bg-accentA-3 rounded-full px-2 py-0.5 font-bold"
+                                    className="text-accent-11 bg-accentA-3 hidden rounded-full px-2 py-0.5 font-bold min-[320px]:inline-block"
                                   >
                                     Сегодня
                                   </Text>
@@ -764,21 +789,29 @@ const SearchPage: FC = () => {
                       </Flex>
                       <Card
                         size={isMobile ? "2" : "3"}
-                        className="bg-grayA-2 flex min-h-[300px] items-center justify-center overflow-hidden"
+                        className="bg-grayA-2 flex h-[450px] items-center justify-center overflow-hidden p-0"
                       >
-                        {/* You can replace this with actual map implementation */}
-                        <Text align="center" as="div">
-                          <MapPin
-                            size={48}
-                            className="text-grayA-12 mx-auto mb-3"
-                          />
-                          <Text as="p" className="text-gray-12 text-sm">
-                            Карта будет загружена здесь
-                          </Text>
-                          <Text as="p" className="text-gray-11 mt-1 text-xs">
-                            {selectedDepartment.address}
-                          </Text>
-                        </Text>
+                        <YMapComponentsProvider
+                          apiKey={import.meta.env.VITE_YMAPS_API_KEY}
+                          lang="ru_RU"
+                        >
+                          <YMap
+                            className="z-[1000]"
+                            location={location}
+                            mode="vector"
+                            theme={resolvedTheme}
+                          >
+                            <YMapDefaultSchemeLayer />
+                            <YMapDefaultFeaturesLayer />
+                            <YMapListener onUpdate={onUpdate} />
+                            <YMapControls position="bottom">
+                              <YMapZoomControl />
+                            </YMapControls>
+                            <YMapControls position="bottom left">
+                              <YMapGeolocationControl />
+                            </YMapControls>
+                          </YMap>
+                        </YMapComponentsProvider>
                       </Card>
                     </Card>
                   )}

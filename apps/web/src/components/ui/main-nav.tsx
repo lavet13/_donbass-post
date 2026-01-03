@@ -182,9 +182,13 @@ const MainNav: FC<MainNavProps> = ({ navItems }) => {
                 >
                   <>
                     {icon}
-                    {flat.some(({ to }) => to && pathname.includes(to)) && (
-                      <BorderBeam />
-                    )}
+                    <BorderBeam
+                      className={cn(
+                        flat.some(({ to }) => to && pathname.includes(to))
+                          ? "block"
+                          : "hidden",
+                      )}
+                    />
                   </>
                 </NavigationMenuTrigger>
                 {!!items.length && (

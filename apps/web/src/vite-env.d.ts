@@ -8,6 +8,7 @@ interface ViteTypeOptions {
 
 interface ImportMetaEnv {
   readonly VITE_DOMAIN: string;
+  readonly VITE_YMAPS_API_KEY: string;
   // more env variables...
 }
 

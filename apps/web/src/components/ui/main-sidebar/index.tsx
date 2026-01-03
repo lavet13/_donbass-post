@@ -327,7 +327,7 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
         <Icon {...iconProps} />
       )}
       <Slottable>{props.children}</Slottable>
-      {isActive && <BorderBeam />}
+      <BorderBeam className={cn(isActive ? "block" : "hidden")} />
     </Button>
   );
 };
