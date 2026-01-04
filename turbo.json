@@ -11,8 +11,14 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+    "preview": {
+      "cache": false,
+      "persistent": true
+    },
     "build": {
-      "outputs": ["dist/**"]
+      "dependsOn": ["check-types"],
+      "outputs": ["dist/**"],
+      "env": ["VITE_*", "NODE_ENV"]
     }
   }
 }

@@ -44,6 +44,7 @@ jobs:
         run: yarn workspace @donbass-post/web build
         env:
           VITE_GITHUB_PAGES: true
+          VITE_YMAPS_API_KEY: ${{ secrets.VITE_YMAPS_API_KEY }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
