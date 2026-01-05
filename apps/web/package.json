@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "check-types": "tsc --noEmit",
+    "check-types": "tsc -b",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -49,6 +49,7 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@donbass-post/typescript-config": "*",
     "@eslint/js": "^9.36.0",
     "@tanstack/router-plugin": "^1.131.50",
     "@types/js-cookie": "^3.0.6",

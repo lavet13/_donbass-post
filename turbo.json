@@ -6,12 +6,14 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "inputs": ["src/**/*.ts", "src/**/*.tsx", "*.config.js"]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
     },
     "preview": {
+      "dependsOn": ["build"],
       "cache": false,
       "persistent": true
     },
