@@ -1,0 +1,15 @@
+{
+  "name": "@donbass-post/tg-bot",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "check-types": "tsc -b"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.44.0",
+    "@donbass-post/typescript-config": "*"
+  }
+}

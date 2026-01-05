@@ -5,7 +5,6 @@
     "target": "ES2022",
     "lib": ["ES2022"],
 
-    "outDir": "./dist",
     "noEmit": false,
     "sourceMap": true,
     "declaration": true,
@@ -18,10 +17,5 @@
     "allowSyntheticDefaultImports": true,
 
     "types": ["node"],
-
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
   }
 }
