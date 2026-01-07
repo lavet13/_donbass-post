@@ -60,6 +60,7 @@ import {
 import { useTheme } from "@/hooks/use-theme";
 import type { YMapLocation } from "@yandex/ymaps3-types/imperative/YMap";
 import type { MapEventUpdateHandler } from "ymaps3";
+import { MAPS_CONFIG } from "@/config/maps";
 
 type ScheduleSearch = {
   q?: string;
@@ -792,7 +793,7 @@ const SearchPage: FC = () => {
                         className="bg-grayA-2 flex h-[450px] items-center justify-center overflow-hidden p-0"
                       >
                         <YMapComponentsProvider
-                          apiKey={import.meta.env.VITE_YMAPS_API_KEY}
+                          apiKey={MAPS_CONFIG.apiKey}
                           lang="ru_RU"
                         >
                           <YMap

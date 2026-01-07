@@ -7,7 +7,12 @@
     },
     "lint": {
       "dependsOn": ["^lint"],
-      "inputs": ["src/**/*.ts", "src/**/*.tsx", "*.config.js"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "*.config.js"
+      ]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
@@ -18,7 +23,7 @@
       "persistent": true
     },
     "build": {
-      "dependsOn": ["check-types"],
+      "dependsOn": ["^build", "check-types"],
       "outputs": ["dist/**"],
       "env": ["VITE_*", "NODE_ENV"]
     }

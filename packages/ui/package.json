@@ -1,0 +1,27 @@
+{
+  "name": "@donbass-post/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "check-types": "tsc -b"
+  },
+  "peerDependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "dependencies": {
+    "@radix-ui/react-navigation-menu": "^1.2.14",
+    "@radix-ui/themes": "^3.2.1"
+  },
+  "devDependencies": {
+    "@donbass-post/eslint-config": "*",
+    "@donbass-post/typescript-config": "*",
+    "eslint": "^9.36.0",
+    "typescript": "~5.8.3"
+  }
+}
