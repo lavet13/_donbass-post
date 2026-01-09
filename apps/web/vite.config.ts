@@ -85,7 +85,6 @@ export default defineConfig({
 
           misc: [
             "react-device-detect",
-            "immer",
             "@tanem/react-nprogress",
             "sonner",
             "date-fns",

@@ -1,9 +1,9 @@
 import { type ComponentProps, type FC } from "react";
-import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormItem, FormLabel, FormMessage } from "./form-primitives";
+import { useFieldAccessibility } from "../hooks/use-field-accessibility";
 import { TextField as _TextField } from "@radix-ui/themes";
-import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
-import { Input } from "@donbass-post/ui";
-import { composeEventHandlers } from "@/lib/utils";
+import { Input } from "@donbass-post/ui/input";
+import { composeEventHandlers } from "@donbass-post/ui/utils";
 
 type TextFieldProps = ComponentProps<typeof Input> & {
   label?: string;

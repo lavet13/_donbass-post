@@ -1,0 +1,33 @@
+{
+  "name": "@donbass-post/forms",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./primitives": "./src/components/form-primitives.tsx",
+    "./components": "./src/components/index.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./lib": "./src/lib/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "check-types": "tsc -b"
+  },
+  "peerDependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "dependencies": {
+    "@donbass-post/ui": "*",
+    "@tanstack/react-form": "1.26.0",
+    "@radix-ui/themes": "^3.2.1"
+  },
+  "devDependencies": {
+    "@donbass-post/eslint-config": "*",
+    "@donbass-post/typescript-config": "*",
+    "eslint": "^9.36.0",
+    "typescript": "~5.8.3",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9"
+  }
+}

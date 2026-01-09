@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./components/index.ts"
+    ".": "./src/ui/index.ts",
+    "./input": "./src/ui/input.tsx",
+    "./label": "./src/ui/label.tsx",
+    "./utils": "./src/lib/utils.ts"
   },
   "scripts": {
     "lint": "eslint .",
@@ -15,13 +18,26 @@
     "react-dom": "^19.1.1"
   },
   "dependencies": {
+    "lucide-react": "^0.544.0",
+    "motion": "^12.23.18",
+    "class-variance-authority": "^0.7.1",
+    "cmdk": "^1.1.1",
+    "jotai": "^2.14.0",
     "@radix-ui/react-navigation-menu": "^1.2.14",
-    "@radix-ui/themes": "^3.2.1"
+    "@radix-ui/themes": "^3.2.1",
+    "react-device-detect": "^2.2.3",
+    "react-resizable-panels": "^3.0.6",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.13",
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
     "@donbass-post/eslint-config": "*",
     "@donbass-post/typescript-config": "*",
     "eslint": "^9.36.0",
-    "typescript": "~5.8.3"
+    "typescript": "~5.8.3",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9"
   }
 }

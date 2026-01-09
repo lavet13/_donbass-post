@@ -20,7 +20,8 @@ import {
   CircleAlertIcon,
   TriangleAlert,
 } from "lucide-react";
-import { cn, getEmailErrorMessage, validatePickupTime } from "@/lib/utils";
+import { cn } from "@donbass-post/ui/utils";
+import { getEmailErrorMessage, validatePickupTime } from "@/lib/utils";
 import z from "zod";
 import { Fragment } from "react/jsx-runtime";
 import { Toggle } from "@/components/ui/toggle";
