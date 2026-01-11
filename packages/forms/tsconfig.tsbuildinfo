@@ -1,0 +1,1 @@
+{"root":["./eslint.config.ts","./index.ts","./src/components/index.ts","./src/hooks/form-context.ts","./src/hooks/form.ts","./src/hooks/index.ts","./src/hooks/use-field-accessibility.ts","./src/lib/form-utils.ts","./src/lib/index.ts","./src/components/form-primitives.tsx","./src/components/text-field.tsx"],"version":"5.8.3"}
