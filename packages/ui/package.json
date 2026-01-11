@@ -33,6 +33,7 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@donbass-post/prettier-config": "*",
     "@donbass-post/eslint-config": "*",
     "@donbass-post/typescript-config": "*",
     "eslint": "^9.36.0",

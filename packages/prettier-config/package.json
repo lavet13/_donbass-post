@@ -1,0 +1,19 @@
+{
+  "name": "@donbass-post/prettier-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "index.ts"
+  ],
+  "peerDependencies": {
+    "prettier": "^3.6.2"
+  },
+  "devDependencies": {
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "prettier": "^3.6.2"
+  }
+}

@@ -4,6 +4,12 @@
   "private": true,
   "type": "module",
   "license": "MIT",
+  "files": [
+    "base.json",
+    "vite.json",
+    "vite-node.json",
+    "node.json"
+  ],
   "publishConfig": {
     "access": "public"
   }
