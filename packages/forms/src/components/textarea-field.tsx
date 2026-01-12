@@ -1,21 +1,19 @@
 import { type ComponentProps, type FC } from "react";
+import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
 import { FormItem, FormLabel, FormMessage } from "./form-primitives";
-import { TextField as _TextField } from "@radix-ui/themes";
 import { useFieldAccessibility } from "../hooks/use-field-accessibility";
-import { Input } from "@donbass-post/ui/input";
-import { composeEventHandlers } from "@donbass-post/ui/utils";
+import type { TextProps } from "@radix-ui/themes";
 
-type TextFieldProps = ComponentProps<typeof Input> & {
+type TextareaFieldProps = ComponentProps<typeof AutosizeTextarea> & {
   label?: string;
-  labelStyles?: string;
   ariaLabel?: string;
-};
+} & TextProps;
 
-const TextField: FC<TextFieldProps> = ({
-  label,
-  labelStyles,
+const TextareaField: FC<TextareaFieldProps> = ({
   "aria-label": ariaLabelProp,
   ariaLabel,
+  label,
+  color,
   ...props
 }) => {
   const {
@@ -33,20 +31,19 @@ const TextField: FC<TextFieldProps> = ({
   return (
     <FormItem>
       {label && (
-        <FormLabel className={labelStyles} htmlFor={formItemId}>
+        <FormLabel color={color} htmlFor={formItemId}>
           {label}
         </FormLabel>
       )}
-      <Input
+      <AutosizeTextarea
+        color={color}
         id={formItemId}
         name={field.name}
-        value={field.state.value}
         aria-label={defaultAriaLabel}
-        aria-describedby={ariaDescribedBy}
         aria-invalid={!!error}
-        onChange={composeEventHandlers(props.onChange, (e) =>
-          field.handleChange(e.target.value),
-        )}
+        aria-describedby={ariaDescribedBy}
+        value={field.state.value}
+        onValueChange={field.handleChange}
         {...props}
       />
       <FormMessage id={formMessageId} />
@@ -54,4 +51,4 @@ const TextField: FC<TextFieldProps> = ({
   );
 };
 
-export default TextField;
+export default TextareaField;

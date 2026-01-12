@@ -3,7 +3,8 @@ import { defaultShopCostCalculationOrderOpts } from "@/routes/_public/shop-cost-
 import { ShopCostCalculationOrderForm } from "@/routes/_public/shop-cost-calculation-order/-shared/nested-form";
 import { useShopCostCalculationOrderMutation } from "@/features/shop-cost-calculation-order/mutations";
 import { isAxiosError } from "axios";
-import { cn, transformApiErrorsToFormErrors } from "@/lib/utils";
+import { transformApiErrorsToFormErrors } from "@donbass-post/forms/lib";
+import { cn } from "@donbass-post/ui/utils";
 import { usePointPostQuery } from "@/features/point/queries";
 import { Suspend } from "@/components/suspend";
 import { Fragment, type FC } from "react";

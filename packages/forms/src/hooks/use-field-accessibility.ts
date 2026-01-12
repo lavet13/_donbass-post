@@ -1,5 +1,5 @@
 import { useEffect, useId } from "react";
-import { useFieldContext } from "./form-context";
+import { useFieldContext } from ".";
 import { isFilled } from "../lib/form-utils";
 
 type UseFieldAccessibilityProps = {

@@ -7,7 +7,7 @@ import {
   useCargoTrackingQuery,
 } from "@/features/cargo-tracking/queries";
 import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
+import { cn } from "@donbass-post/ui/utils";
 import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";

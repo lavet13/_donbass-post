@@ -1,21 +1,22 @@
-import { type ComponentProps, type FC } from "react";
+import { type FC } from "react";
 import { FormItem, FormLabel, FormMessage } from "./form-primitives";
-import { TextField as _TextField } from "@radix-ui/themes";
+import RPNInput from "react-phone-number-input/input";
+import type { DefaultInputComponentProps } from "react-phone-number-input";
 import { useFieldAccessibility } from "../hooks/use-field-accessibility";
 import { Input } from "@donbass-post/ui/input";
-import { composeEventHandlers } from "@donbass-post/ui/utils";
+import type { TextField, TextProps } from "@radix-ui/themes";
 
-type TextFieldProps = ComponentProps<typeof Input> & {
-  label?: string;
-  labelStyles?: string;
-  ariaLabel?: string;
-};
-
-const TextField: FC<TextFieldProps> = ({
+const PhoneField: FC<
+  Omit<TextField.RootProps, "value" | "onChange"> &
+    DefaultInputComponentProps & {
+      label?: string;
+      ariaLabel?: string;
+    } & Omit<TextProps, "onChange">
+> = ({
   label,
-  labelStyles,
   "aria-label": ariaLabelProp,
   ariaLabel,
+  color,
   ...props
 }) => {
   const {
@@ -33,20 +34,21 @@ const TextField: FC<TextFieldProps> = ({
   return (
     <FormItem>
       {label && (
-        <FormLabel className={labelStyles} htmlFor={formItemId}>
+        <FormLabel color={color} htmlFor={formItemId}>
           {label}
         </FormLabel>
       )}
-      <Input
+      <RPNInput
+        color={color}
         id={formItemId}
         name={field.name}
-        value={field.state.value}
+        inputComponent={Input}
         aria-label={defaultAriaLabel}
         aria-describedby={ariaDescribedBy}
         aria-invalid={!!error}
-        onChange={composeEventHandlers(props.onChange, (e) =>
-          field.handleChange(e.target.value),
-        )}
+        value={field.state.value}
+        smartCaret={false} // solved the bug with samsung androids
+        onChange={(value) => field.handleChange(value || "")}
         {...props}
       />
       <FormMessage id={formMessageId} />
@@ -54,4 +56,4 @@ const TextField: FC<TextFieldProps> = ({
   );
 };
 
-export default TextField;
+export default PhoneField;
