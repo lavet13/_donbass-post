@@ -5,10 +5,39 @@
   "type": "module",
   "exports": {
     ".": "./src/ui/index.ts",
+
     "./input": "./src/ui/input.tsx",
     "./label": "./src/ui/label.tsx",
+    "./tabs": "./src/ui/tabs.tsx",
+    "./drawer": "./src/ui/drawer.tsx",
+    "./toggle": "./src/ui/toggle.tsx",
+    "./command": "./src/ui/command.tsx",
+    "./main-nav": "./src/ui/main-nav.tsx",
+    "./resizable": "./src/ui/resizable.tsx",
+    "./hover-card": "./src/ui/hover-card.tsx",
+    "./border-beam": "./src/ui/border-beam.tsx",
+    "./collapsible": "./src/ui/collapsible.tsx",
+    "./mode-toggle": "./src/ui/mode-toggle.tsx",
+    "./radio-group": "./src/ui/radio-group.tsx",
+    "./navigation-menu": "./src/ui/navigation-menu.tsx",
+    "./password-toggle-field": "./src/ui/password-toggle-field.tsx",
+    "./toast": "./src/ui/toast/index.ts",
+    "./sidebar": "./src/ui/sidebar/index.tsx",
+    "./main-sidebar": "./src/ui/main-sidebar/index.tsx",
+    "./main-sidebar/atom": "./src/ui/main-sidebar/atom.ts",
+    "./autosize-textarea": "./src/ui/autosize-textarea/index.ts",
+    "./auto-dismiss-message": "./src/ui/auto-dismiss-message/index.ts",
+
     "./utils": "./src/lib/utils.ts",
-    "./hooks": "./src/hooks/index.ts"
+    "./atom": "./src/lib/atom.ts",
+
+    "./hooks": "./src/hooks/index.ts",
+    "./hooks/create-context": "./src/hooks/create-context.tsx",
+    "./hooks/use-controllable-state": "./src/hooks/use-controllable-state.ts",
+    "./hooks/use-measure": "./src/hooks/use-measure.ts",
+    "./hooks/use-media-query": "./src/hooks/use-media-query.ts",
+    "./hooks/use-message-timer": "./src/hooks/use-message-timer.ts",
+    "./hooks/use-theme": "./src/hooks/use-theme.ts"
   },
   "scripts": {
     "lint": "eslint .",

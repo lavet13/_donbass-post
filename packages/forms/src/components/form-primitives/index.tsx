@@ -2,7 +2,7 @@ import * as LabelPrimitive from "@radix-ui/react-label";
 import { Label } from "@donbass-post/ui/label";
 import type { FC } from "react";
 import { type ComponentProps } from "react";
-import { useFieldContext } from "../hooks/form-context";
+import { useFieldContext } from "../../hooks/form-context";
 import { cn } from "@donbass-post/ui/utils";
 import { Text, type TextProps } from "@radix-ui/themes";
 

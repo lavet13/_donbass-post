@@ -6,7 +6,7 @@ import {
   PasswordToggleFieldIcon,
   PasswordToggleFieldInput,
   PasswordToggleFieldToggle,
-} from "@/components/ui/password-toggle-field";
+} from "@donbass-post/ui/password-toggle-field";
 import { Eye, EyeClosed } from "lucide-react";
 
 type PasswordFieldProps = ComponentProps<typeof PasswordToggleFieldInput> & {

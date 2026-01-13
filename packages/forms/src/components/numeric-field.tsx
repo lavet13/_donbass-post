@@ -5,8 +5,7 @@ import {
   type FocusEvent,
   type InputEvent,
 } from "react";
-import { NumericFormat } from "react-number-format";
-import type { NumericFormatProps } from "react-number-format";
+import { NumericFormat, type NumericFormatProps } from "react-number-format";
 import { Input } from "@donbass-post/ui/input";
 import { FormItem, FormLabel, FormMessage } from "./form-primitives";
 import { useFieldAccessibility } from "../hooks/use-field-accessibility";

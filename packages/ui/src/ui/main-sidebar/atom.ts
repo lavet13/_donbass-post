@@ -1,4 +1,4 @@
-import { atomWithCookie } from "@/lib/atom";
+import { atomWithCookie } from "../../lib/atom";
 import { atom } from "jotai";
 
 const sidebarOpenAtom = atomWithCookie<"open" | "closed">(

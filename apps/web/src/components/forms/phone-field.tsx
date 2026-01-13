@@ -3,7 +3,7 @@ import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import RPNInput from "react-phone-number-input/input";
 import type { DefaultInputComponentProps } from "react-phone-number-input";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
-import { Input } from "@donbass-post/ui";
+import { Input } from "@donbass-post/ui/input";
 import type { TextField, TextProps } from "@radix-ui/themes";
 
 const PhoneField: FC<

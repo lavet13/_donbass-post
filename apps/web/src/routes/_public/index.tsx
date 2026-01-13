@@ -6,9 +6,6 @@ export const Route = createFileRoute("/_public/")({
 });
 
 function IndexComponent() {
-  console.log(import.meta.env.GITHUB_PAGES);
-  console.log(import.meta.env);
-
   return (
     <div className="mx-auto w-full max-w-3xl">
       <Text>

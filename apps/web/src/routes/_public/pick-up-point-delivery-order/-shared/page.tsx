@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import { defaultPickUpPointDeliveryOrderOpts } from "@/routes/_public/pick-up-point-delivery-order/-shared/shared-form";
 import { PickUpPointDeliveryOrderForm } from "@/routes/_public/pick-up-point-delivery-order/-shared/nested-form";
-import { useAppForm } from "@/hooks/form";
+import { useAppForm } from "@donbass-post/forms/form";
 import { Suspend } from "@/components/suspend";
 import { useAdditionalServicePickUpQuery } from "@/features/additional-service/queries";
 import { usePickUpPointDeliveryOrderMutation } from "@/features/pick-up-point-delivery-order/mutations";
@@ -63,13 +63,13 @@ const PickUpPointDeliveryOrderPage: FC = () => {
             // The request was made but no response was received
             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
             // http.ClientRequest in node.js
-            import.meta.env.DEV && console.log(error.request);
+            if (import.meta.env.DEV) console.warn({ request: error.request });
           } else {
             // Something happened in setting up the request that triggered an Error
-            import.meta.env.DEV && console.log("Error", error.message);
+            if (import.meta.env.DEV) console.warn("Error", error.message);
           }
         } else {
-          import.meta.env.DEV && console.error("Unknown error");
+          if (import.meta.env.DEV) console.error("Unknown error");
         }
       }
     },

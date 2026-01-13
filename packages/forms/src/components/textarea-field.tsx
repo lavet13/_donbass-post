@@ -1,5 +1,5 @@
 import { type ComponentProps, type FC } from "react";
-import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
+import { AutosizeTextarea } from "@donbass-post/ui/autosize-textarea";
 import { FormItem, FormLabel, FormMessage } from "./form-primitives";
 import { useFieldAccessibility } from "../hooks/use-field-accessibility";
 import type { TextProps } from "@radix-ui/themes";

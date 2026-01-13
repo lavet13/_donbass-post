@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { AUTH_CONFIG } from "@/config";
 import { decodeJWTPayload } from "@/lib/jwt";
-import { atomWithCookie } from "@/lib/atom";
+import { atomWithCookie } from "@donbass-post/ui/atom";
 
 /**
  * Base atom that stores the raw JWT token string in a cookie.

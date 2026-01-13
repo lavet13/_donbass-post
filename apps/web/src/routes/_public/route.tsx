@@ -1,9 +1,11 @@
 import { Footer } from "@/components/layout-public/footer";
 import { Header } from "@/components/layout-public/header";
-import { sidebarOpenAtom } from "@/components/ui/main-sidebar/atom";
-import { mainSidebarAtom } from "@/components/ui/main-sidebar/atom";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { cn } from "@/lib/utils";
+import {
+  sidebarOpenAtom,
+  mainSidebarAtom,
+} from "@/components/ui/main-sidebar/atom";
+import { useMediaQuery } from "@donbass-post/ui/hooks";
+import { cn } from "@donbass-post/ui/utils";
 import {
   createFileRoute,
   Outlet,

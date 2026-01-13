@@ -4,10 +4,13 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./primitives": "./src/components/form-primitives.tsx",
+    "./primitives": "./src/components/form-primitives/index.tsx",
     "./components": "./src/components/index.ts",
+    "./component-fields": "./src/components/field-groups/index.ts",
     "./hooks": "./src/hooks/index.ts",
-    "./lib": "./src/lib/index.ts"
+    "./context": "./src/hooks/form-context.ts",
+    "./form": "./src/hooks/form.ts",
+    "./utils": "./src/lib/form-utils.ts"
   },
   "scripts": {
     "lint": "eslint .",
@@ -16,19 +19,20 @@
   "peerDependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "@radix-ui/themes": "^3.2.1",
-    "@tanstack/react-form": "1.26.0",
     "jotai": "^2.14.0"
   },
   "dependencies": {
     "@donbass-post/ui": "*",
     "react-phone-number-input": "^3.4.12",
     "react-device-detect": "^2.2.3",
-    "react-number-format": "^5.4.4"
+    "react-number-format": "^5.4.4",
+    "@radix-ui/themes": "^3.2.1",
+    "@tanstack/react-form": "1.26.0"
   },
   "devDependencies": {
     "@donbass-post/eslint-config": "*",
     "@donbass-post/typescript-config": "*",
+    "@donbass-post/prettier-config": "*",
     "eslint": "^9.36.0",
     "typescript": "~5.8.3",
     "@types/react": "^19.1.13",

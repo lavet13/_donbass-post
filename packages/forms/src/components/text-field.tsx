@@ -1,6 +1,5 @@
 import { type ComponentProps, type FC } from "react";
 import { FormItem, FormLabel, FormMessage } from "./form-primitives";
-import { TextField as _TextField } from "@radix-ui/themes";
 import { useFieldAccessibility } from "../hooks/use-field-accessibility";
 import { Input } from "@donbass-post/ui/input";
 import { composeEventHandlers } from "@donbass-post/ui/utils";

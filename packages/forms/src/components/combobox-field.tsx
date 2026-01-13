@@ -22,7 +22,7 @@ import {
   CommandList,
   CommandLoading,
   CommandSeparator,
-} from "@/components/ui/command";
+} from "@donbass-post/ui/command";
 import { cn } from "@donbass-post/ui/utils";
 import { CheckIcon, ChevronsUpDownIcon, X } from "lucide-react";
 import { FormItem, FormLabel, FormMessage } from "./form-primitives";
@@ -34,7 +34,7 @@ import {
   DrawerHandle,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
+} from "@donbass-post/ui/drawer";
 import { isMobile as isMobileDevice, isIOS } from "react-device-detect";
 
 type EntryType = {
@@ -204,7 +204,15 @@ const ComboboxGroupField: FC<
             )}
           </div>
           {showAddress && selectedEntry?.address && (
-            <Text className="leading-3" align="left" wrap="pretty" trim="both" mb="1" size="1" color="gray">
+            <Text
+              className="leading-3"
+              align="left"
+              wrap="pretty"
+              trim="both"
+              mb="1"
+              size="1"
+              color="gray"
+            >
               {selectedEntry.address}
             </Text>
           )}

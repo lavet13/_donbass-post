@@ -1,5 +1,5 @@
-import type { AutoDismissMessageProps } from "@/components/ui/auto-dismiss-message";
-import { defaultOnSubmitInvalid } from "@donbass-post/forms/lib";
+import type { AutoDismissMessageProps } from "@donbass-post/ui/auto-dismiss-message";
+import { defaultOnSubmitInvalid } from "@donbass-post/forms/utils";
 import { formOptions } from "@tanstack/react-form";
 import type { ReactNode } from "react";
 

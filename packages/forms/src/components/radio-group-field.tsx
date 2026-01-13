@@ -1,11 +1,11 @@
-import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
+import { useFieldAccessibility } from "../hooks/use-field-accessibility";
 import type { FC } from "react";
 import {
   RadioGroupIndicator,
   RadioGroupItem,
   RadioGroupLabel,
   RadioGroup,
-} from "@/components/ui/radio-group";
+} from "@donbass-post/ui/radio-group";
 import { FormItem, FormLabel, FormMessage } from "./form-primitives";
 import { cn } from "@donbass-post/ui/utils";
 
@@ -37,7 +37,9 @@ const RadioGroupField: FC<RadioGroupFieldProps> = ({
 
   return (
     <FormItem>
-      {label && <FormLabel className={cn("ml-[5px]", labelStyles)}>{label}</FormLabel>}
+      {label && (
+        <FormLabel className={cn("ml-[5px]", labelStyles)}>{label}</FormLabel>
+      )}
       <RadioGroup
         name={field.name}
         aria-label={defaultAriaLabel}

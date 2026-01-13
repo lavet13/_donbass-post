@@ -1,6 +1,7 @@
 import { createFormHook } from "@tanstack/react-form";
 import { fieldContext, formContext } from "@/hooks/form-context";
 
+import TextField from "@/components/forms/text-field";
 import PasswordField from "@/components/forms/password-field";
 import CheckboxField from "@/components/forms/checkbox-field";
 import NumericField from "@/components/forms/numeric-field";
@@ -12,7 +13,6 @@ import SegmentedControlField from "@/components/forms/segmented-control-field";
 import TextareaField from "@/components/forms/textarea-field";
 import SelectField from "@/components/forms/select-field";
 import SubmitButton from "@/components/forms/submit-button";
-import { TextField } from "@donbass-post/forms/components";
 
 const scrollInto = (node: HTMLElement, { top = 0 }: { top?: number } = {}) => {
   const headerHeightStr = getComputedStyle(document.documentElement)

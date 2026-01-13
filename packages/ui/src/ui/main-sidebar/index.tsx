@@ -23,21 +23,18 @@ import {
   DrawerContent,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
-import { useMediaQuery } from "@/hooks/use-media-query";
+} from "../../ui/drawer";
+import { useMediaQuery } from "../../hooks/use-media-query";
 import { isMobile as isMobileDevice } from "react-device-detect";
-import { cn, composeEventHandlers } from "@/lib/utils";
-import { BorderBeam } from "@/components/ui/border-beam";
-import { createContext } from "@/hooks/create-context";
-import { useControllableState } from "@/hooks/use-controllable-state";
+import { cn, composeEventHandlers } from "../../lib/utils";
+import { BorderBeam } from "../../ui/border-beam";
+import { createContext } from "../../hooks/create-context";
+import { useControllableState } from "../../hooks/use-controllable-state";
 import { useComposedRefs } from "@radix-ui/react-compose-refs";
 import { Portal as PortalPrimitive } from "@radix-ui/react-portal";
 import { Presence } from "@radix-ui/react-presence";
 import { useAtom, useAtomValue } from "jotai";
-import {
-  mainSidebarAtom,
-  sidebarOpenAtom,
-} from "@/components/ui/main-sidebar/atom";
+import { mainSidebarAtom, sidebarOpenAtom } from "./atom";
 
 const MAIN_SIDEBAR_NAME = "MainSidebar";
 
@@ -323,9 +320,7 @@ const MainSidebarButton: FC<MainSidebarButtonProps> = ({
       )}
       {...props}
     >
-      {Icon && (
-        <Icon {...iconProps} />
-      )}
+      {Icon && <Icon {...iconProps} />}
       <Slottable>{props.children}</Slottable>
       <BorderBeam className={cn(isActive ? "block" : "hidden")} />
     </Button>

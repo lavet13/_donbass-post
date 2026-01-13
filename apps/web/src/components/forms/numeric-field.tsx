@@ -7,7 +7,7 @@ import {
 } from "react";
 import { NumericFormat } from "react-number-format";
 import type { NumericFormatProps } from "react-number-format";
-import { Input } from "@donbass-post/ui";
+import { Input } from "@donbass-post/ui/input";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { composeEventHandlers } from "@/lib/utils";
