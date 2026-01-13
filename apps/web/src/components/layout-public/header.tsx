@@ -9,7 +9,7 @@ import {
   MainSidebar,
   MainSidebarButton,
   MainSidebarContent,
-} from "@/components/ui/main-sidebar";
+} from "@donbass-post/ui/main-sidebar";
 
 export const Header: FC = () => {
   const navItems = [

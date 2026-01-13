@@ -7,7 +7,6 @@
     "./primitives": "./src/components/form-primitives/index.tsx",
     "./components": "./src/components/index.ts",
     "./component-fields": "./src/components/field-groups/index.ts",
-    "./hooks": "./src/hooks/index.ts",
     "./context": "./src/hooks/form-context.ts",
     "./form": "./src/hooks/form.ts",
     "./utils": "./src/lib/form-utils.ts"

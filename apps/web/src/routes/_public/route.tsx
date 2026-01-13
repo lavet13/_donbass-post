@@ -3,7 +3,7 @@ import { Header } from "@/components/layout-public/header";
 import {
   sidebarOpenAtom,
   mainSidebarAtom,
-} from "@/components/ui/main-sidebar/atom";
+} from "@donbass-post/ui/main-sidebar/atom";
 import { useMediaQuery } from "@donbass-post/ui/hooks";
 import { cn } from "@donbass-post/ui/utils";
 import {

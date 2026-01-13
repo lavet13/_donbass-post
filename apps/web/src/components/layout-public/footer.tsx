@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Text } from "@radix-ui/themes";
 import { useAtomValue } from "jotai";
 import { useEffect, useState, type FC } from "react";
-import { mainSidebarAtom, sidebarOpenAtom } from "../ui/main-sidebar/atom";
+import { mainSidebarAtom, sidebarOpenAtom } from "@donbass-post/ui/main-sidebar/atom";
 
 export const Footer: FC = () => {
   const currentYear = new Date().getFullYear();
