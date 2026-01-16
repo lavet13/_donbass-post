@@ -112,7 +112,7 @@ const MainNav: FC<MainNavProps> = ({ navItems }) => {
                         (link) => link.to && pathname.includes(link.to),
                       ),
                     ) &&
-                      "[&[data-state='open']]:bg-accentA-3 bg-accentA-2 [&>svg]:scale-110 [&>svg]:rotate-10",
+                      "[&[data-state='open']]:bg-accentA-3 bg-accentA-2 [&>svg]:rotate-10",
                     triggerStyles,
                   )}
                   ref={(node) => onNodeUpdate(node, label)}
@@ -175,7 +175,7 @@ const MainNav: FC<MainNavProps> = ({ navItems }) => {
                 <NavigationMenuTrigger
                   className={cn(
                     flat.some(({ to }) => to && pathname.includes(to)) &&
-                      "[&[data-state='open']]:bg-accentA-3 bg-accentA-2 [&>svg]:scale-110 [&>svg]:rotate-10",
+                      "[&[data-state='open']]:bg-accentA-3 bg-accentA-2 [&>svg]:rotate-10",
                     triggerStyles,
                   )}
                   ref={(node) => onNodeUpdate(node, label)}

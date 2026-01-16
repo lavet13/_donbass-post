@@ -57,7 +57,7 @@ import {
   YMapListener,
   YMapZoomControl,
 } from "ymap3-components";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "@donbass-post/ui/hooks";
 import type { YMapLocation } from "@yandex/ymaps3-types/imperative/YMap";
 import type { MapEventUpdateHandler } from "ymaps3";
 import { MAPS_CONFIG } from "@/config/maps";

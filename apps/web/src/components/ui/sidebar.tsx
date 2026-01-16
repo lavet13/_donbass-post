@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import { ChevronRight, Menu } from "lucide-react";
 import { Link, Outlet } from "@tanstack/react-router";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "@donbass-post/ui/hooks";
 import { Slot, Slottable } from "@radix-ui/react-slot";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { cva, type VariantProps } from "class-variance-authority";

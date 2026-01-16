@@ -40,7 +40,7 @@ const NavigationMenuTrigger: FC<
         "flex flex-1 items-center justify-center gap-[2px] rounded-2xl",
         "focus-visible:outline-accent-8 relative overflow-hidden px-2.5 py-2.5 text-ellipsis whitespace-nowrap select-none focus-visible:outline-[2px] focus-visible:-outline-offset-1",
         "text-accent-11 text-sm leading-none",
-        "[&_svg]:size-5 [&_svg]:duration-50 [&[data-state='open']>svg]:scale-110 [&[data-state='open']>svg]:rotate-15",
+        "[&>svg]:size-4.5 [&>svg]:duration-50",
         "[&[data-state='open']]:bg-accentA-2",
         className,
       )}
@@ -106,7 +106,7 @@ const NavigationMenuLink: FC<
         "focus-visible:outline-accent-8 block leading-none no-underline select-none focus-visible:outline-[2px] focus-visible:-outline-offset-1",
         "h-full rounded-sm px-3 py-2",
         "data-[status=active]:text-accent-11 text-gray-12 hover:bg-accentA-2 active:text-accent-11 active:bg-accentA-3",
-        "data-[status=active]:bg-accentA-3 underline-offset-4 data-[status=active]:underline",
+        "data-[status=active]:bg-accentA-3",
         className,
       )}
       {...props}

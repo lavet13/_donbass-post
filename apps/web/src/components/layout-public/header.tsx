@@ -1,10 +1,10 @@
 import { Link, linkOptions } from "@tanstack/react-router";
 import { type FC } from "react";
 import { Tooltip } from "@radix-ui/themes";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "@donbass-post/ui/hooks";
 import { Calendar, HandbagIcon, Package, Route } from "lucide-react";
-import { ModeToggle } from "@/components/mode-toggle";
-import MainNav from "@/components/ui/main-nav";
+import { ModeToggle } from "@donbass-post/ui/mode-toggle";
+import MainNav from "@donbass-post/ui/main-nav";
 import {
   MainSidebar,
   MainSidebarButton,

@@ -26,7 +26,7 @@ export default defineConfig({
     },
   },
   server: {
-    host: "0.0.0.0",
+    host: "donbass-post-test.ru",
     allowedHosts: ["donbass-post-test.ru", ".donbass-post-test.ru"],
   },
   build: {
