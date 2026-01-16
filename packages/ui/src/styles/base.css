@@ -1,0 +1,7 @@
+/* Base Tailwind CSS import - this is the foundation */
+@import "tailwindcss";
+
+/* Define custom variants that will be available throughout your app */
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant translucent (&:where([data-panel-background="translucent"] *));
+@custom-variant solid (&:where([data-panel-background="solid"] *));

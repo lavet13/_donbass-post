@@ -1,0 +1,29 @@
+/*
+ * Main styles entry point for UI package
+ * Apps should import this file to get everything
+ */
+
+/* Define layer order first */
+@layer theme, base, radix-themes, components, utilities;
+
+/* Import Tailwind base with custom variants */
+@import "./base.css";
+
+/* Import shared theme configuration*/
+@import "./theme.css";
+
+/* Import Radix UI color tokens (only the colors you use) */
+@import "@radix-ui/themes/tokens/colors/red.css" layer(radix-themes);
+@import "@radix-ui/themes/tokens/colors/tomato.css" layer(radix-themes); /* error */
+@import "@radix-ui/themes/tokens/colors/gray.css" layer(radix-themes);
+@import "@radix-ui/themes/tokens/colors/indigo.css" layer(radix-themes); /* info */
+@import "@radix-ui/themes/tokens/colors/iris.css" layer(radix-themes); /* info */
+@import "@radix-ui/themes/tokens/colors/orange.css" layer(radix-themes); /* warning */
+@import "@radix-ui/themes/tokens/colors/green.css" layer(radix-themes); /* success */
+
+/* Import custom color overrides */
+@import "./colors.css" layer(radix-themes);
+
+/* Import Radix UI components and utilities */
+@import "@radix-ui/themes/components.css" layer(radix-themes);
+@import "@radix-ui/themes/utilities.css" layer(radix-themes);

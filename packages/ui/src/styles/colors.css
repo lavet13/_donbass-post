@@ -1,6 +1,11 @@
-/* Get the new colors here: https://www.radix-ui.com/colors/custom in case you want
-*  to override existing ones
-* */
+/*
+ * Custom color overrides for Radix UI colors
+ * Get new colors here: https://www.radix-ui.com/colors/custom
+ */
+
+/* ============================================
+ * LIGHT MODE COLORS
+ * ============================================ */
 
 :root,
 .light,
@@ -157,7 +162,10 @@
   --color-background: #fff;
 }
 
-/* Dark Mode */
+/* ============================================
+ * DARK MODE COLORS
+ * ============================================ */
+
 .dark,
 .dark-theme {
   --red-1: #170f0d;

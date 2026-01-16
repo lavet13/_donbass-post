@@ -5,6 +5,10 @@
   "type": "module",
   "exports": {
     ".": "./src/ui/index.ts",
+    "./styles": "./src/styles/index.css",
+    "./styles/theme": "./src/styles/theme.css",
+    "./styles/base": "./src/styles/base.css",
+    "./styles/colors": "./src/styles/colors.css",
     "./input": "./src/ui/input.tsx",
     "./label": "./src/ui/label.tsx",
     "./tabs": "./src/ui/tabs.tsx",
