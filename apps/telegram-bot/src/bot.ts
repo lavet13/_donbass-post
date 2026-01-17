@@ -14,39 +14,43 @@ function runBot() {
   if (!token)
     return console.error("Telegram bot token was not provided, exiting...");
 
-  const bot = createBotInstance(token);
+  try {
+    const bot = createBotInstance(token);
 
-  bot.catch((error) => {
-    const ctx = error.ctx;
+    bot.catch((error) => {
+      const ctx = error.ctx;
 
-    console.error(`Error while handling update ${ctx.update.update_id}`);
+      console.error(`Error while handling update ${ctx.update.update_id}`);
 
-    const e = error.error;
-    if (e instanceof GrammyError) {
-      console.error("Error in request:", e.description);
-    } else if (e instanceof HttpError) {
-      console.error("Could not contact Telegram:", e);
-    } else {
-      console.error("Unknown error:", e);
-    }
-  });
-
-  bot.on("callback_query:data", async (ctx) => {
-    const payload = ctx.callbackQuery.data;
-    console.log("Unknown button event with payload", {
-      payload,
-      timestamp: formatRussianDateTime(new Date()),
+      const e = error.error;
+      if (e instanceof GrammyError) {
+        console.error("Error in request:", e.description);
+      } else if (e instanceof HttpError) {
+        console.error("Could not contact Telegram:", e);
+      } else {
+        console.error("Unknown error:", e);
+      }
     });
-    await ctx.answerCallbackQuery({
-      text: "Необработанное действие 😥",
+
+    bot.on("callback_query:data", async (ctx) => {
+      const payload = ctx.callbackQuery.data;
+      console.warn("Unknown button event with payload", {
+        payload,
+        timestamp: formatRussianDateTime(new Date()),
+      });
+      await ctx.answerCallbackQuery({
+        text: "Необработанное действие 😥",
+      });
     });
-  });
 
-  // do not await start method, because it's infinite, unless stopped
-  bot.start();
-  console.log("Telegram Bot started!");
+    // do not await start method, because it's infinite, unless stopped
+    bot.start();
+    console.warn("Telegram Bot started!");
 
-  return bot;
+    return bot;
+  } catch (error) {
+    console.error("Error occured:", error);
+  }
 }
 
 export const bot = runBot();
