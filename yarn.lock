@@ -646,6 +646,13 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.10.tgz#a2a1e3812d14525f725d011a73eceb41fef5bc1c"
   integrity sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==
 
+"@grammyjs/auto-retry@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@grammyjs/auto-retry/-/auto-retry-2.0.2.tgz#8b3bfc869b128b818b1e22418418e1d75ca622fd"
+  integrity sha512-b4A4p5jlYDiQtW0c0FXYe11WMkYoiW+5rvOaDMCOk1h7Pu2SDl7B7gmFF8cthWCx2+M2nWLOsBxAgbBG4kKWYg==
+  dependencies:
+    debug "^4.3.4"
+
 "@grammyjs/types@3.23.0":
   version "3.23.0"
   resolved "https://registry.yarnpkg.com/@grammyjs/types/-/types-3.23.0.tgz#f0ed98d2e35dbedf170b3aa9b5a2b7cd46238bc1"

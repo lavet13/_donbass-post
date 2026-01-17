@@ -11,6 +11,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@grammyjs/auto-retry": "^2.0.2",
     "date-fns-tz": "^3.2.0",
     "grammy": "^1.39.2",
     "srvx": "^0.10.0"
