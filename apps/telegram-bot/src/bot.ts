@@ -4,29 +4,58 @@ import { autoRetry } from "@grammyjs/auto-retry";
 
 export type TCustomBot = Bot<Context> & {};
 
-export function createBotInstance(token: string): TCustomBot {
-  const bot = new Bot(token) as TCustomBot;
+export class BotManager {
+  private static instance: BotManager | null = null;
+  private bot: TCustomBot | null = null;
+  private isStarted = false;
 
-  return bot;
-}
+  private constructor() {}
 
-function runBot() {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  if (!token) {
-    return console.error("Telegram bot token was not provided, exiting...");
+  static getInstance(): BotManager {
+    if (!BotManager.instance) {
+      BotManager.instance = new BotManager();
+    }
+    return BotManager.instance;
   }
 
-  try {
-    const bot = createBotInstance(token);
+  getBot(): TCustomBot | null {
+    return this.bot;
+  }
 
-    bot.api.config.use(
-      autoRetry({
-        maxRetryAttempts: 5,
-        maxDelaySeconds: 300,
-      }),
-    );
+  isRunning(): boolean {
+    return this.isStarted && this.bot !== null;
+  }
 
-    bot.catch((err) => {
+  async initialize(token: string): Promise<void> {
+    if (this.bot) {
+      console.warn("Bot already initialized, skipping...");
+      return;
+    }
+
+    try {
+      this.bot = new Bot(token);
+
+      this.bot.api.config.use(
+        autoRetry({
+          maxRetryAttempts: 5,
+          maxDelaySeconds: 300,
+        }),
+      );
+
+      this.setupErrorHandling();
+      this.setupHandlers();
+
+      console.warn("Bot initialized successfully");
+    } catch (error) {
+      console.error("Failed to initialize bot:", error);
+      throw error;
+    }
+  }
+
+  private setupErrorHandling(): void {
+    if (!this.bot) return;
+
+    this.bot.catch((err) => {
       const ctx = err.ctx;
       const updateId = ctx?.update?.update_id ?? "—";
       console.error(`Error in update ${updateId}:`, err);
@@ -78,8 +107,12 @@ function runBot() {
         console.error(`Unexpected error ${prefix}:`, e);
       }
     });
+  }
 
-    bot.on("callback_query:data", async (ctx) => {
+  private setupHandlers(): void {
+    if (!this.bot) return;
+
+    this.bot.on("callback_query:data", async (ctx) => {
       const payload = ctx.callbackQuery.data;
       console.warn("Unknown button event with payload", {
         payload,
@@ -89,30 +122,84 @@ function runBot() {
         text: "Необработанное действие 😥",
       });
     });
+  }
 
-    // do not await start method, because it's infinite, unless stopped
-    bot.start();
-    console.warn("Telegram Bot started!");
+  async startPolling(): Promise<void> {
+    if (!this.bot) return;
 
-    return bot;
-  } catch (error) {
-    console.error(
-      "Startup error:",
-      error instanceof Error ? error.stack : error,
-    );
-    return undefined;
+    try {
+      this.bot.start();
+      this.isStarted = true;
+      console.warn("Bot started in polling mode");
+    } catch (error) {
+      console.error(
+        "Startup error:",
+        error instanceof Error ? error.stack : error,
+      );
+    }
+  }
+
+  async stop(): Promise<void> {
+    if (!this.bot || !this.isStarted) {
+      console.warn("Bot not running, nothing to stop");
+      return;
+    }
+
+    try {
+      await this.bot.stop();
+      this.isStarted = false;
+      console.warn("Bot stopped gracefully");
+    } catch (error) {
+      console.error(
+        "Error stopping bot:",
+        error instanceof Error ? error.stack : error,
+      );
+    }
+  }
+
+  async handleWebhookUpdate(update: any): Promise<void> {
+    if (!this.bot) {
+      throw new Error("Bot not initialized");
+    }
+
+    await this.bot.handleUpdate(update);
+  }
+
+  async setWebhook(url: string): Promise<void> {
+    if (!this.bot) {
+      throw new Error("Bot not initialized");
+    }
+
+    try {
+      await this.bot.api.setWebhook(url);
+      console.warn(`Webhook set to: ${url}`);
+    } catch (error) {
+      console.error("Failed to set webhook:", error);
+      throw error;
+    }
+  }
+
+  async deleteWebhook(): Promise<void> {
+    if (!this.bot) {
+      throw new Error("Bot not initialized");
+    }
+
+    try {
+      await this.bot.api.deleteWebhook();
+      console.warn("Webhook deleted");
+    } catch (error) {
+      console.error("Failed to delete webhook:", error);
+      throw error;
+    }
+  }
+
+  async getWebhookInfo(): Promise<any> {
+    if (!this.bot) {
+      throw new Error("Bot not initialized");
+    }
+
+    return await this.bot.api.getWebhookInfo();
   }
 }
 
-export const bot = runBot();
-
-if (bot) {
-  process.once("SIGINT", () => {
-    bot.stop();
-    console.warn("Bot stopped (SIGINT)");
-  });
-  process.once("SIGTERM", () => {
-    bot.stop();
-    console.warn("Bot stopped (SIGTERM)");
-  });
-}
+export const getBotManager = () => BotManager.getInstance();
