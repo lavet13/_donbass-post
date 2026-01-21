@@ -3,6 +3,8 @@ declare global {
     interface ProcessEnv {
       NODE_ENV: "development" | "production";
       TELEGRAM_BOT_TOKEN?: string;
+      USE_WEBHOOK?: "true";
+      WEBHOOK_URL?: string;
       PORT?: string;
       WEBHOOK_URL?: string;
     }
