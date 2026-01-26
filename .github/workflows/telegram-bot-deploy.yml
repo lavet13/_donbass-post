@@ -53,7 +53,7 @@ jobs:
 
       # 6. Deploy to VPS
       - name: Deploy to VPS via SSH
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
@@ -70,7 +70,7 @@ jobs:
 
       # 7. Copy files to VPS
       - name: Copy files to VPS
-        uses: appleboy/scp-action@v0
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
@@ -81,7 +81,7 @@ jobs:
 
       # 8. Install dependencies and restart with PM2
       - name: Install dependencies and restart bot
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
@@ -110,7 +110,7 @@ jobs:
         run: sleep 10
 
       - name: Verify deployment
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
