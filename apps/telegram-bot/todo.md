@@ -1,3 +1,4 @@
 Setup webhook for production.
-Adding middlware feature for routing.
-Should we consider creating separate class Route for Router?
+Deploy the tg-bot into the server
+Setup workflow in the github
+Create domain which could point to the server

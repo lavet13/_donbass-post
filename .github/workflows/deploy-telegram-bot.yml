@@ -1,0 +1,126 @@
+name: Deploy Telegram Bot
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "apps/telegram-bot/**"
+      - ".github/workflows/deploy-telegram-bot.yml"
+  # Allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout
+        uses: actions/checkout@v5 # Updated to v5 (latest)
+
+      # 2. Setup Node.js
+      - name: Set up Node
+        uses: actions/setup-node@v5 # Updated to v5
+        with:
+          node-version: lts/* # Use latest LTS (currently Node 20)
+          cache: "yarn"
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # 4. Build the project
+      - name: Build telegram bot
+        run: yarn workspace @donbass-post/tg-bot build
+
+      # 5. Prepare deployment files
+      - name: Create deployment package
+        run: |
+          cd apps/telegram-bot
+          mkdir -p deploy
+          cp -r dist deploy/
+          cp package.json deploy/
+          cp yarn.lock deploy/ || cp package-lock.json deploy/ || echo "No lock file"
+
+          # Create .env file from secrets
+          cat > deploy/.env << EOF
+          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+          USE_WEBHOOK=true
+          WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
+          PORT=3000
+          NODE_ENV=production
+          EOF
+
+      # 6. Deploy to VPS
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            mkdir -p ~/telegram-bot
+
+            if [ -d ~/telegram-bot/current ]; then
+              mv ~/telegram-bot/current ~/telegram-bot/backup_$(date +%Y%m%d_%H%M%S)
+              ls -dt ~/telegram-bot/backup_* | tail -n +4 | xargs rm -rf
+            fi
+
+            mkdir -p ~/telegram-bot/current
+
+      # 7. Copy files to VPS
+      - name: Copy files to VPS
+        uses: appleboy/scp-action@v0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "apps/telegram-bot/deploy/*"
+          target: "~/telegram-bot/current"
+          strip_components: 3
+
+      # 8. Install dependencies and restart with PM2
+      - name: Install dependencies and restart bot
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/telegram-bot/current
+
+            npm install --production
+
+            pm2 stop telegram-bot || true
+            pm2 delete telegram-bot || true
+
+            pm2 start dist/server.js \
+              --name telegram-bot \
+              --node-args="--max-old-space-size=512" \
+              --max-memory-restart 500M \
+              --exp-backoff-restart-delay=100
+
+            pm2 save
+
+            pm2 status telegram-bot
+            pm2 logs telegram-bot --lines 20 --nostream
+
+      # 9. Health check
+      - name: Wait for bot to start
+        run: sleep 10
+
+      - name: Verify deployment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            if pm2 status telegram-bot | grep -q "online"; then
+              echo "✅ Bot is running successfully!"
+              pm2 logs telegram-bot --lines 10 --nostream
+            else
+              echo "❌ Bot failed to start!"
+              pm2 logs telegram-bot --lines 50 --nostream
+              exit 1
+            fi
