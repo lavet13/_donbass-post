@@ -6,7 +6,6 @@ on:
     paths:
       - "apps/telegram-bot/**"
       - ".github/workflows/telegram-bot-deploy.yml"
-
   # Allow manual trigger from GitHub Actions tab
   workflow_dispatch:
 
@@ -41,23 +40,13 @@ jobs:
 
           # Copy built output + package.json
           cp -r apps/telegram-bot/dist apps/telegram-bot/deploy/
+          cp apps/telegram-bot/package.json apps/telegram-bot/deploy/
           cp apps/telegram-bot/ecosystem.config.cjs apps/telegram-bot/deploy/
 
-          # Create minimal package.json (only grammy, srvx, auto-retry)
-          cd apps/telegram-bot/deploy
-          cat > package.json << 'PKGJSON'
-          {
-            "name": "@donbass-post/tg-bot",
-            "private": true,
-            "version": "0.0.0",
-            "dependencies": {
-              "@grammyjs/auto-retry": "^2.0.2",
-              "grammy": "^1.39.2",
-              "srvx": "^0.10.0"
-            }
-          }
-          PKGJSON
+          cp yarn.lock apps/telegram-bot/deploy/ || echo "yarn.lock not found at root"
 
+          # Create .env file from secrets
+          cd apps/telegram-bot/deploy
           cat > .env << EOF
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
           USE_WEBHOOK=true
@@ -110,7 +99,6 @@ jobs:
             # Ensure logs dir exists (ecosystem config)
             mkdir -p logs
 
-            # Install ONLY production dependencies (no workspace packages)
             yarn install --production --frozen-lockfile
 
             pm2 stop telegram-bot || true

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch --clear-screen=false src/server.ts",
     "build": "tsup",
-    "preview": "cross-env NODE_ENV=production node dist/server.js",
+    "preview": "cross-env NODE_ENV=production node dist/server.cjs",
     "check-types": "tsc -b",
     "lint": "eslint ."
   },
