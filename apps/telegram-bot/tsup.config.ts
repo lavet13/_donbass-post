@@ -8,4 +8,7 @@ export default defineConfig((options) => ({
   clean: true,
   treeshake: true,
   minify: !options.watch && "terser",
+
+  // Bundle everything by default
+  noExternal: [/.*/],
 }));

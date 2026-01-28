@@ -16,13 +16,13 @@ jobs:
     steps:
       # 1. Checkout code
       - name: Checkout
-        uses: actions/checkout@v4 # Updated to v5 (latest)
+        uses: actions/checkout@v4
 
       # 2. Setup Node.js
       - name: Set up Node
-        uses: actions/setup-node@v4 # Updated to v5
+        uses: actions/setup-node@v4
         with:
-          node-version: lts/* # Use latest LTS (currently Node 20)
+          node-version: lts/*
           cache: "yarn"
 
       # 3. Install dependencies
@@ -40,13 +40,19 @@ jobs:
 
           # Copy built output + package.json
           cp -r apps/telegram-bot/dist apps/telegram-bot/deploy/
-          cp apps/telegram-bot/package.json apps/telegram-bot/deploy/
           cp apps/telegram-bot/ecosystem.config.cjs apps/telegram-bot/deploy/
 
-          cp yarn.lock apps/telegram-bot/deploy/ || echo "yarn.lock not found at root"
-
-          # Create .env file from secrets
+           # Create minimal package.json (NO dependencies needed!)
           cd apps/telegram-bot/deploy
+          cat > package.json << 'PKGJSON'
+          {
+            "name": "@donbass-post/tg-bot",
+            "private": true,
+            "version": "0.0.0",
+            "type": "module"
+          }
+          PKGJSON
+
           cat > .env << EOF
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
           USE_WEBHOOK=true
@@ -98,8 +104,6 @@ jobs:
 
             # Ensure logs dir exists (ecosystem config)
             mkdir -p logs
-
-            yarn install --production --frozen-lockfile
 
             pm2 stop telegram-bot || true
             pm2 delete telegram-bot || true
