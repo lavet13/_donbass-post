@@ -29,6 +29,9 @@ jobs:
             --exclude='.turbo' \
             --exclude='.env*' \
             --exclude='apps/web' \
+            --exclude='apps/telegram-mini-app' \
+            --exclude='packages/forms' \
+            --exclude='packages/ui' \
             --exclude='.DS_Store' \
             --exclude='*.log' \
             --exclude='logs' \
@@ -38,26 +41,11 @@ jobs:
           # Create .env file for telegram-bot
           cat > deploy/apps/telegram-bot/.env << EOF
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-          USE_WEBHOOK=${{ secrets.USE_WEBHOOK }}
+          USE_WEBHOOK=true
           WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
           PORT=3000
           NODE_ENV=production
           EOF
-
-      - name: Prepare VPS directories
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_SSH_PORT }}
-          script: |
-            mkdir -p ~/telegram-bot
-            if [ -d ~/telegram-bot/current ]; then
-              mv ~/telegram-bot/current ~/telegram-bot/backup_$(date +%Y%m%d_%H%M%S)
-              ls -dt ~/telegram-bot/backup_* | tail -n +4 | xargs rm -rf
-            fi
-            mkdir -p ~/telegram-bot/current
 
       - name: Deploy to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -67,8 +55,9 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           source: "deploy/*"
-          target: "~/telegram-bot/current"
+          target: "~/telegram-bot"
           strip_components: 1
+          overwrite: true
 
       - name: Build and start
         uses: appleboy/ssh-action@v1.0.3
@@ -78,7 +67,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
-            cd ~/telegram-bot/current
+            cd ~/telegram-bot
 
             # Install all dependencies
             yarn install --frozen-lockfile
