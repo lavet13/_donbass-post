@@ -6,6 +6,7 @@ on:
     paths:
       - "apps/telegram-bot/**"
       - ".github/workflows/telegram-bot-deploy.yml"
+
   # Allow manual trigger from GitHub Actions tab
   workflow_dispatch:
 
