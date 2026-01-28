@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "telegram-bot",
-      script: "./dist/server.js",
+      script: "./dist/server.cjs",
       instances: 1,
       exec_mode: "fork",
 
