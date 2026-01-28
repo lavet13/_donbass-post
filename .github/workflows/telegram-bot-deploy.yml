@@ -5,8 +5,8 @@ on:
     branches: ["main"]
     paths:
       - "apps/telegram-bot/**"
+      - "packages/**"
       - ".github/workflows/telegram-bot-deploy.yml"
-  # Allow manual trigger from GitHub Actions tab
   workflow_dispatch:
 
 jobs:
@@ -14,48 +14,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: "yarn"
-
-      # 3. Install dependencies
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      # 4. Build the project
-      - name: Build telegram bot
-        run: yarn workspace @donbass-post/tg-bot build
-
-      # 5. Prepare deployment files
       - name: Create deployment package
         run: |
-          mkdir -p apps/telegram-bot/deploy
+          mkdir -p deploy
 
-          # Copy built output + package.json
-          cp -r apps/telegram-bot/dist apps/telegram-bot/deploy/
-          cp apps/telegram-bot/package.json apps/telegram-bot/deploy/
-          cp apps/telegram-bot/ecosystem.config.cjs apps/telegram-bot/deploy/
+          # Use rsync to copy monorepo, excluding unnecessary files
+          rsync -av \
+            --exclude='node_modules' \
+            --exclude='dist' \
+            --exclude='.git' \
+            --exclude='.turbo' \
+            --exclude='.env*' \
+            --exclude='apps/web' \
+            --exclude='.DS_Store' \
+            --exclude='*.log' \
+            --exclude='logs' \
+            --exclude='deploy' \
+            ./ deploy/
 
-          cp yarn.lock apps/telegram-bot/deploy/ || echo "yarn.lock not found at root"
-
-          # Create .env file from secrets
-          cd apps/telegram-bot/deploy
-          cat > .env << EOF
+          # Create .env file for telegram-bot
+          cat > deploy/apps/telegram-bot/.env << EOF
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-          USE_WEBHOOK=true
+          USE_WEBHOOK=${{ secrets.USE_WEBHOOK }}
           WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
           PORT=3000
           NODE_ENV=production
           EOF
 
-      # 6. Deploy to VPS
       - name: Prepare VPS directories
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -65,28 +53,24 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
             mkdir -p ~/telegram-bot
-
             if [ -d ~/telegram-bot/current ]; then
               mv ~/telegram-bot/current ~/telegram-bot/backup_$(date +%Y%m%d_%H%M%S)
               ls -dt ~/telegram-bot/backup_* | tail -n +4 | xargs rm -rf
             fi
-
             mkdir -p ~/telegram-bot/current
 
-      # 7. Copy files to VPS
-      - name: Copy files to VPS
+      - name: Deploy to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
-          source: "apps/telegram-bot/deploy/*"
+          source: "deploy/*"
           target: "~/telegram-bot/current"
-          strip_components: 3
+          strip_components: 1
 
-      # 8. Install dependencies and restart with PM2
-      - name: Install deps & (re)start with PM2
+      - name: Build and start
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -96,25 +80,27 @@ jobs:
           script: |
             cd ~/telegram-bot/current
 
-            # Ensure logs dir exists (ecosystem config)
+            # Install all dependencies
+            yarn install --frozen-lockfile
+
+            # Build telegram bot
+            yarn workspace @donbass-post/tg-bot build
+
+            # Navigate to bot directory
+            cd apps/telegram-bot
             mkdir -p logs
 
-            yarn install --production --frozen-lockfile
-
+            # Restart PM2
             pm2 stop telegram-bot || true
             pm2 delete telegram-bot || true
-
             pm2 start ecosystem.config.cjs --env production
-
-            # Optional upgrade: use reload for zero-downtime if your app supports it
-            # pm2 reload ecosystem.config.cjs --env production   # try this later
-
             pm2 save
-            pm2 status telegram-bot
-            pm2 logs telegram-bot --lines 40 --nostream
 
-      # 9. Health check
-      - name: Wait for bot to start
+            # Verify
+            pm2 status telegram-bot
+            pm2 logs telegram-bot --lines 20 --nostream
+
+      - name: Health check
         run: sleep 15
 
       - name: Verify deployment
@@ -126,10 +112,10 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
             if pm2 status telegram-bot | grep -q "online"; then
-              echo "✅ Bot is running successfully!"
+              echo "✅ Bot deployed successfully!"
               pm2 logs telegram-bot --lines 10 --nostream
             else
-              echo "❌ Bot failed to start!"
+              echo "❌ Deployment failed!"
               pm2 logs telegram-bot --lines 50 --nostream
               exit 1
             fi
