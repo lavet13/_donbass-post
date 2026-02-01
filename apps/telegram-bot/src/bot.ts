@@ -47,6 +47,10 @@ export class BotManager {
         }),
       );
 
+      // CRITICAL: Initialize bot info for webhook mode
+      // This fetches bot information from Telegram
+      await this.bot.init();
+
       this.setupErrorHandling();
       this.setupHandlers();
 
@@ -120,6 +124,40 @@ export class BotManager {
     if (!this.bot) {
       throw new Error("Bot not initialized");
     }
+
+    // Start command
+    this.bot.command("start", async (ctx) => {
+      await ctx.reply(
+        "👋 Привет! Я бот Донбасс Пост.\n\n" +
+          "Доступные команды:\n" +
+          "/start - Начать работу\n" +
+          "/help - Помощь\n" +
+          "/status - Статус бота",
+      );
+    });
+
+    // Help command
+    this.bot.command("help", async (ctx) => {
+      await ctx.reply(
+        "ℹ️ Помощь:\n\n" +
+          "Этот бот помогает с новостями Донбасса.\n" +
+          "Используйте /start для начала работы.",
+      );
+    });
+
+    // Status command
+    this.bot.command("status", async (ctx) => {
+      const uptime = Math.floor(process.uptime());
+      const hours = Math.floor(uptime / 3600);
+      const minutes = Math.floor((uptime % 3600) / 60);
+
+      await ctx.reply(
+        `✅ Бот работает\n\n` +
+          `⏱ Время работы: ${hours}ч ${minutes}м\n` +
+          `🤖 Версия: 1.0.0\n` +
+          `📡 Режим: ${this.mode || "неизвестен"}`,
+      );
+    });
 
     this.bot.on("callback_query:data", async (ctx) => {
       const payload = ctx.callbackQuery.data;

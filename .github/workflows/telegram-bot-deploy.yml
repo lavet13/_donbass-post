@@ -100,9 +100,6 @@ jobs:
             pm2 status telegram-bot
             pm2 logs telegram-bot --lines 20 --nostream
 
-      - name: Health check
-        run: sleep 15
-
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
