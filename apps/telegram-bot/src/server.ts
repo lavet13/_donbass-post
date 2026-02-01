@@ -29,13 +29,13 @@ async function startApp() {
       try {
         await botManager.deleteWebhook();
         await botManager.setWebhook(webhookUrl);
+        console.warn(`✅ Webhook set to: ${webhookUrl}`);
       } catch (error) {
         console.error(
           `Failed to set webhook, switching to polling... The error: ${error instanceof Error ? error.stack : error}`,
         );
         await botManager.startPolling();
       }
-      console.warn(`✅ Webhook set to: ${webhookUrl}`);
     } else {
       await botManager.startPolling();
     }
