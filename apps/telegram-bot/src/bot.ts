@@ -8,6 +8,7 @@ export class BotManager {
   private static instance: BotManager | null = null;
   private bot: TCustomBot | null = null;
   private isStarted = false;
+  private mode: "webhook" | "polling" | null = null;
 
   private constructor() {}
 
@@ -24,6 +25,10 @@ export class BotManager {
 
   isRunning(): boolean {
     return this.isStarted && this.bot !== null;
+  }
+
+  getMode(): "webhook" | "polling" | null {
+    return this.mode;
   }
 
   async initialize(token: string): Promise<void> {
@@ -53,7 +58,9 @@ export class BotManager {
   }
 
   private setupErrorHandling(): void {
-    if (!this.bot) return;
+    if (!this.bot) {
+      throw new Error("Bot not initialized");
+    }
 
     this.bot.catch((err) => {
       const ctx = err.ctx;
@@ -110,7 +117,9 @@ export class BotManager {
   }
 
   private setupHandlers(): void {
-    if (!this.bot) return;
+    if (!this.bot) {
+      throw new Error("Bot not initialized");
+    }
 
     this.bot.on("callback_query:data", async (ctx) => {
       const payload = ctx.callbackQuery.data;
@@ -125,11 +134,14 @@ export class BotManager {
   }
 
   async startPolling(): Promise<void> {
-    if (!this.bot) return;
+    if (!this.bot) {
+      throw new Error("Bot not initialized");
+    }
 
     try {
       this.bot.start();
       this.isStarted = true;
+      this.mode = "polling";
       console.warn("Bot started in polling mode");
     } catch (error) {
       console.error(
@@ -141,13 +153,14 @@ export class BotManager {
 
   async stop(): Promise<void> {
     if (!this.bot || !this.isStarted) {
-      console.warn("Bot not running, nothing to stop");
+      console.error("Bot not running, nothing to stop");
       return;
     }
 
     try {
       await this.bot.stop();
       this.isStarted = false;
+      this.mode = null;
       console.warn("Bot stopped gracefully");
     } catch (error) {
       console.error(
@@ -172,7 +185,9 @@ export class BotManager {
 
     try {
       await this.bot.api.setWebhook(url);
-      console.warn(`Webhook set to: ${url}`);
+      this.isStarted = true;
+      this.mode = "webhook";
+      console.warn(`✅ Webhook configured: ${url}`);
     } catch (error) {
       console.error("Failed to set webhook:", error);
       throw error;
@@ -193,7 +208,7 @@ export class BotManager {
     }
   }
 
-  async getWebhookInfo(): Promise<any> {
+  async getWebhookInfo() {
     if (!this.bot) {
       throw new Error("Bot not initialized");
     }

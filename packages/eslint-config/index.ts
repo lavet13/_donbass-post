@@ -10,7 +10,6 @@ export const base = (): Linter.Config[] => [
   js.configs.recommended,
   {
     rules: {
-      "no-console": ["warn", { allow: ["warn", "error"] }],
       "prefer-const": "warn",
       eqeqeq: ["error", "always"],
     },

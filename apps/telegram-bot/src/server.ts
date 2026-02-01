@@ -29,14 +29,25 @@ async function startApp() {
       try {
         await botManager.deleteWebhook();
         await botManager.setWebhook(webhookUrl);
-        console.warn(`✅ Webhook set to: ${webhookUrl}`);
+
+        const webhookInfo = await botManager.getWebhookInfo();
+
+        if (webhookInfo.url === webhookUrl) {
+          console.warn(`✅ Webhook verified and active: ${webhookUrl}`);
+        } else {
+          throw new Error(
+            `Webhook verification failed. Expected: ${webhookUrl}, Got: ${webhookInfo.url}`,
+          );
+        }
       } catch (error) {
+        console.error(`❌ Failed to set webhook, switching to polling...`);
         console.error(
-          `Failed to set webhook, switching to polling... The error: ${error instanceof Error ? error.stack : error}`,
+          `Error details: ${error instanceof Error ? error.stack : error}`,
         );
         await botManager.startPolling();
       }
     } else {
+      console.warn("📡 Using polling mode...");
       await botManager.startPolling();
     }
 
@@ -49,6 +60,8 @@ async function startApp() {
     });
 
     await server.ready();
+
+    console.warn(`📊 Bot mode: ${botManager.getMode()}`);
 
     const shutdown = async () => {
       console.warn("\nShutting down gracefully...");
