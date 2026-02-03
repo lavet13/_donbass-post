@@ -108,6 +108,7 @@ export function createRoutes(): Router {
   router.post(
     "/api/notify/online-pickup",
     async (request) => {
+      console.log(await request.json());
       try {
         const payload = await parseJSON<OnlinePickupPayload>(request);
 

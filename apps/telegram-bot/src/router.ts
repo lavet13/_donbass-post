@@ -166,10 +166,7 @@ export function error(message: string, status = 400) {
 
 export async function parseJSON<T = any>(request: Request): Promise<T> {
   try {
-    // Get the raw text with UTF-8 encoding
-    const text = await request.text();
-    // Parse as JSON
-    return JSON.parse(text) as T;
+    return await (<T>request.json());
   } catch {
     throw new Error("Invalid JSON body");
   }

@@ -7,7 +7,7 @@ import { config, validateConfig } from "@/config";
 async function startApp() {
   try {
     validateConfig(config);
-  } catch(error) {
+  } catch (error) {
     console.error("❌ Configuration validation failed:");
     console.error(error instanceof Error ? error.message : error);
     process.exit(1);
@@ -27,7 +27,9 @@ async function startApp() {
         const webhookInfo = await botManager.getWebhookInfo();
 
         if (webhookInfo.url === config.telegram.webhookUrl) {
-          console.warn(`✅ Webhook verified and active: ${config.telegram.webhookUrl}`);
+          console.warn(
+            `✅ Webhook verified and active: ${config.telegram.webhookUrl}`,
+          );
         } else {
           throw new Error(
             `Webhook verification failed. Expected: ${config.telegram.webhookUrl}, Got: ${webhookInfo.url}`,
@@ -56,7 +58,9 @@ async function startApp() {
 
     console.warn(`📊 Bot mode: ${botManager.getMode()}`);
     console.warn(`🌍 Environment: ${config.server.nodeEnv}`);
-    console.warn(`👥 Managers configured: ${config.managers.getChatIds().length}`);
+    console.warn(
+      `👥 Managers configured: ${config.managers.getChatIds().length}`,
+    );
 
     const shutdown = async () => {
       console.warn("\nShutting down gracefully...");
