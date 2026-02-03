@@ -155,7 +155,7 @@ export function json(data: any, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json; charset=utf-8",
     },
   });
 }
@@ -166,7 +166,10 @@ export function error(message: string, status = 400) {
 
 export async function parseJSON<T = any>(request: Request): Promise<T> {
   try {
-    return await (<T>request.json());
+    // Get the raw text with UTF-8 encoding
+    const text = await request.text();
+    // Parse as JSON
+    return JSON.parse(text) as T;
   } catch {
     throw new Error("Invalid JSON body");
   }
