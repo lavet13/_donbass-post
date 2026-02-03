@@ -6,7 +6,8 @@ declare global {
       USE_WEBHOOK?: "true";
       WEBHOOK_URL?: string;
       PORT?: string;
-      WEBHOOK_URL?: string;
+
+      MANAGER_CHAT_IDS?: string;
     }
   }
 }

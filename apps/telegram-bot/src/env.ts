@@ -35,13 +35,6 @@ export function getEnv(key: string, defaultValue?: string): string {
 }
 
 /**
- * Get required environment variable (throws if not set)
- */
-export function requireEnv(key: string): string {
-  return getEnv(key);
-}
-
-/**
  * Validate required environment variables
  */
 export function validateEnv(requiredVars: string[]): void {

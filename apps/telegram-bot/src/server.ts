@@ -2,41 +2,35 @@ import "@/env";
 import { serve } from "srvx/node";
 import { createRoutes } from "@/routes";
 import { getBotManager } from "@/bot";
+import { config, validateConfig } from "@/config";
 
 async function startApp() {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-
-  if (!token) {
-    console.error("TELEGRAM_BOT_TOKEN environment variable is required");
+  try {
+    validateConfig(config);
+  } catch(error) {
+    console.error("❌ Configuration validation failed:");
+    console.error(error instanceof Error ? error.message : error);
     process.exit(1);
   }
 
   const botManager = getBotManager();
 
   try {
-    await botManager.initialize(token);
+    await botManager.initialize(config.telegram.token);
 
-    const useWebhook = process.env.USE_WEBHOOK === "true";
-
-    if (useWebhook) {
-      const webhookUrl = process.env.WEBHOOK_URL;
-      if (!webhookUrl) {
-        console.error("WEBHOOK_URL is required when USE_WEBHOOK=true");
-        process.exit(1);
-      }
-
+    if (config.telegram.useWebhook) {
       console.warn("🔗 Setting up webhook mode...");
       try {
         await botManager.deleteWebhook();
-        await botManager.setWebhook(webhookUrl);
+        await botManager.setWebhook(config.telegram.webhookUrl);
 
         const webhookInfo = await botManager.getWebhookInfo();
 
-        if (webhookInfo.url === webhookUrl) {
-          console.warn(`✅ Webhook verified and active: ${webhookUrl}`);
+        if (webhookInfo.url === config.telegram.webhookUrl) {
+          console.warn(`✅ Webhook verified and active: ${config.telegram.webhookUrl}`);
         } else {
           throw new Error(
-            `Webhook verification failed. Expected: ${webhookUrl}, Got: ${webhookInfo.url}`,
+            `Webhook verification failed. Expected: ${config.telegram.webhookUrl}, Got: ${webhookInfo.url}`,
           );
         }
       } catch (error) {
@@ -52,16 +46,17 @@ async function startApp() {
     }
 
     const router = createRoutes();
-    const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
     const server = serve({
       fetch: (request) => router.handle(request),
-      port,
+      port: config.server.port,
     });
 
     await server.ready();
 
     console.warn(`📊 Bot mode: ${botManager.getMode()}`);
+    console.warn(`🌍 Environment: ${config.server.nodeEnv}`);
+    console.warn(`👥 Managers configured: ${config.managers.getChatIds().length}`);
 
     const shutdown = async () => {
       console.warn("\nShutting down gracefully...");
