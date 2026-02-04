@@ -1,4 +1,5 @@
 import { getBotManager } from "@/bot";
+import { config } from "@/config";
 import { cors, handleOptions, requireJSON } from "@/middleware";
 import { getRouter, Router, error, parseJSON, json } from "@/router";
 import { notifyOnlinePickup } from "@/services/notification.service";
@@ -64,6 +65,33 @@ export function createRoutes(): Router {
   // To use this, you need to set webhook URL via Telegram Bot API:
   // https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://your-domain.com/webhook
   router.post("/webhook", async (request) => {
+    // 1. Only allow webhook mode at all
+    if (!config.telegram.useWebhook)
+      return new Response("This endpoint is only available in webhook mode", {
+        status: 403,
+        headers: {
+          "Content-Type": "text/plain",
+        },
+      });
+
+    // 2. Secret token verification – do this as early as possible
+    const receivedSecret = request.headers.get(
+      "X-Telegram-Bot-Api-Secret-Token",
+    );
+    console.log({ receivedSecret });
+
+    if (config.telegram.webhookSecret) {
+      if (receivedSecret !== config.telegram.webhookSecret) {
+        console.warn(
+          `Webhook secret mismatch (possible spoofed request) — received: ${receivedSecret ? "present but wrong" : "missing"}`,
+        );
+        return new Response("Forbidden", { status: 403 });
+      }
+    } else {
+      // No secret configured → log warning but proceed (not ideal, but graceful)
+      console.warn("Webhook secret check skipped — WEBHOOK_SECRET not set");
+    }
+
     if (!bot) {
       return new Response("Bot not initialized", { status: 503 });
     }
@@ -76,7 +104,7 @@ export function createRoutes(): Router {
 
       return new Response("OK", { status: 200 });
     } catch (error) {
-      console.error("Webhook error:", error);
+      console.error("Webhook processing error:", error);
       return new Response("Error processing update", { status: 500 });
     }
   });
@@ -108,7 +136,6 @@ export function createRoutes(): Router {
   router.post(
     "/api/notify/online-pickup",
     async (request) => {
-      console.log(await request.json());
       try {
         const payload = await parseJSON<OnlinePickupPayload>(request);
 

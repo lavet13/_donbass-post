@@ -8,6 +8,7 @@ export const config = {
     token: getEnv("TELEGRAM_BOT_TOKEN"),
     useWebhook: getEnv("USE_WEBHOOK", "") === "true",
     webhookUrl: getEnv("WEBHOOK_URL", ""),
+    webhookSecret: getEnv("WEBHOOK_SECRET", ""),
   },
 
   server: {
@@ -47,8 +48,18 @@ export function validateConfig(cfg: typeof config): void {
     errors.push("TELEGRAM_BOT_TOKEN is required");
   }
 
-  if (cfg.telegram.useWebhook && !cfg.telegram.webhookUrl) {
-    errors.push("WEBHOOK_URL is required when USE_WEBHOOK=true");
+  if (cfg.telegram.useWebhook) {
+    if (!cfg.telegram.webhookUrl) {
+      errors.push("WEBHOOK_URL is required when USE_WEBHOOK=true");
+    }
+
+    if (!cfg.telegram.webhookSecret) {
+      console.warn(
+        "⚠️ WEBHOOK_SECRET not set — webhook requests will NOT be verified!",
+      );
+    } else if (cfg.telegram.webhookSecret.length < 10) {
+      errors.push("WEBHOOK_SECRET is too short (min 10 chars recommended)");
+    }
   }
 
   if (errors.length > 0) {

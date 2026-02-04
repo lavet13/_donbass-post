@@ -2,6 +2,7 @@ import { Bot, Context, GrammyError, HttpError } from "grammy";
 import { formatRussianDateTime } from "@/utils";
 import { autoRetry } from "@grammyjs/auto-retry";
 import { registerCommands } from "@/commands";
+import { config } from "./config";
 
 export type TCustomBot = Bot<Context> & {};
 
@@ -190,11 +191,21 @@ export class BotManager {
       throw new Error("Bot not initialized");
     }
 
+    const secret = config.telegram.webhookSecret;
+
     try {
-      await this.bot.api.setWebhook(url);
+      await this.bot.api.setWebhook(url, { secret_token: secret || undefined });
       this.isStarted = true;
       this.mode = "webhook";
-      console.warn(`✅ Webhook configured: ${url}`);
+      if (secret) {
+        console.warn(
+          `✅ Webhook configured: ${url}  (secret token protection enabled)`,
+        );
+      } else {
+        console.warn(
+          `⚠️ Webhook configured: ${url}  (NO secret token — less secure)`,
+        );
+      }
     } catch (error) {
       console.error("Failed to set webhook:", error);
       throw error;

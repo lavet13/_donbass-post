@@ -44,6 +44,7 @@ jobs:
           MANAGER_CHAT_IDS=${{ secrets.MANAGER_CHAT_IDS }}
           USE_WEBHOOK=true
           WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
+          WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}
           PORT=3000
           NODE_ENV=production
           EOF

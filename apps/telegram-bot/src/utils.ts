@@ -16,7 +16,7 @@ export const formatRussianDate = (date: Date | string | number): string => {
       return "Invalid Date";
     }
 
-    const eestDate = toZonedTime(dateObj, "Europe/Tallinn");
+    const eestDate = toZonedTime(dateObj, "Europe/Moscow");
 
     const normalizedDate = startOfDay(eestDate);
 
@@ -41,7 +41,7 @@ export const formatRussianDateTime = (date: Date | string | number): string => {
       return "Invalid Date";
     }
 
-    const eestDate = toZonedTime(dateObj, "Europe/Tallinn");
+    const eestDate = toZonedTime(dateObj, "Europe/Moscow");
 
     return format(eestDate, "d MMMM yyyy г., HH:mm", { locale: ru });
   } catch (error) {
