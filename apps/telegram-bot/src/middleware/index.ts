@@ -12,6 +12,7 @@ const CORS_CONFIG = {
     "https://donbass-post.ru",
     "https://donbass-post2.ru",
     "https://workplace-post.ru",
+    "https://donbass-post.duckdns.org",
 
     // For local development
     "http://localhost:3000",
@@ -98,7 +99,10 @@ export const handleOptions: Middleware = async (request, next) => {
 
     // Check if origin is allowed
     if (origin && !isOriginAllowed(origin)) {
-      return new Response("Origin not allowed", { status: 403 });
+      return new Response("Origin not allowed", {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Return 204 No Content with CORS headers

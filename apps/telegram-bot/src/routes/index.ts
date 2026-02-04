@@ -74,11 +74,10 @@ export function createRoutes(): Router {
         },
       });
 
-    // 2. Secret token verification – do this as early as possible
+    // 2. Getting telegram bot api secret token from headers
     const receivedSecret = request.headers.get(
       "X-Telegram-Bot-Api-Secret-Token",
     );
-    console.log({ receivedSecret });
 
     if (config.telegram.webhookSecret) {
       if (receivedSecret !== config.telegram.webhookSecret) {
