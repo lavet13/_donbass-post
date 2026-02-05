@@ -5,7 +5,7 @@ export function formatOnlinePickupMessage(
   payload: OnlinePickupPayload,
 ): string {
   const lines: string[] = [
-    "📦 <b>Новая заявка на онлайн-забор</b>",
+    "📦 <b>Новая заявка на онлайн-забор по РФ</b>",
     "",
     "👤 <b>Отправитель:</b>",
     `ФИО: ${payload.surnameSender} ${payload.nameSender} ${payload.patronymicSender}`,

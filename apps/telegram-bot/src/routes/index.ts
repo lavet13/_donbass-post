@@ -15,7 +15,14 @@ export function createRoutes(): Router {
     throw new Error("Bot not initialized");
   }
 
-  // Preflight requests
+  /**
+   * When to enable:
+   * - Local development without nginx
+   * - Serverless deployments
+   * - Testing CORS without reverse proxy
+   *
+   * To enable: modify below to `router.use(handleOptions);`
+   */
   if (process.env.NODE_ENV === "development") {
     router.use(handleOptions);
   }
