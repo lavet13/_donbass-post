@@ -151,17 +151,11 @@ class Router {
   }
 }
 
-export function json(data: any, status = 200) {
-  return new Response(JSON.stringify(data, null, 2), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-}
-
-export function error(message: string, status = 400) {
-  return json({ error: message }, status);
+export function error(
+  message: string,
+  init: ResponseInit | undefined = { status: 400 },
+) {
+  return Response.json({ error: message }, init);
 }
 
 export async function parseJSON<T = any>(request: Request): Promise<T> {

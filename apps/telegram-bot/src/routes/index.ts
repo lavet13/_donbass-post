@@ -1,7 +1,7 @@
 import { getBotManager } from "@/bot";
 import { config } from "@/config";
 import { cors, handleOptions, requireJSON } from "@/middleware";
-import { getRouter, Router, error, parseJSON, json } from "@/router";
+import { getRouter, Router, error, parseJSON } from "@/router";
 import { notifyOnlinePickup } from "@/services/notification.service";
 import type { OnlinePickupPayload } from "@/types/notifications";
 import type { Update } from "grammy/types";
@@ -39,7 +39,7 @@ export function createRoutes(): Router {
   });
 
   router.get("/health", (_request) => {
-    return json({
+    return Response.json({
       status: "ok",
       bot: botManager.isRunning() ? "running" : "stopped",
       timestamp: new Date().toISOString(),
@@ -49,7 +49,7 @@ export function createRoutes(): Router {
   router.get("/stats", (_request) => {
     const memoryUsage = process.memoryUsage();
 
-    return json({
+    return Response.json({
       uptime: Math.floor(process.uptime()),
       memory: {
         rss: `${Math.round(memoryUsage.rss / 1024 / 1024)} MB`,
@@ -111,7 +111,7 @@ export function createRoutes(): Router {
   router.get("/webhook/info", async (_request) => {
     try {
       const info = await botManager.getWebhookInfo();
-      return json(info);
+      return Response.json(info);
     } catch (error) {
       console.error("Error getting webhook info:", error);
       return new Response("Error getting webhook info", { status: 500 });
@@ -119,7 +119,7 @@ export function createRoutes(): Router {
   });
 
   router.get("/", (_request) => {
-    return json({
+    return Response.json({
       service: "Telegram Bot Server",
       version: "1.0.0",
       endpoints: [
@@ -175,7 +175,7 @@ export function createRoutes(): Router {
           return error("Failed to send notifications to managers", 500);
         }
 
-        return json({
+        return Response.json({
           success: true,
           message: "Notification sent successfully",
           status: {
