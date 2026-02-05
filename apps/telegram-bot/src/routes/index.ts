@@ -16,7 +16,9 @@ export function createRoutes(): Router {
   }
 
   // Preflight requests
-  router.use(handleOptions);
+  if (process.env.NODE_ENV === "development") {
+    router.use(handleOptions);
+  }
 
   router.use(cors);
 
@@ -169,7 +171,9 @@ export function createRoutes(): Router {
 
         if (!result.success) {
           console.error("Failed to send notifications:", result.errors);
-          return error("Failed to send notifications to managers", { status: 500 });
+          return error("Failed to send notifications to managers", {
+            status: 500,
+          });
         }
 
         return Response.json({
