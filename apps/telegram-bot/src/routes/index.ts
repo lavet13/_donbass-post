@@ -133,7 +133,7 @@ export function createRoutes(): Router {
   });
 
   router.post(
-    "/api/notify/online-pickup",
+    "/api/notify/online-pickup-rf",
     async (request) => {
       try {
         const payload = await parseJSON<OnlinePickupPayload>(request);
