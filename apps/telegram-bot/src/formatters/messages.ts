@@ -15,7 +15,7 @@ export function formatOnlinePickupMessage(
   // Contact preferences for sender
   const senderPrefs: string[] = [];
   if (payload.telegramSender) senderPrefs.push("Telegram");
-  if (payload.whatsappSender) senderPrefs.push("WhatsApp");
+  if (payload.whatsappSender) senderPrefs.push("MAX");
   if (senderPrefs.length > 0) {
     lines.push(`💬 Предпочтения: ${senderPrefs.join(", ")}`);
   }

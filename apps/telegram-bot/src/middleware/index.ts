@@ -52,7 +52,7 @@ function isOriginAllowed(origin: string | null): boolean {
  */
 function getCorsHeaders(origin: string | null): Record<string, string> {
   const headers: Record<string, string> = {
-    "Vary": "Origin",
+    Vary: "Origin",
   };
 
   // Set origin dynamically based on request
@@ -85,9 +85,8 @@ export const handleOptions: Middleware = async (request, next) => {
 
     // Check if origin is allowed
     if (origin && !isOriginAllowed(origin)) {
-      return new Response("Origin not allowed", {
+      return error("Origin not allowed", {
         status: 403,
-        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -100,6 +99,7 @@ export const handleOptions: Middleware = async (request, next) => {
         "Access-Control-Allow-Headers": CORS_CONFIG.allowedHeaders.join(", "),
         "Access-Control-Max-Age": CORS_CONFIG.maxAge.toString(),
         "Content-Length": "0",
+        "Content-Type": "text/plain",
       },
     });
   }
@@ -119,9 +119,8 @@ export const cors: Middleware = async (request, next) => {
 
   // Check if origin is allowed (skip for no-origin requests like Telegram)
   if (origin && !isOriginAllowed(origin)) {
-    return new Response(JSON.stringify({ error: "Origin not allowed" }), {
+    return error("Origin not allowed", {
       status: 403,
-      headers: { "Content-Type": "application/json" },
     });
   }
 
