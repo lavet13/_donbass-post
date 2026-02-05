@@ -165,7 +165,7 @@ export const requireJSON: Middleware = async (request, next) => {
   const contentType = request.headers.get("Content-Type");
 
   if (!contentType?.includes("application/json")) {
-    return error("Content-Type must be application/json", 400);
+    return error("Content-Type must be application/json");
   }
 
   return next();

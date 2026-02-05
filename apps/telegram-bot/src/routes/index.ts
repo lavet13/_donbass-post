@@ -162,17 +162,14 @@ export function createRoutes(): Router {
         );
 
         if (missingFields.length > 0) {
-          return error(
-            `Missing required fields: ${missingFields.join(", ")}`,
-            400,
-          );
+          return error(`Missing required fields: ${missingFields.join(", ")}`);
         }
 
         const result = await notifyOnlinePickup(bot, payload);
 
         if (!result.success) {
           console.error("Failed to send notifications:", result.errors);
-          return error("Failed to send notifications to managers", 500);
+          return error("Failed to send notifications to managers", { status: 500 });
         }
 
         return Response.json({
@@ -187,10 +184,10 @@ export function createRoutes(): Router {
         console.error("Error in /api/notify/online-pickup:", err);
 
         if (err instanceof Error && err.message === "Invalid JSON body") {
-          return error("Invalid JSON body:", 400);
+          return error("Invalid JSON body");
         }
 
-        return error("Internal server error:", 500);
+        return error("Internal server error", { status: 500 });
       }
     },
     requireJSON,
