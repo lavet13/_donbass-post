@@ -124,6 +124,9 @@ export interface PickUpPointDeliveryOrderPayload extends BaseNotificationPayload
     declaredPrice: number;
     cashOnDelivery?: number;
     cubicMeter: number;
+    long?: number;
+    width?: number;
+    height?: number;
   };
 
   // Additional services

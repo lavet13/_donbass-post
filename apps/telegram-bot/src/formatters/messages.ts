@@ -205,7 +205,19 @@ export function formatPickUpPointDeliveryOrderMessage(
     `Описание: ${payload.cargoData.description}`,
     `⚖️ Общий вес: ${payload.cargoData.totalWeight} кг`,
     `⚖️ Вес самой тяжелой позиции: ${payload.cargoData.weightHeaviestPosition} кг`,
-    `📐 Объем: ${payload.cargoData.cubicMeter} м³`,
+  );
+
+  if (
+    payload.cargoData.long &&
+    payload.cargoData.width &&
+    payload.cargoData.height
+  ) {
+    lines.push(
+      `Размеры: ${payload.cargoData.long} × ${payload.cargoData.width} × ${payload.cargoData.height} см`,
+    );
+  }
+
+  lines.push(
     `💎 Заявленная стоимость: ${payload.cargoData.declaredPrice} ₽`,
     `💰 Плательщик доставки: ${payload.cargoData.shippingPayment}`,
   );
