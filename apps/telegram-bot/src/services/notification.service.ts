@@ -1,7 +1,11 @@
 import { Bot } from "grammy";
 import { config } from "@/config";
-import { formatOnlinePickupMessage, formatGenericMessage } from "@/formatters/messages";
-import type { OnlinePickupPayload } from "@/types/notifications";
+import {
+  formatOnlinePickupMessage,
+  formatGenericMessage,
+  formatPickUpPointDeliveryOrderMessage,
+} from "@/formatters/messages";
+import type { OnlinePickupPayload, PickUpPointDeliveryOrderPayload } from "@/types/notifications";
 
 /**
  * Result of sending notifications to managers
@@ -75,8 +79,24 @@ export async function sendToManagers(
  *
  * Convenience function that formats and sends in one step.
  * */
-export async function notifyOnlinePickup(bot: Bot, payload: OnlinePickupPayload): Promise<NotificationResult> {
+export async function notifyOnlinePickup(
+  bot: Bot,
+  payload: OnlinePickupPayload,
+): Promise<NotificationResult> {
   const message = formatOnlinePickupMessage(payload);
+  return sendToManagers(bot, message);
+}
+
+/**
+ * Send pick-up point delivery order notification to all managers
+ *
+ * Convenience function that formats and sends in one step.
+ */
+export async function notifyPickUpPointDeliveryOrder(
+  bot: Bot,
+  payload: PickUpPointDeliveryOrderPayload,
+): Promise<NotificationResult> {
+  const message = formatPickUpPointDeliveryOrderMessage(payload);
   return sendToManagers(bot, message);
 }
 
@@ -85,7 +105,11 @@ export async function notifyOnlinePickup(bot: Bot, payload: OnlinePickupPayload)
  *
  * Convenience function that formats and sends in one step.
  */
-export async function notifyGeneric(bot: Bot, formType: string, data: Record<string, any>) {
+export async function notifyGeneric(
+  bot: Bot,
+  formType: string,
+  data: Record<string, any>,
+) {
   const message = formatGenericMessage(formType, data);
   return sendToManagers(bot, message);
 }

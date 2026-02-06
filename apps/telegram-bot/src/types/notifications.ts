@@ -53,6 +53,88 @@ export interface OnlinePickupPayload extends BaseNotificationPayload {
 }
 
 /**
+ * Pick-up point delivery order payload
+ */
+export interface PickUpPointDeliveryOrderPayload extends BaseNotificationPayload {
+  // Sender information
+  sender: {
+    // Physical person fields
+    nameSender?: string;
+    surnameSender?: string;
+    patronymicSender?: string;
+    telegramSender?: boolean;
+    whatsAppSender?: boolean;
+    emailSender?: string; // emailFizSender in form
+
+    // Company fields
+    companySender?: string;
+    innSender?: string;
+
+    // Common fields
+    phoneSender: string;
+    pickupAddress: string;
+    pointFrom: string;
+  };
+
+  // Recipient information
+  recipient: {
+    // Physical person fields
+    nameRecipient?: string;
+    surnameRecipient?: string;
+    patronymicRecipient?: string;
+    telegramRecipient?: boolean;
+    whatsAppRecipient?: boolean;
+
+    // Company fields
+    companyRecipient?: string;
+    innRecipient?: string;
+    emailRecipient?: string;
+
+    // Common fields
+    phoneRecipient: string;
+    deliveryAddress: string;
+    deliveryCompany?: string;
+    pointTo?: string;
+  };
+
+  // Customer information (optional - third party payer)
+  customer?: {
+    // Physical person fields
+    nameCustomer?: string;
+    surnameCustomer?: string;
+    patronymicCustomer?: string;
+    telegramCustomer?: boolean;
+    whatsAppCustomer?: boolean;
+
+    // Company fields
+    companyCustomer?: string;
+    innCustomer?: string;
+    emailCustomer?: string;
+
+    // Common fields
+    phoneCustomer: string;
+  };
+
+  // Cargo data
+  cargoData: {
+    shippingPayment: string; // "Отправитель" | "Получатель" | "Третье лицо"
+    description: string;
+    weightHeaviestPosition: number;
+    totalWeight: number;
+    declaredPrice: number;
+    cashOnDelivery?: number;
+    cubicMeter: number;
+  };
+
+  // Additional services
+  additionalService?: Array<{
+    id: number;
+    name: string;
+    price: number;
+  }>;
+}
+
+/**
  * Generic notification payload for other endpoints
  */
 export interface GenericNotificationPayload extends BaseNotificationPayload {

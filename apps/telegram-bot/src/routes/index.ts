@@ -2,8 +2,8 @@ import { getBotManager } from "@/bot";
 import { config } from "@/config";
 import { cors, handleOptions, requireJSON } from "@/middleware";
 import { getRouter, Router, error, parseJSON } from "@/router";
-import { notifyOnlinePickup } from "@/services/notification.service";
-import type { OnlinePickupPayload } from "@/types/notifications";
+import { notifyOnlinePickup, notifyPickUpPointDeliveryOrder } from "@/services/notification.service";
+import type { OnlinePickupPayload, PickUpPointDeliveryOrderPayload } from "@/types/notifications";
 import type { Update } from "grammy/types";
 
 export function createRoutes(): Router {
@@ -193,6 +193,106 @@ export function createRoutes(): Router {
         });
       } catch (err) {
         console.error("Error in /api/notify/online-pickup:", err);
+
+        if (err instanceof Error && err.message === "Invalid JSON body") {
+          return error("Invalid JSON body");
+        }
+
+        return error("Internal server error", { status: 500 });
+      }
+    },
+    requireJSON,
+  );
+
+  router.post(
+    "/api/notify/pick-up-point-delivery-order",
+    async (request) => {
+      try {
+        const payload = await parseJSON<PickUpPointDeliveryOrderPayload>(request);
+
+        // Validate required fields
+        const errors: string[] = [];
+
+        // Sender validation
+        if (!payload.sender) {
+          errors.push("sender is required");
+        } else {
+          if (!payload.sender.phoneSender) errors.push("sender.phoneSender is required");
+          if (!payload.sender.pickupAddress) errors.push("sender.pickupAddress is required");
+          if (!payload.sender.pointFrom) errors.push("sender.pointFrom is required");
+
+          // Either physical person OR company fields must be present
+          const hasPhysicalFields = payload.sender.nameSender && payload.sender.surnameSender;
+          const hasCompanyFields = payload.sender.companySender && payload.sender.innSender;
+
+          if (!hasPhysicalFields && !hasCompanyFields) {
+            errors.push("sender must have either physical person fields (nameSender, surnameSender) or company fields (companySender, innSender)");
+          }
+        }
+
+        // Recipient validation
+        if (!payload.recipient) {
+          errors.push("recipient is required");
+        } else {
+          if (!payload.recipient.phoneRecipient) errors.push("recipient.phoneRecipient is required");
+          if (!payload.recipient.deliveryAddress) errors.push("recipient.deliveryAddress is required");
+
+          // Either physical person OR company fields must be present
+          const hasPhysicalFields = payload.recipient.nameRecipient && payload.recipient.surnameRecipient;
+          const hasCompanyFields = payload.recipient.companyRecipient && payload.recipient.innRecipient;
+
+          if (!hasPhysicalFields && !hasCompanyFields) {
+            errors.push("recipient must have either physical person fields (nameRecipient, surnameRecipient) or company fields (companyRecipient, innRecipient)");
+          }
+        }
+
+        // Cargo data validation
+        if (!payload.cargoData) {
+          errors.push("cargoData is required");
+        } else {
+          if (!payload.cargoData.shippingPayment) errors.push("cargoData.shippingPayment is required");
+          if (!payload.cargoData.description) errors.push("cargoData.description is required");
+          if (payload.cargoData.weightHeaviestPosition === undefined) errors.push("cargoData.weightHeaviestPosition is required");
+          if (payload.cargoData.totalWeight === undefined) errors.push("cargoData.totalWeight is required");
+          if (payload.cargoData.declaredPrice === undefined) errors.push("cargoData.declaredPrice is required");
+          if (payload.cargoData.cubicMeter === undefined) errors.push("cargoData.cubicMeter is required");
+        }
+
+        // Customer validation (if provided)
+        if (payload.customer) {
+          if (!payload.customer.phoneCustomer) errors.push("customer.phoneCustomer is required when customer is provided");
+
+          const hasPhysicalFields = payload.customer.nameCustomer && payload.customer.surnameCustomer;
+          const hasCompanyFields = payload.customer.companyCustomer && payload.customer.innCustomer;
+
+          if (!hasPhysicalFields && !hasCompanyFields) {
+            errors.push("customer must have either physical person fields (nameCustomer, surnameCustomer) or company fields (companyCustomer, innCustomer)");
+          }
+        }
+
+        if (errors.length > 0) {
+          return error(`Validation errors: ${errors.join("; ")}`, { status: 400 });
+        }
+
+        const result = await notifyPickUpPointDeliveryOrder(bot, payload);
+
+        if (!result.success) {
+          console.error("Failed to send notifications:", result.errors);
+          return error("Failed to send notifications to managers", {
+            status: 500,
+          });
+        }
+
+        return Response.json({
+          success: true,
+          message: "Notification sent successfully",
+          status: {
+            sent: result.sent,
+            failed: result.failed,
+          },
+        });
+      } catch (err) {
+        console.error("Error in /api/notify/pick-up-point-delivery-order:", err);
 
         if (err instanceof Error && err.message === "Invalid JSON body") {
           return error("Invalid JSON body");
