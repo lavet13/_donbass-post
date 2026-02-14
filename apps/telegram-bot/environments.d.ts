@@ -9,6 +9,7 @@ declare global {
       PORT?: string;
 
       MANAGER_CHAT_IDS?: string;
+      MANAGER_NOTIFICATION_PREFERENCES?: string;
     }
   }
 }

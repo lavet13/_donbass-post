@@ -1,5 +1,6 @@
 import { config } from "@/config";
 import type { Bot, Context } from "grammy";
+import { preferencesCommand, allPreferencesCommand } from "./preferences";
 
 export type CommandHandler = (ctx: Context) => Promise<void>;
 
@@ -91,10 +92,9 @@ export const managersCommand: Command = {
 
     const isManager = isCurrentUserManager(ctx);
 
-    const managerList =
-      managerChatIds
-        .map((id, idx) => `${idx + 1}. Chat ID: <code>${id}</code>`)
-        .join("\n");
+    const managerList = managerChatIds
+      .map((id, idx) => `${idx + 1}. Chat ID: <code>${id}</code>`)
+      .join("\n");
 
     await ctx.reply(
       `👥 <b>Список менеджеров</b>\n\n` +
@@ -130,6 +130,8 @@ export const commands: Command[] = [
   statusCommand,
   managersCommand,
   getChatIdCommand,
+  preferencesCommand,
+  allPreferencesCommand,
 ];
 
 export function isCurrentUserManager(ctx: Context): boolean {

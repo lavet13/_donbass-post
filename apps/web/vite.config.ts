@@ -27,7 +27,12 @@ export default defineConfig({
   },
   server: {
     host: "donbass-post-test.ru",
-    allowedHosts: ["donbass-post-test.ru", ".donbass-post-test.ru"],
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     minify: "esbuild",

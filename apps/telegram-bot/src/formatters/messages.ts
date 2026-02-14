@@ -241,30 +241,3 @@ export function formatPickUpPointDeliveryOrderMessage(
 
   return lines.join("\n");
 }
-
-/**
- * Format generic notification message
- *
- * Use this for simple forms or as a fallback
- */
-export function formatGenericMessage(
-  formType: string,
-  data: Record<string, any>,
-): string {
-  const lines: string[] = [`📝 <b>Новая заявка: ${formType}</b>`, ""];
-
-  // Format data fields
-  Object.entries(data).forEach(([key, value]) => {
-    if (value !== null && value !== undefined && value !== "") {
-      const formattedKey = key
-        .replace(/([A-Z])/g, " $1")
-        .replace(/^./, (str) => str.toUpperCase());
-
-      lines.push(`<b>${formattedKey}:</b> ${value}`);
-    }
-  });
-
-  lines.push("", `🕐 Время: ${formatRussianDateTime(new Date())}`);
-
-  return lines.join("\n");
-}

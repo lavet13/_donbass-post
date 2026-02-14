@@ -42,6 +42,7 @@ jobs:
           cat > deploy/apps/telegram-bot/.env << EOF
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
           MANAGER_CHAT_IDS=${{ secrets.MANAGER_CHAT_IDS }}
+          MANAGER_NOTIFICATION_PREFERENCES=${{ secrets.MANAGER_NOTIFICATION_PREFERENCES }}
           USE_WEBHOOK=true
           WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
           WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}

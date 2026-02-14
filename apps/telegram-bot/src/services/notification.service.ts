@@ -1,11 +1,17 @@
 import { Bot } from "grammy";
-import { config } from "@/config";
 import {
   formatOnlinePickupMessage,
-  formatGenericMessage,
   formatPickUpPointDeliveryOrderMessage,
 } from "@/formatters/messages";
-import type { OnlinePickupPayload, PickUpPointDeliveryOrderPayload } from "@/types/notifications";
+import type {
+  OnlinePickupPayload,
+  PickUpPointDeliveryOrderPayload,
+} from "@/types/notifications";
+import {
+  NotificationTypes,
+  type NotificationType,
+} from "@/types/notification-types";
+import { getManagerPreferences } from "./manager-preferences.service";
 
 /**
  * Result of sending notifications to managers
@@ -14,32 +20,52 @@ export interface NotificationResult {
   success: boolean;
   sent: number;
   failed: number;
+  skipped: number; // Managers who were skipped due to preferences
   errors: Array<{ chatId: number; error: string }>;
 }
 
 /**
- * Send a message to all configured managers
+ * Send a message to managers based on notification type
  *
- * This is the core function - it just sends a formatted message to all managers.
+ * This is the core function - it routes messages to managers based on their preferences.
  * The message formatting is handled by separate formatter functions.
  *
  * @param bot - Telegram bot instance
  * @param message - Formatted HTML message to send
+ * @param notificationType - Type of notification to determine which managers receive it
  * @returns Statistics about the send operation
  */
 export async function sendToManagers(
   bot: Bot,
   message: string,
+  notificationType: NotificationType,
 ): Promise<NotificationResult> {
-  const managerChatIds = config.managers.getChatIds();
+  const preferencesService = getManagerPreferences();
 
-  if (managerChatIds.length === 0) {
+  const targetManagers =
+    preferencesService.getManagersForNotification(notificationType);
+  const allManagers = preferencesService.getAllManagers();
+
+  if (allManagers.length === 0) {
     console.warn("⚠️ No manager chat IDs configured");
-    return { success: false, sent: 0, failed: 0, errors: [] };
+    return { success: false, sent: 0, failed: 0, skipped: 0, errors: [] };
+  }
+
+  if (targetManagers.length === 0) {
+    console.warn(
+      `⚠️ No managers subscribed to notification type: ${notificationType}`,
+    );
+    return {
+      success: false,
+      sent: 0,
+      failed: 0,
+      skipped: allManagers.length,
+      errors: [],
+    };
   }
 
   const results = await Promise.allSettled(
-    managerChatIds.map((chatId) =>
+    targetManagers.map((chatId) =>
       bot.api.sendMessage(chatId, message, { parse_mode: "HTML" }),
     ),
   );
@@ -49,9 +75,13 @@ export async function sendToManagers(
   let failed = 0;
 
   results.forEach((result, index) => {
+    const chatId = targetManagers[index]!;
+
     if (result.status === "fulfilled") {
       sent++;
-      console.warn(`✅ Notification sent to manager ${managerChatIds[index]}`);
+      console.warn(
+        `✅ [${notificationType}] Notification sent to manager ${chatId}`,
+      );
     } else {
       failed++;
       const error =
@@ -59,17 +89,26 @@ export async function sendToManagers(
           ? result.reason.message
           : String(result.reason);
 
-      errors.push({ chatId: managerChatIds[index]!, error });
+      errors.push({ chatId, error });
       console.error(
-        `❌ Failed to send to manager ${managerChatIds[index]}: ${error}`,
+        `❌ [${notificationType}] Failed to send to manager ${chatId}: ${error}`,
       );
     }
   });
+
+  const skipped = allManagers.length - targetManagers.length;
+
+  if (skipped > 0) {
+    console.warn(
+      `ℹ️ [${notificationType}] Skipped ${skipped} managers (not subscribed)`,
+    );
+  }
 
   return {
     success: sent > 0,
     sent,
     failed,
+    skipped,
     errors,
   };
 }
@@ -84,7 +123,7 @@ export async function notifyOnlinePickup(
   payload: OnlinePickupPayload,
 ): Promise<NotificationResult> {
   const message = formatOnlinePickupMessage(payload);
-  return sendToManagers(bot, message);
+  return sendToManagers(bot, message, NotificationTypes.ONLINE_PICKUP_RF);
 }
 
 /**
@@ -97,19 +136,5 @@ export async function notifyPickUpPointDeliveryOrder(
   payload: PickUpPointDeliveryOrderPayload,
 ): Promise<NotificationResult> {
   const message = formatPickUpPointDeliveryOrderMessage(payload);
-  return sendToManagers(bot, message);
-}
-
-/**
- * Send generic notification to all managers
- *
- * Convenience function that formats and sends in one step.
- */
-export async function notifyGeneric(
-  bot: Bot,
-  formType: string,
-  data: Record<string, any>,
-) {
-  const message = formatGenericMessage(formType, data);
-  return sendToManagers(bot, message);
+  return sendToManagers(bot, message, NotificationTypes.PICK_UP_POINT_DELIVERY);
 }
