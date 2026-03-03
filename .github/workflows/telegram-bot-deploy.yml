@@ -110,7 +110,7 @@ jobs:
             cd ../..
 
             # Install all dependencies
-            yarn install --immutable
+            yarn install --check-cache
 
             # Build telegram bot
             yarn workspace @donbass-post/tg-bot build
