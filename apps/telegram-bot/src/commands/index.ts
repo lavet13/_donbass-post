@@ -1,6 +1,7 @@
 import { config } from "@/config";
 import type { Bot, Context } from "grammy";
 import { preferencesCommand, allPreferencesCommand } from "./preferences";
+import { prisma } from "@/prisma";
 
 export type CommandHandler = (ctx: Context) => Promise<void>;
 
@@ -16,7 +17,7 @@ export const startCommand: Command = {
   description: "Начать работу с ботом",
   handler: async (ctx) => {
     const username = ctx.from?.first_name || "пользователь";
-    const isManager = isCurrentUserManager(ctx);
+    const isManager = await isCurrentUserManager(ctx);
 
     await ctx.reply(
       `👋 Привет ${username}! Я бот <b>Нашей Почты</b>.\n\n` +
@@ -31,7 +32,7 @@ export const helpCommand: Command = {
   name: "help",
   description: "Помощь",
   handler: async (ctx) => {
-    const isManager = isCurrentUserManager(ctx);
+    const isManager = await isCurrentUserManager(ctx);
 
     await ctx.reply(
       "ℹ️ <b>Помощь</b>\n\n" +
@@ -58,7 +59,7 @@ export const statusCommand: Command = {
 
     const managerCount = config.managers.getChatIds().length;
 
-    const isManager = isCurrentUserManager(ctx);
+    const isManager = await isCurrentUserManager(ctx);
 
     await ctx.reply(
       "✅ <b>Статус бота</b>\n\n" +
@@ -79,26 +80,38 @@ export const managersCommand: Command = {
   description: "Информация о менеджерах",
   adminOnly: true,
   handler: async (ctx) => {
-    const managerChatIds = config.managers.getChatIds();
+    const managers = await prisma.manager.findMany({
+      where: {
+        telegramUser: { isActive: true },
+      },
+      include: {
+        telegramUser: true,
+      },
+    });
 
-    if (managerChatIds.length === 0) {
+    if (managers.length === 0) {
       await ctx.reply(
-        "⚠️ <b>Менеджеры не настроены</b>\n\n" +
+        "<b>Менеджеры не настроены</b>\n\n" +
           "Установите переменную окружения MANAGER_CHAT_IDS",
         { parse_mode: "HTML" },
       );
       return;
     }
 
-    const isManager = isCurrentUserManager(ctx);
+    const isManager = await isCurrentUserManager(ctx);
 
-    const managerList = managerChatIds
-      .map((id, idx) => `${idx + 1}. Chat ID: <code>${id}</code>`)
-      .join("\n");
+    const managerList = managers.map((manager, index) => {
+      const user = manager.telegramUser;
+      const name = [user.firstName, user.lastName].filter(Boolean).join(" ");
+      const username = user.username ? `@${user.username}` : "";
+      const displayName = name || username || `Chat ID: ${user.chatId}`;
+
+      return `${index + 1}: ${displayName}\n   └ Chat ID: <code>${user.chatId}</code>\n`;
+    });
 
     await ctx.reply(
       `👥 <b>Список менеджеров</b>\n\n` +
-        `Всего менеджеров: ${managerChatIds.length}\n\n` +
+        `Всего менеджеров: ${managers.length}\n\n` +
         `${managerList}\n\n` +
         getCommandListText(isManager),
       { parse_mode: "HTML" },
@@ -134,10 +147,25 @@ export const commands: Command[] = [
   allPreferencesCommand,
 ];
 
-export function isCurrentUserManager(ctx: Context): boolean {
+export async function isCurrentUserManager(ctx: Context): Promise<boolean> {
   const userId = ctx.from?.id;
   if (!userId) return false;
-  return config.managers.getChatIds().includes(userId);
+
+  try {
+    const telegramUser = await prisma.telegramUser.findUnique({
+      where: {
+        chatId: BigInt(userId),
+      },
+      include: {
+        managerProfile: true,
+      },
+    });
+
+    return !!(telegramUser?.isActive && telegramUser.managerProfile);
+  } catch (err) {
+    console.error(`Error checking manager status: ${err}`);
+    return false;
+  }
 }
 
 function getCommandListText(isAdmin: boolean = false): string {

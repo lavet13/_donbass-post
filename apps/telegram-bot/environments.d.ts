@@ -10,6 +10,8 @@ declare global {
 
       MANAGER_CHAT_IDS?: string;
       MANAGER_NOTIFICATION_PREFERENCES?: string;
+
+      DATABASE_URL?: string;
     }
   }
 }

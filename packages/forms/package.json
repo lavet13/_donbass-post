@@ -16,25 +16,25 @@
     "check-types": "tsc -b"
   },
   "peerDependencies": {
+    "jotai": "^2.14.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "jotai": "^2.14.0"
+    "react-dom": "^19.1.1"
   },
   "dependencies": {
-    "@donbass-post/ui": "*",
-    "react-phone-number-input": "^3.4.12",
+    "@donbass-post/ui": "workspace:*",
+    "@radix-ui/themes": "^3.2.1",
+    "@tanstack/react-form": "1.26.0",
     "react-device-detect": "^2.2.3",
     "react-number-format": "^5.4.4",
-    "@radix-ui/themes": "^3.2.1",
-    "@tanstack/react-form": "1.26.0"
+    "react-phone-number-input": "^3.4.12"
   },
   "devDependencies": {
-    "@donbass-post/eslint-config": "*",
-    "@donbass-post/typescript-config": "*",
-    "@donbass-post/prettier-config": "*",
-    "eslint": "^9.36.0",
-    "typescript": "~5.8.3",
+    "@donbass-post/eslint-config": "workspace:*",
+    "@donbass-post/prettier-config": "workspace:*",
+    "@donbass-post/typescript-config": "workspace:*",
     "@types/react": "^19.1.13",
-    "@types/react-dom": "^19.1.9"
+    "@types/react-dom": "^19.1.9",
+    "eslint": "^9.36.0",
+    "typescript": "~5.8.3"
   }
 }

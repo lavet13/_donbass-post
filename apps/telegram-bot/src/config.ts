@@ -26,7 +26,7 @@ export const config = {
 
       if (!chatIdsStr) {
         console.warn(
-          "⚠️ MANAGER_CHAT_IDS not set - notifications will not be sent",
+          "MANAGER_CHAT_IDS not set - notifications will not be sent",
         );
         return [];
       }

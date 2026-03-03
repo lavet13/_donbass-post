@@ -8,21 +8,30 @@
     "build": "tsup",
     "preview": "cross-env NODE_ENV=production node dist/server.cjs",
     "check-types": "tsc -b",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "yarn dlx prisma db seed",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset"
   },
   "dependencies": {
     "@grammyjs/auto-retry": "^2.0.2",
-    "date-fns-tz": "^3.2.0",
+    "@prisma/adapter-pg": "^7.4.0",
+    "@prisma/client": "^7.4.0",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dotenv": "^17.2.3",
     "dotenv-expand": "^12.0.3",
     "grammy": "^1.39.2",
-    "srvx": "^0.10.0"
+    "prisma": "^7.4.0",
+    "srvx": "^0.11.8"
   },
   "devDependencies": {
-    "@donbass-post/eslint-config": "*",
-    "@donbass-post/prettier-config": "*",
-    "@donbass-post/typescript-config": "*",
+    "@donbass-post/eslint-config": "workspace:*",
+    "@donbass-post/prettier-config": "workspace:*",
+    "@donbass-post/typescript-config": "workspace:*",
     "@eslint/js": "^9.36.0",
     "@types/node": "^25.0.8",
     "cross-env": "^10.1.0",

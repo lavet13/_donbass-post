@@ -3,7 +3,6 @@
   "tasks": {
     "dev": {
       "cache": false,
-      "persistent": true
     },
     "lint": {
       "dependsOn": ["^lint"],
@@ -26,6 +25,25 @@
       "dependsOn": ["^build", "check-types"],
       "outputs": ["dist/**"],
       "env": ["VITE_*", "NODE_ENV"]
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:reset": {
+      "cache": false
+    },
+    "db:seed": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:deploy": {
+      "cache": false
     }
   }
 }

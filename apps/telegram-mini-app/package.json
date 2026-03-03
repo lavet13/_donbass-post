@@ -6,10 +6,9 @@
   "scripts": {
     "check-types": "tsc -b"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@donbass-post/typescript-config": "workspace:*",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.44.0",
-    "@donbass-post/typescript-config": "*"
+    "typescript-eslint": "^8.44.0"
   }
 }

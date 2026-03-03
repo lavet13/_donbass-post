@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Base model for any Telegram user (managers, clients, etc.)
+model TelegramUser {
+  id        String   @id @default(cuid(2))
+  chatId    BigInt   @unique @map("chat_id")
+  username  String?
+  firstName String?  @map("first_name")
+  lastName  String?  @map("last_name")
+  phone     String? // Phone number if provided
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  managerProfile Manager?
+  clientProfile  Client?
+
+  @@map("telegram_users")
+}
+
+/// Manager profile - extends TelegramUser
+/// These are staff members who receive notifications
+model Manager {
+  id        String   @id @default(cuid(2))
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  telegramUserId String                           @unique @map("telegram_user_id")
+  telegramUser   TelegramUser                     @relation(fields: [telegramUserId], references: [id], onDelete: Cascade)
+  preferences    ManagerNotificationPreferences[]
+
+  @@map("managers")
+}
+
+/// Client profile - extends TelegramUser
+/// These are your customers who use the service
+model Client {
+  id              String   @id @default(cuid(2))
+  deliveryAddress String?  @map("delivery_address")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  telegramUserId String       @unique @map("telegram_user_id")
+  telegramUser   TelegramUser @relation(fields: [telegramUserId], references: [id], onDelete: Cascade)
+
+  @@map("clients")
+}
+
+model NotificationType {
+  id          String   @id @default(cuid(2))
+  slug        String   @unique // e.g. "online-pickup-rf", "pick-up-point-delivery-order"
+  name        String // Human-readable name in Russian
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  preferences ManagerNotificationPreferences[]
+
+  @@map("notification_types")
+}
+
+model ManagerNotificationPreferences {
+  id                 String   @id @default(cuid(2))
+  managerId          String   @map("manager_id")
+  notificationTypeId String   @map("notification_type_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  manager          Manager          @relation(fields: [managerId], references: [id], onDelete: Cascade)
+  notificationType NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([managerId, notificationTypeId])
+  @@map("manager_notification_preferences")
+}
+
+model NotificationLog {
+  id               String   @id @default(cuid(2))
+  managerChatId    BigInt   @map("manager_chat_id")
+  notificationType String   @map("notification_type")
+  payload          Json? // Store the notification payload
+  success          Boolean
+  errorMessage     String?  @map("error_message")
+  sentAt           DateTime @default(now()) @map("sent_at")
+
+  @@index([managerChatId])
+  @@index([notificationType])
+  @@index([sentAt])
+  @@map("notifications_logs")
+}

@@ -41,13 +41,19 @@ jobs:
           # Create .env file for telegram-bot
           cat > deploy/apps/telegram-bot/.env << EOF
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-          MANAGER_CHAT_IDS=${{ secrets.MANAGER_CHAT_IDS }}
-          MANAGER_NOTIFICATION_PREFERENCES=${{ secrets.MANAGER_NOTIFICATION_PREFERENCES }}
-          USE_WEBHOOK=true
-          WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
-          WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}
           PORT=3000
           NODE_ENV=production
+          USE_WEBHOOK=true
+          MANAGER_CHAT_IDS=${{ secrets.MANAGER_CHAT_IDS }}
+          MANAGER_NOTIFICATION_PREFERENCES=${{ secrets.MANAGER_NOTIFICATION_PREFERENCES }}
+          WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
+          WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}
+
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
           EOF
 
       - name: Clean VPS directory
@@ -81,16 +87,44 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
-            cd ~/telegram-bot
+            cd ~/telegram-bot/apps/telegram-bot
+
+            # Ensure Docker is running and database is up
+            docker compose up -d postgres
+
+            # Loading .env vars
+            source .env
+
+            # Wait for database to be ready
+            echo "Waiting for database to be ready..."
+            for i in {1..30}; do
+              if docker compose exec -T postgres pg_isready -U "$POSTGRES_USER" > /dev/null 2>&1; then
+                echo "✅ Database is ready!"
+                break
+              fi
+              echo "Waiting for database... ($i/30)"
+              sleep 2
+            done
+
+            # Go back to root
+            cd ../..
 
             # Install all dependencies
-            yarn install --frozen-lockfile
+            yarn install --immutable
 
             # Build telegram bot
             yarn workspace @donbass-post/tg-bot build
 
             # Navigate to bot directory
             cd apps/telegram-bot
+
+            # Generate Prisma client
+            yarn db:generate
+
+            # Run database migrations (non-interactive)
+            yarn db:deploy
+
+            # Create logs directory
             mkdir -p logs
 
             # Restart PM2
