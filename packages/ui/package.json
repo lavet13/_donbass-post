@@ -53,7 +53,6 @@
   },
   "dependencies": {
     "@radix-ui/react-navigation-menu": "^1.2.14",
-    "@tailwindcss/vite": "^4.1.13",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
     "lucide-react": "^0.544.0",
@@ -69,9 +68,11 @@
     "@donbass-post/eslint-config": "workspace:*",
     "@donbass-post/prettier-config": "workspace:*",
     "@donbass-post/typescript-config": "workspace:*",
+    "@tailwindcss/vite": "^4.1.13",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "eslint": "^9.36.0",
+    "prettier": "^3.6.2",
     "typescript": "~5.8.3"
   }
 }

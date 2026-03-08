@@ -420,11 +420,13 @@ __metadata:
     "@types/react": "npm:^19.1.13"
     "@types/react-dom": "npm:^19.1.9"
     eslint: "npm:^9.36.0"
+    prettier: "npm:^3.6.2"
     react-device-detect: "npm:^2.2.3"
     react-number-format: "npm:^5.4.4"
     react-phone-number-input: "npm:^3.4.12"
     typescript: "npm:~5.8.3"
   peerDependencies:
+    "@tanstack/react-router": ^1.131.50
     jotai: ^2.14.0
     react: ^19.1.1
     react-dom: ^19.1.1
@@ -479,6 +481,7 @@ __metadata:
   resolution: "@donbass-post/tg-mini-app@workspace:apps/telegram-mini-app"
   dependencies:
     "@donbass-post/typescript-config": "workspace:*"
+    eslint: "npm:^9.36.0"
     typescript: "npm:~5.8.3"
     typescript-eslint: "npm:^8.44.0"
   languageName: unknown
@@ -506,6 +509,7 @@ __metadata:
     eslint: "npm:^9.36.0"
     lucide-react: "npm:^0.544.0"
     motion: "npm:^12.23.18"
+    prettier: "npm:^3.6.2"
     react-device-detect: "npm:^2.2.3"
     react-resizable-panels: "npm:^3.0.6"
     sonner: "npm:^2.0.7"
