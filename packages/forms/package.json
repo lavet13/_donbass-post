@@ -16,8 +16,9 @@
     "check-types": "tsc -b"
   },
   "peerDependencies": {
-    "@tanstack/react-router": "^1.131.50",
+    "@tanstack/react-router": "1.131.50",
     "jotai": "^2.14.0",
+    "prettier": "^3.6.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

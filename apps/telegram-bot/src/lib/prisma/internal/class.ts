@@ -17,8 +17,8 @@ import type * as Prisma from "./prismaNamespace.ts"
 
 const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [],
-  "clientVersion": "7.4.0",
-  "engineVersion": "ab56fe763f921d033a6c195e7ddeb3e255bdbb57",
+  "clientVersion": "7.4.2",
+  "engineVersion": "94a226be1cf2967af2541cca5529f0f7ba866919",
   "activeProvider": "postgresql",
   "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"../lib/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\n/// Base model for any Telegram user (managers, clients, etc.)\nmodel TelegramUser {\n  id        String   @id @default(cuid(2))\n  chatId    BigInt   @unique @map(\"chat_id\")\n  username  String?\n  firstName String?  @map(\"first_name\")\n  lastName  String?  @map(\"last_name\")\n  phone     String? // Phone number if provided\n  isActive  Boolean  @default(true) @map(\"is_active\")\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  managerProfile Manager?\n  clientProfile  Client?\n\n  @@map(\"telegram_users\")\n}\n\n/// Manager profile - extends TelegramUser\n/// These are staff members who receive notifications\nmodel Manager {\n  id        String   @id @default(cuid(2))\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  telegramUserId String                           @unique @map(\"telegram_user_id\")\n  telegramUser   TelegramUser                     @relation(fields: [telegramUserId], references: [id], onDelete: Cascade)\n  preferences    ManagerNotificationPreferences[]\n\n  @@map(\"managers\")\n}\n\n/// Client profile - extends TelegramUser\n/// These are your customers who use the service\nmodel Client {\n  id              String   @id @default(cuid(2))\n  deliveryAddress String?  @map(\"delivery_address\")\n  createdAt       DateTime @default(now()) @map(\"created_at\")\n  updatedAt       DateTime @updatedAt @map(\"updated_at\")\n\n  telegramUserId String       @unique @map(\"telegram_user_id\")\n  telegramUser   TelegramUser @relation(fields: [telegramUserId], references: [id], onDelete: Cascade)\n\n  @@map(\"clients\")\n}\n\nmodel NotificationType {\n  id          String   @id @default(cuid(2))\n  slug        String   @unique // e.g. \"online-pickup-rf\", \"pick-up-point-delivery-order\"\n  name        String // Human-readable name in Russian\n  description String?\n  isActive    Boolean  @default(true) @map(\"is_active\")\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @updatedAt @map(\"updated_at\")\n\n  preferences ManagerNotificationPreferences[]\n\n  @@map(\"notification_types\")\n}\n\nmodel ManagerNotificationPreferences {\n  id                 String   @id @default(cuid(2))\n  managerId          String   @map(\"manager_id\")\n  notificationTypeId String   @map(\"notification_type_id\")\n  createdAt          DateTime @default(now()) @map(\"created_at\")\n\n  manager          Manager          @relation(fields: [managerId], references: [id], onDelete: Cascade)\n  notificationType NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)\n\n  @@unique([managerId, notificationTypeId])\n  @@map(\"manager_notification_preferences\")\n}\n\nmodel NotificationLog {\n  id               String   @id @default(cuid(2))\n  managerChatId    BigInt   @map(\"manager_chat_id\")\n  notificationType String   @map(\"notification_type\")\n  payload          Json? // Store the notification payload\n  success          Boolean\n  errorMessage     String?  @map(\"error_message\")\n  sentAt           DateTime @default(now()) @map(\"sent_at\")\n\n  @@index([managerChatId])\n  @@index([notificationType])\n  @@index([sentAt])\n  @@map(\"notifications_logs\")\n}\n",
   "runtimeDataModel": {
@@ -67,7 +67,9 @@ export interface PrismaClientConstructor {
    * Type-safe database client for TypeScript
    * @example
    * ```
-   * const prisma = new PrismaClient()
+   * const prisma = new PrismaClient({
+   *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+   * })
    * // Fetch zero or more TelegramUsers
    * const telegramUsers = await prisma.telegramUser.findMany()
    * ```
@@ -89,7 +91,9 @@ export interface PrismaClientConstructor {
  * Type-safe database client for TypeScript
  * @example
  * ```
- * const prisma = new PrismaClient()
+ * const prisma = new PrismaClient({
+ *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+ * })
  * // Fetch zero or more TelegramUsers
  * const telegramUsers = await prisma.telegramUser.findMany()
  * ```
@@ -174,7 +178,7 @@ export interface PrismaClient<
    * ])
    * ```
    * 
-   * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
+   * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
    */
   $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
 
