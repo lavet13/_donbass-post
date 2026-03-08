@@ -1,9 +1,6 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "tasks": {
-    "dev": {
-      "cache": false,
-    },
     "lint": {
       "dependsOn": ["^lint"],
       "inputs": [
@@ -22,9 +19,15 @@
       "persistent": true
     },
     "build": {
-      "dependsOn": ["^build", "check-types"],
+      "dependsOn": ["^build", "check-types", "^db:generate"],
       "outputs": ["dist/**"],
       "env": ["VITE_*", "NODE_ENV"]
+    },
+    "dev": {
+      "with": ["db:studio"],
+      "dependsOn": ["db:generate"],
+      "cache": false,
+      "persistent": true,
     },
     "db:generate": {
       "cache": false
@@ -40,7 +43,7 @@
     },
     "db:studio": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
     },
     "db:deploy": {
       "cache": false

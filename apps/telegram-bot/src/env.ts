@@ -18,10 +18,12 @@ export function loadEnv() {
   return process.env;
 }
 
+type EnvKeys = keyof typeof process.env;
+
 /**
  * Get environment variable with fallback
  */
-export function getEnv(key: string, defaultValue?: string): string {
+export function getEnv(key: EnvKeys, defaultValue?: string): string {
   const value = process.env[key];
 
   if (value === undefined) {
@@ -54,4 +56,4 @@ export function validateEnv(requiredVars: string[]): void {
 }
 
 // Auto-load on import
-loadEnv();
+export const loadedEnv = loadEnv();

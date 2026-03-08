@@ -1,4 +1,4 @@
-import "@/env";
+import { getEnv } from "@/env";
 import { prisma } from "@/prisma";
 
 async function main() {
@@ -36,7 +36,7 @@ async function main() {
   // 2. Migrate existing managers from MANAGER_CHAT_IDS
   console.log("\nMigrating managers from environment variables...");
 
-  const managerChatIdsStr = process.env.MANAGER_CHAT_IDS || "";
+  const managerChatIdsStr = getEnv("MANAGER_CHAT_IDS", "");
   const managerChatIds = managerChatIdsStr
     .split(",")
     .map((id) => id.trim())
@@ -79,7 +79,7 @@ async function main() {
   // 3. Migrate notification preferences from MANAGER_NOTIFICATION_PREFERENCES
   console.log("\nMigrating notification preferences...");
 
-  const preferencesStr = process.env.MANAGER_NOTIFICATION_PREFERENCES || "";
+  const preferencesStr = getEnv("MANAGER_NOTIFICATION_PREFERENCES", "");
 
   if (!preferencesStr) {
     console.log("⚠ No MANAGER_NOTIFICATION_PREFERENCES found");
