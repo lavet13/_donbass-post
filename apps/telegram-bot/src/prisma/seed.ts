@@ -1,5 +1,6 @@
 import { getEnv } from "@/env";
 import { prisma } from "@/prisma";
+import type { NotificationType } from "@/types/notification-types";
 
 async function main() {
   console.log("Starting database seeding...");
@@ -20,7 +21,16 @@ async function main() {
       description:
         "Уведомления о новых заявках на забор груза в ЛДНР и Запорожской области",
     },
-  ];
+    {
+      slug: "ali-parcel-pickup",
+      name: "Забор посылки AliExpress",
+      description: "Уведомления о новых заявках на забор посылок AliExpress",
+    },
+  ] satisfies {
+    slug: NotificationType;
+    name: string;
+    description: string;
+  }[];
 
   for (const type of notificationTypes) {
     await prisma.notificationType.upsert({
@@ -74,80 +84,6 @@ async function main() {
     });
 
     console.log(`✅ Created/Updated manager: ${chatId}`);
-  }
-
-  // 3. Migrate notification preferences from MANAGER_NOTIFICATION_PREFERENCES
-  console.log("\nMigrating notification preferences...");
-
-  const preferencesStr = getEnv("MANAGER_NOTIFICATION_PREFERENCES", "");
-
-  if (!preferencesStr) {
-    console.log("⚠ No MANAGER_NOTIFICATION_PREFERENCES found");
-    console.log("ℹ All managers will need preferences set via bot commands");
-  } else {
-    try {
-      const preferences = JSON.parse(preferencesStr) as Record<
-        string,
-        string[]
-      >;
-
-      for (const [chatIdStr, notificationSlugs] of Object.entries(
-        preferences,
-      )) {
-        const chatId = parseInt(chatIdStr, 10);
-
-        if (isNaN(chatId)) {
-          console.log(`⚠ Invalid chat ID: ${chatId}`);
-          continue;
-        }
-
-        const telegramUser = await prisma.telegramUser.findUnique({
-          where: { chatId: BigInt(chatId) },
-          include: { managerProfile: true },
-        });
-
-        if (!telegramUser || !telegramUser.managerProfile) {
-          console.warn(`⚠ Manager not found for chat ID: ${chatId}`);
-          continue;
-        }
-
-        const manager = telegramUser.managerProfile;
-
-        // Clear existing preferences
-        await prisma.managerNotificationPreferences.deleteMany({
-          where: {
-            managerId: manager.id,
-          },
-        });
-
-        for (const slug of notificationSlugs) {
-          const notificationType = await prisma.notificationType.findUnique({
-            where: { slug },
-          });
-
-          if (!notificationType) {
-            console.warn(`⚠ Unknown notification type: ${slug}`);
-            continue;
-          }
-
-          await prisma.managerNotificationPreferences.create({
-            data: {
-              managerId: manager.id,
-              notificationTypeId: notificationType.id,
-            },
-          });
-
-          console.log(
-            `✅ Set preference for manager ${manager.id}: ${notificationType.id}`,
-          );
-        }
-      }
-    } catch (err) {
-      console.error(
-        `❌ Failed to parse MANAGER_NOTIFICATION_PREFERENCES:`,
-        err,
-      );
-    }
   }
 
   console.log("\n✅ Database seeding completed!");

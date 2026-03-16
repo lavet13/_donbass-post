@@ -3,10 +3,13 @@ import { config } from "@/config";
 import { cors, handleOptions, requireJSON } from "@/middleware";
 import { getRouter, Router, error, parseJSON } from "@/router";
 import {
+  notifyAliParcelPickup,
   notifyOnlinePickup,
   notifyPickUpPointDeliveryOrder,
 } from "@/services/notification.service";
+import { NotificationTypes } from "@/types/notification-types";
 import type {
+  AliParcelPickupPayload,
   OnlinePickupPayload,
   PickUpPointDeliveryOrderPayload,
 } from "@/types/notifications";
@@ -148,7 +151,7 @@ export function createRoutes(): Router {
   });
 
   router.post(
-    "/api/notify/online-pickup-rf",
+    `/api/notify/${NotificationTypes.ONLINE_PICKUP_RF}`,
     async (request) => {
       try {
         const payload = await parseJSON<OnlinePickupPayload>(request);
@@ -228,7 +231,7 @@ export function createRoutes(): Router {
   );
 
   router.post(
-    "/api/notify/pick-up-point-delivery-order",
+    `/api/notify/${NotificationTypes.PICK_UP_POINT_DELIVERY}`,
     async (request) => {
       try {
         const payload =
@@ -374,6 +377,95 @@ export function createRoutes(): Router {
         }
 
         return error("Internal server error", { status: 500 });
+      }
+    },
+    requireJSON,
+  );
+
+  router.post(
+    `/ali/notify/${NotificationTypes.ALI_PARCEL_PICKUP}`,
+    async (request) => {
+      try {
+        const payload = await parseJSON<AliParcelPickupPayload>(request);
+
+        const errors: string[] = [];
+
+        if (
+          !payload.address ||
+          payload.address.length < 3 ||
+          payload.address.length > 50
+        ) {
+          errors.push("Адрес должен содержать от 3 до 50 символов");
+        }
+
+        if (
+          !payload.track ||
+          payload.track.length < 3 ||
+          payload.track.length > 50
+        ) {
+          errors.push("Трек должен содержать от 3 до 50 символов");
+        }
+
+        if (
+          !payload.code ||
+          payload.code.length < 3 ||
+          payload.code.length > 50
+        ) {
+          errors.push("Код должен содержать от 3 до 50 символов");
+        }
+
+        if (!payload.phone) {
+          errors.push("Заполните телефон!");
+        } else if (!/^\+7\d{10}$/.test(payload.phone)) {
+          errors.push("Телефон должен быть в формате +7XXXXXXXXXX");
+        }
+
+        if (errors.length > 0) {
+          return error(`Validation errors: ${errors.join("; ")}`, {
+            status: 400,
+          });
+        }
+
+        const result = await notifyAliParcelPickup(bot, payload);
+
+        if (!result.success) {
+          console.error("Failed to send notifications:", result.errors);
+
+          if (result.sent === 0) {
+            return error("Failed to send notifications to any manager", {
+              status: 500,
+            });
+          }
+
+          return Response.json({
+            success: true,
+            message: "Notification sent with some failures",
+            status: {
+              sent: result.sent,
+              failed: result.failed,
+              skipped: result.skipped,
+            },
+            warnings: result.errors,
+          });
+        }
+
+        return Response.json({
+          success: true,
+          message: "Notification sent successfully",
+          status: {
+            sent: result.sent,
+            failed: result.failed,
+            skipped: result.skipped,
+          },
+        });
+      } catch (err) {
+        console.error("Error in /api/notify/ali-parcel-pickup:", err);
+
+        if (err instanceof Error && err.message === "Invalid JSON body") {
+          return error("Invalid JSON body");
+        }
+
+        return error("Internal server error:", { status: 500 });
       }
     },
     requireJSON,

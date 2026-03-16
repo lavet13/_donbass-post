@@ -74,13 +74,14 @@ model NotificationType {
 }
 
 model ManagerNotificationPreferences {
-  id                 String   @id @default(cuid(2))
-  managerId          String   @map("manager_id")
-  notificationTypeId String   @map("notification_type_id")
-  createdAt          DateTime @default(now()) @map("created_at")
+  id        String   @id @default(cuid(2))
+  createdAt DateTime @default(now()) @map("created_at")
 
-  manager          Manager          @relation(fields: [managerId], references: [id], onDelete: Cascade)
-  notificationType NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
+  managerId String  @map("manager_id")
+  manager   Manager @relation(fields: [managerId], references: [id], onDelete: Cascade)
+
+  notificationTypeId String           @map("notification_type_id")
+  notificationType   NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
 
   @@unique([managerId, notificationTypeId])
   @@map("manager_notification_preferences")

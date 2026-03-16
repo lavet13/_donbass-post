@@ -2,6 +2,15 @@ import { config } from "@/config";
 import type { Bot, Context } from "grammy";
 import { preferencesCommand, allPreferencesCommand } from "./preferences";
 import { prisma } from "@/prisma";
+import {
+  NotificationTypeNames,
+  NotificationTypes,
+  type NotificationType,
+} from "@/types/notification-types";
+import { getManagerPreferences } from "@/services/manager-preferences.service";
+import { version } from "../../package.json";
+
+const VALID_SLUGS = Object.values(NotificationTypes);
 
 export type CommandHandler = (ctx: Context) => Promise<void>;
 
@@ -64,7 +73,7 @@ export const statusCommand: Command = {
     await ctx.reply(
       "✅ <b>Статус бота</b>\n\n" +
         `⏱ <b>Время работы:</b> ${hours}ч ${minutes}м ${seconds}с\n` +
-        `🤖 <b>Версия:</b> 1.0.0\n` +
+        `🤖 <b>Версия:</b> ${version}\n` +
         `📡 <b>Режим:</b> ${config.telegram.useWebhook ? "webhook" : "polling"}\n` +
         `💾 <b>Память:</b> ${heapUsedMB} / ${heapTotalMB} MB\n` +
         `👥 <b>Менеджеров:</b> ${managerCount}\n` +
@@ -102,17 +111,14 @@ export const managersCommand: Command = {
 
     const managerList = managers.map((manager, index) => {
       const user = manager.telegramUser;
-      const name = [user.firstName, user.lastName].filter(Boolean).join(" ");
-      const username = user.username ? `@${user.username}` : "";
-      const displayName = name || username || `Chat ID: ${user.chatId}`;
 
-      return `${index + 1}: ${displayName}\n   └ Chat ID: <code>${user.chatId}</code>\n`;
+      return `${index + 1}: Chat ID: <code>${user.chatId}</code>\n`;
     });
 
     await ctx.reply(
       `👥 <b>Список менеджеров</b>\n\n` +
         `Всего менеджеров: ${managers.length}\n\n` +
-        `${managerList}\n\n` +
+        `${managerList}\n` +
         getCommandListText(isManager),
       { parse_mode: "HTML" },
     );
@@ -137,6 +143,335 @@ export const getChatIdCommand: Command = {
   },
 };
 
+export const setPreferencesCommand: Command = {
+  name: "setpreferences",
+  description: "Задать настройки уведомлений менеджера",
+  adminOnly: true,
+  handler: async (ctx) => {
+    const text = ctx.message?.text ?? "";
+    // e.g. "/setpreferences 123456789 online-pickup-rf pick-up-point-delivery-order"
+    const parts = text.trim().split(/\s+/).slice(1);
+    if (parts.length < 2) {
+      await ctx.reply(
+        "❌ <b>Использование:</b>\n" +
+          "<code>/setpreferences &lt;chatId&gt; [slug1 slug2 ...]</code>\n\n" +
+          "Доступные типы уведомлений:\n" +
+          VALID_SLUGS.map(
+            (s) => `<code>${s}</code> — ${NotificationTypeNames[s]}`,
+          ).join("\n") +
+          "\n\nЧтобы <b>снять все</b> подписки — укажите только chatId без слагов.",
+        { parse_mode: "HTML" },
+      );
+      return;
+    }
+
+    const [chatIdStr, ...slugs] = parts as [string, ...NotificationType[]];
+    const chatId = parseInt(chatIdStr, 10);
+
+    if (isNaN(chatId)) {
+      await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {
+        parse_mode: "HTML",
+      });
+      return;
+    }
+
+    const invalidSlugs = slugs.filter((s) => !VALID_SLUGS.includes(s));
+    if (invalidSlugs.length > 0) {
+      await ctx.reply(
+        `❌ Неизвестные типы уведомлений:
+          ${invalidSlugs.map((s) => `<code>${s}</code>`).join(", ")}\n\n` +
+          "Доступные:\n" +
+          VALID_SLUGS.map((s) => `  <code>${s}</code>`).join("\n"),
+        { parse_mode: "HTML" },
+      );
+      return;
+    }
+
+    const service = getManagerPreferences();
+    const allManagers = await service.getAllManagers();
+    if (!allManagers.includes(chatId)) {
+      await ctx.reply(
+        `❌ Менеджер с Chat ID <code>${chatId}</code> не найден в базе данных.\n` +
+          "Сначала добавьте его через /addmanager.",
+        { parse_mode: "HTML" },
+      );
+      return;
+    }
+
+    try {
+      await service.setManagerPreferences(chatId, slugs);
+
+      if (slugs.length === 0) {
+        await ctx.reply(
+          `✅ Все подписки для менеджера <code>${chatId}</code> сняты.`,
+          { parse_mode: "HTML" },
+        );
+      } else {
+        const list = slugs
+          .map((s) => `  ${NotificationTypeNames[s]}`)
+          .join("\n");
+
+        await ctx.reply(
+          `✅ Настройки менеджера <code>${chatId}</code> обновлены:\n\n${list}`,
+          { parse_mode: "HTML" },
+        );
+      }
+    } catch (err) {
+      console.error(`Error in /setpreferences:`, err);
+      await ctx.reply(
+        `❌ Произошла ошибка при обновлении настроек. Попробуйте позже.`,
+      );
+    }
+  },
+};
+
+/**
+ * /appendpreference <chatId> <slug>
+ *
+ * Adds a single notification type to a manager's existing preferences.
+ * Unlike /setpreferences, this does NOT clear existing subscriptions.
+ *
+ * Examples:
+ *   /appendpreference 123456789 ali-parcel-pickup
+ */
+export const appendPreferenceCommand: Command = {
+  name: "appendpreference",
+  description: "Добавить тип уведомлений менеджеру",
+  adminOnly: true,
+  handler: async (ctx) => {
+    const text = ctx.message?.text ?? "";
+    const parts = text.trim().split(/\s+/).slice(1); // drop /appendpreference
+
+    if (parts.length < 2) {
+      await ctx.reply(
+        "❌ <b>Использование:</b>\n" +
+          "<code>/appendpreference &lt;chatId&gt; &lt;slug&gt;</code>\n\n" +
+          "Доступные слаги:\n" +
+          VALID_SLUGS.map(
+            (s) => `<code>${s}</code> — ${NotificationTypeNames[s]}`,
+          ).join("\n"),
+        { parse_mode: "HTML" },
+      );
+      return;
+    }
+
+    const [chatIdStr, slug] = parts as [string, NotificationType];
+    const chatId = parseInt(chatIdStr, 10);
+
+    if (isNaN(chatId)) {
+      await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {
+        parse_mode: "HTML",
+      });
+      return;
+    }
+
+    if (!VALID_SLUGS.includes(slug as NotificationType)) {
+      await ctx.reply(
+        `❌ Неизвестный слаг: <code>${slug}</code>\n\n` +
+          "Доступные:\n" +
+          VALID_SLUGS.map((s) => `<code>${s}</code>`).join("\n"),
+        { parse_mode: "HTML" },
+      );
+      return;
+    }
+
+    const service = getManagerPreferences();
+
+    const allManagers = await service.getAllManagers();
+    if (!allManagers.includes(chatId)) {
+      await ctx.reply(
+        `❌ Менеджер с Chat ID <code>${chatId}</code> не найден.\n` +
+          "Сначала добавьте его через /addmanager.",
+        { parse_mode: "HTML" },
+      );
+      return;
+    }
+
+    try {
+      const alreadySubscribed = await service.isManagerSubscribed(
+        chatId,
+        slug,
+      );
+      if (alreadySubscribed) {
+        await ctx.reply(
+          `⚠ Менеджер <code>${chatId}</code> уже подписан на <b>${NotificationTypeNames[slug]}</b>.`,
+          { parse_mode: "HTML" },
+        );
+        return;
+      }
+
+      const current = await service.getManagerNotifications(chatId);
+      await service.setManagerPreferences(chatId, [...current, slug]);
+
+      await ctx.reply(
+        `✅ Менеджер <code>${chatId}</code> подписан на <b>${NotificationTypeNames[slug]}</b>.\n\n` +
+          "Текущие подписки:\n" +
+          [...current, slug]
+            .map((s) => `${NotificationTypeNames[s]}`)
+            .join("\n"),
+        { parse_mode: "HTML" },
+      );
+    } catch (err) {
+      console.error("Error in /appendpreference:", err);
+      await ctx.reply("❌ Произошла ошибка. Попробуйте позже.");
+    }
+  },
+};
+
+/**
+ * /addmanager <chatId> [username] [firstName] [lastName]
+ *
+ * Examples:
+ *   /addmanager 123456789
+ *   /addmanager 123456789 john_doe John Doe
+ */
+export const addManagerCommand: Command = {
+  name: "addmanager",
+  description: "Добавить менеджера",
+  adminOnly: true,
+  handler: async (ctx) => {
+    const text = ctx.message?.text ?? "";
+    const parts = text.trim().split(/\s+/).slice(1); // drop "/addmanager"
+
+    if (parts.length === 0) {
+      await ctx.reply(
+        "❌ <b>Использование:</b>\n" +
+          "<code>/addmanager &lt;chatId&gt; [username] [firstName] [lastName]</code>\n\n" +
+          "Примеры:\n" +
+          "<code>/addmanager 123456789</code>\n" +
+          "<code>/addmanager 123456789 john_doe John Doe</code>",
+        { parse_mode: "HTML" },
+      );
+      return;
+    }
+
+    const [chatIdStr, username, firstName, lastName] = parts as [
+      string,
+      string,
+      string,
+      string,
+    ];
+
+    const chatId = parseInt(chatIdStr, 10);
+
+    if (isNaN(chatId)) {
+      await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {
+        parse_mode: "HTML",
+      });
+      return;
+    }
+
+    const service = getManagerPreferences();
+
+    const existingManagers = await service.getAllManagers();
+
+    if (existingManagers.includes(chatId)) {
+      await ctx.reply(
+        `⚠ Менеджер с Chat ID <code>${chatId}</code> уже существует.`,
+        { parse_mode: "HTML" },
+      );
+      return;
+    }
+
+    try {
+      await service.addManager({
+        chatId,
+        username,
+        firstName,
+        lastName,
+      });
+
+      const displayName = [firstName, lastName].filter(Boolean).join(" ");
+      const usernameStr = username ? ` (@${username})` : "";
+
+      await ctx.reply(
+        `✅ Менеджер добавлен:\n\n` +
+          `Chat ID: <code>${chatId}</code>\n` +
+          (displayName ? `Имя: ${displayName}${usernameStr}\n` : "") +
+          `\nУведомления не настроены. Используйте:\n` +
+          `<code>/setpreferences ${chatId} &lt;slug1&gt; [slug2 ...]</code>`,
+        { parse_mode: "HTML" },
+      );
+    } catch (err) {
+      console.error("Error in /addmanager:", err);
+      await ctx.reply(
+        "❌ Произошла ошибка при добавлении менеджера. Попробуйте позже.",
+      );
+    }
+  },
+};
+
+/**
+ * /removemanager <chatId>
+ *
+ * Marks the manager as inactive (does not delete from DB).
+ *
+ * Example:
+ *   /removemanager 123456789
+ */
+export const removeManagerCommand: Command = {
+  name: "removemanager",
+  description: "Удалить менеджера",
+  adminOnly: true,
+  handler: async (ctx) => {
+    const text = ctx.message?.text ?? "";
+    const parts = text.trim().split(/\s+/).slice(1); // drop "/removemanager"
+
+    if (parts.length === 0) {
+      await ctx.reply(
+        "❌ <b>Использование:</b>\n" +
+          "<code>/removemanager &lt;chatId&gt;</code>\n\n" +
+          "Пример:\n" +
+          "<code>/removemanager 123456789</code>",
+        { parse_mode: "HTML" },
+      );
+      return;
+    }
+
+    const [chatIdStr] = parts as [string];
+    const chatId = parseInt(chatIdStr, 10);
+
+    if (isNaN(chatId)) {
+      await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {
+        parse_mode: "HTML",
+      });
+      return;
+    }
+
+    const service = getManagerPreferences();
+
+    const existingManagers = await service.getAllManagers();
+    if (!existingManagers) {
+      await ctx.reply(
+        `❌ Активный менеджер с Chat ID <code>${chatId}</code> не найден.`,
+        { parse_mode: "HTML" },
+      );
+      return;
+    }
+
+    // Prevent self-removal
+    if (ctx.from?.id === chatId) {
+      await ctx.reply("⛔ Нельзя удалить самого себя.", { parse_mode: "HTML" });
+      return;
+    }
+
+    try {
+      await service.removeManager(chatId);
+
+      await ctx.reply(
+        `✅ Менеджер <code>${chatId}</code> деактивирован.\n\n` +
+          `Данные сохранены в базе. Для полного удаления обратитесь к администратору БД.`,
+        { parse_mode: "HTML" },
+      );
+    } catch (err) {
+      console.error("Error in /removemanager:", err);
+      await ctx.reply(
+        "❌ Произошла ошибка при удалении менеджера. Попробуйте позже.",
+      );
+    }
+  },
+};
+
 export const commands: Command[] = [
   startCommand,
   helpCommand,
@@ -145,6 +480,10 @@ export const commands: Command[] = [
   getChatIdCommand,
   preferencesCommand,
   allPreferencesCommand,
+  setPreferencesCommand,
+  appendPreferenceCommand,
+  addManagerCommand,
+  removeManagerCommand,
 ];
 
 export async function isCurrentUserManager(ctx: Context): Promise<boolean> {
@@ -164,6 +503,14 @@ export async function isCurrentUserManager(ctx: Context): Promise<boolean> {
     return !!(telegramUser?.isActive && telegramUser.managerProfile);
   } catch (err) {
     console.error(`Error checking manager status: ${err}`);
+    if (ctx.callbackQuery) {
+      await ctx.answerCallbackQuery({
+        text: "Ошибка при попытке найти менеджера 😥",
+      });
+    } else {
+      await ctx.reply("❌ Ошибка при проверке доступа. Попробуйте позже.");
+    }
+
     return false;
   }
 }
@@ -171,7 +518,7 @@ export async function isCurrentUserManager(ctx: Context): Promise<boolean> {
 function getCommandListText(isAdmin: boolean = false): string {
   const relevantCommands = commands.filter((cmd) => !cmd.adminOnly || isAdmin);
 
-  if (relevantCommands.length === 0) return "Комманд пока нет 😔";
+  if (relevantCommands.length === 0) return "Команд пока нет 😔";
 
   const lines = relevantCommands.map(
     (cmd) => `/${cmd.name} - ${cmd.description}`,

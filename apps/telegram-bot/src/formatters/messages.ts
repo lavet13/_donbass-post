@@ -1,4 +1,5 @@
 import type {
+    AliParcelPickupPayload,
   OnlinePickupPayload,
   PickUpPointDeliveryOrderPayload,
 } from "@/types/notifications";
@@ -203,8 +204,8 @@ export function formatPickUpPointDeliveryOrderMessage(
     "",
     "📦 <b>Информация о грузе:</b>",
     `Описание: ${payload.cargoData.description}`,
-    `⚖️ Общий вес: ${payload.cargoData.totalWeight} кг`,
-    `⚖️ Вес самой тяжелой позиции: ${payload.cargoData.weightHeaviestPosition} кг`,
+    `Общий вес: ${payload.cargoData.totalWeight} кг`,
+    `Вес самой тяжелой позиции: ${payload.cargoData.weightHeaviestPosition} кг`,
   );
 
   if (
@@ -238,6 +239,23 @@ export function formatPickUpPointDeliveryOrderMessage(
   }
 
   lines.push("", `🕐 Время: ${formatRussianDateTime(new Date())}`);
+
+  return lines.join("\n");
+}
+
+export function formatAliParcelPickupMessage(
+  payload: AliParcelPickupPayload,
+): string {
+  const lines: string[] = [
+    "📦 <b>Код и информация для забор заказа AliExpress</b>",
+    "",
+    `📍 <b>Адрес:</b> ${payload.address}`,
+    `🔢 <b>Трек-номер:</b> <code>${payload.track}</code>`,
+    `🔑 <b>Код получения:</b> <code>${payload.code}</code>`,
+    `📱 <b>Телефон:</b> ${payload.phone}`,
+    "",
+    `🕐 Время: ${formatRussianDateTime(new Date())}`,
+  ];
 
   return lines.join("\n");
 }

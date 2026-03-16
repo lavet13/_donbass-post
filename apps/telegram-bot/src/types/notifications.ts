@@ -137,10 +137,9 @@ export interface PickUpPointDeliveryOrderPayload extends BaseNotificationPayload
   }>;
 }
 
-/**
- * Generic notification payload for other endpoints
- */
-export interface GenericNotificationPayload extends BaseNotificationPayload {
-  formType: string;
-  data: Record<string, any>;
+export interface AliParcelPickupPayload extends BaseNotificationPayload {
+  address: string; // 3–50 chars
+  track: string; // 3–50 chars
+  code: string; // 3–50 chars
+  phone: string; // +7XXXXXXXXXX
 }

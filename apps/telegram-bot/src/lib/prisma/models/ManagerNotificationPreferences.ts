@@ -26,46 +26,46 @@ export type AggregateManagerNotificationPreferences = {
 
 export type ManagerNotificationPreferencesMinAggregateOutputType = {
   id: string | null
+  createdAt: Date | null
   managerId: string | null
   notificationTypeId: string | null
-  createdAt: Date | null
 }
 
 export type ManagerNotificationPreferencesMaxAggregateOutputType = {
   id: string | null
+  createdAt: Date | null
   managerId: string | null
   notificationTypeId: string | null
-  createdAt: Date | null
 }
 
 export type ManagerNotificationPreferencesCountAggregateOutputType = {
   id: number
+  createdAt: number
   managerId: number
   notificationTypeId: number
-  createdAt: number
   _all: number
 }
 
 
 export type ManagerNotificationPreferencesMinAggregateInputType = {
   id?: true
+  createdAt?: true
   managerId?: true
   notificationTypeId?: true
-  createdAt?: true
 }
 
 export type ManagerNotificationPreferencesMaxAggregateInputType = {
   id?: true
+  createdAt?: true
   managerId?: true
   notificationTypeId?: true
-  createdAt?: true
 }
 
 export type ManagerNotificationPreferencesCountAggregateInputType = {
   id?: true
+  createdAt?: true
   managerId?: true
   notificationTypeId?: true
-  createdAt?: true
   _all?: true
 }
 
@@ -143,9 +143,9 @@ export type ManagerNotificationPreferencesGroupByArgs<ExtArgs extends runtime.Ty
 
 export type ManagerNotificationPreferencesGroupByOutputType = {
   id: string
+  createdAt: Date
   managerId: string
   notificationTypeId: string
-  createdAt: Date
   _count: ManagerNotificationPreferencesCountAggregateOutputType | null
   _min: ManagerNotificationPreferencesMinAggregateOutputType | null
   _max: ManagerNotificationPreferencesMaxAggregateOutputType | null
@@ -171,18 +171,18 @@ export type ManagerNotificationPreferencesWhereInput = {
   OR?: Prisma.ManagerNotificationPreferencesWhereInput[]
   NOT?: Prisma.ManagerNotificationPreferencesWhereInput | Prisma.ManagerNotificationPreferencesWhereInput[]
   id?: Prisma.StringFilter<"ManagerNotificationPreferences"> | string
+  createdAt?: Prisma.DateTimeFilter<"ManagerNotificationPreferences"> | Date | string
   managerId?: Prisma.StringFilter<"ManagerNotificationPreferences"> | string
   notificationTypeId?: Prisma.StringFilter<"ManagerNotificationPreferences"> | string
-  createdAt?: Prisma.DateTimeFilter<"ManagerNotificationPreferences"> | Date | string
   manager?: Prisma.XOR<Prisma.ManagerScalarRelationFilter, Prisma.ManagerWhereInput>
   notificationType?: Prisma.XOR<Prisma.NotificationTypeScalarRelationFilter, Prisma.NotificationTypeWhereInput>
 }
 
 export type ManagerNotificationPreferencesOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   managerId?: Prisma.SortOrder
   notificationTypeId?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
   manager?: Prisma.ManagerOrderByWithRelationInput
   notificationType?: Prisma.NotificationTypeOrderByWithRelationInput
 }
@@ -193,18 +193,18 @@ export type ManagerNotificationPreferencesWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ManagerNotificationPreferencesWhereInput | Prisma.ManagerNotificationPreferencesWhereInput[]
   OR?: Prisma.ManagerNotificationPreferencesWhereInput[]
   NOT?: Prisma.ManagerNotificationPreferencesWhereInput | Prisma.ManagerNotificationPreferencesWhereInput[]
+  createdAt?: Prisma.DateTimeFilter<"ManagerNotificationPreferences"> | Date | string
   managerId?: Prisma.StringFilter<"ManagerNotificationPreferences"> | string
   notificationTypeId?: Prisma.StringFilter<"ManagerNotificationPreferences"> | string
-  createdAt?: Prisma.DateTimeFilter<"ManagerNotificationPreferences"> | Date | string
   manager?: Prisma.XOR<Prisma.ManagerScalarRelationFilter, Prisma.ManagerWhereInput>
   notificationType?: Prisma.XOR<Prisma.NotificationTypeScalarRelationFilter, Prisma.NotificationTypeWhereInput>
 }, "id" | "managerId_notificationTypeId">
 
 export type ManagerNotificationPreferencesOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   managerId?: Prisma.SortOrder
   notificationTypeId?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
   _count?: Prisma.ManagerNotificationPreferencesCountOrderByAggregateInput
   _max?: Prisma.ManagerNotificationPreferencesMaxOrderByAggregateInput
   _min?: Prisma.ManagerNotificationPreferencesMinOrderByAggregateInput
@@ -215,9 +215,9 @@ export type ManagerNotificationPreferencesScalarWhereWithAggregatesInput = {
   OR?: Prisma.ManagerNotificationPreferencesScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ManagerNotificationPreferencesScalarWhereWithAggregatesInput | Prisma.ManagerNotificationPreferencesScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ManagerNotificationPreferences"> | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"ManagerNotificationPreferences"> | Date | string
   managerId?: Prisma.StringWithAggregatesFilter<"ManagerNotificationPreferences"> | string
   notificationTypeId?: Prisma.StringWithAggregatesFilter<"ManagerNotificationPreferences"> | string
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"ManagerNotificationPreferences"> | Date | string
 }
 
 export type ManagerNotificationPreferencesCreateInput = {
@@ -229,9 +229,9 @@ export type ManagerNotificationPreferencesCreateInput = {
 
 export type ManagerNotificationPreferencesUncheckedCreateInput = {
   id?: string
+  createdAt?: Date | string
   managerId: string
   notificationTypeId: string
-  createdAt?: Date | string
 }
 
 export type ManagerNotificationPreferencesUpdateInput = {
@@ -243,16 +243,16 @@ export type ManagerNotificationPreferencesUpdateInput = {
 
 export type ManagerNotificationPreferencesUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managerId?: Prisma.StringFieldUpdateOperationsInput | string
   notificationTypeId?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ManagerNotificationPreferencesCreateManyInput = {
   id?: string
+  createdAt?: Date | string
   managerId: string
   notificationTypeId: string
-  createdAt?: Date | string
 }
 
 export type ManagerNotificationPreferencesUpdateManyMutationInput = {
@@ -262,9 +262,9 @@ export type ManagerNotificationPreferencesUpdateManyMutationInput = {
 
 export type ManagerNotificationPreferencesUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   managerId?: Prisma.StringFieldUpdateOperationsInput | string
   notificationTypeId?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ManagerNotificationPreferencesListRelationFilter = {
@@ -284,23 +284,23 @@ export type ManagerNotificationPreferencesManagerIdNotificationTypeIdCompoundUni
 
 export type ManagerNotificationPreferencesCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   managerId?: Prisma.SortOrder
   notificationTypeId?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
 }
 
 export type ManagerNotificationPreferencesMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   managerId?: Prisma.SortOrder
   notificationTypeId?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
 }
 
 export type ManagerNotificationPreferencesMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   managerId?: Prisma.SortOrder
   notificationTypeId?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
 }
 
 export type ManagerNotificationPreferencesCreateNestedManyWithoutManagerInput = {
@@ -395,8 +395,8 @@ export type ManagerNotificationPreferencesCreateWithoutManagerInput = {
 
 export type ManagerNotificationPreferencesUncheckedCreateWithoutManagerInput = {
   id?: string
-  notificationTypeId: string
   createdAt?: Date | string
+  notificationTypeId: string
 }
 
 export type ManagerNotificationPreferencesCreateOrConnectWithoutManagerInput = {
@@ -430,9 +430,9 @@ export type ManagerNotificationPreferencesScalarWhereInput = {
   OR?: Prisma.ManagerNotificationPreferencesScalarWhereInput[]
   NOT?: Prisma.ManagerNotificationPreferencesScalarWhereInput | Prisma.ManagerNotificationPreferencesScalarWhereInput[]
   id?: Prisma.StringFilter<"ManagerNotificationPreferences"> | string
+  createdAt?: Prisma.DateTimeFilter<"ManagerNotificationPreferences"> | Date | string
   managerId?: Prisma.StringFilter<"ManagerNotificationPreferences"> | string
   notificationTypeId?: Prisma.StringFilter<"ManagerNotificationPreferences"> | string
-  createdAt?: Prisma.DateTimeFilter<"ManagerNotificationPreferences"> | Date | string
 }
 
 export type ManagerNotificationPreferencesCreateWithoutNotificationTypeInput = {
@@ -443,8 +443,8 @@ export type ManagerNotificationPreferencesCreateWithoutNotificationTypeInput = {
 
 export type ManagerNotificationPreferencesUncheckedCreateWithoutNotificationTypeInput = {
   id?: string
-  managerId: string
   createdAt?: Date | string
+  managerId: string
 }
 
 export type ManagerNotificationPreferencesCreateOrConnectWithoutNotificationTypeInput = {
@@ -475,8 +475,8 @@ export type ManagerNotificationPreferencesUpdateManyWithWhereWithoutNotification
 
 export type ManagerNotificationPreferencesCreateManyManagerInput = {
   id?: string
-  notificationTypeId: string
   createdAt?: Date | string
+  notificationTypeId: string
 }
 
 export type ManagerNotificationPreferencesUpdateWithoutManagerInput = {
@@ -487,20 +487,20 @@ export type ManagerNotificationPreferencesUpdateWithoutManagerInput = {
 
 export type ManagerNotificationPreferencesUncheckedUpdateWithoutManagerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  notificationTypeId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notificationTypeId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ManagerNotificationPreferencesUncheckedUpdateManyWithoutManagerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  notificationTypeId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notificationTypeId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ManagerNotificationPreferencesCreateManyNotificationTypeInput = {
   id?: string
-  managerId: string
   createdAt?: Date | string
+  managerId: string
 }
 
 export type ManagerNotificationPreferencesUpdateWithoutNotificationTypeInput = {
@@ -511,53 +511,53 @@ export type ManagerNotificationPreferencesUpdateWithoutNotificationTypeInput = {
 
 export type ManagerNotificationPreferencesUncheckedUpdateWithoutNotificationTypeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  managerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  managerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ManagerNotificationPreferencesUncheckedUpdateManyWithoutNotificationTypeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  managerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  managerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
 
 export type ManagerNotificationPreferencesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  createdAt?: boolean
   managerId?: boolean
   notificationTypeId?: boolean
-  createdAt?: boolean
   manager?: boolean | Prisma.ManagerDefaultArgs<ExtArgs>
   notificationType?: boolean | Prisma.NotificationTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["managerNotificationPreferences"]>
 
 export type ManagerNotificationPreferencesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  createdAt?: boolean
   managerId?: boolean
   notificationTypeId?: boolean
-  createdAt?: boolean
   manager?: boolean | Prisma.ManagerDefaultArgs<ExtArgs>
   notificationType?: boolean | Prisma.NotificationTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["managerNotificationPreferences"]>
 
 export type ManagerNotificationPreferencesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  createdAt?: boolean
   managerId?: boolean
   notificationTypeId?: boolean
-  createdAt?: boolean
   manager?: boolean | Prisma.ManagerDefaultArgs<ExtArgs>
   notificationType?: boolean | Prisma.NotificationTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["managerNotificationPreferences"]>
 
 export type ManagerNotificationPreferencesSelectScalar = {
   id?: boolean
+  createdAt?: boolean
   managerId?: boolean
   notificationTypeId?: boolean
-  createdAt?: boolean
 }
 
-export type ManagerNotificationPreferencesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "managerId" | "notificationTypeId" | "createdAt", ExtArgs["result"]["managerNotificationPreferences"]>
+export type ManagerNotificationPreferencesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "managerId" | "notificationTypeId", ExtArgs["result"]["managerNotificationPreferences"]>
 export type ManagerNotificationPreferencesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   manager?: boolean | Prisma.ManagerDefaultArgs<ExtArgs>
   notificationType?: boolean | Prisma.NotificationTypeDefaultArgs<ExtArgs>
@@ -579,9 +579,9 @@ export type $ManagerNotificationPreferencesPayload<ExtArgs extends runtime.Types
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    createdAt: Date
     managerId: string
     notificationTypeId: string
-    createdAt: Date
   }, ExtArgs["result"]["managerNotificationPreferences"]>
   composites: {}
 }
@@ -1008,9 +1008,9 @@ export interface Prisma__ManagerNotificationPreferencesClient<T, Null = never, E
  */
 export interface ManagerNotificationPreferencesFieldRefs {
   readonly id: Prisma.FieldRef<"ManagerNotificationPreferences", 'String'>
+  readonly createdAt: Prisma.FieldRef<"ManagerNotificationPreferences", 'DateTime'>
   readonly managerId: Prisma.FieldRef<"ManagerNotificationPreferences", 'String'>
   readonly notificationTypeId: Prisma.FieldRef<"ManagerNotificationPreferences", 'String'>
-  readonly createdAt: Prisma.FieldRef<"ManagerNotificationPreferences", 'DateTime'>
 }
     
 

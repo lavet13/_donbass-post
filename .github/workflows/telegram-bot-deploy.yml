@@ -45,7 +45,6 @@ jobs:
           NODE_ENV=production
           USE_WEBHOOK=true
           MANAGER_CHAT_IDS=${{ secrets.MANAGER_CHAT_IDS }}
-          MANAGER_NOTIFICATION_PREFERENCES=${{ secrets.MANAGER_NOTIFICATION_PREFERENCES }}
           WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
           WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}
 

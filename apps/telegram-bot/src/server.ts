@@ -2,7 +2,7 @@ import "@/env";
 import { serve } from "srvx/node";
 import { createRoutes } from "@/routes";
 import { getBotManager } from "@/bot";
-import { config, validateConfig } from "@/config";
+import { config, validateConfig, validateNotificationTypes } from "@/config";
 
 async function startApp() {
   try {
@@ -17,6 +17,7 @@ async function startApp() {
 
   try {
     await botManager.initialize(config.telegram.token);
+    await validateNotificationTypes();
 
     if (config.telegram.useWebhook) {
       console.warn("🔗 Setting up webhook mode...");

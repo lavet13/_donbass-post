@@ -1,4 +1,6 @@
 import { getEnv } from "@/env";
+import { prisma } from "@/prisma";
+import { NotificationTypes } from "@/types/notification-types";
 
 /**
  * Application configuration loaded from environment variables
@@ -55,7 +57,7 @@ export function validateConfig(cfg: typeof config): void {
 
     if (!cfg.telegram.webhookSecret) {
       console.warn(
-        "⚠️ WEBHOOK_SECRET not set — webhook requests will NOT be verified!",
+        "⚠ WEBHOOK_SECRET not set — webhook requests will NOT be verified!",
       );
     } else if (cfg.telegram.webhookSecret.length < 10) {
       errors.push("WEBHOOK_SECRET is too short (min 10 chars recommended)");
@@ -67,4 +69,23 @@ export function validateConfig(cfg: typeof config): void {
   }
 
   console.warn("✅ Configuration validated");
+}
+
+export async function validateNotificationTypes() {
+  const dbTypes = await prisma.notificationType.findMany({
+    select: { slug: true },
+  });
+  const dbSlugs = new Set(dbTypes.map((t) => t.slug));
+
+  const missingSlugs = Object.values(NotificationTypes).filter(
+    (slug) => !dbSlugs.has(slug),
+  );
+
+  if (missingSlugs.length > 0) {
+    console.error(
+      `⚠ Notification types missing from DB: ${missingSlugs.join(", ")}. Run yarn db:seed.`,
+    );
+  } else {
+    console.warn("✅ Notification types validated against DB");
+  }
 }

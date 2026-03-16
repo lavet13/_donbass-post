@@ -1,5 +1,6 @@
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";
+import type { EnvKeys } from "environments";
 import { resolve } from "path";
 
 /**
@@ -17,8 +18,6 @@ export function loadEnv() {
 
   return process.env;
 }
-
-type EnvKeys = keyof typeof process.env;
 
 /**
  * Get environment variable with fallback

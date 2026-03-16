@@ -1,9 +1,11 @@
 import { Bot } from "grammy";
 import {
+  formatAliParcelPickupMessage,
   formatOnlinePickupMessage,
   formatPickUpPointDeliveryOrderMessage,
 } from "@/formatters/messages";
 import type {
+    AliParcelPickupPayload,
   OnlinePickupPayload,
   PickUpPointDeliveryOrderPayload,
 } from "@/types/notifications";
@@ -170,6 +172,7 @@ export async function notifyOnlinePickup(
   payload: OnlinePickupPayload,
 ): Promise<NotificationResult> {
   const message = formatOnlinePickupMessage(payload);
+
   return sendToManagers(
     bot,
     message,
@@ -188,10 +191,25 @@ export async function notifyPickUpPointDeliveryOrder(
   payload: PickUpPointDeliveryOrderPayload,
 ): Promise<NotificationResult> {
   const message = formatPickUpPointDeliveryOrderMessage(payload);
+
   return sendToManagers(
     bot,
     message,
     NotificationTypes.PICK_UP_POINT_DELIVERY,
+    payload,
+  );
+}
+
+export async function notifyAliParcelPickup(
+  bot: Bot,
+  payload: AliParcelPickupPayload,
+): Promise<NotificationResult> {
+  const message = formatAliParcelPickupMessage(payload);
+
+  return sendToManagers(
+    bot,
+    message,
+    NotificationTypes.ALI_PARCEL_PICKUP,
     payload,
   );
 }

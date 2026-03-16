@@ -4,6 +4,7 @@
 export const NotificationTypes = {
   ONLINE_PICKUP_RF: "online-pickup-rf",
   PICK_UP_POINT_DELIVERY: "pick-up-point-delivery-order",
+  ALI_PARCEL_PICKUP: "ali-parcel-pickup",
 } as const;
 
 export type NotificationType = typeof NotificationTypes[keyof typeof NotificationTypes];
@@ -14,4 +15,5 @@ export type NotificationType = typeof NotificationTypes[keyof typeof Notificatio
 export const NotificationTypeNames: Record<NotificationType, string> = {
   [NotificationTypes.ONLINE_PICKUP_RF]: "Онлайн-забор по РФ",
   [NotificationTypes.PICK_UP_POINT_DELIVERY]: "Забор груза ЛДНР/Запорожье",
+  [NotificationTypes.ALI_PARCEL_PICKUP]: "Забор посылки AliExpress",
 };

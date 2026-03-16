@@ -126,9 +126,9 @@ export type NotificationTypeScalarFieldEnum = (typeof NotificationTypeScalarFiel
 
 export const ManagerNotificationPreferencesScalarFieldEnum = {
   id: 'id',
+  createdAt: 'createdAt',
   managerId: 'managerId',
-  notificationTypeId: 'notificationTypeId',
-  createdAt: 'createdAt'
+  notificationTypeId: 'notificationTypeId'
 } as const
 
 export type ManagerNotificationPreferencesScalarFieldEnum = (typeof ManagerNotificationPreferencesScalarFieldEnum)[keyof typeof ManagerNotificationPreferencesScalarFieldEnum]
