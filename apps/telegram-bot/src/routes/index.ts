@@ -14,6 +14,7 @@ import type {
   PickUpPointDeliveryOrderPayload,
 } from "@/types/notifications";
 import type { Update } from "grammy/types";
+import { version } from "../../package.json";
 
 export function createRoutes(): Router {
   const botManager = getBotManager();
@@ -139,7 +140,7 @@ export function createRoutes(): Router {
   router.get("/", (_request) => {
     return Response.json({
       service: "Telegram Bot Server",
-      version: "1.0.0",
+      version,
       endpoints: [
         "GET /health - Health check",
         "GET /stats - Server statistics",

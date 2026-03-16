@@ -112,13 +112,13 @@ export const managersCommand: Command = {
     const managerList = managers.map((manager, index) => {
       const user = manager.telegramUser;
 
-      return `${index + 1}: Chat ID: <code>${user.chatId}</code>\n`;
-    });
+      return `${index + 1}: Chat ID: <code>${user.chatId}</code>`;
+    }).join("\n");
 
     await ctx.reply(
       `👥 <b>Список менеджеров</b>\n\n` +
         `Всего менеджеров: ${managers.length}\n\n` +
-        `${managerList}\n` +
+        `${managerList}\n\n` +
         getCommandListText(isManager),
       { parse_mode: "HTML" },
     );
