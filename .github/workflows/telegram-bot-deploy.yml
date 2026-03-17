@@ -123,6 +123,9 @@ jobs:
             # Run database migrations (non-interactive)
             yarn db:deploy
 
+            # Seed database (idempotent - safe to run on every deploy)
+            yarn db:seed
+
             # Create logs directory
             mkdir -p logs
 
