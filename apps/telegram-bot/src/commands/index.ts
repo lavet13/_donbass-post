@@ -579,6 +579,7 @@ export const commands: Command[] = [
   allPreferencesCommand,
   setPreferencesCommand,
   appendPreferenceCommand,
+  removePreferenceCommand,
   addManagerCommand,
   removeManagerCommand,
 ];
