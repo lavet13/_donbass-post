@@ -417,7 +417,7 @@ export function createRoutes(): Router {
 
         if (!payload.phone) {
           errors.push("Заполните телефон!");
-        } else if (!/^\+7\d{10}$/.test(payload.phone)) {
+        } else if (!/^\+7\d{10,}$/.test(payload.phone)) {
           errors.push("Телефон должен быть в формате +7XXXXXXXXXX");
         }
 
