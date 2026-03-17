@@ -69,9 +69,9 @@ export const allPreferencesCommand: Command = {
     const preferencesService = getManagerPreferences();
 
     try {
-      const allManagers = await preferencesService.getAllManagers();
+      const allPreferences = await preferencesService.getAllPreferences();
 
-      if (allManagers.length === 0) {
+      if (allPreferences.length === 0) {
         await ctx.reply(
           "<b>Менеджеры не настроены</b>\n\n" +
             "В базе данных нет активных менеджеров.\n" +
@@ -82,8 +82,6 @@ export const allPreferencesCommand: Command = {
       }
 
       const lines: string[] = ["👥 <b>Настройки уведомлений менеджеров</b>\n"];
-
-      const allPreferences = await preferencesService.getAllPreferences();
 
       if (allPreferences.length === 0) {
         lines.push("В базе данных нет менеджеров с настройками\n");

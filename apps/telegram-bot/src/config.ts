@@ -82,8 +82,8 @@ export async function validateNotificationTypes() {
   );
 
   if (missingSlugs.length > 0) {
-    console.error(
-      `⚠ Notification types missing from DB: ${missingSlugs.join(", ")}. Run yarn db:seed.`,
+    throw new Error(
+      `Notification types missing from DB: ${missingSlugs.join(", ")}. Run yarn db:seed.`,
     );
   } else {
     console.warn("✅ Notification types validated against DB");
