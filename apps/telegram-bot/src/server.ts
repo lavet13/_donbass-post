@@ -49,7 +49,9 @@ async function startApp() {
     }
 
     const router = createRoutes();
-    console.log(router.getRoutes());
+    if (process.env.NODE_ENV === "development") {
+      console.log(router.getRoutes());
+    }
 
     const server = serve({
       fetch: (request) => router.handle(request),
