@@ -32,16 +32,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: 'yarn'
 
+      - name: Cache node_modules & install state
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+            .yarn/install-state.gz
+          key: ${{ runner.os }}-yarn-nm-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-nm-
+
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable --immutable-cache
 
       - name: Build
         run: yarn workspace @donbass-post/web build
