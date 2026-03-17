@@ -49,6 +49,7 @@ async function startApp() {
     }
 
     const router = createRoutes();
+    console.log(router.getRoutes());
 
     const server = serve({
       fetch: (request) => router.handle(request),

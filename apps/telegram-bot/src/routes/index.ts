@@ -384,7 +384,7 @@ export function createRoutes(): Router {
   );
 
   router.post(
-    `/ali/notify/${NotificationTypes.ALI_PARCEL_PICKUP}`,
+    `/api/notify/${NotificationTypes.ALI_PARCEL_PICKUP}`,
     async (request) => {
       try {
         const payload = await parseJSON<AliParcelPickupPayload>(request);
