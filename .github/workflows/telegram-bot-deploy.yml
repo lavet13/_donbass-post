@@ -92,20 +92,17 @@ jobs:
             docker compose up -d postgres
 
             # Loading .env vars
+            set -a
             source .env
+            set +a
 
             # Wait for database to be ready
             echo "Waiting for database to be ready..."
-            for i in {1..30}; do
-              if docker compose exec -T postgres pg_isready -U "$POSTGRES_USER" > /dev/null 2>&1; then
-                echo "✅ Database is ready!"
-                break
-              fi
-              echo "Waiting for database... ($i/30)"
-              sleep 2
-            done
+            docker compose wait postgres
 
-            # Go back to root
+            echo "✅ Database is ready!"
+
+            # Continue deployment
             cd ../..
 
             # Install all dependencies
