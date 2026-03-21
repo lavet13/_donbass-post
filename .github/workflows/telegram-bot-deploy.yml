@@ -105,6 +105,11 @@ jobs:
               sleep 2
             done
 
+            if ! docker compose exec -T postgres pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" > /dev/null 2>&1; then
+              echo "❌ Database failed to become ready after 60 seconds!"
+              exit 1
+            fi
+
             # Go back to root
             cd ../..
 
