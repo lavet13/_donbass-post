@@ -1,23 +1,19 @@
 import type { Command } from ".";
-import { isCurrentUserManager } from ".";
 import { getManagerPreferences } from "@/services/manager-preferences.service";
 import { NotificationTypeNames } from "@/types/notification-types";
 
+/**
+ * /preferences — shows the calling manager their own notification subscriptions
+ */
 export const preferencesCommand: Command = {
   name: "preferences",
+  scope: "manager",
   description: "Мои настройки уведомлений",
   handler: async (ctx) => {
     const userId = ctx.from?.id;
 
     if (!userId) {
       await ctx.reply("❌ Не удалось определить ваш ID");
-      return;
-    }
-
-    const isManager = isCurrentUserManager(ctx);
-
-    if (!isManager) {
-      await ctx.reply("⛔ Эта команда только для менеджеров.");
       return;
     }
 
@@ -63,6 +59,7 @@ export const preferencesCommand: Command = {
 
 export const allPreferencesCommand: Command = {
   name: "allpreferences",
+  scope: "admin",
   description: "Настройки всех менеджеров",
   adminOnly: true,
   handler: async (ctx) => {

@@ -11,6 +11,7 @@ export const config = {
     useWebhook: getEnv("USE_WEBHOOK", "") === "true",
     webhookUrl: getEnv("WEBHOOK_URL", ""),
     webhookSecret: getEnv("WEBHOOK_SECRET", ""),
+    rootAdminChatId: parseInt(getEnv("ROOT_ADMIN_CHAT_ID", ""), 10) || null,
   },
 
   server: {
@@ -48,6 +49,10 @@ export function validateConfig(cfg: typeof config): void {
 
   if (!cfg.telegram.token) {
     errors.push("TELEGRAM_BOT_TOKEN is required");
+  }
+
+  if (!cfg.telegram.rootAdminChatId) {
+    errors.push("ROOT_ADMIN_CHAT_ID is required");
   }
 
   if (cfg.telegram.useWebhook) {

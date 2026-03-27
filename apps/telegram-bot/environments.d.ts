@@ -6,7 +6,8 @@ export type EnvKeys =
   | "WEBHOOK_SECRET"
   | "PORT"
   | "MANAGER_CHAT_IDS"
-  | "DATABASE_URL";
+  | "DATABASE_URL"
+  | "ROOT_ADMIN_CHAT_ID";
 
 declare global {
   namespace NodeJS {
@@ -21,6 +22,7 @@ declare global {
       MANAGER_CHAT_IDS?: string;
 
       DATABASE_URL?: string;
+      ROOT_ADMIN_CHAT_ID?: string;
     }
   }
 }
