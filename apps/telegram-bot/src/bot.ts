@@ -2,7 +2,7 @@ import { Bot, Context, GrammyError, HttpError } from "grammy";
 import { formatRussianDateTime } from "@/utils";
 import { autoRetry } from "@grammyjs/auto-retry";
 import { registerCommands } from "@/commands";
-import { config } from "./config";
+import { config } from "@/config";
 
 export type TCustomBot = Bot<Context> & {};
 

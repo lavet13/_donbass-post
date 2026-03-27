@@ -23,6 +23,8 @@ import {
   requireRootAdmin,
   getRootAdminChatId,
 } from "@/commands/guards";
+import { getManagerPreferences } from "@/services/manager-preferences.service";
+import type { BotCommand } from "grammy/types";
 
 export const VALID_SLUGS = Object.values(NotificationTypes);
 
@@ -39,8 +41,6 @@ export interface Command {
    * "admin"     — only root admin (ROOT_ADMIN_CHAT_ID)
    */
   scope: "public" | "manager" | "admin";
-
-  adminOnly?: boolean;
 }
 
 export const startCommand: Command = {
@@ -81,7 +81,6 @@ export const helpCommand: Command = {
 export const statusCommand: Command = {
   name: "status",
   description: "Показать статус бота",
-  adminOnly: true,
   scope: "manager",
   handler: async (ctx) => {
     const uptime = Math.floor(process.uptime());
@@ -146,7 +145,7 @@ export const commands: Command[] = [
   removeManagerCommand,
 ];
 
-function getCommandListText({
+export function getCommandListText({
   manager = false,
   admin = false,
 }: {
@@ -196,14 +195,26 @@ export async function registerCommands(bot: Bot) {
       { scope: { type: "default" } },
     );
 
-    // Managers see public + manager commands (uses chat scope per-user)
-    // This is set dynamically in /start and /preferences via setMyCommands per-chat
+    // Safety net
     await bot.api.setMyCommands(
       commands
-        .filter((c) => c.scope === "public" || c.scope === "manager")
+        .filter((c) => c.scope === "public")
         .map((c) => ({ command: c.name, description: c.description })),
       { scope: { type: "all_private_chats" } },
     );
+
+    // Active managers
+    const managerService = getManagerPreferences();
+    const managerIds = await managerService.getAllManagers();
+    const managerCommands: BotCommand[] = commands
+      .filter((c) => c.scope === "public" || c.scope === "manager")
+      .map((c) => ({ command: c.name, description: c.description }));
+
+    for (const chatId of managerIds) {
+      await bot.api.setMyCommands(managerCommands, {
+        scope: { type: "chat", chat_id: chatId },
+      });
+    }
 
     const adminId = getRootAdminChatId();
     if (adminId) {

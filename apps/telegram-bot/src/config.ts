@@ -51,7 +51,7 @@ export function validateConfig(cfg: typeof config): void {
     errors.push("TELEGRAM_BOT_TOKEN is required");
   }
 
-  if (!cfg.telegram.rootAdminChatId) {
+  if (!cfg.telegram.rootAdminChatId && process.env.NODE_ENV === "production") {
     errors.push("ROOT_ADMIN_CHAT_ID is required");
   }
 

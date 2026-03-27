@@ -15,7 +15,6 @@ export const removePreferenceCommand: Command = {
   name: "removepreference",
   scope: "admin",
   description: "Удалить тип уведомления у менеджера",
-  adminOnly: true,
   handler: async (ctx) => {
     const text = ctx.message?.text ?? "";
     const parts = text.trim().split(/\s+/).slice(1);
@@ -113,7 +112,6 @@ export const appendPreferenceCommand: Command = {
   name: "appendpreference",
   scope: "admin",
   description: "Добавить тип уведомлений менеджеру",
-  adminOnly: true,
   handler: async (ctx) => {
     const text = ctx.message?.text ?? "";
     const parts = text.trim().split(/\s+/).slice(1); // drop /appendpreference
@@ -195,7 +193,6 @@ export const setPreferencesCommand: Command = {
   name: "setpreferences",
   scope: "admin",
   description: "Задать настройки уведомлений менеджера",
-  adminOnly: true,
   handler: async (ctx) => {
     const item = ctx.match;
     console.log({ item });

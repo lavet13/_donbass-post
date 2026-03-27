@@ -1,13 +1,18 @@
 import { getManagerPreferences } from "@/services/manager-preferences.service";
-import type { Command } from ".";
+import { commands, getCommandListText, type Command } from ".";
 import { prisma } from "@/prisma";
+import { isActiveManager, isRootAdmin } from "@/commands/guards";
+import { getBotManager } from "@/bot";
+import type { BotCommand } from "grammy/types";
 
 export const managersCommand: Command = {
   name: "managers",
   scope: "admin",
   description: "Информация о менеджерах",
-  adminOnly: true,
   handler: async (ctx) => {
+    const manager = await isActiveManager(ctx);
+    const admin = isRootAdmin(ctx);
+
     const managers = await prisma.manager.findMany({
       where: {
         telegramUser: { isActive: true },
@@ -34,7 +39,8 @@ export const managersCommand: Command = {
     await ctx.reply(
       `👥 <b>Список менеджеров</b>\n\n` +
         `Всего менеджеров: ${managers.length}\n\n` +
-        `${list}\n\n`,
+        `${list.join("\n")}\n\n` +
+        getCommandListText({ manager, admin }),
       { parse_mode: "HTML" },
     );
   },
@@ -51,7 +57,6 @@ export const addManagerCommand: Command = {
   name: "addmanager",
   scope: "admin",
   description: "Добавить менеджера",
-  adminOnly: true,
   handler: async (ctx) => {
     const text = ctx.message?.text ?? "";
     const parts = text.trim().split(/\s+/).slice(1); // drop "/addmanager"
@@ -96,12 +101,27 @@ export const addManagerCommand: Command = {
       return;
     }
 
+    const botManager = getBotManager();
+    const bot = botManager.getBot();
+
+    if (!bot) {
+      throw new Error("Bot not initialized");
+    }
+
+    const managerCommands: BotCommand[] = commands
+      .filter((c) => c.scope === "public" || c.scope === "manager")
+      .map((c) => ({ command: c.name, description: c.description }));
+
     try {
       await service.addManager({
         chatId,
         username,
         firstName,
         lastName,
+      });
+
+      await bot.api.setMyCommands(managerCommands, {
+        scope: { type: "chat", chat_id: chatId },
       });
 
       const displayName = [firstName, lastName].filter(Boolean).join(" ");
@@ -136,7 +156,6 @@ export const removeManagerCommand: Command = {
   name: "removemanager",
   scope: "admin",
   description: "Удалить менеджера",
-  adminOnly: true,
   handler: async (ctx) => {
     const text = ctx.message?.text ?? "";
     const parts = text.trim().split(/\s+/).slice(1); // drop "/removemanager"
@@ -179,8 +198,22 @@ export const removeManagerCommand: Command = {
       return;
     }
 
+    const botManager = getBotManager();
+    const bot = botManager.getBot();
+
+    if (!bot) {
+      throw new Error("Bot not initialized");
+    }
+
     try {
       await service.removeManager(chatId);
+
+      await bot.api.setMyCommands(
+        commands
+          .filter((c) => c.scope === "public")
+          .map((c) => ({ command: c.name, description: c.description })),
+        { scope: { type: "chat", chat_id: chatId } },
+      );
 
       await ctx.reply(
         `✅ Менеджер <code>${chatId}</code> деактивирован.\n\n` +

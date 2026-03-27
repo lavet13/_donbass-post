@@ -61,7 +61,6 @@ export const allPreferencesCommand: Command = {
   name: "allpreferences",
   scope: "admin",
   description: "Настройки всех менеджеров",
-  adminOnly: true,
   handler: async (ctx) => {
     const preferencesService = getManagerPreferences();
 
