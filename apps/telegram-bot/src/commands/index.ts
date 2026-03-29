@@ -23,7 +23,7 @@ import {
   requireRootAdmin,
   getRootAdminChatId,
 } from "@/commands/guards";
-import { getManagerPreferences } from "@/services/manager-preferences.service";
+import { getAllManagers } from "@/services/manager-preferences.service";
 import type { BotCommand } from "grammy/types";
 
 export const VALID_SLUGS = Object.values(NotificationTypes);
@@ -167,8 +167,6 @@ export function getCommandListText({
 }
 
 export async function registerCommands(bot: Bot) {
-  if (!bot) return;
-
   try {
     // 1. Register handlers for all commands
     for (const cmd of commands) {
@@ -204,8 +202,7 @@ export async function registerCommands(bot: Bot) {
     );
 
     // Active managers
-    const managerService = getManagerPreferences();
-    const managerIds = await managerService.getAllManagers();
+    const managerIds = await getAllManagers();
     const managerCommands: BotCommand[] = commands
       .filter((c) => c.scope === "public" || c.scope === "manager")
       .map((c) => ({ command: c.name, description: c.description }));

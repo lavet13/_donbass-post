@@ -1,6 +1,14 @@
-import { NotificationTypeNames, type NotificationType } from "@/types/notification-types";
+import {
+  NotificationTypeNames,
+  type NotificationType,
+} from "@/types/notification-types";
 import { VALID_SLUGS, type Command } from ".";
-import { getManagerPreferences } from "@/services/manager-preferences.service";
+import {
+  getAllManagers,
+  isManagerSubscribed,
+  getManagerNotifications,
+  setManagerPreferences,
+} from "@/services/manager-preferences.service";
 
 /**
  * /removepreference <chatId> <slug>
@@ -52,9 +60,7 @@ export const removePreferenceCommand: Command = {
       return;
     }
 
-    const service = getManagerPreferences();
-
-    const allManagers = await service.getAllManagers();
+    const allManagers = await getAllManagers();
     if (!allManagers.includes(chatId)) {
       await ctx.reply(
         `❌ Менеджер с Chat ID <code>${chatId}</code> не найден.\n` +
@@ -65,7 +71,7 @@ export const removePreferenceCommand: Command = {
     }
 
     try {
-      const isSubscribed = await service.isManagerSubscribed(chatId, slug);
+      const isSubscribed = await isManagerSubscribed(chatId, slug);
       if (!isSubscribed) {
         await ctx.reply(
           `⚠ Менеджер <code>${chatId}</code> не подписан на <b>${NotificationTypeNames[slug]}</b>.`,
@@ -74,9 +80,9 @@ export const removePreferenceCommand: Command = {
         return;
       }
 
-      const current = await service.getManagerNotifications(chatId);
+      const current = await getManagerNotifications(chatId);
       const updated = current.filter((s) => s !== slug);
-      await service.setManagerPreferences(chatId, updated);
+      await setManagerPreferences(chatId, updated);
 
       if (updated.length === 0) {
         await ctx.reply(
@@ -149,9 +155,7 @@ export const appendPreferenceCommand: Command = {
       return;
     }
 
-    const service = getManagerPreferences();
-
-    const allManagers = await service.getAllManagers();
+    const allManagers = await getAllManagers();
     if (!allManagers.includes(chatId)) {
       await ctx.reply(
         `❌ Менеджер с Chat ID <code>${chatId}</code> не найден.\n` +
@@ -162,7 +166,7 @@ export const appendPreferenceCommand: Command = {
     }
 
     try {
-      const alreadySubscribed = await service.isManagerSubscribed(chatId, slug);
+      const alreadySubscribed = await isManagerSubscribed(chatId, slug);
       if (alreadySubscribed) {
         await ctx.reply(
           `⚠ Менеджер <code>${chatId}</code> уже подписан на <b>${NotificationTypeNames[slug]}</b>.`,
@@ -171,8 +175,8 @@ export const appendPreferenceCommand: Command = {
         return;
       }
 
-      const current = await service.getManagerNotifications(chatId);
-      await service.setManagerPreferences(chatId, [...current, slug]);
+      const current = await getManagerNotifications(chatId);
+      await setManagerPreferences(chatId, [...current, slug]);
 
       await ctx.reply(
         `✅ Менеджер <code>${chatId}</code> подписан на <b>${NotificationTypeNames[slug]}</b>.\n\n` +
@@ -235,8 +239,7 @@ export const setPreferencesCommand: Command = {
       return;
     }
 
-    const service = getManagerPreferences();
-    const allManagers = await service.getAllManagers();
+    const allManagers = await getAllManagers();
     if (!allManagers.includes(chatId)) {
       await ctx.reply(
         `❌ Менеджер с Chat ID <code>${chatId}</code> не найден в базе данных.\n` +
@@ -247,7 +250,7 @@ export const setPreferencesCommand: Command = {
     }
 
     try {
-      await service.setManagerPreferences(chatId, slugs);
+      await setManagerPreferences(chatId, slugs);
 
       if (slugs.length === 0) {
         await ctx.reply(

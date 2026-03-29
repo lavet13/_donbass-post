@@ -1,4 +1,4 @@
-import { getManagerPreferences } from "@/services/manager-preferences.service";
+import { getAllManagers, addManager, removeManager } from "@/services/manager-preferences.service";
 import { commands, getCommandListText, type Command } from ".";
 import { prisma } from "@/prisma";
 import { isActiveManager, isRootAdmin } from "@/commands/guards";
@@ -89,9 +89,7 @@ export const addManagerCommand: Command = {
       return;
     }
 
-    const service = getManagerPreferences();
-
-    const existingManagers = await service.getAllManagers();
+    const existingManagers = await getAllManagers();
 
     if (existingManagers.includes(chatId)) {
       await ctx.reply(
@@ -104,16 +102,12 @@ export const addManagerCommand: Command = {
     const botManager = getBotManager();
     const bot = botManager.getBot();
 
-    if (!bot) {
-      throw new Error("Bot not initialized");
-    }
-
     const managerCommands: BotCommand[] = commands
       .filter((c) => c.scope === "public" || c.scope === "manager")
       .map((c) => ({ command: c.name, description: c.description }));
 
     try {
-      await service.addManager({
+      await addManager({
         chatId,
         username,
         firstName,
@@ -181,9 +175,7 @@ export const removeManagerCommand: Command = {
       return;
     }
 
-    const service = getManagerPreferences();
-
-    const existingManagers = await service.getAllManagers();
+    const existingManagers = await getAllManagers();
     if (!existingManagers) {
       await ctx.reply(
         `❌ Активный менеджер с Chat ID <code>${chatId}</code> не найден.`,
@@ -201,12 +193,8 @@ export const removeManagerCommand: Command = {
     const botManager = getBotManager();
     const bot = botManager.getBot();
 
-    if (!bot) {
-      throw new Error("Bot not initialized");
-    }
-
     try {
-      await service.removeManager(chatId);
+      await removeManager(chatId);
 
       await bot.api.setMyCommands(
         commands

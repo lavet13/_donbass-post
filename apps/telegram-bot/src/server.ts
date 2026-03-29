@@ -19,13 +19,15 @@ async function startApp() {
     await botManager.initialize(config.telegram.token);
     await validateNotificationTypes();
 
+    const bot = botManager.getBot();
+
     if (config.telegram.useWebhook) {
       console.warn("🔗 Setting up webhook mode...");
       try {
-        await botManager.deleteWebhook();
-        await botManager.setWebhook(config.telegram.webhookUrl);
+        await botManager.deleteWebhook(bot);
+        await botManager.setWebhook(bot, config.telegram.webhookUrl);
 
-        const webhookInfo = await botManager.getWebhookInfo();
+        const webhookInfo = await botManager.getWebhookInfo(bot);
 
         if (webhookInfo.url === config.telegram.webhookUrl) {
           console.warn(
@@ -41,14 +43,15 @@ async function startApp() {
         console.error(
           `Error details: ${error instanceof Error ? error.stack : error}`,
         );
-        await botManager.startPolling();
+        await botManager.startPolling(bot);
       }
     } else {
       console.warn("📡 Using polling mode...");
-      await botManager.startPolling();
+      await botManager.startPolling(bot);
     }
 
-    const router = createRoutes();
+
+    const router = createRoutes(bot);
     if (process.env.NODE_ENV === "development") {
       console.log(router.getRoutes());
     }
@@ -68,7 +71,7 @@ async function startApp() {
 
     const shutdown = async () => {
       console.warn("\nShutting down gracefully...");
-      await botManager.stop();
+      await botManager.stop(bot);
       process.exit(0);
     };
 

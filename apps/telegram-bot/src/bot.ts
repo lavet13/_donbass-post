@@ -3,13 +3,13 @@ import { formatRussianDateTime } from "@/utils";
 import { autoRetry } from "@grammyjs/auto-retry";
 import { registerCommands } from "@/commands";
 import { config } from "@/config";
+import type { Update } from "grammy/types";
 
 export type TCustomBot = Bot<Context> & {};
 
 export class BotManager {
   private static instance: BotManager | null = null;
   private bot: TCustomBot | null = null;
-  private isStarted = false;
   private mode: "webhook" | "polling" | null = null;
 
   private constructor() {}
@@ -21,12 +21,16 @@ export class BotManager {
     return BotManager.instance;
   }
 
-  getBot(): TCustomBot | null {
+  getBot(): TCustomBot {
+    if (!this.bot) {
+      // This is a programmer error, not a runtime condition
+      throw new Error("BotManager.getBot() called before BotManager.initialize()");
+    }
     return this.bot;
   }
 
   isRunning(): boolean {
-    return this.isStarted && this.bot !== null;
+    return this.bot !== null && this.mode !== null;
   }
 
   getMode(): "webhook" | "polling" | null {
@@ -53,8 +57,8 @@ export class BotManager {
       // This fetches bot information from Telegram
       await this.bot.init();
 
-      this.setupErrorHandling();
-      this.setupHandlers();
+      this.setupErrorHandling(this.bot);
+      this.setupHandlers(this.bot);
 
       console.warn("Bot initialized successfully");
     } catch (error) {
@@ -63,12 +67,8 @@ export class BotManager {
     }
   }
 
-  private setupErrorHandling(): void {
-    if (!this.bot) {
-      throw new Error("Bot not initialized");
-    }
-
-    this.bot.catch((err) => {
+  private setupErrorHandling(bot: Bot): void {
+    bot.catch((err) => {
       const ctx = err.ctx;
       const updateId = ctx?.update?.update_id ?? "—";
       console.error(`Error in update ${updateId}:`, err);
@@ -122,14 +122,10 @@ export class BotManager {
     });
   }
 
-  private setupHandlers(): void {
-    if (!this.bot) {
-      throw new Error("Bot not initialized");
-    }
+  private setupHandlers(bot: Bot): void {
+    registerCommands(bot);
 
-    registerCommands(this.bot);
-
-    this.bot.on("callback_query:data", async (ctx) => {
+    bot.on("callback_query:data", async (ctx) => {
       const payload = ctx.callbackQuery.data;
       console.warn("Unknown button event with payload", {
         payload,
@@ -141,14 +137,9 @@ export class BotManager {
     });
   }
 
-  async startPolling(): Promise<void> {
-    if (!this.bot) {
-      throw new Error("Bot not initialized");
-    }
-
+  async startPolling(bot: Bot): Promise<void> {
     try {
-      this.bot.start();
-      this.isStarted = true;
+      bot.start();
       this.mode = "polling";
       console.warn("Bot started in polling mode");
     } catch (error) {
@@ -159,15 +150,14 @@ export class BotManager {
     }
   }
 
-  async stop(): Promise<void> {
-    if (!this.bot || !this.isStarted) {
+  async stop(bot: Bot): Promise<void> {
+    if (!this.isRunning) {
       console.error("Bot not running, nothing to stop");
       return;
     }
 
     try {
-      await this.bot.stop();
-      this.isStarted = false;
+      await bot.stop();
       this.mode = null;
       console.warn("Bot stopped gracefully");
     } catch (error) {
@@ -178,24 +168,15 @@ export class BotManager {
     }
   }
 
-  async handleWebhookUpdate(update: any): Promise<void> {
-    if (!this.bot) {
-      throw new Error("Bot not initialized");
-    }
-
-    await this.bot.handleUpdate(update);
+  async handleWebhookUpdate(bot: Bot, update: Update): Promise<void> {
+    await bot.handleUpdate(update);
   }
 
-  async setWebhook(url: string): Promise<void> {
-    if (!this.bot) {
-      throw new Error("Bot not initialized");
-    }
-
+  async setWebhook(bot: Bot, url: string): Promise<void> {
     const secret = config.telegram.webhookSecret;
 
     try {
-      await this.bot.api.setWebhook(url, { secret_token: secret || undefined });
-      this.isStarted = true;
+      await bot.api.setWebhook(url, { secret_token: secret || undefined });
       this.mode = "webhook";
       if (secret) {
         console.warn(
@@ -203,7 +184,7 @@ export class BotManager {
         );
       } else {
         console.warn(
-          `⚠️ Webhook configured: ${url}  (NO secret token — less secure)`,
+          `⚠ Webhook configured: ${url}  (NO secret token — less secure)`,
         );
       }
     } catch (error) {
@@ -212,13 +193,9 @@ export class BotManager {
     }
   }
 
-  async deleteWebhook(): Promise<void> {
-    if (!this.bot) {
-      throw new Error("Bot not initialized");
-    }
-
+  async deleteWebhook(bot: Bot): Promise<void> {
     try {
-      await this.bot.api.deleteWebhook();
+      await bot.api.deleteWebhook();
       console.warn("Webhook deleted");
     } catch (error) {
       console.error("Failed to delete webhook:", error);
@@ -226,12 +203,8 @@ export class BotManager {
     }
   }
 
-  async getWebhookInfo() {
-    if (!this.bot) {
-      throw new Error("Bot not initialized");
-    }
-
-    return await this.bot.api.getWebhookInfo();
+  async getWebhookInfo(bot: Bot) {
+    return await bot.api.getWebhookInfo();
   }
 }
 

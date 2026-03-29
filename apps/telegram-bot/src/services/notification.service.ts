@@ -5,7 +5,7 @@ import {
   formatPickUpPointDeliveryOrderMessage,
 } from "@/formatters/messages";
 import type {
-    AliParcelPickupPayload,
+  AliParcelPickupPayload,
   OnlinePickupPayload,
   PickUpPointDeliveryOrderPayload,
 } from "@/types/notifications";
@@ -13,7 +13,10 @@ import {
   NotificationTypes,
   type NotificationType,
 } from "@/types/notification-types";
-import { getManagerPreferences } from "./manager-preferences.service";
+import {
+  getManagersForNotification,
+  getAllManagers,
+} from "@/services/manager-preferences.service";
 import { prisma } from "@/prisma";
 
 /**
@@ -45,11 +48,8 @@ export async function sendToManagers(
   notificationType: NotificationType,
   payload?: any,
 ): Promise<NotificationResult> {
-  const preferencesService = getManagerPreferences();
-
-  const targetManagers =
-    await preferencesService.getManagersForNotification(notificationType);
-  const allManagers = await preferencesService.getAllManagers();
+  const targetManagers = await getManagersForNotification(notificationType);
+  const allManagers = await getAllManagers();
 
   if (allManagers.length === 0) {
     console.warn("No manager chat IDs configured");

@@ -1,7 +1,7 @@
 import { getBotManager } from "@/bot";
 import { config } from "@/config";
 import { cors, handleOptions, requireJSON } from "@/middleware";
-import { getRouter, Router, error, parseJSON } from "@/router";
+import { createRouter, error, parseJSON, type Router } from "@/router";
 import {
   notifyAliParcelPickup,
   notifyOnlinePickup,
@@ -15,15 +15,11 @@ import type {
 } from "@/types/notifications";
 import type { Update } from "grammy/types";
 import { version } from "../../package.json";
+import type { Bot } from "grammy";
 
-export function createRoutes(): Router {
+export function createRoutes(bot: Bot): Router {
   const botManager = getBotManager();
-  const router = getRouter();
-  const bot = botManager.getBot();
-
-  if (!bot) {
-    throw new Error("Bot not initialized");
-  }
+  const router = createRouter();
 
   /**
    * When to enable:
@@ -110,15 +106,13 @@ export function createRoutes(): Router {
       console.warn("Webhook secret check skipped — WEBHOOK_SECRET not set");
     }
 
-    if (!bot) {
-      return new Response("Bot not initialized", { status: 503 });
-    }
-
     try {
       const update = (await request.json()) as Update;
 
+      const bot = botManager.getBot();
+
       // Handle the update using grammy's handleUpdate method
-      await botManager.handleWebhookUpdate(update);
+      await botManager.handleWebhookUpdate(bot, update);
 
       return new Response("OK", { status: 200 });
     } catch (error) {
@@ -129,7 +123,8 @@ export function createRoutes(): Router {
 
   router.get("/webhook/info", async (_request) => {
     try {
-      const info = await botManager.getWebhookInfo();
+      const bot = botManager.getBot();
+      const info = await botManager.getWebhookInfo(bot);
       return Response.json(info);
     } catch (error) {
       console.error("Error getting webhook info:", error);

@@ -1,5 +1,8 @@
 import type { Command } from ".";
-import { getManagerPreferences } from "@/services/manager-preferences.service";
+import {
+  getAllPreferences,
+  getManagerNotifications,
+} from "@/services/manager-preferences.service";
 import { NotificationTypeNames } from "@/types/notification-types";
 
 /**
@@ -17,12 +20,9 @@ export const preferencesCommand: Command = {
       return;
     }
 
-    const preferencesService = getManagerPreferences();
-
     try {
       // Get user's notification subscriptions
-      const userNotifications =
-        await preferencesService.getManagerNotifications(userId);
+      const userNotifications = await getManagerNotifications(userId);
 
       if (userNotifications.length === 0) {
         // Manager in database but with no subscriptions
@@ -62,10 +62,8 @@ export const allPreferencesCommand: Command = {
   scope: "admin",
   description: "Настройки всех менеджеров",
   handler: async (ctx) => {
-    const preferencesService = getManagerPreferences();
-
     try {
-      const allPreferences = await preferencesService.getAllPreferences();
+      const allPreferences = await getAllPreferences();
 
       if (allPreferences.length === 0) {
         await ctx.reply(
