@@ -1,3 +1,4 @@
+import { z } from "zod";
 /**
  * Base notification payload
  */
@@ -137,9 +138,31 @@ export interface PickUpPointDeliveryOrderPayload extends BaseNotificationPayload
   }>;
 }
 
-export interface AliParcelPickupPayload extends BaseNotificationPayload {
-  address: string; // 3–50 chars
-  track: string; // 3–50 chars
-  code: string; // 3–50 chars
-  phone: string; // +7XXXXXXXXXX
-}
+export const phoneRuSchema = z
+  .string({ error: "Заполните телефон!" })
+  .regex(/^\+7\d{10,}$/, "Телефон должен быть в формате +7XXXXXXXXXX");
+
+export const AliParcelPickupSchema = z.object({
+  address: z
+    .string({ error: "Адрес обязателен!" })
+    .trim()
+    .min(1, "Адрес обязателен!")
+    .min(3, "Адрес должен содержать от 3 до 50 символов")
+    .max(50, "Адрес должен содержать от 3 до 50 символов"),
+  track: z
+    .string({ error: "Трек обязателен!" })
+    .trim()
+    .min(1, "Трек обязателен!")
+    .min(3, "Трек должен содержать от 3 до 50 символов")
+    .max(50, "Трек должен содержать от 3 до 50 символов"),
+  code: z
+    .string({ error: "Код обязателен!" })
+    .trim()
+    .min(1, "Код обязателен!")
+    .min(3, "Код должен содержать от 3 до 50 символов")
+    .max(50, "Код должен содержать от 3 до 50 символов"),
+  phone: phoneRuSchema,
+});
+
+export type AliParcelPickupPayload = z.infer<typeof AliParcelPickupSchema> &
+  BaseNotificationPayload;

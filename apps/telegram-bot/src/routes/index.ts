@@ -8,14 +8,15 @@ import {
   notifyPickUpPointDeliveryOrder,
 } from "@/services/notification.service";
 import { NotificationTypes } from "@/types/notification-types";
-import type {
-  AliParcelPickupPayload,
-  OnlinePickupPayload,
-  PickUpPointDeliveryOrderPayload,
+import {
+  AliParcelPickupSchema,
+  type OnlinePickupPayload,
+  type PickUpPointDeliveryOrderPayload,
 } from "@/types/notifications";
 import type { Update } from "grammy/types";
 import { version } from "../../package.json";
 import type { Bot } from "grammy";
+import { parseBody } from "@/utils/validate";
 
 export function createRoutes(bot: Bot): Router {
   const botManager = getBotManager();
@@ -382,66 +383,33 @@ export function createRoutes(bot: Bot): Router {
     `/api/notify/${NotificationTypes.ALI_PARCEL_PICKUP}`,
     async (request) => {
       try {
-        const payload = await parseJSON<AliParcelPickupPayload>(request);
+        const body = await parseJSON(request);
+        const result = parseBody(AliParcelPickupSchema, body);
 
-        const errors: string[] = [];
-
-        if (
-          !payload.address ||
-          payload.address.length < 3 ||
-          payload.address.length > 50
-        ) {
-          errors.push("Адрес должен содержать от 3 до 50 символов");
+        if (!result.success) {
+          return result.response;
         }
 
-        if (
-          !payload.track ||
-          payload.track.length < 3 ||
-          payload.track.length > 50
-        ) {
-          errors.push("Трек должен содержать от 3 до 50 символов");
-        }
+        const notifResult = await notifyAliParcelPickup(bot, result.data);
 
-        if (
-          !payload.code ||
-          payload.code.length < 3 ||
-          payload.code.length > 50
-        ) {
-          errors.push("Код должен содержать от 3 до 50 символов");
-        }
-
-        if (!payload.phone) {
-          errors.push("Заполните телефон!");
-        } else if (!/^\+7\d{10,}$/.test(payload.phone)) {
-          errors.push("Телефон должен быть в формате +7XXXXXXXXXX");
-        }
-
-        if (errors.length > 0) {
-          return error(`Validation errors: ${errors.join("; ")}`, {
-            status: 400,
+        if (notifResult.sent === 0 && notifResult.failed > 0) {
+          console.error("Failed to send notifications:", notifResult.errors);
+          return error("Failed to send notifications to any manager", {
+            status: 500,
           });
         }
 
-        const result = await notifyAliParcelPickup(bot, payload);
-
-        if (!result.success) {
-          console.error("Failed to send notifications:", result.errors);
-
-          if (result.sent === 0) {
-            return error("Failed to send notifications to any manager", {
-              status: 500,
-            });
-          }
-
+        if (notifResult.failed > 0) {
+          console.error("Partial failure:", notifResult.errors);
           return Response.json({
             success: true,
             message: "Notification sent with some failures",
             status: {
-              sent: result.sent,
-              failed: result.failed,
-              skipped: result.skipped,
+              sent: notifResult.sent,
+              failed: notifResult.failed,
+              skipped: notifResult.skipped,
             },
-            warnings: result.errors,
+            warnings: notifResult.errors,
           });
         }
 
@@ -449,9 +417,9 @@ export function createRoutes(bot: Bot): Router {
           success: true,
           message: "Notification sent successfully",
           status: {
-            sent: result.sent,
-            failed: result.failed,
-            skipped: result.skipped,
+            sent: notifResult.sent,
+            failed: notifResult.failed,
+            skipped: notifResult.skipped,
           },
         });
       } catch (err) {

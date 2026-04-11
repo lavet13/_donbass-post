@@ -24,7 +24,9 @@ export class BotManager {
   getBot(): TCustomBot {
     if (!this.bot) {
       // This is a programmer error, not a runtime condition
-      throw new Error("BotManager.getBot() called before BotManager.initialize()");
+      throw new Error(
+        "BotManager.getBot() called before BotManager.initialize()",
+      );
     }
     return this.bot;
   }

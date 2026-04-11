@@ -50,7 +50,6 @@ async function startApp() {
       await botManager.startPolling(bot);
     }
 
-
     const router = createRoutes(bot);
     if (process.env.NODE_ENV === "development") {
       console.log(router.getRoutes());
