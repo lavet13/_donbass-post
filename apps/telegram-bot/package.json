@@ -13,7 +13,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "yarn dlx prisma db seed",
-    "db:studio": "prisma studio",
+    "db:studio": "prisma studio --port 5556",
     "db:reset": "prisma migrate reset"
   },
   "dependencies": {

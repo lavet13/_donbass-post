@@ -1,4 +1,4 @@
-import type { Context } from "grammy";
+import type { TContext } from "@/types";
 import { prisma } from "@/prisma";
 import { config } from "@/config";
 
@@ -13,13 +13,13 @@ export function getRootAdminChatId(): number | null {
 /**
  * Returns true if the user is the root admin (configured via ROOT_ADMIN_CHAT_ID env).
  * */
-export function isRootAdmin(ctx: Context): boolean {
+export function isRootAdmin(ctx: TContext): boolean {
   const adminId = getRootAdminChatId();
   if (!adminId) return false;
   return ctx.from?.id === adminId;
 }
 
-export async function isActiveManager(ctx: Context): Promise<boolean> {
+export async function isActiveManager(ctx: TContext): Promise<boolean> {
   const userId = ctx.from?.id;
   if (!userId) return false;
 
@@ -39,39 +39,4 @@ export async function isActiveManager(ctx: Context): Promise<boolean> {
     console.error(`Error checking manager status:`, err);
     return false;
   }
-}
-
-/**
- * Guard for root-admin-only commands.
- * Replies with an error and returns false if the user is not the root admin.
- * */
-export async function requireRootAdmin(ctx: Context): Promise<boolean> {
-  if (isRootAdmin(ctx)) return true;
-
-  if (ctx.callbackQuery) {
-    await ctx.answerCallbackQuery({ text: "⛔ Только для администратора." });
-  } else {
-    await ctx.reply("⛔ Эта команда только для администратора системы.");
-  }
-
-  return false;
-}
-
-/**
- * Guard for manager-only commands.
- * Replies with an error and returns false if the user is not an active manager.
- * */
-export async function requireManager(ctx: Context): Promise<boolean> {
-  if (isRootAdmin(ctx)) return true;
-
-  const manager = await isActiveManager(ctx);
-  if (manager) return true;
-
-  if (ctx.callbackQuery) {
-    await ctx.answerCallbackQuery({ text: "⛔ Только для менеджеров." });
-  } else {
-    await ctx.reply("⛔ Эта команда только для менеджеров.");
-  }
-
-  return false;
 }

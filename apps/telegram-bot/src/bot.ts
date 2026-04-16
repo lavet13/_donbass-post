@@ -1,11 +1,13 @@
-import { Bot, Context, GrammyError, HttpError } from "grammy";
+import { Bot, GrammyError, HttpError } from "grammy";
 import { formatRussianDateTime } from "@/utils";
 import { autoRetry } from "@grammyjs/auto-retry";
 import { registerCommands } from "@/commands";
 import { config } from "@/config";
 import type { Update } from "grammy/types";
+import type { TContext } from "@/types";
+import { commands } from "@grammyjs/commands";
 
-export type TCustomBot = Bot<Context> & {};
+export type TCustomBot = Bot<TContext>;
 
 export class BotManager {
   private static instance: BotManager | null = null;
@@ -46,7 +48,7 @@ export class BotManager {
     }
 
     try {
-      this.bot = new Bot(token);
+      this.bot = new Bot<TContext>(token);
 
       this.bot.api.config.use(
         autoRetry({
@@ -59,6 +61,10 @@ export class BotManager {
       // This fetches bot information from Telegram
       await this.bot.init();
 
+      // Register commands flavor middleware — required for commandNotFound /
+      // ctx.getNearestCommand to work
+      this.bot.use(commands());
+
       this.setupErrorHandling(this.bot);
       this.setupHandlers(this.bot);
 
@@ -69,7 +75,7 @@ export class BotManager {
     }
   }
 
-  private setupErrorHandling(bot: Bot): void {
+  private setupErrorHandling(bot: TCustomBot): void {
     bot.catch((err) => {
       const ctx = err.ctx;
       const updateId = ctx?.update?.update_id ?? "—";
@@ -124,7 +130,7 @@ export class BotManager {
     });
   }
 
-  private setupHandlers(bot: Bot): void {
+  private setupHandlers(bot: TCustomBot): void {
     registerCommands(bot);
 
     bot.on("callback_query:data", async (ctx) => {
@@ -139,7 +145,7 @@ export class BotManager {
     });
   }
 
-  async startPolling(bot: Bot): Promise<void> {
+  async startPolling(bot: TCustomBot): Promise<void> {
     try {
       bot.start();
       this.mode = "polling";
@@ -152,7 +158,7 @@ export class BotManager {
     }
   }
 
-  async stop(bot: Bot): Promise<void> {
+  async stop(bot: TCustomBot): Promise<void> {
     if (!this.isRunning) {
       console.error("Bot not running, nothing to stop");
       return;
@@ -170,11 +176,11 @@ export class BotManager {
     }
   }
 
-  async handleWebhookUpdate(bot: Bot, update: Update): Promise<void> {
+  async handleWebhookUpdate(bot: TCustomBot, update: Update): Promise<void> {
     await bot.handleUpdate(update);
   }
 
-  async setWebhook(bot: Bot, url: string): Promise<void> {
+  async setWebhook(bot: TCustomBot, url: string): Promise<void> {
     const secret = config.telegram.webhookSecret;
 
     try {
@@ -195,7 +201,7 @@ export class BotManager {
     }
   }
 
-  async deleteWebhook(bot: Bot): Promise<void> {
+  async deleteWebhook(bot: TCustomBot): Promise<void> {
     try {
       await bot.api.deleteWebhook();
       console.warn("Webhook deleted");
@@ -205,7 +211,7 @@ export class BotManager {
     }
   }
 
-  async getWebhookInfo(bot: Bot) {
+  async getWebhookInfo(bot: TCustomBot) {
     return await bot.api.getWebhookInfo();
   }
 }

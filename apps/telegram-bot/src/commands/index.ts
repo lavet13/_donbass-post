@@ -1,230 +1,138 @@
-import { config } from "@/config";
-import type { Bot, Context } from "grammy";
-import {
-  preferencesCommand,
-  allPreferencesCommand,
-} from "@/commands/preferences";
+import type { Bot } from "grammy";
 import { NotificationTypes } from "@/types/notification-types";
-import { version } from "../../package.json";
-import {
-  addManagerCommand,
-  managersCommand,
-  removeManagerCommand,
-} from "@/commands/manager-commands";
-import {
-  appendPreferenceCommand,
-  removePreferenceCommand,
-  setPreferencesCommand,
-} from "@/commands/preference-commands";
 import {
   isActiveManager,
   isRootAdmin,
-  requireManager,
-  requireRootAdmin,
   getRootAdminChatId,
 } from "@/commands/guards";
 import { getAllManagers } from "@/services/manager-preferences.service";
-import type { BotCommand } from "grammy/types";
+import {
+  adminCommands,
+  managerCommands,
+  publicCommands,
+} from "@/commands/groups";
+import type { TContext } from "@/types";
+import { commandNotFound } from "@grammyjs/commands";
+
+import "@/commands/public";
+import "@/commands/manager";
+import "@/commands/admin";
+
+import { setCommandsForChat, suggestionHandler } from "@/commands/utils";
 
 export const VALID_SLUGS = Object.values(NotificationTypes);
 
-export type CommandHandler = (ctx: Context) => Promise<void>;
-
-export interface Command {
-  name: string;
-  description: string;
-  handler: CommandHandler;
-
-  /**
-   * "public"    — shown and accessible to everyone
-   * "manager"   — only active managers (+ root admin)
-   * "admin"     — only root admin (ROOT_ADMIN_CHAT_ID)
-   */
-  scope: "public" | "manager" | "admin";
-}
-
-export const startCommand: Command = {
-  name: "start",
-  scope: "public",
-  description: "Начать работу с ботом",
-  handler: async (ctx) => {
-    const username = ctx.from?.first_name || "пользователь";
-    const manager = await isActiveManager(ctx);
-    const admin = isRootAdmin(ctx);
-
-    await ctx.reply(
-      `👋 Привет ${username}! Я бот <b>Нашей Почты</b>.\n\n` +
-        "Я помогаю обрабатывать заявки и уведомления.\n\n" +
-        getCommandListText({ manager, admin }),
-      { parse_mode: "HTML" },
-    );
-  },
-};
-
-export const helpCommand: Command = {
-  name: "help",
-  description: "Помощь",
-  scope: "public",
-  handler: async (ctx) => {
-    const manager = await isActiveManager(ctx);
-    const admin = isRootAdmin(ctx);
-
-    await ctx.reply(
-      "ℹ️ <b>Помощь</b>\n\n" +
-        "Этот бот используется для обработки заявок на доставку.\n\n" +
-        getCommandListText({ manager, admin }),
-      { parse_mode: "HTML" },
-    );
-  },
-};
-
-export const statusCommand: Command = {
-  name: "status",
-  description: "Показать статус бота",
-  scope: "manager",
-  handler: async (ctx) => {
-    const uptime = Math.floor(process.uptime());
-    const hours = Math.floor(uptime / 3600);
-    const minutes = Math.floor((uptime % 3600) / 60);
-    const seconds = uptime % 60;
-
-    const memoryUsage = process.memoryUsage();
-    const heapUsedMB = Math.round(memoryUsage.heapUsed / 1024 / 1024);
-    const heapTotalMB = Math.round(memoryUsage.heapTotal / 1024 / 1024);
-
-    const managerCount = config.managers.getChatIds().length;
-
-    const manager = await isActiveManager(ctx);
-    const admin = isRootAdmin(ctx);
-
-    await ctx.reply(
-      "✅ <b>Статус бота</b>\n\n" +
-        `⏱ <b>Время работы:</b> ${hours}ч ${minutes}м ${seconds}с\n` +
-        `🤖 <b>Версия:</b> ${version}\n` +
-        `📡 <b>Режим:</b> ${config.telegram.useWebhook ? "webhook" : "polling"}\n` +
-        `💾 <b>Память:</b> ${heapUsedMB} / ${heapTotalMB} MB\n` +
-        `👥 <b>Менеджеров:</b> ${managerCount}\n` +
-        `🌍 <b>Окружение:</b> ${config.server.nodeEnv}\n\n` +
-        getCommandListText({ manager, admin }),
-      { parse_mode: "HTML" },
-    );
-  },
-};
-
-export const getChatIdCommand: Command = {
-  name: "getchatid",
-  scope: "public",
-  description: "Получить свой Chat ID",
-  handler: async (ctx) => {
-    const chatId = ctx.chat?.id;
-    const userId = ctx.from?.id;
-    const username = ctx.from?.username;
-
-    await ctx.reply(
-      "🆔 <b>Ваши идентификаторы</b>\n\n" +
-        `Chat ID: <code>${chatId}</code>\n` +
-        `User ID: <code>${userId}</code>\n` +
-        (username ? `Username: @${username}` : ""),
-      { parse_mode: "HTML" },
-    );
-  },
-};
-
-export const commands: Command[] = [
-  startCommand,
-  helpCommand,
-  statusCommand,
-  managersCommand,
-  getChatIdCommand,
-  preferencesCommand,
-  allPreferencesCommand,
-  setPreferencesCommand,
-  appendPreferenceCommand,
-  removePreferenceCommand,
-  addManagerCommand,
-  removeManagerCommand,
-];
-
-export function getCommandListText({
-  manager = false,
-  admin = false,
-}: {
-  manager?: boolean;
-  admin?: boolean;
-}): string {
-  const visible = commands.filter((cmd) => {
-    if (cmd.scope === "public") return true;
-    if (cmd.scope === "manager") return manager || admin;
-    if (cmd.scope === "admin") return admin;
-    return false;
-  });
-
-  if (visible.length === 0) return "Команд пока нет 😔";
-
-  const lines = visible.map((cmd) => `/${cmd.name} - ${cmd.description}`);
-
-  return "Доступные команды:\n" + lines.join("\n");
-}
-
-export async function registerCommands(bot: Bot) {
+export async function registerCommands(bot: Bot<TContext>) {
   try {
-    // 1. Register handlers for all commands
-    for (const cmd of commands) {
-      bot.command(cmd.name, async (ctx) => {
-        if (cmd.scope === "admin") {
-          const isAdmin = await requireRootAdmin(ctx);
-          if (!isAdmin) return;
-        } else if (cmd.scope === "manager") {
-          const isManager = await requireManager(ctx);
-          if (!isManager) return;
+    // Register command groups as middleware so grammY routes incoming
+    // commands to the correct handler. Order matters — public first,
+    // then manager, then admin, so more specific groups don't shadow
+    // broader ones unexpectedly.
+    bot.use(publicCommands);
+
+    const managerRouter = bot.filter(
+      async (ctx) => (await isActiveManager(ctx)) || isRootAdmin(ctx),
+    );
+    managerRouter.use(managerCommands);
+
+    const adminRouter = bot.filter(async (ctx) => isRootAdmin(ctx));
+    adminRouter.use(adminCommands);
+
+    bot
+      .filter(commandNotFound([publicCommands, managerCommands, adminCommands]))
+      .use(async (ctx) => {
+        const userId = ctx.from?.id;
+        if (!userId) {
+          await ctx.reply("😕 Неизвестная команда.");
+          return;
         }
 
-        await cmd.handler(ctx);
+        // 1. Check if user is admin
+        if (isRootAdmin(ctx)) {
+          await ctx.reply("😕 Неизвестная команда. Используйте /help.");
+          return;
+        }
+
+        // Case 2: Manager typed an admin-only command
+        const isManager = await isActiveManager(ctx);
+        if (isManager) {
+          const adminSuggestion = ctx.getNearestCommand(adminCommands);
+          if (adminSuggestion) {
+            await ctx.reply("⛔ Эта команда только для администратора.");
+            return;
+          }
+
+          await suggestionHandler(ctx);
+          return;
+        }
+
+        // Case 3: Normal unknown command → show suggestion
+        await ctx.reply("😕 Неизвестная команда. Используйте /help.");
       });
-    }
 
-    // Set command menus scoped by Telegram's BotCommandScope
+    // Register public commands with their default scope.
+    // setCommands calls bot.api.setMyCommands for every scope+language
+    // combination defined on the group, and validates command names.
+    await publicCommands.setCommands(bot);
 
-    // Everyone sees only public commands
-    await bot.api.setMyCommands(
-      commands
-        .filter((c) => c.scope === "public")
-        .map((c) => ({ command: c.name, description: c.description })),
-      { scope: { type: "default" } },
-    );
+    /*
+    // setCommands internally does roughly this:
+    // 1. Get all scope+language combinations from the group
+    const { scopes } = publicCommands.toArgs();
 
-    // Safety net
-    await bot.api.setMyCommands(
-      commands
-        .filter((c) => c.scope === "public")
-        .map((c) => ({ command: c.name, description: c.description })),
-      { scope: { type: "all_private_chats" } },
-    );
-
-    // Active managers
-    const managerIds = await getAllManagers();
-    const managerCommands: BotCommand[] = commands
-      .filter((c) => c.scope === "public" || c.scope === "manager")
-      .map((c) => ({ command: c.name, description: c.description }));
-
-    for (const chatId of managerIds) {
-      await bot.api.setMyCommands(managerCommands, {
-        scope: { type: "chat", chat_id: chatId },
-      });
-    }
-
-    const adminId = getRootAdminChatId();
-    if (adminId) {
+    // 2. For each combination, make one Telegram API call
+    // This is exactly what setCommands abstracts away
+    for (const arg of scopes) {
       await bot.api.setMyCommands(
-        commands.map((c) => ({ command: c.name, description: c.description })),
-        { scope: { type: "chat", chat_id: adminId } },
+        arg.commands,          // the command list for this scope+language
+        {
+          scope: arg.scope,                    // e.g. { type: "default" }
+          language_code: arg.language_code,    // e.g. "ru", "uk", or undefined
+        }
+      );
+    } */
+
+    // Safety net: explicitly set public commands for all private chats.
+    // Telegram's "default" scope is a catch-all, but "all_private_chats"
+    // is more specific and wins in private conversations.
+    // We loop over scopes (instead of taking scopes[0]) to correctly
+    // handle all language variants when localizations are added later.
+    const publicArgs = publicCommands.toArgs();
+    for (const arg of publicArgs.scopes) {
+      await bot.api.setMyCommands(arg.commands, {
+        scope: { type: "all_private_chats" },
+        language_code: arg.language_code, // preserve language variants
+      });
+    }
+
+    // Set manager commands scoped to each manager's specific chat.
+    // This is per-chat rather than global so that only known managers
+    // see these commands in their menu — not every user.
+    const managerIds = await getAllManagers();
+    for (const chatId of managerIds) {
+      await setCommandsForChat(bot, chatId, publicCommands, managerCommands);
+    }
+
+    // Set admin commands scoped only to the root admin's chat.
+    // ROOT_ADMIN_CHAT_ID is guaranteed to exist in production by validateConfig()
+    // which throws on startup if it's missing. Safe to skip only in development.
+    const adminId = getRootAdminChatId();
+    console.log("adminId:", adminId);
+    if (adminId) {
+      await setCommandsForChat(
+        bot,
+        adminId,
+        publicCommands,
+        managerCommands,
+        adminCommands,
       );
     }
 
+    // Log a summary of registered commands for observability
     const counts = {
-      public: commands.filter((c) => c.scope === "public").length,
-      manager: commands.filter((c) => c.scope === "manager").length,
-      admin: commands.filter((c) => c.scope === "admin").length,
+      public: publicCommands.commands.length,
+      manager: managerCommands.commands.length,
+      admin: adminCommands.commands.length,
     };
 
     console.info(
