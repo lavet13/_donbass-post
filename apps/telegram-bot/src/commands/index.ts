@@ -18,6 +18,7 @@ import "@/commands/public";
 import "@/commands/manager";
 import "@/commands/admin";
 
+
 import { setCommandsForChat, suggestionHandler } from "@/commands/utils";
 
 export const VALID_SLUGS = Object.values(NotificationTypes);
