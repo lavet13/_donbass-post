@@ -43,7 +43,7 @@ jobs:
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
           PORT=3000
           NODE_ENV=production
-          USE_WEBHOOK=true
+          USE_WEBHOOK=${{ secrets.USE_WEBHOOK }}
           MANAGER_CHAT_IDS=${{ secrets.MANAGER_CHAT_IDS }}
           ROOT_ADMIN_CHAT_ID=${{ secrets.ROOT_ADMIN_CHAT_ID }}
           WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
