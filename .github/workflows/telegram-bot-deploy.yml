@@ -84,7 +84,7 @@ jobs:
           # On manual trigger: uses the input value (0 or 1)
           # On push trigger: workflow_dispatch inputs are unavailable,
           # so github.event.inputs.staging is empty — defaults to "0" which is the production certificates
-          STAGING: ${{ github.event.inputs.staging || "0" }}
+          STAGING: ${{ github.event.inputs.staging || '0' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
