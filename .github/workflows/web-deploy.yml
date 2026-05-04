@@ -10,6 +10,11 @@ on:
       - ".github/workflows/web-deploy.yml"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      staging:
+        description: "Use Let's Encrypt staging (1=staging, 0=production)"
+        required: false
+        default: "0"
 
 jobs:
   deploy:
@@ -64,20 +69,29 @@ jobs:
       # covers the case where you changed nginx config too.
       - name: Reload nginx
         env:
+          # Defined at step level — appleboy/ssh-action picks these up
+          # and forwards them into the remote shell session via envs:
           CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
+          # On manual trigger: uses the input value (0 or 1)
+          # On push trigger: workflow_dispatch inputs are unavailable,
+          # so github.event.inputs.staging is empty — defaults to "0" which is the production certificates
+          STAGING: ${{ github.event.inputs.staging || '0' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
-          envs: CERTBOT_EMAIL
+          envs: CERTBOT_EMAIL,STAGING
           script: |
             cd ~/telegram-bot
 
-            # Ensure all services are running before reloading nginx.
-            # On first deploy starts nginx-certbot with CERTBOT_EMAIL.
-            # On subsequent deploys this is a no-op for already-running services.
+            # Ensure ALL services are running (idempotent — skips already-running ones).
+            # On first deploy this starts nginx-certbot and postgres.
+            # On subsequent deploys this is effectively a no-op for those services.
+            # CERTBOT_EMAIL is read here by nginx-certbot on first start.
+            # STAGING=1 uses Let's Encrypt staging (safe for testing).
+            # STAGING=0 uses production (real trusted certificates).
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
               up -d --no-build
 

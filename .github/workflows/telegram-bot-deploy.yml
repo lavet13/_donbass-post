@@ -124,12 +124,16 @@ jobs:
               ps telegram-bot
 
       - name: Verify deployment
+        env:
+          CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
+          STAGING: ${{ github.event.inputs.staging || '0' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
+          envs: CERTBOT_EMAIL,STAGING
           script: |
             cd ~/telegram-bot
 
