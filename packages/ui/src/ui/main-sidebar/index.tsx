@@ -433,7 +433,7 @@ const Logo: FC<ComponentProps<typeof Link>> = ({ className, ...props }) => {
   return (
     <Link
       className={cn(
-        "focus-visible:outline-accent-8 relative rounded-sm select-none focus-visible:outline-[2px] focus-visible:-outline-offset-1",
+        "focus-visible:outline-accent-8 relative rounded-sm select-none focus-visible:outline-2 focus-visible:-outline-offset-1",
         className,
       )}
       to="/"
@@ -441,8 +441,8 @@ const Logo: FC<ComponentProps<typeof Link>> = ({ className, ...props }) => {
       {...props}
     >
       <img
-        className="h-full w-[220px]"
-        src={`${import.meta.env.BASE_URL}/logomini_np-bsd.png`}
+        className="h-full w-55"
+        src={`${import.meta.env.BASE_URL}logomini_np-bsd.png`}
         alt={`Лого "Наша Почта - почта по-новому" Партнер "БСД"`}
       />
     </Link>

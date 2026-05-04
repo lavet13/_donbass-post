@@ -57,6 +57,7 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
             mkdir -p /var/www/donbass-post-web
+            chown $(whoami):$(whoami) /var/www/donbass-post-web
             chmod 755 /var/www/donbass-post-web
 
       # scp-action copies files from the GitHub runner to your VPS

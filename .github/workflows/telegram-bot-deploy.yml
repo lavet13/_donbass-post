@@ -96,26 +96,28 @@ jobs:
           script: |
             cd ~/telegram-bot
 
-            # Ensure ALL services are running (idempotent — skips already-running ones).
-            # On first deploy this starts nginx-certbot and postgres.
-            # On subsequent deploys this is effectively a no-op for those services.
-            # CERTBOT_EMAIL is read here by nginx-certbot on first start.
-            # STAGING=1 uses Let's Encrypt staging (safe for testing).
-            # STAGING=0 uses production (real trusted certificates).
+            # Step 1: Start postgres first — bot and nginx both need it healthy
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              up -d --no-build
+              up -d postgres
 
-            # Rebuild and restart only the bot container
-            # --no-deps: don't restart postgres unnecessarily
+            # Step 2: Wait for postgres to be healthy before proceeding
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+              up -d --wait postgres
+
+            # Step 3: Build and start the bot — nginx depends_on this
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
               up -d --build --no-deps telegram-bot
+
+            # Step 4: Now nginx-certbot can start — telegram-bot image exists
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+              up -d --no-deps nginx-certbot
 
             # Run migrations against the live database
             # exec runs a command inside the already-running container
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
               exec -T telegram-bot yarn workspace @donbass-post/tg-bot db:deploy
 
-            # Seed is idempotent — safe to run every deploy(idempotent)
+            # Seed is idempotent — safe to run every deploy
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
               exec -T telegram-bot yarn workspace @donbass-post/tg-bot db:seed
 
