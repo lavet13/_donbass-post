@@ -18,7 +18,7 @@ COPY packages/prettier-config/package.json packages/prettier-config/
 COPY apps/telegram-bot/package.json apps/telegram-bot/
 
 # Install ALL dependencies (including devDeps needed for build)
-RUN yarn install --immutable
+RUN yarn install --check-cache
 
 # Now copy source code (separate from install — preserves cache on code changes)
 COPY packages/eslint-config/ packages/eslint-config/
