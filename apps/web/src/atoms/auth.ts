@@ -33,7 +33,7 @@ export const setAuthTokenAtom = atom(
     if (receivedToken) {
       const payload = decodeJWTPayload(receivedToken);
 
-      // eslint-disable-next-line -- just for debugging lul
+      // eslint-disable-next-line
       import.meta.env.DEV && console.log({ payload });
 
       if (!payload) {

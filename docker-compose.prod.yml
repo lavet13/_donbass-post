@@ -1,0 +1,63 @@
+services:
+  # == Nginx + Certbot =========================================================
+  nginx-certbot:
+    image: jonasal/nginx-certbot:5-alpine
+    restart: unless-stopped
+    ports:
+      # Expose both HTTP and HTTPS to the internet
+      - "80:80"
+      - "443:443"
+    environment:
+      # Used by Certbot to obtain and renew certificates
+      CERTBOT_EMAIL: ${CERTBOT_EMAIL}
+    volumes:
+      # Where the image stores obtained certificates — persist across restarts
+      - nginx_secrets:/etc/letsencrypt
+
+      # Your nginx config files — we'll create this directory next
+      - ./nginx/conf.d:/etc/nginx/user_conf.d
+
+      # Static React files copied here by web-deploy.yml workflow
+      - /var/www/donbass-post-web:/var/www/donbass-post-web:ro
+    depends_on:
+      - telegram-bot
+    networks:
+      - donbass-post-network
+
+  # == Telegram Bot (Node.js) ==================================================
+  telegram-bot:
+    build:
+      # Monorepo root as context so yarn can resolve all workspaces
+      context: .
+      dockerfile: apps/telegram-bot/Dockerfile
+    restart: unless-stopped
+    mem_limit: 500m
+    env_file:
+      # Same .env file your bot already uses
+      - apps/telegram-bot/.env
+      - apps/telegram-bot/.env.production
+    depends_on:
+      postgres:
+        # Don't start the bot until postgres is actually ready to accept
+        # connections — not just started
+        condition: service_healthy
+    networks:
+      - donbass-post-network
+
+  # Override postgres in prod — remove host port exposure,
+  # containers reach it directly via Docker network
+  postgres:
+    env_file:
+      - apps/telegram-bot/.env
+      - apps/telegram-bot/.env.production
+    ports: []
+    expose:
+      - "5432"
+
+volumes:
+  # Nginx/Certbot stores SSL certificates here
+  nginx_secrets:
+
+networks:
+  donbass-post-network:
+    driver: bridge

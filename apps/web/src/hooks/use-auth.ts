@@ -7,7 +7,7 @@ import {
 import { useAtomValue, useSetAtom } from "jotai";
 import { router } from "@/router";
 
-// @future reminder: https://tanstack.com/router/latest/docs/framework/react/how-to/setup-rbac#3-using-permission-guards
+// @TODO: https://tanstack.com/router/latest/docs/framework/react/how-to/setup-rbac#3-using-permission-guards
 export const useAuth = () => {
   const setToken = useSetAtom(setAuthTokenAtom);
   const user = useAtomValue(jwtPayloadAtom);

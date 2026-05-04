@@ -1,31 +1,35 @@
 services:
+  # Dev only needs postgres — bot runs locally via yarn dev
   postgres:
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5" # Max 50% of one CPU
-          memory: 512M # Max 512MB RAM
     image: postgres:16-alpine
     container_name: donbass-post-db
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
     environment:
       TZ: "Europe/Moscow"
       PGTZ: "Europe/Moscow"
     env_file:
-      - .env
+      - apps/telegram-bot/.env
     ports:
+      # Exposed to host in dev so you can connect with local tools
+      # (prisma studio, psql, etc.)
       - "127.0.0.1:5434:5432"
     volumes:
       - donbass-post-data:/var/lib/postgresql/data
     networks:
       - donbass-post-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U donbass_post -d donbass_post_db"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
+  # Postgres data persisted across container restarts
   donbass-post-data:
     driver: local
 

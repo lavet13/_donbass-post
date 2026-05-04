@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "docker compose -f docker-compose.yml up -d --wait && yarn db:deploy && yarn db:seed && turbo run dev",
     "build": "turbo run build",
     "preview": "turbo run preview",
     "lint": "turbo run lint",

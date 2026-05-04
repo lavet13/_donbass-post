@@ -1,44 +1,28 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy Web App
 
 on:
-  # Runs on pushes targeting the default branch
   push:
-    branches: ['main']
+    branches: ["main"]
     paths:
       - "apps/web/**"
+      - "packages/ui/**"
+      - "packages/forms/**"
       - ".github/workflows/web-deploy.yml"
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow one concurrent deployment
-concurrency:
-  group: 'pages'
-  cancel-in-progress: true
-
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Cache node_modules & install state
         uses: actions/cache@v4
@@ -55,18 +39,47 @@ jobs:
       - name: Build
         run: yarn workspace @donbass-post/web build
         env:
-          VITE_GITHUB_PAGES: true
+          # Served at root on your VPS domain
+          VITE_BASE_PATH: /
           VITE_YMAPS_API_KEY: ${{ secrets.VITE_YMAPS_API_KEY }}
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+      # scp-action copies files from the GitHub runner to your VPS
+      # It's the same action you already use in telegram-bot-deploy.yml
+      - name: Copy dist to VPS
+        uses: appleboy/scp-action@v0.1.7
         with:
-          # Upload dist folder
-          path: './apps/web/dist'
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          source: "apps/web/dist/*"
+          target: "/var/www/donbass-post-web"
+          # Strips the leading apps/web/dist path so files land
+          # directly in /var/www/donbass-post-web/ not
+          # /var/www/donbass-post-web/apps/web/dist/
+          strip_components: 3
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # Tell nginx to reload so it picks up any config changes.
+      # Static file changes don't need this, but it's harmless and
+      # covers the case where you changed nginx config too.
+      - name: Reload nginx
+        env:
+          CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          envs: CERTBOT_EMAIL
+          script: |
+            cd ~/telegram-bot
+
+            # Ensure all services are running before reloading nginx.
+            # On first deploy starts nginx-certbot with CERTBOT_EMAIL.
+            # On subsequent deploys this is a no-op for already-running services.
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+              up -d --no-build
+
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+              exec -T nginx-certbot nginx -s reload
