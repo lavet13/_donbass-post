@@ -48,6 +48,17 @@ jobs:
           VITE_BASE_PATH: /
           VITE_YMAPS_API_KEY: ${{ secrets.VITE_YMAPS_API_KEY }}
 
+      - name: Prepare target directory on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          script: |
+            mkdir -p /var/www/donbass-post-web
+            chmod 755 /var/www/donbass-post-web
+
       # scp-action copies files from the GitHub runner to your VPS
       # It's the same action you already use in telegram-bot-deploy.yml
       - name: Copy dist to VPS
