@@ -115,15 +115,18 @@ jobs:
             # Run migrations against the live database
             # exec runs a command inside the already-running container
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              exec -T --workdir /app/apps/telegram-bot telegram-bot yarn db:deploy
+              exec -T telegram-bot yarn db:deploy
 
             # Seed is idempotent — safe to run every deploy
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              exec -T --workdir /app/apps/telegram-bot telegram-bot yarn db:seed
+              exec -T telegram-bot yarn db:seed
 
             # Verify container is running
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
               ps telegram-bot
+
+            # Clean up dangling Docker layers from previous builds to prevent disk bloat
+            docker image prune -f
 
       - name: Verify deployment
         env:
