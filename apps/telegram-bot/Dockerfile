@@ -56,6 +56,7 @@ COPY --from=builder /app/apps/telegram-bot/dist/ apps/telegram-bot/dist/
 # (Prisma client is generated code, not a devDep artifact)
 COPY --from=builder /app/apps/telegram-bot/src/prisma/ apps/telegram-bot/src/prisma/
 COPY --from=builder /app/apps/telegram-bot/src/lib/prisma/ apps/telegram-bot/src/lib/prisma/
+COPY --from=builder /app/apps/telegram-bot/prisma.config.ts apps/telegram-bot/prisma.config.ts
 
 WORKDIR /app/apps/telegram-bot
 
