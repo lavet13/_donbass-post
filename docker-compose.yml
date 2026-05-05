@@ -14,10 +14,9 @@ services:
       PGTZ: "Europe/Moscow"
     env_file:
       - apps/telegram-bot/.env
-    ports:
-      # Exposed to host in dev so you can connect with local tools
-      # (prisma studio, psql, etc.)
-      - "127.0.0.1:5434:5432"
+    # No ports here — added by docker-compose.dev.yml for local dev
+    expose:
+      - "5432"
     volumes:
       - donbass-post-data:/var/lib/postgresql/data
     networks:
