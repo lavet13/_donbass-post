@@ -103,4 +103,4 @@ jobs:
 
             # Reload nginx to pick up any config changes
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              exec -T nginx-certbot nginx -s reload
+              exec -T nginx-certbot nginx -s reload || true
