@@ -120,7 +120,7 @@ jobs:
             # Seed is idempotent — safe to run every deploy
             # Call compiled seed directly — no tsx, no yarn dlx, no network calls
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              exec -T telegram-bot node dist/seed.js
+              exec -T telegram-bot node dist/prisma/seed.js
 
             # Verify container is running
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
