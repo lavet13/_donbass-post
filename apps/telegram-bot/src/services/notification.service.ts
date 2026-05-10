@@ -1,4 +1,3 @@
-import { Bot } from "grammy";
 import {
   formatAliParcelPickupMessage,
   formatOnlinePickupMessage,
@@ -18,6 +17,7 @@ import {
   getAllManagers,
 } from "@/services/manager-preferences.service";
 import { prisma } from "@/prisma";
+import type { TCustomBot } from "@/bot";
 
 /**
  * Result of sending notifications to managers
@@ -43,7 +43,7 @@ export interface NotificationResult {
  * @returns Statistics about the send operation
  */
 export async function sendToManagers(
-  bot: Bot,
+  bot: TCustomBot,
   message: string,
   notificationType: NotificationType,
   payload?: any,
@@ -168,7 +168,7 @@ export async function sendToManagers(
  * Convenience function that formats and sends in one step.
  * */
 export async function notifyOnlinePickup(
-  bot: Bot,
+  bot: TCustomBot,
   payload: OnlinePickupPayload,
 ): Promise<NotificationResult> {
   const message = formatOnlinePickupMessage(payload);
@@ -187,7 +187,7 @@ export async function notifyOnlinePickup(
  * Convenience function that formats and sends in one step.
  */
 export async function notifyPickUpPointDeliveryOrder(
-  bot: Bot,
+  bot: TCustomBot,
   payload: PickUpPointDeliveryOrderPayload,
 ): Promise<NotificationResult> {
   const message = formatPickUpPointDeliveryOrderMessage(payload);
@@ -201,7 +201,7 @@ export async function notifyPickUpPointDeliveryOrder(
 }
 
 export async function notifyAliParcelPickup(
-  bot: Bot,
+  bot: TCustomBot,
   payload: AliParcelPickupPayload,
 ): Promise<NotificationResult> {
   const message = formatAliParcelPickupMessage(payload);

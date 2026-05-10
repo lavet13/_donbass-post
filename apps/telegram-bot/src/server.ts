@@ -1,18 +1,9 @@
-import "@/env";
 import { serve } from "srvx/node";
 import { createRoutes } from "@/routes";
 import { getBotManager } from "@/bot";
-import { config, validateConfig, validateNotificationTypes } from "@/config";
+import { config, validateNotificationTypes } from "@/config";
 
 async function startApp() {
-  try {
-    validateConfig(config);
-  } catch (error) {
-    console.error("❌ Configuration validation failed:");
-    console.error(error instanceof Error ? error.message : error);
-    process.exit(1);
-  }
-
   const botManager = getBotManager();
 
   try {
@@ -25,7 +16,11 @@ async function startApp() {
       console.warn("🔗 Setting up webhook mode...");
       try {
         await botManager.deleteWebhook(bot);
-        await botManager.setWebhook(bot, config.telegram.webhookUrl);
+        await botManager.setWebhook(
+          bot,
+          config.telegram.webhookUrl,
+          config.telegram.webhookSecret,
+        );
 
         const webhookInfo = await botManager.getWebhookInfo(bot);
 
@@ -51,7 +46,7 @@ async function startApp() {
     }
 
     const router = createRoutes(bot);
-    if (process.env.NODE_ENV === "development") {
+    if (config.server.nodeEnv === "development") {
       console.log(router.getRoutes());
     }
 
@@ -64,9 +59,7 @@ async function startApp() {
 
     console.warn(`📊 Bot mode: ${botManager.getMode()}`);
     console.warn(`🌍 Environment: ${config.server.nodeEnv}`);
-    console.warn(
-      `👥 Managers configured: ${config.managers.getChatIds().length}`,
-    );
+    console.warn(`👥 Managers configured: ${config.managers.chatIds.length}`);
 
     const shutdown = async () => {
       console.warn("\nShutting down gracefully...");

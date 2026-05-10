@@ -6,7 +6,7 @@ import { config } from "@/config";
  * Returns the root admin chat ID from env.
  * This is the single operator/owner who can manage the team.
  */
-export function getRootAdminChatId(): number | null {
+export function getRootAdminChatId(): number | undefined {
   return config.telegram.rootAdminChatId;
 }
 

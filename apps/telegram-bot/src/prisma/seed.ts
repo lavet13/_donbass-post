@@ -1,4 +1,4 @@
-import { getEnv } from "@/env";
+import { env } from "@/env";
 import { prisma } from "@/prisma";
 import type { NotificationType } from "@/types/notification-types";
 
@@ -46,13 +46,7 @@ async function main() {
   // 2. Migrate existing managers from MANAGER_CHAT_IDS
   console.log("\nMigrating managers from environment variables...");
 
-  const managerChatIdsStr = getEnv("MANAGER_CHAT_IDS", "");
-  const managerChatIds = managerChatIdsStr
-    .split(",")
-    .map((id) => id.trim())
-    .filter((id) => id.length > 0)
-    .map((id) => parseInt(id, 10))
-    .filter((id) => !isNaN(id));
+  const managerChatIds = env.MANAGER_CHAT_IDS;
 
   if (managerChatIds.length === 0) {
     console.warn("⚠ No MANAGER_CHAT_IDS found in environment");

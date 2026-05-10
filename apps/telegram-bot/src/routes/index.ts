@@ -1,4 +1,4 @@
-import { getBotManager } from "@/bot";
+import { getBotManager, type TCustomBot } from "@/bot";
 import { config } from "@/config";
 import { cors, handleOptions, requireJSON } from "@/middleware";
 import { createRouter, error, parseJSON, type Router } from "@/router";
@@ -15,10 +15,9 @@ import {
 } from "@/types/notifications";
 import type { Update } from "grammy/types";
 import { version } from "../../package.json";
-import type { Bot } from "grammy";
 import { parseBody } from "@/utils/validate";
 
-export function createRoutes(bot: Bot): Router {
+export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
   const router = createRouter();
 
@@ -30,7 +29,7 @@ export function createRoutes(bot: Bot): Router {
    *
    * To enable: modify below to `router.use(handleOptions);`
    */
-  if (process.env.NODE_ENV === "development") {
+  if (config.server.nodeEnv === "development") {
     router.use(handleOptions);
   }
 

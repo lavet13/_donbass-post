@@ -2,7 +2,6 @@ import { Bot, GrammyError, HttpError } from "grammy";
 import { formatRussianDateTime } from "@/utils";
 import { autoRetry } from "@grammyjs/auto-retry";
 import { registerCommands } from "@/commands";
-import { config } from "@/config";
 import type { Update } from "grammy/types";
 import type { TContext } from "@/types";
 import { commands } from "@grammyjs/commands";
@@ -180,9 +179,7 @@ export class BotManager {
     await bot.handleUpdate(update);
   }
 
-  async setWebhook(bot: TCustomBot, url: string): Promise<void> {
-    const secret = config.telegram.webhookSecret;
-
+  async setWebhook(bot: TCustomBot, url: string, secret?: string): Promise<void> {
     try {
       await bot.api.setWebhook(url, { secret_token: secret || undefined });
       this.mode = "webhook";

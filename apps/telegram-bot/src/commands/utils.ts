@@ -7,7 +7,7 @@ import {
   publicCommands,
 } from "@/commands/groups";
 import type { Bot } from "grammy";
-import type { BotCommand, LanguageCode } from "grammy/types";
+import type { BotCommand } from "grammy/types";
 
 export function getCommandListText({
   manager = false,
