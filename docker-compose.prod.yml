@@ -46,6 +46,18 @@ services:
 
   # Override postgres in prod — remove host port exposure,
   # containers reach it directly via Docker network
+  #
+  # Windows machine (office)
+  # Excel/ODBC → connects to VPS_PUBLIC_IP:5432
+  #                   ↓
+  #             VPS host receives connection
+  #             Docker checks: is source IP = OFFICE_IP_1? ✅
+  #                   ↓
+  #             Docker forwards to container port 5432
+  #                   ↓
+  #             postgres container receives connection
+  #                   ↓
+  #             query runs, result returns same path back
   postgres:
     env_file:
       - apps/telegram-bot/.env
@@ -53,6 +65,7 @@ services:
     ports: []
     expose:
       - "5432"
+
 
 volumes:
   # Nginx/Certbot stores SSL certificates here

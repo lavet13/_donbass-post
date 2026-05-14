@@ -6,10 +6,10 @@
 echo "🚀 Starting Repomix for Telegram Bot..."
 
 yarn repomix \
-  --include "apps/telegram-bot/**/*" \
+  --include "apps/telegram-bot/**,packages/eslint-config/**,packages/prettier-config/**,packages/typescript-config/**" \
   --ignore "apps/telegram-bot/src/lib/**" \
   --style markdown \
+  --parsable-style
   -o telegram-bot.md
 
-echo "✅ Done! Output file: telegram-bot.md"
-echo "   Total tokens were ~30k last time — ready for Claude / Grok / GPT"
+echo "✅ Done! output file: telegram-bot.md"

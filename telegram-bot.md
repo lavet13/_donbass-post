@@ -28,7 +28,7 @@ The content is organized as follows:
 ## Notes
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Only files matching these patterns are included: apps/telegram-bot/**/*
+- Only files matching these patterns are included: apps/telegram-bot/**, packages/eslint-config/**, packages/prettier-config/**, packages/typescript-config/**
 - Files matching these patterns are excluded: apps/telegram-bot/src/lib/**
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
@@ -36,11 +36,11 @@ The content is organized as follows:
 
 # Directory Structure
 ```
+apps/telegram-bot/.env.production.sample
 apps/telegram-bot/.env.sample
 apps/telegram-bot/.gitignore
-apps/telegram-bot/docker-compose.yml
+apps/telegram-bot/Dockerfile
 apps/telegram-bot/ecosystem.config.cjs
-apps/telegram-bot/environments.d.ts
 apps/telegram-bot/eslint.config.ts
 apps/telegram-bot/package.json
 apps/telegram-bot/prettier.config.ts
@@ -80,6 +80,7 @@ apps/telegram-bot/src/server.ts
 apps/telegram-bot/src/services/manager-preferences.service.ts
 apps/telegram-bot/src/services/notification.service.ts
 apps/telegram-bot/src/types.ts
+apps/telegram-bot/src/types/config.ts
 apps/telegram-bot/src/types/notification-types.ts
 apps/telegram-bot/src/types/notifications.ts
 apps/telegram-bot/src/utils.ts
@@ -87,9 +88,187 @@ apps/telegram-bot/src/utils/validate.ts
 apps/telegram-bot/todo.md
 apps/telegram-bot/tsconfig.json
 apps/telegram-bot/tsup.config.ts
+packages/eslint-config/index.ts
+packages/eslint-config/package.json
+packages/prettier-config/index.ts
+packages/prettier-config/package.json
+packages/typescript-config/base.json
+packages/typescript-config/node.json
+packages/typescript-config/package.json
+packages/typescript-config/vite-node.json
+packages/typescript-config/vite.json
 ```
 
 # Files
+
+## File: packages/eslint-config/package.json
+```json
+{
+  "name": "@donbass-post/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "index.ts"
+  ],
+  "dependencies": {
+    "@eslint/js": "^9.36.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.4.0",
+    "typescript-eslint": "^8.44.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.36.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.36.0",
+    "typescript": "~5.8.3"
+  }
+}
+```
+
+## File: packages/prettier-config/index.ts
+```typescript
+import type { Config } from "prettier";
+
+const config: Config = {
+  semi: true,
+  trailingComma: "all",
+  singleQuote: false,
+  printWidth: 80,
+  tabWidth: 2,
+  useTabs: false,
+  arrowParens: "always",
+  endOfLine: "lf",
+  bracketSpacing: true,
+  jsxSingleQuote: false,
+  plugins: ["prettier-plugin-tailwindcss"],
+};
+
+export default config;
+```
+
+## File: packages/typescript-config/base.json
+```json
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "resolveJsonModule": true,
+
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "skipLibCheck": true
+  }
+}
+```
+
+## File: packages/typescript-config/node.json
+```json
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+
+    "noEmit": false,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "types": ["node"],
+  }
+}
+```
+
+## File: packages/typescript-config/package.json
+```json
+{
+  "name": "@donbass-post/typescript-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "base.json",
+    "vite.json",
+    "vite-node.json",
+    "node.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
+```
+
+## File: packages/typescript-config/vite-node.json
+```json
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "noEmit": true,
+
+    "erasableSyntaxOnly": true
+  }
+}
+```
+
+## File: packages/typescript-config/vite.json
+```json
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "useDefineForClassFields": true,
+    "noEmit": true,
+
+    "erasableSyntaxOnly": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+  }
+}
+```
+
+## File: apps/telegram-bot/.env.production.sample
+```
+DATABASE_URL=postgresql://donbass_post:password@postgres:5432/donbass_post_db?schema=public
+```
+
+## File: apps/telegram-bot/prettier.config.ts
+```typescript
+import config from "@donbass-post/prettier-config";
+
+export default config;
+```
 
 ## File: apps/telegram-bot/src/commands/admin/addmanager.ts
 ```typescript
@@ -902,248 +1081,6 @@ startCommand.localize(
 );
 ```
 
-## File: apps/telegram-bot/src/commands/utils.ts
-```typescript
-import type { TContext } from "@/types";
-import type { CommandGroup } from "@grammyjs/commands";
-import {
-  adminCommands,
-  LOCALES,
-  managerCommands,
-  publicCommands,
-} from "@/commands/groups";
-import type { Bot } from "grammy";
-import type { BotCommand, LanguageCode } from "grammy/types";
-
-export function getCommandListText({
-  manager = false,
-  admin = false,
-}: {
-  manager?: boolean;
-  admin?: boolean;
-}): string {
-  const lines: string[] = [];
-
-  const addInlineCommands = (group: CommandGroup<TContext>) => {
-    for (const cmd of group.commands) {
-      lines.push(`/${cmd.stringName} - ${cmd.description}`);
-    }
-  };
-
-  addInlineCommands(publicCommands);
-
-  if (manager || admin) {
-    addInlineCommands(managerCommands);
-  }
-
-  if (admin) {
-    addInlineCommands(adminCommands);
-  }
-
-  if (lines.length === 0) return "Команд пока нет 😔";
-
-  return "Доступные команды:\n" + lines.join("\n");
-}
-
-/**
- * Sets the Telegram command menu for a specific chat, merging commands from
- * multiple CommandGroups into a single menu per language variant.
- *
- * Telegram's setMyCommands replaces the entire command list on each call,
- * so we must merge all groups before sending — otherwise each call would
- * overwrite the previous one, leaving only the last group's commands visible.
- *
- * Scope priority (highest wins):
- *   default < all_private_chats < chat:<id>  ← this function sets chat:<id>
- *
- * @param bot - The bot instance, used to access the Telegram API
- * @param chatId - The specific chat to set commands for
- * @param groups - One or more CommandGroups whose commands will be merged
- */
-export async function setCommandsForChat(
-  bot: Bot<TContext>,
-  chatId: number,
-  ...groups: CommandGroup<TContext>[]
-) {
-  // Step 1: For every supported language (including default/undefined)...
-  for (const languageCode of LOCALES) {
-    const allCommandsForLocale: BotCommand[] = [];
-
-    // Step 2: Ask every command group what commands it has in this language
-    for (const group of groups) {
-      const elementals = group.toElementals(languageCode);
-
-      // Step 3: Convert the elemental objects into the simple BotCommand format
-      for (const e of elementals) {
-        allCommandsForLocale.push({
-          command: e.command,
-          description: e.description,
-        });
-      }
-    }
-
-    // Step 4: Only send to Telegram if we actually have commands
-    if (allCommandsForLocale.length === 0) {
-      continue;
-    }
-
-    // Step 5: Send the merged commands for this language to this specific chat
-    await bot.api.setMyCommands(allCommandsForLocale, {
-      scope: { type: "chat", chat_id: chatId },
-      language_code: languageCode,
-    });
-  }
-}
-
-// TContext extended with the commandSuggestion property that
-// commandNotFound adds when it finds a close match
-type SuggestionContext = TContext & { commandSuggestion: string | null };
-
-export async function suggestionHandler(ctx: SuggestionContext): Promise<void> {
-  if (ctx.commandSuggestion) {
-    // A close match was found — suggest it to the user
-    await ctx.reply(
-      `🤔 Не знаю такой команды. Может, вы имели в виду <b>${ctx.commandSuggestion}</b>?`,
-      { parse_mode: "HTML" },
-    );
-  } else {
-    // No close match — generic fallback
-    await ctx.reply("😕 Не знаю такой команды. Используйте /help.");
-  }
-}
-```
-
-## File: apps/telegram-bot/src/types.ts
-```typescript
-import { Context } from "grammy";
-import { type CommandsFlavor } from "@grammyjs/commands";
-
-export type TContext = CommandsFlavor<Context>;
-```
-
-## File: apps/telegram-bot/prettier.config.ts
-```typescript
-import config from "@donbass-post/prettier-config";
-
-export default config;
-```
-
-## File: apps/telegram-bot/prisma.config.ts
-```typescript
-import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
-
-export default defineConfig({
-  schema: "src/prisma/schema.prisma",
-  migrations: {
-    path: "src/prisma/migrations",
-    seed: "tsx src/prisma/seed.ts",
-  },
-  datasource: {
-    url: env("DATABASE_URL"),
-  },
-});
-```
-
-## File: apps/telegram-bot/src/commands/guards.ts
-```typescript
-import type { TContext } from "@/types";
-import { prisma } from "@/prisma";
-import { config } from "@/config";
-
-/**
- * Returns the root admin chat ID from env.
- * This is the single operator/owner who can manage the team.
- */
-export function getRootAdminChatId(): number | null {
-  return config.telegram.rootAdminChatId;
-}
-
-/**
- * Returns true if the user is the root admin (configured via ROOT_ADMIN_CHAT_ID env).
- * */
-export function isRootAdmin(ctx: TContext): boolean {
-  const adminId = getRootAdminChatId();
-  if (!adminId) return false;
-  return ctx.from?.id === adminId;
-}
-
-export async function isActiveManager(ctx: TContext): Promise<boolean> {
-  const userId = ctx.from?.id;
-  if (!userId) return false;
-
-  try {
-    const telegramUser = await prisma.telegramUser.findUnique({
-      where: {
-        chatId: BigInt(userId),
-      },
-      select: {
-        isActive: true,
-        managerProfile: true,
-      },
-    });
-
-    return !!(telegramUser?.isActive && telegramUser.managerProfile);
-  } catch(err) {
-    console.error(`Error checking manager status:`, err);
-    return false;
-  }
-}
-
-/**
- * Guard for root-admin-only commands.
- * Replies with an error and returns false if the user is not the root admin.
- * */
-export async function requireRootAdmin(ctx: TContext): Promise<boolean> {
-  if (isRootAdmin(ctx)) return true;
-
-  if (ctx.callbackQuery) {
-    await ctx.answerCallbackQuery({ text: "⛔ Только для администратора." });
-  } else {
-    await ctx.reply("⛔ Эта команда только для администратора системы.");
-  }
-
-  return false;
-}
-
-/**
- * Guard for manager-only commands.
- * Replies with an error and returns false if the user is not an active manager.
- * */
-export async function requireManager(ctx: TContext): Promise<boolean> {
-  if (isRootAdmin(ctx)) return true;
-
-  const manager = await isActiveManager(ctx);
-  if (manager) return true;
-
-  if (ctx.callbackQuery) {
-    await ctx.answerCallbackQuery({ text: "⛔ Только для менеджеров." });
-  } else {
-    await ctx.reply("⛔ Эта команда только для менеджеров.");
-  }
-
-  return false;
-}
-```
-
-## File: apps/telegram-bot/src/prisma/index.ts
-```typescript
-import { PrismaClient } from "@/lib/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-
-console.log({ databaseUrl: process.env.DATABASE_URL });
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-
-export const prisma = new PrismaClient({
-  adapter,
-  log:
-    process.env.NODE_ENV === "development"
-      ? ["info", "query", "warn", "error"]
-      : undefined,
-  errorFormat: "pretty",
-});
-```
-
 ## File: apps/telegram-bot/src/prisma/migrations/20260220020200_init/migration.sql
 ```sql
 -- CreateTable
@@ -1262,6 +1199,43 @@ ALTER TABLE "manager_notification_preferences" ADD CONSTRAINT "manager_notificat
 provider = "postgresql"
 ```
 
+## File: apps/telegram-bot/src/types.ts
+```typescript
+import { Context } from "grammy";
+import { type CommandsFlavor } from "@grammyjs/commands";
+
+export type TContext = CommandsFlavor<Context>;
+```
+
+## File: apps/telegram-bot/src/types/config.ts
+```typescript
+// This is what the rest of the app imports - never process.env directly.
+export type TelegramConfig =
+  | {
+      useWebhook: true;
+      token: string;
+      webhookUrl: string;
+      webhookSecret?: string;
+      rootAdminChatId?: number;
+    }
+  | {
+      useWebhook: false;
+      token: string;
+      rootAdminChatId?: number;
+    };
+
+export type AppConfig = {
+  telegram: TelegramConfig;
+  server: {
+    port: number;
+    nodeEnv: "development" | "production";
+  };
+  managers: {
+    chatIds: number[];
+  };
+};
+```
+
 ## File: apps/telegram-bot/src/utils/validate.ts
 ```typescript
 import { z } from "zod";
@@ -1287,38 +1261,31 @@ export function parseBody<T>(
 }
 ```
 
-## File: apps/telegram-bot/.gitignore
-```
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist.zip
-dist
-dist-ssr
-*.local
-.tanstack
-.env
-.turbo
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-/lib/prisma
+## File: apps/telegram-bot/tsconfig.json
+```json
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@donbass-post/typescript-config/node.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "*.config.ts",
+    "environments.d.ts",
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+  ]
+}
 ```
 
 ## File: apps/telegram-bot/eslint.config.ts
@@ -1337,6 +1304,118 @@ export default defineConfig([
   ]),
   ...node(),
 ]);
+```
+
+## File: apps/telegram-bot/src/commands/utils.ts
+```typescript
+import type { TContext } from "@/types";
+import type { CommandGroup } from "@grammyjs/commands";
+import {
+  adminCommands,
+  LOCALES,
+  managerCommands,
+  publicCommands,
+} from "@/commands/groups";
+import type { Bot } from "grammy";
+import type { BotCommand } from "grammy/types";
+
+export function getCommandListText({
+  manager = false,
+  admin = false,
+}: {
+  manager?: boolean;
+  admin?: boolean;
+}): string {
+  const lines: string[] = [];
+
+  const addInlineCommands = (group: CommandGroup<TContext>) => {
+    for (const cmd of group.commands) {
+      lines.push(`/${cmd.stringName} - ${cmd.description}`);
+    }
+  };
+
+  addInlineCommands(publicCommands);
+
+  if (manager || admin) {
+    addInlineCommands(managerCommands);
+  }
+
+  if (admin) {
+    addInlineCommands(adminCommands);
+  }
+
+  if (lines.length === 0) return "Команд пока нет 😔";
+
+  return "Доступные команды:\n" + lines.join("\n");
+}
+
+/**
+ * Sets the bot command menu for a **specific chat** by merging commands
+ * from one or more CommandGroups.
+ *
+ * Why we merge:
+ * Telegram's setMyCommands REPLACES the previous list completely.
+ * If we called it once per group, only the last group would remain visible.
+ *
+ * Scope used: "chat" (highest priority for this exact chatId)
+ *
+ * @param bot - The bot instance, used to access the Telegram API
+ * @param chatId - The specific chat to set commands for
+ * @param groups - One or more CommandGroups whose commands will be merged
+ */
+export async function setCommandsForChat(
+  bot: Bot<TContext>,
+  chatId: number,
+  ...groups: CommandGroup<TContext>[]
+) {
+  // LOCALES = [undefined, "ru", "uk", "en"] — we support default + localized menus
+  for (const languageCode of LOCALES) {
+    const mergeCommands: BotCommand[] = [];
+
+    // Step 1: Collect commands from every group for this language
+    for (const group of groups) {
+      const elementals = group.toElementals(languageCode);
+
+      // Convert internal "elemental" format → simple BotCommand[]
+      for (const el of elementals) {
+        mergeCommands.push({
+          command: el.command,
+          description: el.description,
+        });
+      }
+    }
+
+    // Step 2: Safety — never send an empty command list to Telegram
+    // Telegram behavior with empty list is inconsistent (some clients clear the menu,
+    // others ignore it). Better to skip.
+    if (mergeCommands.length === 0) {
+      continue;
+    }
+
+    // Step 3: Send the merged list for this language + chat
+    await bot.api.setMyCommands(mergeCommands, {
+      scope: { type: "chat", chat_id: chatId },
+      language_code: languageCode, // undefined = default language
+    });
+  }
+}
+
+// TContext extended with the commandSuggestion property that
+// commandNotFound adds when it finds a close match
+type SuggestionContext = TContext & { commandSuggestion: string | null };
+
+export async function suggestionHandler(ctx: SuggestionContext): Promise<void> {
+  if (ctx.commandSuggestion) {
+    // A close match was found — suggest it to the user
+    await ctx.reply(
+      `🤔 Не знаю такой команды. Может, вы имели в виду <b>${ctx.commandSuggestion}</b>?`,
+      { parse_mode: "HTML" },
+    );
+  } else {
+    // No close match — generic fallback
+    await ctx.reply("😕 Неизвестная команда. Используйте /help.");
+  }
+}
 ```
 
 ## File: apps/telegram-bot/src/prisma/schema.prisma
@@ -1524,6 +1603,205 @@ export const formatRussianDateTime = (date: Date | string | number): string => {
 };
 ```
 
+## File: packages/eslint-config/index.ts
+```typescript
+import js from "@eslint/js";
+import globals from "globals";
+import reactPlugin from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
+import { Linter } from "eslint";
+
+export const base = (): Linter.Config[] => [
+  js.configs.recommended,
+  {
+    rules: {
+      "prefer-const": "warn",
+      eqeqeq: ["error", "always"],
+    },
+  },
+];
+
+export const react = (): Linter.Config[] => [
+  ...base(),
+  ...tseslint.configs.recommended,
+  reactHooks.configs["recommended-latest"],
+  reactRefresh.configs.vite,
+  {
+    files: ["**/*.{ts,tsx}"],
+    plugins: {
+      react: reactPlugin,
+    },
+    languageOptions: {
+      ecmaVersion: 2022,
+      globals: globals.browser,
+      parser: tseslint.parser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    settings: {
+      react: { version: "detect" },
+    },
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/consistent-type-imports": "off",
+      "@typescript-eslint/consistent-type-definitions": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
+      "react/jsx-key": "error",
+      "react/self-closing-comp": "warn",
+      "react/jsx-curly-brace-presence": ["warn", "never"],
+    },
+  },
+];
+
+export const node = (): Linter.Config[] => [
+  ...base(),
+  ...tseslint.configs.recommended,
+  {
+    files: ["**/*.{ts,js}"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      parser: tseslint.parser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+      globals: {
+        ...globals.node,
+        ...globals.es2022,
+      },
+    },
+    rules: {
+      // TypeScript
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/consistent-type-imports": "off",
+      "@typescript-eslint/consistent-type-definitions": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
+    },
+  },
+];
+```
+
+## File: packages/prettier-config/package.json
+```json
+{
+  "name": "@donbass-post/prettier-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "index.ts"
+  ],
+  "peerDependencies": {
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14"
+  },
+  "peerDependenciesMeta": {
+    "prettier-plugin-tailwindcss": {
+      "optional": true
+    }
+  }
+}
+```
+
+## File: apps/telegram-bot/Dockerfile
+```
+# === Stage 1: Builder ========================================================
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+# Copy package manifests first — Docker caches layers in order.
+# If these files don't change, yarn install is skipped on next build.
+COPY package.json yarn.lock .yarnrc.yml ./
+
+# Copy the .yarn directory (contains yarn 4 release itself)
+COPY .yarn/releases/ .yarn/releases/
+
+# Copy all workspace package.json files so yarn can resolve the workspace graph
+# without copying all source code yet
+COPY packages/eslint-config/package.json packages/eslint-config/
+COPY packages/typescript-config/package.json packages/typescript-config/
+COPY packages/prettier-config/package.json packages/prettier-config/
+COPY apps/telegram-bot/package.json apps/telegram-bot/
+
+# Install ALL dependencies (including devDeps needed for build)
+RUN yarn install --check-cache
+
+# Now copy source code (separate from install — preserves cache on code changes)
+COPY packages/eslint-config/ packages/eslint-config/
+COPY packages/typescript-config/ packages/typescript-config/
+COPY packages/prettier-config/ packages/prettier-config/
+COPY apps/telegram-bot/ apps/telegram-bot/
+
+# Generate Prisma client (must happen before build)
+RUN yarn workspace @donbass-post/tg-bot db:generate
+
+# Build the bot (tsup compiles TypeScript → dist/)
+RUN yarn workspace @donbass-post/tg-bot build
+
+# === Stage 2: Runner =========================================================
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+
+# Copy package manifests again for production install
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/releases/ .yarn/releases/
+
+COPY packages/eslint-config/package.json packages/eslint-config/
+COPY packages/typescript-config/package.json packages/typescript-config/
+COPY packages/prettier-config/package.json packages/prettier-config/
+COPY apps/telegram-bot/package.json apps/telegram-bot/
+
+# Install ONLY production dependencies — no devDeps
+RUN yarn workspaces focus @donbass-post/tg-bot --production
+
+# Copy compiled output from builder stage
+COPY --from=builder /app/apps/telegram-bot/dist/ apps/telegram-bot/dist/
+
+# Copy Prisma schema and generated client from builder
+# (Prisma client is generated code, not a devDep artifact)
+COPY --from=builder /app/apps/telegram-bot/src/prisma/ apps/telegram-bot/src/prisma/
+COPY --from=builder /app/apps/telegram-bot/src/lib/prisma/ apps/telegram-bot/src/lib/prisma/
+COPY --from=builder /app/apps/telegram-bot/prisma.config.ts apps/telegram-bot/prisma.config.ts
+
+WORKDIR /app/apps/telegram-bot
+
+# Why USER node?
+# The node Docker image ships with a built-in unprivileged user called node.
+# Running as root inside a container means if someone exploits your app, they
+# have root inside the container — which can lead to escaping to the host.
+# Running as node limits the blast radius.
+
+# Run as non-root user for security — never run Node as root in production
+USER node
+
+# This is the single process Docker manages — no PM2
+CMD ["node", "dist/server.js"]
+```
+
 ## File: apps/telegram-bot/ecosystem.config.cjs
 ```javascript
 module.exports = {
@@ -1568,107 +1846,85 @@ module.exports = {
 };
 ```
 
-## File: apps/telegram-bot/src/prisma/seed.ts
+## File: apps/telegram-bot/prisma.config.ts
 ```typescript
-import { getEnv } from "@/env";
+import "dotenv/config";
+import { defineConfig, env } from "prisma/config";
+
+export default defineConfig({
+  schema: "src/prisma/schema.prisma",
+  migrations: {
+    path: "src/prisma/migrations",
+    seed: "tsx src/prisma/seed.ts",
+  },
+  datasource: {
+    url: env("DATABASE_URL"),
+  },
+});
+```
+
+## File: apps/telegram-bot/src/commands/guards.ts
+```typescript
+import type { TContext } from "@/types";
 import { prisma } from "@/prisma";
-import type { NotificationType } from "@/types/notification-types";
+import { config } from "@/config";
 
-async function main() {
-  console.log("Starting database seeding...");
-
-  // 1. Create notification types
-  console.log("Creating notification types...");
-
-  const notificationTypes = [
-    {
-      slug: "online-pickup-rf",
-      name: "Онлайн-забор по РФ",
-      description:
-        "Уведомления о новых заявках на онлайн-забор посылок по территории РФ",
-    },
-    {
-      slug: "pick-up-point-delivery-order",
-      name: "Забор груза ЛДНР/Запорожье",
-      description:
-        "Уведомления о новых заявках на забор груза в ЛДНР и Запорожской области",
-    },
-    {
-      slug: "ali-parcel-pickup",
-      name: "Забор посылки AliExpress",
-      description: "Уведомления о новых заявках на забор посылок AliExpress",
-    },
-  ] satisfies {
-    slug: NotificationType;
-    name: string;
-    description: string;
-  }[];
-
-  for (const type of notificationTypes) {
-    await prisma.notificationType.upsert({
-      where: {
-        slug: type.slug,
-      },
-      update: type,
-      create: type,
-    });
-    console.log(`✅ Created/Updated notification type: ${type.name}`);
-  }
-
-  // 2. Migrate existing managers from MANAGER_CHAT_IDS
-  console.log("\nMigrating managers from environment variables...");
-
-  const managerChatIdsStr = getEnv("MANAGER_CHAT_IDS", "");
-  const managerChatIds = managerChatIdsStr
-    .split(",")
-    .map((id) => id.trim())
-    .filter((id) => id.length > 0)
-    .map((id) => parseInt(id, 10))
-    .filter((id) => !isNaN(id));
-
-  if (managerChatIds.length === 0) {
-    console.warn("⚠ No MANAGER_CHAT_IDS found in environment");
-  }
-
-  for (const chatId of managerChatIds) {
-    const telegramUser = await prisma.telegramUser.upsert({
-      where: {
-        chatId: BigInt(chatId),
-      },
-      update: {
-        isActive: true,
-      },
-      create: {
-        chatId: BigInt(chatId),
-        isActive: true,
-      },
-    });
-
-    // Create Manager profile if doesn't exist
-    await prisma.manager.upsert({
-      where: {
-        telegramUserId: telegramUser.id,
-      },
-      update: {},
-      create: {
-        telegramUserId: telegramUser.id,
-      },
-    });
-
-    console.log(`✅ Created/Updated manager: ${chatId}`);
-  }
-
-  console.log("\n✅ Database seeding completed!");
+/**
+ * Returns the root admin chat ID from env.
+ * This is the single operator/owner who can manage the team.
+ */
+export function getRootAdminChatId(): number | undefined {
+  return config.telegram.rootAdminChatId;
 }
 
-main()
-  .catch(async (e) => {
-    console.error("❌ Seeding failed:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+/**
+ * Returns true if the user is the root admin (configured via ROOT_ADMIN_CHAT_ID env).
+ * */
+export function isRootAdmin(ctx: TContext): boolean {
+  const adminId = getRootAdminChatId();
+  if (!adminId) return false;
+  return ctx.from?.id === adminId;
+}
+
+export async function isActiveManager(ctx: TContext): Promise<boolean> {
+  const userId = ctx.from?.id;
+  if (!userId) return false;
+
+  try {
+    const telegramUser = await prisma.telegramUser.findUnique({
+      where: {
+        chatId: BigInt(userId),
+      },
+      select: {
+        isActive: true,
+        managerProfile: true,
+      },
+    });
+
+    return !!(telegramUser?.isActive && telegramUser.managerProfile);
+  } catch(err) {
+    console.error(`Error checking manager status:`, err);
+    return false;
+  }
+}
+```
+
+## File: apps/telegram-bot/src/prisma/index.ts
+```typescript
+import { env } from "@/env";
+import { PrismaClient } from "@/lib/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
+
+export const prisma = new PrismaClient({
+  adapter,
+  log:
+    env.NODE_ENV === "development"
+      ? ["info", "query", "warn", "error"]
+      : undefined,
+  errorFormat: "pretty",
+});
 ```
 
 ## File: apps/telegram-bot/src/services/manager-preferences.service.ts
@@ -2003,83 +2259,209 @@ export async function getAllAvailableNotificationTypes(): Promise<
 
 ```
 
-## File: apps/telegram-bot/tsconfig.json
-```json
-{
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "@donbass-post/typescript-config/node.json",
-  "compilerOptions": {
-    "noEmit": true,
-    "outDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    }
-  },
-  "include": [
-    "src/**/*",
-    "*.config.ts",
-    "environments.d.ts",
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-  ]
-}
+## File: apps/telegram-bot/.gitignore
+```
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist.zip
+dist
+dist-ssr
+*.local
+.tanstack
+.env
+.env.production
+.turbo
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+/src/lib/prisma
 ```
 
-## File: apps/telegram-bot/docker-compose.yml
-```yaml
-services:
-  postgres:
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5" # Max 50% of one CPU
-          memory: 512M # Max 512MB RAM
-    image: postgres:16-alpine
-    container_name: donbass-post-db
-    restart: unless-stopped
-    environment:
-      TZ: "Europe/Moscow"
-      PGTZ: "Europe/Moscow"
-    env_file:
-      - .env
-    ports:
-      - "127.0.0.1:5434:5432"
-    volumes:
-      - donbass-post-data:/var/lib/postgresql/data
-    networks:
-      - donbass-post-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U donbass_post -d donbass_post_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+## File: apps/telegram-bot/src/prisma/seed.ts
+```typescript
+import { env } from "@/env";
+import { prisma } from "@/prisma";
+import type { NotificationType } from "@/types/notification-types";
 
-volumes:
-  donbass-post-data:
-    driver: local
+async function main() {
+  console.log("Starting database seeding...");
 
-networks:
-  donbass-post-network:
-    driver: bridge
+  // 1. Create notification types
+  console.log("Creating notification types...");
+
+  const notificationTypes = [
+    {
+      slug: "online-pickup-rf",
+      name: "Онлайн-забор по РФ",
+      description:
+        "Уведомления о новых заявках на онлайн-забор посылок по территории РФ",
+    },
+    {
+      slug: "pick-up-point-delivery-order",
+      name: "Забор груза ЛДНР/Запорожье",
+      description:
+        "Уведомления о новых заявках на забор груза в ЛДНР и Запорожской области",
+    },
+    {
+      slug: "ali-parcel-pickup",
+      name: "Забор посылки AliExpress",
+      description: "Уведомления о новых заявках на забор посылок AliExpress",
+    },
+  ] satisfies {
+    slug: NotificationType;
+    name: string;
+    description: string;
+  }[];
+
+  for (const type of notificationTypes) {
+    await prisma.notificationType.upsert({
+      where: {
+        slug: type.slug,
+      },
+      update: type,
+      create: type,
+    });
+    console.log(`✅ Created/Updated notification type: ${type.name}`);
+  }
+
+  // 2. Migrate existing managers from MANAGER_CHAT_IDS
+  console.log("\nMigrating managers from environment variables...");
+
+  const managerChatIds = env.MANAGER_CHAT_IDS;
+
+  if (managerChatIds.length === 0) {
+    console.warn("⚠ No MANAGER_CHAT_IDS found in environment");
+  }
+
+  for (const chatId of managerChatIds) {
+    const telegramUser = await prisma.telegramUser.upsert({
+      where: {
+        chatId: BigInt(chatId),
+      },
+      update: {
+        isActive: true,
+      },
+      create: {
+        chatId: BigInt(chatId),
+        isActive: true,
+      },
+    });
+
+    // Create Manager profile if doesn't exist
+    await prisma.manager.upsert({
+      where: {
+        telegramUserId: telegramUser.id,
+      },
+      update: {},
+      create: {
+        telegramUserId: telegramUser.id,
+      },
+    });
+
+    console.log(`✅ Created/Updated manager: ${chatId}`);
+  }
+
+  console.log("\n✅ Database seeding completed!");
+}
+
+main()
+  .catch(async (e) => {
+    console.error("❌ Seeding failed:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
 ```
 
 ## File: apps/telegram-bot/src/env.ts
 ```typescript
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";
-import type { EnvKeys } from "environments";
 import { resolve } from "path";
+import z from "zod";
+
+const BaseSchema = z.object({
+  TELEGRAM_BOT_TOKEN: z.string().min(1, "TELEGRAM_BOT_TOKEN is required"),
+  NODE_ENV: z.enum(["development", "production"]).default("development"),
+  PORT: z.coerce.number<string>().int("PORT should be an integer").min(1).max(65535).default(3000),
+  MANAGER_CHAT_IDS: z
+    .string()
+    .trim()
+    .default("")
+    .transform((ids) => {
+      if (ids === "") return [];
+      return ids
+        .split(",")
+        .map((raw) => raw.trim())
+        .filter((raw) => raw.length > 0)
+        .map((raw) => parseInt(raw, 10))
+        .filter((id) => !isNaN(id));
+    }),
+  DATABASE_URL: z.string().min(1, "Database URL is required"),
+  ROOT_ADMIN_CHAT_ID: z.coerce.number<string>().int("ROOT_ADMIN_CHAT_ID should be an integer").optional(),
+});
+
+const WebhookEnvSchema = BaseSchema.extend({
+  USE_WEBHOOK: z.literal("true"),
+  WEBHOOK_URL: z
+    .string()
+    .min(1, "WEBHOOK_URL is required when USE_WEBHOOK is true"),
+  WEBHOOK_SECRET: z
+    .hex()
+    .min(64, "WEBHOOK_SECRET is too short (min 64 chars recommended)")
+    .optional(),
+});
+
+const PollingEnvSchema = BaseSchema.extend({
+  // default("false") handles the case where USE_WEBHOOK is not set at all
+  USE_WEBHOOK: z.literal("false").default("false"),
+});
+
+const EnvSchema = z
+  .discriminatedUnion("USE_WEBHOOK", [WebhookEnvSchema, PollingEnvSchema])
+  .refine(
+    (data) => {
+      if (
+        data.NODE_ENV === "production" &&
+        data.ROOT_ADMIN_CHAT_ID === undefined
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      error: "ROOT_ADMIN_CHAT_ID is required in production",
+      path: ["ROOT_ADMIN_CHAT_ID"],
+    },
+  );
+
+// The raw validated env type — used internally by buildConfig()
+// The rest of the app never imports this directly
+type RawEnv = z.infer<typeof EnvSchema>;
 
 /**
  * Load and expand environment variables from .env file
  * This handles variable interpolation like ${VARIABLE_NAME}
  */
-export function loadEnv() {
+function loadEnv() {
   const envPath = resolve(process.cwd(), ".env");
 
   // Load .env file
@@ -2091,43 +2473,28 @@ export function loadEnv() {
   return process.env;
 }
 
-/**
- * Get environment variable with fallback
- */
-export function getEnv(key: EnvKeys, defaultValue?: string): string {
-  const value = process.env[key];
+function parseEnv(): RawEnv {
+  loadEnv();
 
-  if (value === undefined) {
-    if (defaultValue !== undefined) {
-      return defaultValue;
-    }
-    throw new Error(`Environment variable ${key} is not set`);
+  const result = EnvSchema.safeParse(process.env);
+
+  if (!result.success) {
+    console.error("❌ Invalid environment variables:");
+    // Produces output like:
+    // ✖ String must contain at least 1 character(s)
+    //   → at TELEGRAM_BOT_TOKEN
+    // ✖ Database URL is required
+    //   → at DATABASE_URL
+    console.error(z.prettifyError(result.error));
+    process.exit(1);
   }
 
-  return value;
-}
-
-/**
- * Validate required environment variables
- */
-export function validateEnv(requiredVars: string[]): void {
-  const missing: string[] = [];
-
-  for (const varName of requiredVars) {
-    if (!process.env[varName]) {
-      missing.push(varName);
-    }
-  }
-
-  if (missing.length > 0) {
-    throw new Error(
-      `Missing required environment variables: ${missing.join(", ")}`,
-    );
-  }
+  return result.data;
 }
 
 // Auto-load on import
-export const loadedEnv = loadEnv();
+export const env = parseEnv();
+export type { RawEnv };
 ```
 
 ## File: apps/telegram-bot/src/types/notifications.ts
@@ -2307,7 +2674,10 @@ export type AliParcelPickupPayload = z.infer<typeof AliParcelPickupSchema> &
 import { defineConfig } from "tsup";
 
 export default defineConfig((options) => ({
-  entry: ["src/server.ts"],
+  // Two entry points:
+  // - server.ts → dist/server.js (main app entrypoint)
+  // - seed.ts   → dist/seed.js  (run directly in production via node)
+  entry: ["src/server.ts", "src/prisma/seed.ts"],
   format: ["esm"],
   target: "node18",
   sourcemap: true,
@@ -2315,325 +2685,6 @@ export default defineConfig((options) => ({
   treeshake: true,
   minify: !options.watch && "terser",
 }));
-```
-
-## File: apps/telegram-bot/src/services/notification.service.ts
-```typescript
-import { Bot } from "grammy";
-import {
-  formatAliParcelPickupMessage,
-  formatOnlinePickupMessage,
-  formatPickUpPointDeliveryOrderMessage,
-} from "@/formatters/messages";
-import type {
-  AliParcelPickupPayload,
-  OnlinePickupPayload,
-  PickUpPointDeliveryOrderPayload,
-} from "@/types/notifications";
-import {
-  NotificationTypes,
-  type NotificationType,
-} from "@/types/notification-types";
-import {
-  getManagersForNotification,
-  getAllManagers,
-} from "@/services/manager-preferences.service";
-import { prisma } from "@/prisma";
-
-/**
- * Result of sending notifications to managers
- */
-export interface NotificationResult {
-  success: boolean;
-  sent: number;
-  failed: number;
-  skipped: number; // Managers who were skipped due to preferences
-  errors: Array<{ chatId: number; errorMessage: string }>;
-}
-
-/**
- * Send a message to managers based on notification type
- *
- * This is the core function - it routes messages to managers based on their preferences.
- * The message formatting is handled by separate formatter functions.
- *
- * @param bot - Telegram bot instance
- * @param message - Formatted HTML message to send
- * @param notificationType - Type of notification to determine which managers receive it
- * @param payload - Optional payload to log
- * @returns Statistics about the send operation
- */
-export async function sendToManagers(
-  bot: Bot,
-  message: string,
-  notificationType: NotificationType,
-  payload?: any,
-): Promise<NotificationResult> {
-  const targetManagers = await getManagersForNotification(notificationType);
-  const allManagers = await getAllManagers();
-
-  if (allManagers.length === 0) {
-    console.warn("No manager chat IDs configured");
-    return { success: false, sent: 0, failed: 0, skipped: 0, errors: [] };
-  }
-
-  if (targetManagers.length === 0) {
-    console.warn(
-      `No managers subscribed to notification type: ${notificationType}`,
-    );
-    return {
-      success: false,
-      sent: 0,
-      failed: 0,
-      skipped: allManagers.length,
-      errors: [],
-    };
-  }
-
-  const results = await Promise.allSettled(
-    targetManagers.map(async (chatId) => {
-      // Log successful notification
-      try {
-        await bot.api.sendMessage(chatId, message, { parse_mode: "HTML" });
-
-        try {
-          await prisma.notificationLog.create({
-            data: {
-              managerChatId: BigInt(chatId),
-              notificationType,
-              payload: payload || null,
-              success: true,
-              errorMessage: null,
-            },
-          });
-        } catch (logErr) {
-          console.error(
-            `Sent OK to ${chatId} but logging success failed:`,
-            logErr,
-          );
-        }
-
-        return { chatId, success: true } as const;
-      } catch (sendErr) {
-        const errorMessage =
-          sendErr instanceof Error ? sendErr.message : String(sendErr);
-
-        try {
-          await prisma.notificationLog.create({
-            data: {
-              managerChatId: BigInt(chatId),
-              success: false,
-              errorMessage,
-              payload: payload || null,
-              notificationType,
-            },
-          });
-        } catch (logErr) {
-          console.error(
-            `Failed to send to ${chatId} and also failed to log it:`,
-            logErr,
-          );
-        }
-
-        throw sendErr;
-      }
-    }),
-  );
-
-  const errors: NotificationResult["errors"] = [];
-  let sent = 0;
-  let failed = 0;
-
-  for (const [index, result] of results.entries()) {
-    const chatId = targetManagers[index]!;
-
-    if (result.status === "fulfilled") {
-      sent++;
-      console.warn(
-        `✅ [${notificationType}] Notification delivered to ${chatId}`,
-      );
-    } else {
-      failed++;
-      const errorMessage =
-        result.reason instanceof Error
-          ? result.reason.message
-          : String(result.reason);
-
-      errors.push({ chatId, errorMessage });
-      console.error(
-        `❌ [${notificationType}] Failed to send to ${chatId}: ${errorMessage}`,
-      );
-    }
-  }
-
-  const skipped = allManagers.length - targetManagers.length;
-
-  if (skipped > 0) {
-    console.warn(
-      `ℹ️ [${notificationType}] Skipped ${skipped} managers (not subscribed)`,
-    );
-  }
-
-  return {
-    success: sent > 0,
-    sent,
-    failed,
-    skipped,
-    errors,
-  };
-}
-
-/**
- * Send online pickup notification to all managers
- *
- * Convenience function that formats and sends in one step.
- * */
-export async function notifyOnlinePickup(
-  bot: Bot,
-  payload: OnlinePickupPayload,
-): Promise<NotificationResult> {
-  const message = formatOnlinePickupMessage(payload);
-
-  return sendToManagers(
-    bot,
-    message,
-    NotificationTypes.ONLINE_PICKUP_RF,
-    payload,
-  );
-}
-
-/**
- * Send pick-up point delivery order notification to all managers
- *
- * Convenience function that formats and sends in one step.
- */
-export async function notifyPickUpPointDeliveryOrder(
-  bot: Bot,
-  payload: PickUpPointDeliveryOrderPayload,
-): Promise<NotificationResult> {
-  const message = formatPickUpPointDeliveryOrderMessage(payload);
-
-  return sendToManagers(
-    bot,
-    message,
-    NotificationTypes.PICK_UP_POINT_DELIVERY,
-    payload,
-  );
-}
-
-export async function notifyAliParcelPickup(
-  bot: Bot,
-  payload: AliParcelPickupPayload,
-): Promise<NotificationResult> {
-  const message = formatAliParcelPickupMessage(payload);
-
-  return sendToManagers(
-    bot,
-    message,
-    NotificationTypes.ALI_PARCEL_PICKUP,
-    payload,
-  );
-}
-```
-
-## File: apps/telegram-bot/src/config.ts
-```typescript
-import { getEnv } from "@/env";
-import { prisma } from "@/prisma";
-import { NotificationTypes } from "@/types/notification-types";
-
-/**
- * Application configuration loaded from environment variables
- */
-export const config = {
-  telegram: {
-    token: getEnv("TELEGRAM_BOT_TOKEN"),
-    useWebhook: getEnv("USE_WEBHOOK", "") === "true",
-    webhookUrl: getEnv("WEBHOOK_URL", ""),
-    webhookSecret: getEnv("WEBHOOK_SECRET", ""),
-    rootAdminChatId: parseInt(getEnv("ROOT_ADMIN_CHAT_ID", ""), 10) || null,
-  },
-
-  server: {
-    port: parseInt(getEnv("PORT", "3000")),
-    nodeEnv: getEnv("NODE_ENV") as "development" | "production",
-  },
-
-  managers: {
-    /**
-     * Get list of manager chat IDs
-     * Expected format: "123456789,987654321,111222333"
-     */
-    getChatIds(): number[] {
-      const chatIdsStr = getEnv("MANAGER_CHAT_IDS", "");
-
-      if (!chatIdsStr) {
-        console.warn(
-          "MANAGER_CHAT_IDS not set - notifications will not be sent",
-        );
-        return [];
-      }
-
-      return chatIdsStr
-        .split(",")
-        .map((id) => id.trim())
-        .filter((id) => id.length > 0)
-        .map((id) => parseInt(id, 10))
-        .filter((id) => !isNaN(id));
-    },
-  },
-} as const;
-
-export function validateConfig(cfg: typeof config): void {
-  const errors: string[] = [];
-
-  if (!cfg.telegram.token) {
-    errors.push("TELEGRAM_BOT_TOKEN is required");
-  }
-
-  if (!cfg.telegram.rootAdminChatId && process.env.NODE_ENV === "production") {
-    errors.push("ROOT_ADMIN_CHAT_ID is required");
-  }
-
-  if (cfg.telegram.useWebhook) {
-    if (!cfg.telegram.webhookUrl) {
-      errors.push("WEBHOOK_URL is required when USE_WEBHOOK=true");
-    }
-
-    if (!cfg.telegram.webhookSecret) {
-      console.warn(
-        "⚠ WEBHOOK_SECRET not set — webhook requests will NOT be verified!",
-      );
-    } else if (cfg.telegram.webhookSecret.length < 10) {
-      errors.push("WEBHOOK_SECRET is too short (min 10 chars recommended)");
-    }
-  }
-
-  if (errors.length > 0) {
-    throw new Error(`Configuration errors:\n${errors.join("\n")}`);
-  }
-
-  console.warn("✅ Configuration validated");
-}
-
-export async function validateNotificationTypes() {
-  const dbTypes = await prisma.notificationType.findMany({
-    select: { slug: true },
-  });
-  const dbSlugs = new Set(dbTypes.map((t) => t.slug));
-
-  const missingSlugs = Object.values(NotificationTypes).filter(
-    (slug) => !dbSlugs.has(slug),
-  );
-
-  if (missingSlugs.length > 0) {
-    throw new Error(
-      `Notification types missing from DB: ${missingSlugs.join(", ")}. Run yarn db:seed.`,
-    );
-  } else {
-    console.warn("✅ Notification types validated against DB");
-  }
-}
 ```
 
 ## File: apps/telegram-bot/src/formatters/messages.ts
@@ -3223,10 +3274,301 @@ export async function parseJSON<T = any>(request: Request): Promise<T> {
 }
 ```
 
+## File: apps/telegram-bot/src/services/notification.service.ts
+```typescript
+import {
+  formatAliParcelPickupMessage,
+  formatOnlinePickupMessage,
+  formatPickUpPointDeliveryOrderMessage,
+} from "@/formatters/messages";
+import type {
+  AliParcelPickupPayload,
+  OnlinePickupPayload,
+  PickUpPointDeliveryOrderPayload,
+} from "@/types/notifications";
+import {
+  NotificationTypes,
+  type NotificationType,
+} from "@/types/notification-types";
+import {
+  getManagersForNotification,
+  getAllManagers,
+} from "@/services/manager-preferences.service";
+import { prisma } from "@/prisma";
+import type { TCustomBot } from "@/bot";
+
+/**
+ * Result of sending notifications to managers
+ */
+export interface NotificationResult {
+  success: boolean;
+  sent: number;
+  failed: number;
+  skipped: number; // Managers who were skipped due to preferences
+  errors: Array<{ chatId: number; errorMessage: string }>;
+}
+
+/**
+ * Send a message to managers based on notification type
+ *
+ * This is the core function - it routes messages to managers based on their preferences.
+ * The message formatting is handled by separate formatter functions.
+ *
+ * @param bot - Telegram bot instance
+ * @param message - Formatted HTML message to send
+ * @param notificationType - Type of notification to determine which managers receive it
+ * @param payload - Optional payload to log
+ * @returns Statistics about the send operation
+ */
+export async function sendToManagers(
+  bot: TCustomBot,
+  message: string,
+  notificationType: NotificationType,
+  payload?: any,
+): Promise<NotificationResult> {
+  const targetManagers = await getManagersForNotification(notificationType);
+  const allManagers = await getAllManagers();
+
+  if (allManagers.length === 0) {
+    console.warn("No manager chat IDs configured");
+    return { success: false, sent: 0, failed: 0, skipped: 0, errors: [] };
+  }
+
+  if (targetManagers.length === 0) {
+    console.warn(
+      `No managers subscribed to notification type: ${notificationType}`,
+    );
+    return {
+      success: false,
+      sent: 0,
+      failed: 0,
+      skipped: allManagers.length,
+      errors: [],
+    };
+  }
+
+  const results = await Promise.allSettled(
+    targetManagers.map(async (chatId) => {
+      // Log successful notification
+      try {
+        await bot.api.sendMessage(chatId, message, { parse_mode: "HTML" });
+
+        try {
+          await prisma.notificationLog.create({
+            data: {
+              managerChatId: BigInt(chatId),
+              notificationType,
+              payload: payload || null,
+              success: true,
+              errorMessage: null,
+            },
+          });
+        } catch (logErr) {
+          console.error(
+            `Sent OK to ${chatId} but logging success failed:`,
+            logErr,
+          );
+        }
+
+        return { chatId, success: true } as const;
+      } catch (sendErr) {
+        const errorMessage =
+          sendErr instanceof Error ? sendErr.message : String(sendErr);
+
+        try {
+          await prisma.notificationLog.create({
+            data: {
+              managerChatId: BigInt(chatId),
+              success: false,
+              errorMessage,
+              payload: payload || null,
+              notificationType,
+            },
+          });
+        } catch (logErr) {
+          console.error(
+            `Failed to send to ${chatId} and also failed to log it:`,
+            logErr,
+          );
+        }
+
+        throw sendErr;
+      }
+    }),
+  );
+
+  const errors: NotificationResult["errors"] = [];
+  let sent = 0;
+  let failed = 0;
+
+  for (const [index, result] of results.entries()) {
+    const chatId = targetManagers[index]!;
+
+    if (result.status === "fulfilled") {
+      sent++;
+      console.warn(
+        `✅ [${notificationType}] Notification delivered to ${chatId}`,
+      );
+    } else {
+      failed++;
+      const errorMessage =
+        result.reason instanceof Error
+          ? result.reason.message
+          : String(result.reason);
+
+      errors.push({ chatId, errorMessage });
+      console.error(
+        `❌ [${notificationType}] Failed to send to ${chatId}: ${errorMessage}`,
+      );
+    }
+  }
+
+  const skipped = allManagers.length - targetManagers.length;
+
+  if (skipped > 0) {
+    console.warn(
+      `ℹ️ [${notificationType}] Skipped ${skipped} managers (not subscribed)`,
+    );
+  }
+
+  return {
+    success: sent > 0,
+    sent,
+    failed,
+    skipped,
+    errors,
+  };
+}
+
+/**
+ * Send online pickup notification to all managers
+ *
+ * Convenience function that formats and sends in one step.
+ * */
+export async function notifyOnlinePickup(
+  bot: TCustomBot,
+  payload: OnlinePickupPayload,
+): Promise<NotificationResult> {
+  const message = formatOnlinePickupMessage(payload);
+
+  return sendToManagers(
+    bot,
+    message,
+    NotificationTypes.ONLINE_PICKUP_RF,
+    payload,
+  );
+}
+
+/**
+ * Send pick-up point delivery order notification to all managers
+ *
+ * Convenience function that formats and sends in one step.
+ */
+export async function notifyPickUpPointDeliveryOrder(
+  bot: TCustomBot,
+  payload: PickUpPointDeliveryOrderPayload,
+): Promise<NotificationResult> {
+  const message = formatPickUpPointDeliveryOrderMessage(payload);
+
+  return sendToManagers(
+    bot,
+    message,
+    NotificationTypes.PICK_UP_POINT_DELIVERY,
+    payload,
+  );
+}
+
+export async function notifyAliParcelPickup(
+  bot: TCustomBot,
+  payload: AliParcelPickupPayload,
+): Promise<NotificationResult> {
+  const message = formatAliParcelPickupMessage(payload);
+
+  return sendToManagers(
+    bot,
+    message,
+    NotificationTypes.ALI_PARCEL_PICKUP,
+    payload,
+  );
+}
+```
+
+## File: apps/telegram-bot/src/config.ts
+```typescript
+import { env, type RawEnv } from "@/env";
+import { prisma } from "@/prisma";
+import { NotificationTypes } from "@/types/notification-types";
+import type { AppConfig } from "@/types/config";
+
+function buildConfig(env: RawEnv): AppConfig {
+  let telegram: AppConfig["telegram"];
+
+  if (env.USE_WEBHOOK === "true") {
+    if (!env.WEBHOOK_SECRET) {
+      console.warn(
+        "⚠ WEBHOOK_SECRET not set — webhook requests will NOT be verified!",
+      );
+    }
+
+    telegram = {
+      useWebhook: true,
+      token: env.TELEGRAM_BOT_TOKEN,
+      rootAdminChatId: env.ROOT_ADMIN_CHAT_ID,
+      webhookUrl: env.WEBHOOK_URL,
+      webhookSecret: env.WEBHOOK_SECRET,
+    };
+  } else {
+    telegram = {
+      useWebhook: false,
+      token: env.TELEGRAM_BOT_TOKEN,
+      rootAdminChatId: env.ROOT_ADMIN_CHAT_ID,
+    };
+  }
+
+  return {
+    telegram,
+    server: {
+      port: env.PORT, // already a number from transform
+      nodeEnv: env.NODE_ENV,
+    },
+    managers: {
+      chatIds: env.MANAGER_CHAT_IDS, // already number[] from transform
+    },
+  };
+}
+
+export const config = buildConfig(env);
+
+export async function validateNotificationTypes() {
+  const dbTypes = await prisma.notificationType.findMany({
+    select: { slug: true },
+  });
+  const dbSlugs = new Set(dbTypes.map((t) => t.slug));
+
+  const missingSlugs = Object.values(NotificationTypes).filter(
+    (slug) => !dbSlugs.has(slug),
+  );
+
+  if (missingSlugs.length > 0) {
+    throw new Error(
+      `Notification types missing from DB: ${missingSlugs.join(", ")}. Run yarn db:seed.`,
+    );
+  } else {
+    console.warn("✅ Notification types validated against DB");
+  }
+}
+```
+
 ## File: apps/telegram-bot/.env.sample
 ```
 TELEGRAM_BOT_TOKEN=your_bot_token_here
 PORT=3000
+# so if it's "true"
+# USE_WEBHOOK=true
+# Secret token for webhook verification (1–256 chars, only A-Z a-z 0-9 _ - allowed)
+WEBHOOK_SECRET=your_random_secret_string_here_AtLeast16CharsLong
+# Optional: for webhook mode
+# WEBHOOK_URL=https://your-domain.com/webhook
 MANAGER_CHAT_IDS=123456789,987654321
 ROOT_ADMIN_CHAT_ID=123456789
 
@@ -3235,48 +3577,6 @@ POSTGRES_PASSWORD=password
 POSTGRES_DB=donbass_post_db
 
 DATABASE_URL=postgresql://donbass_post:password@localhost:5434/donbass_post_db?schema=public
-
-# Secret token for webhook verification (1–256 chars, only A-Z a-z 0-9 _ - allowed)
-WEBHOOK_SECRET=your_random_secret_string_here_AtLeast16CharsLong
-
-# Optional: for webhook mode
-# WEBHOOK_URL=https://your-domain.com/webhook
-# so if it's "true"
-# USE_WEBHOOK=true
-```
-
-## File: apps/telegram-bot/environments.d.ts
-```typescript
-export type EnvKeys =
-  | "NODE_ENV"
-  | "TELEGRAM_BOT_TOKEN"
-  | "USE_WEBHOOK"
-  | "WEBHOOK_URL"
-  | "WEBHOOK_SECRET"
-  | "PORT"
-  | "MANAGER_CHAT_IDS"
-  | "DATABASE_URL"
-  | "ROOT_ADMIN_CHAT_ID";
-
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv extends Record<EnvKeys, string | undefined> {
-      NODE_ENV: "development" | "production";
-      TELEGRAM_BOT_TOKEN?: string;
-      USE_WEBHOOK?: "true";
-      WEBHOOK_URL?: string;
-      WEBHOOK_SECRET?: string;
-      PORT?: string;
-
-      MANAGER_CHAT_IDS?: string;
-
-      DATABASE_URL?: string;
-      ROOT_ADMIN_CHAT_ID?: string;
-    }
-  }
-}
-
-export {};
 ```
 
 ## File: apps/telegram-bot/src/commands/index.ts
@@ -3301,8 +3601,8 @@ import "@/commands/public";
 import "@/commands/manager";
 import "@/commands/admin";
 
+
 import { setCommandsForChat, suggestionHandler } from "@/commands/utils";
-import { LOCALES } from "@/commands/groups";
 
 export const VALID_SLUGS = Object.values(NotificationTypes);
 
@@ -3322,24 +3622,37 @@ export async function registerCommands(bot: Bot<TContext>) {
     const adminRouter = bot.filter(async (ctx) => isRootAdmin(ctx));
     adminRouter.use(adminCommands);
 
-    bot.filter(commandNotFound([publicCommands])).use(suggestionHandler);
-
-    managerRouter
-      .filter(commandNotFound([publicCommands, managerCommands]))
+    bot
+      .filter(commandNotFound([publicCommands, managerCommands, adminCommands]))
       .use(async (ctx) => {
-        const adminSuggestion = ctx.getNearestCommand(adminCommands);
-        if (adminSuggestion) {
-          // The command exists but requires admin privileges
-          await ctx.reply("⛔ Эта команда только для администратора.");
+        const userId = ctx.from?.id;
+        if (!userId) {
+          await ctx.reply("😕 Неизвестная команда.");
           return;
         }
 
-        await suggestionHandler(ctx);
-      });
+        // 1. Check if user is admin
+        if (isRootAdmin(ctx)) {
+          await ctx.reply("😕 Неизвестная команда. Используйте /help.");
+          return;
+        }
 
-    adminRouter
-      .filter(commandNotFound([publicCommands, managerCommands, adminCommands]))
-      .use(suggestionHandler);
+        // Case 2: Manager typed an admin-only command
+        const isManager = await isActiveManager(ctx);
+        if (isManager) {
+          const adminSuggestion = ctx.getNearestCommand(adminCommands);
+          if (adminSuggestion) {
+            await ctx.reply("⛔ Эта команда только для администратора.");
+            return;
+          }
+
+          await suggestionHandler(ctx);
+          return;
+        }
+
+        // Case 3: Normal unknown command → show suggestion
+        await ctx.reply("😕 Неизвестная команда. Используйте /help.");
+      });
 
     // Register public commands with their default scope.
     // setCommands calls bot.api.setMyCommands for every scope+language
@@ -3399,11 +3712,6 @@ export async function registerCommands(bot: Bot<TContext>) {
       );
     }
 
-    // console.log("elementals ru:", publicCommands.toElementals("ru"));
-    // console.log("elementals en:", publicCommands.toElementals("en"));
-    // console.log("elementals uk:", publicCommands.toElementals("uk"));
-    // console.log("elementals default:", publicCommands.toElementals("default"));
-
     // Log a summary of registered commands for observability
     const counts = {
       public: publicCommands.commands.length,
@@ -3426,7 +3734,6 @@ import { Bot, GrammyError, HttpError } from "grammy";
 import { formatRussianDateTime } from "@/utils";
 import { autoRetry } from "@grammyjs/auto-retry";
 import { registerCommands } from "@/commands";
-import { config } from "@/config";
 import type { Update } from "grammy/types";
 import type { TContext } from "@/types";
 import { commands } from "@grammyjs/commands";
@@ -3604,9 +3911,7 @@ export class BotManager {
     await bot.handleUpdate(update);
   }
 
-  async setWebhook(bot: TCustomBot, url: string): Promise<void> {
-    const secret = config.telegram.webhookSecret;
-
+  async setWebhook(bot: TCustomBot, url: string, secret?: string): Promise<void> {
     try {
       await bot.api.setWebhook(url, { secret_token: secret || undefined });
       this.mode = "webhook";
@@ -3645,21 +3950,12 @@ export const getBotManager = () => BotManager.getInstance();
 
 ## File: apps/telegram-bot/src/server.ts
 ```typescript
-import "@/env";
 import { serve } from "srvx/node";
 import { createRoutes } from "@/routes";
 import { getBotManager } from "@/bot";
-import { config, validateConfig, validateNotificationTypes } from "@/config";
+import { config, validateNotificationTypes } from "@/config";
 
 async function startApp() {
-  try {
-    validateConfig(config);
-  } catch (error) {
-    console.error("❌ Configuration validation failed:");
-    console.error(error instanceof Error ? error.message : error);
-    process.exit(1);
-  }
-
   const botManager = getBotManager();
 
   try {
@@ -3672,7 +3968,11 @@ async function startApp() {
       console.warn("🔗 Setting up webhook mode...");
       try {
         await botManager.deleteWebhook(bot);
-        await botManager.setWebhook(bot, config.telegram.webhookUrl);
+        await botManager.setWebhook(
+          bot,
+          config.telegram.webhookUrl,
+          config.telegram.webhookSecret,
+        );
 
         const webhookInfo = await botManager.getWebhookInfo(bot);
 
@@ -3698,7 +3998,7 @@ async function startApp() {
     }
 
     const router = createRoutes(bot);
-    if (process.env.NODE_ENV === "development") {
+    if (config.server.nodeEnv === "development") {
       console.log(router.getRoutes());
     }
 
@@ -3711,9 +4011,7 @@ async function startApp() {
 
     console.warn(`📊 Bot mode: ${botManager.getMode()}`);
     console.warn(`🌍 Environment: ${config.server.nodeEnv}`);
-    console.warn(
-      `👥 Managers configured: ${config.managers.getChatIds().length}`,
-    );
+    console.warn(`👥 Managers configured: ${config.managers.chatIds.length}`);
 
     const shutdown = async () => {
       console.warn("\nShutting down gracefully...");
@@ -3742,7 +4040,7 @@ startApp();
 
 ## File: apps/telegram-bot/src/routes/index.ts
 ```typescript
-import { getBotManager } from "@/bot";
+import { getBotManager, type TCustomBot } from "@/bot";
 import { config } from "@/config";
 import { cors, handleOptions, requireJSON } from "@/middleware";
 import { createRouter, error, parseJSON, type Router } from "@/router";
@@ -3759,10 +4057,9 @@ import {
 } from "@/types/notifications";
 import type { Update } from "grammy/types";
 import { version } from "../../package.json";
-import type { Bot } from "grammy";
 import { parseBody } from "@/utils/validate";
 
-export function createRoutes(bot: Bot): Router {
+export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
   const router = createRouter();
 
@@ -3774,7 +4071,7 @@ export function createRoutes(bot: Bot): Router {
    *
    * To enable: modify below to `router.use(handleOptions);`
    */
-  if (process.env.NODE_ENV === "development") {
+  if (config.server.nodeEnv === "development") {
     router.use(handleOptions);
   }
 
@@ -4200,7 +4497,7 @@ export function createRoutes(bot: Bot): Router {
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "yarn dlx prisma db seed",
-    "db:studio": "prisma studio",
+    "db:studio": "prisma studio --port 5556",
     "db:reset": "prisma migrate reset"
   },
   "dependencies": {
