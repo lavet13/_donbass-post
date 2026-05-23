@@ -59,10 +59,23 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
-            # Remove old source but preserve named Docker volumes
-            # (volumes live in Docker's storage, not in ~/telegram-bot)
-            rm -rf ~/telegram-bot
-            mkdir -p ~/telegram-bot
+            # Remove source code but preserve nginx config
+            # nginx/conf.d is mounted into the running nginx-certbot container —
+            # deleting it while the container runs empties the mounted volume
+            rm -rf ~/telegram-bot/apps
+            rm -rf ~/telegram-bot/packages
+            rm -rf ~/telegram-bot/.yarn
+            rm -f ~/telegram-bot/package.json
+            rm -f ~/telegram-bot/yarn.lock
+            rm -f ~/telegram-bot/.yarnrc.yml
+            rm -f ~/telegram-bot/docker-compose.yml
+            rm -f ~/telegram-bot/docker-compose.prod.yml
+
+            # Recreate directories scp needs to copy into
+            mkdir -p ~/telegram-bot/apps
+            mkdir -p ~/telegram-bot/packages
+            mkdir -p ~/telegram-bot/.yarn
+            # nginx/ intentionally NOT touched — leave mounted config intact
 
       - name: Copy source to VPS
         uses: appleboy/scp-action@v0.1.7
