@@ -96,21 +96,11 @@ jobs:
           script: |
             cd ~/telegram-bot
 
-            # Step 1: Start postgres first — bot and nginx both need it healthy
+            # One command — Compose handles ordering via depends_on
+            # --build rebuilds telegram-bot image
+            # Compose starts postgres first (healthcheck), then bot, then nginx
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              up -d postgres
-
-            # Step 2: Wait for postgres to be healthy before proceeding
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              up -d --wait postgres
-
-            # Step 3: Build and start the bot — nginx depends_on this
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              up -d --build --no-deps telegram-bot
-
-            # Step 4: Now nginx-certbot can start — telegram-bot image exists
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              up -d --no-deps nginx-certbot
+              up -d --build
 
             # Run migrations against the live database
             # exec runs a command inside the already-running container
@@ -122,9 +112,8 @@ jobs:
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
               exec -T telegram-bot node dist/prisma/seed.js
 
-            # Verify container is running
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              ps telegram-bot
+            # Show final state of all services
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
 
             # Clean up dangling Docker layers from previous builds to prevent disk bloat
             docker image prune -f

@@ -89,18 +89,6 @@ jobs:
           script: |
             cd ~/telegram-bot
 
-            # Ensure postgres is healthy first
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              up -d --wait postgres
-
-            # Ensure bot is running (needed before nginx can start)
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              up -d --no-build --no-deps telegram-bot
-
-            # Ensure nginx is running
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              up -d --no-deps nginx-certbot
-
-            # Reload nginx to pick up any config changes
+            # Reload nginx config gracefully — || true in case config unchanged
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
               exec -T nginx-certbot nginx -s reload || true
