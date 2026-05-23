@@ -9,7 +9,7 @@ function IndexComponent() {
   return (
     <div className="mx-auto w-full max-w-3xl">
       <Text>
-        Hello client
+        Hello there, human!
       </Text>
     </div>
   );
