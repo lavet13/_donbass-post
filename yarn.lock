@@ -418,19 +418,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@donbass-post/db@workspace:packages/database":
-  version: 0.0.0-use.local
-  resolution: "@donbass-post/db@workspace:packages/database"
-  dependencies:
-    "@donbass-post/typescript-config": "workspace:*"
-    "@prisma/adapter-pg": "npm:^7.4.0"
-    "@prisma/client": "npm:^7.4.0"
-    dotenv: "npm:^17.2.3"
-    prisma: "npm:^7.4.0"
-    typescript: "npm:~5.8.3"
-  languageName: unknown
-  linkType: soft
-
 "@donbass-post/eslint-config@workspace:*, @donbass-post/eslint-config@workspace:packages/eslint-config":
   version: 0.0.0-use.local
   resolution: "@donbass-post/eslint-config@workspace:packages/eslint-config"

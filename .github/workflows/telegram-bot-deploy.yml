@@ -120,7 +120,7 @@ jobs:
 
             # Clean build cache older than 48h — keeps recent cache for faster builds
             # but prevents unbounded disk growth
-            docker builder prune -f --reserved-space 2GB
+            docker builder prune -f --reserved-space 4GB
 
       - name: Verify deployment
         env:
