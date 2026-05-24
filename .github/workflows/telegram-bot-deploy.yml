@@ -85,7 +85,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           # Copy everything needed - docker compose files, nginx config, source
-          source: "apps/*,packages/*,package.json,yarn.lock,.yarnrc.yml,.yarn/releases/,docker-compose.yml,docker-compose.prod.yml,nginx/"
+          source: "apps/telegram-bot/,packages/eslint-config/,packages/typescript-config/,packages/prettier-config/,package.json,yarn.lock,.yarnrc.yml,.yarn/releases/,docker-compose.yml,docker-compose.prod.yml,nginx/"
           target: "~/telegram-bot"
           strip_components: 0
 

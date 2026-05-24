@@ -15,14 +15,10 @@ COPY .yarn/releases/ .yarn/releases/
 COPY packages/eslint-config/package.json packages/eslint-config/
 COPY packages/typescript-config/package.json packages/typescript-config/
 COPY packages/prettier-config/package.json packages/prettier-config/
-COPY packages/forms/package.json packages/forms/
-COPY packages/ui/package.json packages/ui/
 COPY apps/telegram-bot/package.json apps/telegram-bot/
-COPY apps/web/package.json apps/web/
-COPY apps/telegram-mini-app/package.json apps/telegram-mini-app/
 
 # Install ALL dependencies (including devDeps needed for build)
-RUN yarn install --immutable
+RUN yarn install --check-cache
 
 # Now copy source code (separate from install — preserves cache on code changes)
 COPY packages/eslint-config/ packages/eslint-config/
@@ -48,11 +44,7 @@ COPY .yarn/releases/ .yarn/releases/
 COPY packages/eslint-config/package.json packages/eslint-config/
 COPY packages/typescript-config/package.json packages/typescript-config/
 COPY packages/prettier-config/package.json packages/prettier-config/
-COPY packages/forms/package.json packages/forms/
-COPY packages/ui/package.json packages/ui/
 COPY apps/telegram-bot/package.json apps/telegram-bot/
-COPY apps/web/package.json apps/web/
-COPY apps/telegram-mini-app/package.json apps/telegram-mini-app/
 
 # Install ONLY production dependencies — no devDeps
 RUN yarn workspaces focus @donbass-post/tg-bot --production
