@@ -109,8 +109,9 @@ jobs:
           script: |
             cd ~/telegram-bot
 
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              build --no-cache
+            # If something goes wrong, for full rebuild
+            # docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+            #   build --no-cache
 
             # One command — Compose handles ordering via depends_on
             # --build rebuilds telegram-bot image
