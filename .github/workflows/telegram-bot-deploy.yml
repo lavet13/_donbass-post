@@ -17,6 +17,10 @@ on:
         description: "Use Let's Encrypt staging (1=staging, 0=production)"
         required: false
         default: "0"
+      full_rebuild:
+        description: "Force full rebuild without cache (may cause brief downtime)"
+        required: false
+        default: "false"
 
 jobs:
   deploy:
@@ -98,6 +102,7 @@ jobs:
           # On push trigger: workflow_dispatch inputs are unavailable,
           # so github.event.inputs.staging is empty — defaults to "0" which is the production certificates
           STAGING: ${{ github.event.inputs.staging || '0' }}
+          FULL_REBUILD: ${{ github.event.inputs.full_rebuild || 'false' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -105,13 +110,15 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           # Comma-separated list of which env vars to forward into the SSH session
-          envs: CERTBOT_EMAIL,STAGING
+          envs: CERTBOT_EMAIL,STAGING,FULL_REBUILD
           script: |
             cd ~/telegram-bot
 
-            # If something goes wrong, for full rebuild
-            # docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-            #   build --no-cache
+            if [[ "$FULL_REBUILD" == "true" ]]; then
+              echo "⚠️ Full rebuild requested (no cache)"
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+                build --no-cache
+            fi
 
             # One command — Compose handles ordering via depends_on
             # --build rebuilds telegram-bot image
