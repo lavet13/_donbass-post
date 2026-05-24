@@ -109,11 +109,14 @@ jobs:
           script: |
             cd ~/telegram-bot
 
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+              build --no-cache
+
             # One command — Compose handles ordering via depends_on
             # --build rebuilds telegram-bot image
             # Compose starts postgres first (healthcheck), then bot, then nginx
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              up -d --build --force-recreate
+              up -d --build
 
             # Run migrations against the live database
             # exec runs a command inside the already-running container
