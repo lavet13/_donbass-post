@@ -18,7 +18,7 @@ on:
         required: false
         default: "0"
       full_rebuild:
-        description: "Force full rebuild without cache (may cause brief downtime)"
+        description: 'Enable full rebuild without Docker cache? true = full rebuild (slower), false = normal build (faster)'
         required: false
         default: "false"
 
