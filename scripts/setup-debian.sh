@@ -138,6 +138,37 @@ else
   echo "✅ $AUTH_KEYS already exists, skipping"
 fi
 
+# == Admin user (splinter) =====================================================
+if id "splinter" &>/dev/null; then
+  echo "✅ User 'splinter' already exists, skipping creation"
+else
+  echo "Creating user 'splinter'..."
+  adduser --disabled-password --gecos "" splinter
+  echo "✅ User 'splinter' created"
+fi
+
+# Add to sudo group - gives full sudo access
+usermod -aG sudo splinter
+echo "✅ User 'splinter' added to sudo group"
+
+# SSH directory for splinter
+SPLINTER_SSH_DIR="/home/splinter/.ssh"
+SPLINTER_AUTH_KEYS="$SPLINTER_SSH_DIR/authorized_keys"
+
+mkdir -p "$SPLINTER_SSH_DIR"
+chmod 700 "$SPLINTER_SSH_DIR"
+chown splinter:splinter "$SPLINTER_SSH_DIR"
+
+if [[ ! -f "$SPLINTER_AUTH_KEYS" ]]; then
+  touch "$SPLINTER_AUTH_KEYS"
+  chmod 600 "$SPLINTER_AUTH_KEYS"
+  chown splinter:splinter "$SPLINTER_AUTH_KEYS"
+  echo "✅ Created $SPLINTER_AUTH_KEYS"
+  echo "⚠  Remember to add your public key to $SPLINTER_AUTH_KEYS"
+else
+  echo "✅ $SPLINTER_AUTH_KEYS already exists, skipping"
+fi
+
 # == Web directory =============================================================
 WEB_DIR="/var/www/donbass-post-web"
 

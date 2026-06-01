@@ -1,4 +1,3 @@
-
 ```bash
 # Why pipefail matters:
 cat file.txt | grep "something" | sort
@@ -31,7 +30,7 @@ With the colon(:) -> Bash checks if the variable was declared AND if it has a va
 
 # All Variable Expansion Forms — Explained
 
-## ${VAR}:-default
+## `${VAR}:-default`
 
 > [!NOTE]
 > use `VAR` if set and non-empty, otherwise use default OR
@@ -83,8 +82,10 @@ FILE="my file.txt"
 rm $FILE            # WRONG — tries to delete "my" and "file.txt" separately
 rm "$FILE"          # correct — treats as one argument
 ```
-Rule of thumb: always double-quote variables. The exceptions are rare and you'll
-learn them naturally.
+
+> [!TIP]
+> **_Rule of thumb: always double-quote variables. The exceptions are rare and
+> you'll learn them naturally._**
 
 # `if` Statements
 ```bash
@@ -149,9 +150,11 @@ means failure/false. This is the opposite of most programming languages.
 
 ```bash
 # if directly tests exit codes
-if command -v docker; then   # runs docker --version, checks if it succeeded
+if command -v docker; then   # prints /c/Program Files/Docker/Docker/resources/bin/docker
   echo "docker exists"
 fi
+
+# command -v NAME — finds where a command lives, like which but more reliable
 
 # The [ ] and [[ ]] are actually commands themselves
 # They return 0 if the test passes, 1 if it fails
@@ -160,6 +163,28 @@ fi
 ls /some/path
 echo $?    # prints 0 if ls succeeded, non-zero if it failed
 ```
+
+# `command` — Is It a Keyword?
+
+`command -v NAME` — finds where a command lives, like `which` but more reliable:
+
+```bash
+command -v docker        # prints: /usr/bin/docker
+command -v nonexistent   # prints nothing, exits with code 1
+```
+
+`command NAME` — runs a command while bypassing any shell functions or aliases with the same name:
+
+```bash
+# Imagine you defined a function called ls
+ls() { echo "my custom ls"; }
+
+ls              # calls your function
+command ls      # bypasses your function, calls the real /bin/ls
+```
+
+So `-v` is just a flag meaning "find and verify" — command itself is the builtin.
+
 
 # `&>/dev/null` — The Ampersand
 
@@ -224,6 +249,36 @@ greet() {
 greet "deploy"   # prints: Hello, deploy!
 ```
 
+# Function Arguments
+
+Bash has no formal parameter names — you document them with comments:
+
+```bash
+# Creates a user and sets up their SSH directory
+# Arguments:
+#   $1 — username (string)
+#   $2 — public key content (string)
+#   $3 — sudo access (optional, "true" or "false", default: "false")
+create_user() {
+  local username="$1"        # local makes variable scoped to this function
+  local public_key="$2"
+  local sudo_access="${3:-false}"  # optional with default
+
+  echo "Creating user: $username"
+}
+```
+
+`local` is important — without it, variables inside functions are global and can
+accidentally overwrite variables in the rest of your script. Always use `local`
+inside functions.
+
+The real documentation is the comment block above. There's no enforced convention
+in bash — some people use the style above, others write:
+
+```bash
+# Usage: create_user USERNAME PUBLIC_KEY [SUDO_ACCESS]
+```
+
 # Common Pattern You'll See
 
 ```bash
@@ -240,6 +295,163 @@ echo "Docker version: $VERSION"
 # Default value — use fallback if variable is unset or empty
 SIZE=${1:-1G}     # if $1 not provided, use "1G"
 NAME=${VAR:-"default"}
+```
+
+# All Redirection Operators
+
+```bash
+# == Output redirects ==========================================================
+
+command > file        # redirect stdout to file (overwrites)
+command >> file       # redirect stdout to file (appends)
+command 2> file       # redirect stderr to file (overwrites)
+command 2>> file      # redirect stderr to file (appends)
+command &> file       # redirect both stdout and stderr to file (overwrites)
+command &>> file      # redirect both stdout and stderr to file (appends)
+command 2>&1          # redirect stderr to wherever stdout is currently going
+
+# Real example of 2>&1:
+command > file 2>&1   # stdout → file, then stderr → same place as stdout (file)
+# Note: order matters — 2>&1 must come AFTER the > file
+
+# == Input redirects ===========================================================
+
+command < file        # feed file contents as stdin to command
+
+# Here-document — feed multiple lines as stdin, ends at the delimiter
+cat << EOF
+line one
+line two
+EOF
+
+# Here-document without variable expansion (single-quoted delimiter)
+cat << 'EOF'
+$HOME won't expand here — printed literally
+EOF
+
+# Here-string — feed a single string as stdin
+# <<< sends a string directly to a command's stdin
+grep "word" <<< "this string contains the word here"
+# equivalent to: echo "this string contains the word here" | grep "word"
+
+# == Pipes =====================================================================
+
+command1 | command2        # stdout of command1 becomes stdin of command2
+command1 |& command2       # stdout AND stderr of command1 → stdin of command2
+
+# == Practical combinations ====================================================
+
+# Silence a command completely
+command &> /dev/null
+
+# Capture output into a variable
+OUTPUT=$(command 2>&1)     # capture both stdout and stderr
+
+# Log stdout to file, show stderr in terminal
+command > logfile.txt
+
+# Append to a log file
+echo "$(date): something happened" >> /var/log/myapp.log
+
+# Feed a string into a command without echo
+wc -w <<< "count these words"   # prints: 3
+```
+> [!IMPORTANT]
+> The most important ones to memorize: `>`, `>>`, `2>`, `&>`, `|`, and `<<<`.
+
+# Special Variables
+
+```bash
+$0    # name of the script itself
+$1    # first argument
+$2    # second argument
+$#    # number of arguments
+$@    # all arguments as separate words
+$?    # exit code of the last command
+$$    # PID (process ID) of current script
+$!    # PID of last background command
+```
+
+# Special Variables with `${}` — Your Prints Are Wrong
+
+You cannot nest $ inside ${}. These are wrong:
+
+```bash
+echo "${$0}"   # WRONG — ${ } expects a variable name, not another $
+echo "${$1}"   # WRONG
+```
+
+# Correct syntax:
+
+```bash
+echo "Name of the script itself - ${0}"
+echo "First argument - ${1:-no argument provided}"
+echo "Second argument - ${2:-no argument provided}"
+echo "Number of arguments - $#"
+echo "All arguments as separate words - $@"
+echo "Exit code of the last command - $?"
+echo "PID (process ID) of current script -  $$"
+echo "PID of last background command - ${!:-no value}"
+```
+
+# Arrays and For Loops — Before You Try
+
+```bash
+# == Defining arrays ===========================================================
+
+# Space-separated values in parentheses
+FRUITS=("apple" "banana" "cherry")
+
+# Multi-line (same thing, more readable)
+FRUITS=(
+  "apple"
+  "banana"
+  "cherry"
+)
+
+# == Accessing arrays ==========================================================
+
+echo "${FRUITS[0]}"     # apple — zero-indexed
+echo "${FRUITS[1]}"     # banana
+echo "${FRUITS[-1]}"    # cherry — last element
+
+echo "${FRUITS[@]}"     # all elements: apple banana cherry
+echo "${#FRUITS[@]}"    # number of elements: 3
+
+# == For loop ==================================================================
+
+for ITEM in "${FRUITS[@]}"; do
+  echo "$ITEM"
+done
+# prints each fruit on its own line
+
+# == Classic C-style for loop (counting) =======================================
+
+for ((i=0; i<3; i++)); do
+  echo "index $i: ${FRUITS[$i]}"
+done
+
+# == For loop over a range =====================================================
+
+for i in {1..5}; do
+  echo "$i"
+done
+# prints 1 2 3 4 5 on separate lines
+
+# == The [@] vs [*] distinction ================================================
+
+NAMES=("John Doe" "Jane Smith")
+
+for NAME in "${NAMES[@]}"; do   # correct — each element stays intact
+  echo "$NAME"
+done
+# John Doe
+# Jane Smith
+
+for NAME in "${NAMES[*]}"; do   # WRONG — joins all into one string
+  echo "$NAME"
+done
+# John Doe Jane Smith  (one iteration, everything joined)
 ```
 
 # Common Test Conditions
@@ -290,41 +502,6 @@ case "$1" in
     echo "unknown"
     ;;
 esac             # esac is "case" backwards — ends the case block
-```
-
-# Special Variables
-
-```bash
-$0    # name of the script itself
-$1    # first argument
-$2    # second argument
-$#    # number of arguments
-$@    # all arguments as separate words
-$?    # exit code of the last command
-$$    # PID (process ID) of current script
-$!    # PID of last background command
-```
-
-# Special Variables with `${}` — Your Prints Are Wrong
-
-You cannot nest $ inside ${}. These are wrong:
-
-```bash
-echo "${$0}"   # WRONG — ${ } expects a variable name, not another $
-echo "${$1}"   # WRONG
-```
-
-# Correct syntax:
-
-```bash
-echo "Name of the script itself - ${0}"
-echo "First argument - ${1:-no argument provided}"
-echo "Second argument - ${2:-no argument provided}"
-echo "Number of arguments - $#"
-echo "All arguments as separate words - $@"
-echo "Exit code of the last command - $?"
-echo "PID (process ID) of current script -  $$"
-echo "PID of last background command - ${!:-no value}"
 ```
 
 # set -u and Unset Variables — The ${VAR+x} Pattern
@@ -426,4 +603,81 @@ $     # end of string
 [a-z] # lowercase letter
 \d    # digit (not always supported — use [0-9] to be safe)
 (a|b) # a or b
+```
+
+# String Formatting
+
+```bash
+# == printf — more control than echo ==========================================
+
+printf "%-20s %s\n" "Container" "Status"   # left-align in 20 chars
+printf "%-20s %s\n" "telegram-bot" "UP"
+# Container            Status
+# telegram-bot         UP
+
+# \n is newline, \t is tab — echo doesn't always handle these consistently
+printf "line one\nline two\n"
+
+# == String length =============================================================
+
+NAME="deploy"
+echo "${#NAME}"    # 6 — number of characters
+
+# == Substring =================================================================
+
+NAME="telegram-bot"
+echo "${NAME:0:8}"    # telegram — start at 0, take 8 chars
+echo "${NAME:9}"      # bot — start at 9, take rest
+
+# == Upper/lowercase ===========================================================
+
+NAME="Deploy"
+echo "${NAME,,}"   # deploy — all lowercase
+echo "${NAME^^}"   # DEPLOY — all uppercase
+
+# == String replacement ========================================================
+
+NAME="telegram-bot-old"
+echo "${NAME/old/new}"    # telegram-bot-new — replace first match
+echo "${NAME//o/0}"       # telegram-b0t-0ld — replace all matches
+```
+
+# `trap` — cleanup on exit:
+
+```bash
+# Runs cleanup function when script exits for any reason
+# Essential for scripts that create temp files or need teardown
+trap cleanup EXIT
+trap 'echo "Error on line $LINENO"' ERR
+
+cleanup() {
+  rm -f /tmp/tempfile
+}
+```
+
+# `read` — interactive input:
+
+```bash
+read -p "Enter username: " USERNAME
+read -s -p "Enter password: " PASSWORD  # -s hides input
+echo "Got: $USERNAME"
+```
+
+# `tee` — write to file AND stdout simultaneously:
+
+```bash
+command | tee logfile.txt    # shows output AND saves it
+command | tee -a logfile.txt # same but appends
+```
+
+# Process substitution:
+
+```bash
+diff <(command1) <(command2)   # compare outputs of two commands
+```
+
+# `$LINENO` and `$FUNCNAME`:
+
+```bash
+echo "Error at line $LINENO in function ${FUNCNAME[0]}"
 ```
