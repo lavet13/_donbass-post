@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # =============================================
 # Simple script to pack only the react web app
 # =============================================
@@ -9,6 +9,6 @@ yarn repomix \
   --include "apps/web/**,packages/**" \
   --style markdown \
   --parsable-style
-  -o telegram-bot.md
+  -o web-app.md
 
 echo "✅ Done! output file: telegram-bot.md"
