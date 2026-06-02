@@ -39,3 +39,6 @@ dist-ssr
 .pnp.*
 !.pnp.cjs
 !.pnp.loader.mjs
+
+# repomix
+telegram-bot.md
