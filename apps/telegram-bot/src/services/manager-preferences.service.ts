@@ -1,6 +1,7 @@
 import type { Prisma } from "@/lib/prisma/client";
 import { prisma } from "@/prisma";
 import type { NotificationType } from "@/types/notification-types";
+import { invalidateUser } from "@/services/rbac.cache";
 
 /**
  * Database-backed Manager Notification Preferences Service
@@ -103,8 +104,12 @@ export async function getAllManagers(): Promise<number[]> {
           isActive: true,
         },
       },
-      include: {
-        telegramUser: true,
+      select: {
+        telegramUser: {
+          select: {
+            chatId: true,
+          },
+        },
       },
     });
 
@@ -208,7 +213,7 @@ export async function addManager({
   lastName?: string;
 }): Promise<void> {
   try {
-    await prisma.$transaction(async (tx) => {
+    const addedManager = await prisma.$transaction(async (tx) => {
       // Create or update TelegramUser
       const telegramUser = await tx.telegramUser.upsert({
         where: { chatId: BigInt(chatId) },
@@ -234,7 +239,11 @@ export async function addManager({
           telegramUserId: telegramUser.id,
         },
       });
+
+      return telegramUser;
     });
+
+    invalidateUser(addedManager.chatId);
 
     console.log(`✅ Manager added/updated: ${chatId}`);
   } catch (err) {
@@ -245,13 +254,19 @@ export async function addManager({
 
 /**
  * Remove a manager (set user inactive)
+ *
+ * HACK: removeManager overloads telegram_users.is_active to revoke the manager
+ * role. Once client features land, switch to soft-deleting the user_roles
+ * assignment (add isActive/revokedAt to UserRole) and reserve is_active for
+ * account-level enablement.
  */
 export async function removeManager(chatId: number): Promise<void> {
   try {
-    await prisma.telegramUser.update({
+    const removedManager = await prisma.telegramUser.update({
       where: { chatId: BigInt(chatId) },
       data: { isActive: false },
     });
+    invalidateUser(removedManager.chatId);
   } catch (err) {
     console.error("Failed to remove manager:", err);
     throw err;

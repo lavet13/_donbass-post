@@ -6,7 +6,12 @@ import z from "zod";
 const BaseSchema = z.object({
   TELEGRAM_BOT_TOKEN: z.string().min(1, "TELEGRAM_BOT_TOKEN is required"),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
-  PORT: z.coerce.number<string>().int("PORT should be an integer").min(1).max(65535).default(3000),
+  PORT: z.coerce
+    .number<string>()
+    .int("PORT should be an integer")
+    .min(1)
+    .max(65535)
+    .default(3000),
   MANAGER_CHAT_IDS: z
     .string()
     .trim()
@@ -21,7 +26,19 @@ const BaseSchema = z.object({
         .filter((id) => !isNaN(id));
     }),
   DATABASE_URL: z.string().min(1, "Database URL is required"),
-  ROOT_ADMIN_CHAT_ID: z.coerce.number<string>().int("ROOT_ADMIN_CHAT_ID should be an integer").optional(),
+  ROOT_ADMIN_CHAT_ID: blankToUndefined(z.coerce.number<string>().int("ROOT_ADMIN_CHAT_ID should be an integer").optional()),
+  // TEST_VALUE: z
+  //   .unknown()
+  //   .transform((val) => {
+  //     if (typeof val === "string" && val.trim() === "") return undefined;
+  //     return val;
+  //   })
+  //   .pipe(
+  //     z.coerce
+  //       .number<string>()
+  //       .int("TEST_VALUE should be an integer")
+  //       .optional(),
+  //   ),
 });
 
 const WebhookEnvSchema = BaseSchema.extend({
@@ -95,6 +112,21 @@ function parseEnv(): RawEnv {
   }
 
   return result.data;
+}
+
+/**
+ * Wraps a schema so blank/whitespace-only env strings become `undefined`
+ * BEFORE the inner schema runs. Without this, z.coerce.number("") === 0,
+ * which makes a missing var look like a real value of 0.
+ *
+ * @param schema - the schema to apply once the value is normalized
+ */
+function blankToUndefined<T extends z.ZodType>(schema: T) {
+  return z.preprocess((val) => {
+    // Only strings can be "blank"; pass everything else through untouched.
+    if (typeof val === "string" && val.trim() === "") return undefined;
+    return val;
+  }, schema);
 }
 
 // Auto-load on import

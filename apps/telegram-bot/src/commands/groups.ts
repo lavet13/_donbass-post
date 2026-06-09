@@ -1,4 +1,4 @@
-import { type TContext } from "@/types";
+import { type TContext } from "@/types/context";
 import { CommandGroup, LanguageCodes } from "@grammyjs/commands";
 
 export const LOCALES = [

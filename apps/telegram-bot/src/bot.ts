@@ -1,9 +1,9 @@
 import { Bot, GrammyError, HttpError } from "grammy";
-import { formatRussianDateTime } from "@/utils";
+import { formatRussianDateTime } from "@/utils/date";
 import { autoRetry } from "@grammyjs/auto-retry";
 import { registerCommands } from "@/commands";
 import type { Update } from "grammy/types";
-import type { TContext } from "@/types";
+import type { TContext } from "@/types/context";
 import { commands } from "@grammyjs/commands";
 
 export type TCustomBot = Bot<TContext>;

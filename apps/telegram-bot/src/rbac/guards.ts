@@ -1,7 +1,7 @@
 import type { TContext } from "@/types/context";
 import { config } from "@/config";
-import type { Permission, Role } from "@/types/rbac";
-import { getCachedPermissions, getCachedRoles } from "@/services/rbac.cache";
+import type { Permission, Role } from "@/rbac/types";
+import { getCachedPermissions, getCachedRoles } from "@/rbac/cache";
 
 /**
  * Returns the root admin chat ID from env.
@@ -73,3 +73,4 @@ export async function userHasEveryRole(ctx: TContext, ...roles: Role[]) {
   }
   return true;
 }
+

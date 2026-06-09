@@ -1,7 +1,7 @@
 import { getManagerNotifications } from "@/services/manager-preferences.service";
-import type { TContext } from "@/types";
+import type { TContext } from "@/types/context";
 import { NotificationTypeNames } from "@/types/notification-types";
-import { Command } from "@grammyjs/commands";
+import { Command, LanguageCodes } from "@grammyjs/commands";
 
 /**
  * /preferences — shows the calling manager their own notification subscriptions
@@ -53,3 +53,7 @@ export const preferencesCommand = new Command<TContext>(
     }
   },
 );
+
+preferencesCommand.localize(LanguageCodes.Russian, "preferences", "Мои настройки уведомлений");
+preferencesCommand.localize(LanguageCodes.Ukrainian, "preferences", "Мої налаштування сповіщень");
+preferencesCommand.localize(LanguageCodes.English, "preferences", "My notification settings");

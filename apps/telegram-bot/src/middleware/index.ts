@@ -4,8 +4,8 @@ import { error } from "@/router";
 /**
  * CORS Configuration
  *
- * NOTE: OPTIONS requests are handled by nginx for performance.
- * This middleware only adds CORS headers to actual responses.
+ *  NOTE: OPTIONS requests are handled by nginx for performance.
+ *  This middleware only adds CORS headers to actual responses.
  */
 const CORS_CONFIG = {
   // Allowed origins - add your domains here

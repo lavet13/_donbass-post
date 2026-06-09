@@ -1,8 +1,16 @@
-import type { TContext } from "@/types";
-import { Command } from "@grammyjs/commands";
+import type { TContext } from "@/types/context";
+import { Command, LanguageCodes } from "@grammyjs/commands";
 import { VALID_SLUGS } from "..";
-import { NotificationTypeNames, type NotificationType } from "@/types/notification-types";
-import { getAllManagers, getManagerNotifications, isManagerSubscribed, setManagerPreferences } from "@/services/manager-preferences.service";
+import {
+  NotificationTypeNames,
+  type NotificationType,
+} from "@/types/notification-types";
+import {
+  getAllManagers,
+  getManagerNotifications,
+  isManagerSubscribed,
+  setManagerPreferences,
+} from "@/services/manager-preferences.service";
 
 /**
  * /removepreference <chatId> <slug>
@@ -96,4 +104,20 @@ export const removePreferenceCommand = new Command<TContext>(
       await ctx.reply("❌ Произошла ошибка. Попробуйте позже.");
     }
   },
+);
+
+removePreferenceCommand.localize(
+  LanguageCodes.Russian,
+  "removepreference",
+  "Удалить тип уведомления у менеджера",
+);
+removePreferenceCommand.localize(
+  LanguageCodes.Ukrainian,
+  "removepreference",
+  "Видалити тип сповіщення у менеджера",
+);
+removePreferenceCommand.localize(
+  LanguageCodes.English,
+  "removepreference",
+  "Remove notification type from manager",
 );

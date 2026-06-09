@@ -1,4 +1,4 @@
-import type { TContext } from "@/types";
+import type { TContext } from "@/types/context";
 import type { CommandGroup } from "@grammyjs/commands";
 import {
   adminCommands,

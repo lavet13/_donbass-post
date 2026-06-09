@@ -13,6 +13,69 @@ datasource db {
   provider = "postgresql"
 }
 
+// TelegramUser
+//     │
+//     ├──→ UserRole ──→ Role ──→ RolePermission ──→ Permission
+//     │         (join table)           (join table)
+//     │
+//     └──→ NotificationPreference ──→ NotificationType
+//               (was Manager → ManagerNotificationPreferences)
+
+model Role {
+  id          String  @id @default(cuid(2))
+  name        String  @unique
+  description String?
+
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
+}
+
+model UserRole {
+  user   TelegramUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId String @map("role_id")
+
+  @@id([userId, roleId])
+  @@index([roleId])
+  @@map("user_roles")
+}
+
+model Permission {
+  id          String  @id @default(cuid(2))
+  name        String  @unique
+  description String?
+
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  rolePermissions RolePermission[]
+
+  @@index([name])
+  @@index([isActive])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId String @map("role_id")
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  permissionId String @map("permission_id")
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  grantedAt DateTime @default(now()) @map("granted_at")
+
+  @@id([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
 /// Base model for any Telegram user (managers, clients, etc.)
 model TelegramUser {
   id        String   @id @default(cuid(2))
@@ -25,8 +88,10 @@ model TelegramUser {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  managerProfile Manager?
-  clientProfile  Client?
+  managerProfile          Manager?
+  clientProfile           Client?
+  userRoles               UserRole[]
+  notificationPreferences NotificationPreferences[]
 
   @@map("telegram_users")
 }
@@ -50,6 +115,7 @@ model Manager {
 model Client {
   id              String   @id @default(cuid(2))
   deliveryAddress String?  @map("delivery_address")
+  vipCardNumber   String? @unique @map("vip_card_number")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
@@ -68,9 +134,24 @@ model NotificationType {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  preferences ManagerNotificationPreferences[]
+  preferences             ManagerNotificationPreferences[]
+  notificationPreferences NotificationPreferences[]
 
   @@map("notification_types")
+}
+
+model NotificationPreferences {
+  id        String   @id @default(cuid(2))
+  createdAt DateTime @default(now()) @map("created_at")
+
+  userId String       @map("user_id")
+  user   TelegramUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  notificationTypeId String           @map("notification_type_id")
+  notificationType   NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, notificationTypeId])
+  @@map("notification_preferences")
 }
 
 model ManagerNotificationPreferences {

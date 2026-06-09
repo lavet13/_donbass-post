@@ -1,9 +1,10 @@
 import { config } from "@/config";
-import type { TContext } from "@/types";
-import { Command } from "@grammyjs/commands";
-import { isActiveManager, isRootAdmin } from "../guards";
+import type { TContext } from "@/types/context";
+import { Command, LanguageCodes } from "@grammyjs/commands";
 import { version } from "../../../package.json";
 import { getCommandListText } from "@/commands/utils";
+import { userHasPermission } from "../guards";
+import { Permissions } from "@/types/rbac";
 
 export const statusCommand = new Command<TContext>(
   "status",
@@ -18,10 +19,10 @@ export const statusCommand = new Command<TContext>(
     const heapUsedMB = Math.round(memoryUsage.heapUsed / 1024 / 1024);
     const heapTotalMB = Math.round(memoryUsage.heapTotal / 1024 / 1024);
 
-    const managerCount = config.managers.getChatIds().length;
+    const managerCount = config.managers.chatIds.length;
 
-    const manager = await isActiveManager(ctx);
-    const admin = isRootAdmin(ctx);
+    const manager = await userHasPermission(ctx, Permissions.BOT_VIEW_STATUS);
+    const admin = await userHasPermission(ctx, Permissions.USERS_MANAGE);
 
     await ctx.reply(
       "✅ <b>Статус бота</b>\n\n" +
@@ -36,3 +37,11 @@ export const statusCommand = new Command<TContext>(
     );
   },
 );
+
+statusCommand.localize(LanguageCodes.Russian, "status", "Показать статус бота");
+statusCommand.localize(
+  LanguageCodes.Ukrainian,
+  "status",
+  "Показати статус бота",
+);
+statusCommand.localize(LanguageCodes.English, "status", "Show bot status");

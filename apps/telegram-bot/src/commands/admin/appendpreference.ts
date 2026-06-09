@@ -1,8 +1,16 @@
-import type { TContext } from "@/types";
-import { Command } from "@grammyjs/commands";
+import type { TContext } from "@/types/context";
+import { Command, LanguageCodes } from "@grammyjs/commands";
 import { VALID_SLUGS } from "..";
-import { NotificationTypeNames, type NotificationType } from "@/types/notification-types";
-import { getAllManagers, getManagerNotifications, isManagerSubscribed, setManagerPreferences } from "@/services/manager-preferences.service";
+import {
+  NotificationTypeNames,
+  type NotificationType,
+} from "@/types/notification-types";
+import {
+  getAllManagers,
+  getManagerNotifications,
+  isManagerSubscribed,
+  setManagerPreferences,
+} from "@/services/manager-preferences.service";
 
 /**
  * /appendpreference <chatId> <slug>
@@ -89,4 +97,20 @@ export const appendPreferenceCommand = new Command<TContext>(
       await ctx.reply("❌ Произошла ошибка. Попробуйте позже.");
     }
   },
+);
+
+appendPreferenceCommand.localize(
+  LanguageCodes.Russian,
+  "appendpreference",
+  "Добавить тип уведомлений менеджеру",
+);
+appendPreferenceCommand.localize(
+  LanguageCodes.Ukrainian,
+  "appendpreference",
+  "Додати тип сповіщень менеджеру",
+);
+appendPreferenceCommand.localize(
+  LanguageCodes.English,
+  "appendpreference",
+  "Add notification type to manager",
 );

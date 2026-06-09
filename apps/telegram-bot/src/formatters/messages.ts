@@ -3,7 +3,7 @@ import type {
   OnlinePickupPayload,
   PickUpPointDeliveryOrderPayload,
 } from "@/types/notifications";
-import { formatRussianDateTime } from "@/utils";
+import { formatRussianDateTime } from "@/utils/date";
 
 export function formatOnlinePickupMessage(
   payload: OnlinePickupPayload,

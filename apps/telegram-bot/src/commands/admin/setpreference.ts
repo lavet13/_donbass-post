@@ -1,8 +1,14 @@
-import type { TContext } from "@/types";
-import { Command } from "@grammyjs/commands";
+import type { TContext } from "@/types/context";
+import { Command, LanguageCodes } from "@grammyjs/commands";
 import { VALID_SLUGS } from "..";
-import { NotificationTypeNames, type NotificationType } from "@/types/notification-types";
-import { getAllManagers, setManagerPreferences } from "@/services/manager-preferences.service";
+import {
+  NotificationTypeNames,
+  type NotificationType,
+} from "@/types/notification-types";
+import {
+  getAllManagers,
+  setManagerPreferences,
+} from "@/services/manager-preferences.service";
 
 export const setPreferenceCommand = new Command<TContext>(
   "setpreferences",
@@ -86,3 +92,18 @@ export const setPreferenceCommand = new Command<TContext>(
   },
 );
 
+setPreferenceCommand.localize(
+  LanguageCodes.Russian,
+  "setpreferences",
+  "Задать настройки уведомлений менеджера",
+);
+setPreferenceCommand.localize(
+  LanguageCodes.Ukrainian,
+  "setpreferences",
+  "Задати налаштування сповіщень менеджера",
+);
+setPreferenceCommand.localize(
+  LanguageCodes.English,
+  "setpreferences",
+  "Set manager notification settings",
+);

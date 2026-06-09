@@ -1,15 +1,16 @@
-import type { TContext } from "@/types";
+import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
-import { isActiveManager, isRootAdmin } from "@/commands/guards";
 import { getCommandListText } from "@/commands/utils";
+import { Permissions } from "@/types/rbac";
+import { userHasPermission } from "@/commands/guards";
 
 export const startCommand = new Command<TContext>(
   "start",
   "Начать работу с ботом",
   async (ctx) => {
     const username = ctx.from?.first_name || "пользователь";
-    const manager = await isActiveManager(ctx);
-    const admin = isRootAdmin(ctx);
+    const manager = await userHasPermission(ctx, Permissions.BOT_VIEW_STATUS);
+    const admin = await userHasPermission(ctx, Permissions.USERS_MANAGE);
 
     await ctx.reply(
       `👋 Привет ${username}! Я бот <b>Нашей Почты</b>.\n\n` +
@@ -25,4 +26,9 @@ startCommand.localize(
   LanguageCodes.Ukrainian,
   "start",
   "Почати роботу з ботом",
+);
+startCommand.localize(
+  LanguageCodes.English,
+  "start",
+  "Start working with the bot",
 );

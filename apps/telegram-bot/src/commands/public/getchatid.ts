@@ -1,5 +1,5 @@
-import type { TContext } from "@/types";
-import { Command } from "@grammyjs/commands";
+import type { TContext } from "@/types/context";
+import { Command, LanguageCodes } from "@grammyjs/commands";
 
 export const getChatIdCommand = new Command<TContext>(
   "getchatid",
@@ -17,4 +17,20 @@ export const getChatIdCommand = new Command<TContext>(
       { parse_mode: "HTML" },
     );
   },
+);
+
+getChatIdCommand.localize(
+  LanguageCodes.Russian,
+  "getchatid",
+  "Получить свой Chat ID",
+);
+getChatIdCommand.localize(
+  LanguageCodes.Ukrainian,
+  "getchatid",
+  "Отримати свій Chat ID",
+);
+getChatIdCommand.localize(
+  LanguageCodes.English,
+  "getchatid",
+  "Get your Chat ID",
 );

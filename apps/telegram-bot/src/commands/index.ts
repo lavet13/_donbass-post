@@ -1,9 +1,8 @@
 import type { Bot } from "grammy";
 import { NotificationTypes } from "@/types/notification-types";
 import {
-  isActiveManager,
-  isRootAdmin,
   getRootAdminChatId,
+  userHasPermission,
 } from "@/commands/guards";
 import { getAllManagers } from "@/services/manager-preferences.service";
 import {
@@ -11,15 +10,15 @@ import {
   managerCommands,
   publicCommands,
 } from "@/commands/groups";
-import type { TContext } from "@/types";
+import type { TContext } from "@/types/context";
 import { commandNotFound } from "@grammyjs/commands";
 
 import "@/commands/public";
 import "@/commands/manager";
 import "@/commands/admin";
 
-
 import { setCommandsForChat, suggestionHandler } from "@/commands/utils";
+import { Permissions } from "@/types/rbac";
 
 export const VALID_SLUGS = Object.values(NotificationTypes);
 
@@ -31,12 +30,14 @@ export async function registerCommands(bot: Bot<TContext>) {
     // broader ones unexpectedly.
     bot.use(publicCommands);
 
+    // managerCommands = /status, /preferences → gated by bot:view-status
     const managerRouter = bot.filter(
-      async (ctx) => (await isActiveManager(ctx)) || isRootAdmin(ctx),
+      async (ctx) => userHasPermission(ctx, Permissions.BOT_VIEW_STATUS),
     );
     managerRouter.use(managerCommands);
 
-    const adminRouter = bot.filter(async (ctx) => isRootAdmin(ctx));
+    // adminCommands = /addmanager etc. → gated by users:manage
+    const adminRouter = bot.filter(async (ctx) => userHasPermission(ctx, Permissions.USERS_MANAGE));
     adminRouter.use(adminCommands);
 
     bot
@@ -49,13 +50,13 @@ export async function registerCommands(bot: Bot<TContext>) {
         }
 
         // 1. Check if user is admin
-        if (isRootAdmin(ctx)) {
-          await ctx.reply("😕 Неизвестная команда. Используйте /help.");
+        if (await userHasPermission(ctx, Permissions.USERS_MANAGE)) {
+          await suggestionHandler(ctx);
           return;
         }
 
         // Case 2: Manager typed an admin-only command
-        const isManager = await isActiveManager(ctx);
+        const isManager = await userHasPermission(ctx, Permissions.BOT_VIEW_STATUS);
         if (isManager) {
           const adminSuggestion = ctx.getNearestCommand(adminCommands);
           if (adminSuggestion) {
@@ -118,7 +119,6 @@ export async function registerCommands(bot: Bot<TContext>) {
     // ROOT_ADMIN_CHAT_ID is guaranteed to exist in production by validateConfig()
     // which throws on startup if it's missing. Safe to skip only in development.
     const adminId = getRootAdminChatId();
-    console.log("adminId:", adminId);
     if (adminId) {
       await setCommandsForChat(
         bot,

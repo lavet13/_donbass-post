@@ -1,7 +1,7 @@
 import { getAllPreferences } from "@/services/manager-preferences.service";
-import type { TContext } from "@/types";
+import type { TContext } from "@/types/context";
 import { NotificationTypeNames } from "@/types/notification-types";
-import { Command } from "@grammyjs/commands";
+import { Command, LanguageCodes } from "@grammyjs/commands";
 
 export const allPreferencesCommand = new Command<TContext>(
   "allpreferences",
@@ -55,4 +55,20 @@ export const allPreferencesCommand = new Command<TContext>(
       );
     }
   },
+);
+
+allPreferencesCommand.localize(
+  LanguageCodes.Russian,
+  "allpreferences",
+  "Настройки всех менеджеров",
+);
+allPreferencesCommand.localize(
+  LanguageCodes.Ukrainian,
+  "allpreferences",
+  "Налаштування всіх менеджерів",
+);
+allPreferencesCommand.localize(
+  LanguageCodes.English,
+  "allpreferences",
+  "All manager settings",
 );
