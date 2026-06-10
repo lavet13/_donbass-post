@@ -1,40 +1,73 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-set -e # Exit immediately if any command fails (returns non-zero exit code)
+# ==============================================================================
+# Provisioning script for a fresh Debian VPS (Donbass Post project)
+#
+# Usage (as root):
+#   curl -fsSL https://raw.githubusercontent.com/lavet13/_donbass-post/main/scripts/setup-debian.sh \
+#     | bash -s -- [--swap [SIZE]] [--ssh-port PORT] [--harden-ssh]
+#
+# Examples:
+#   bash setup-debian.sh                          → no swap, SSH port 22, no hardening
+#   bash setup-debian.sh --swap                   → 1G swap (default size)
+#   bash setup-debian.sh --swap 2G                → 2G swap (rule of thumb: =RAM up to
+#                                                   2GB RAM, half of RAM above that)
+#   bash setup-debian.sh --ssh-port 10022         → firewall allows SSH on 10022
+#   bash setup-debian.sh --harden-ssh             → disable root login + passwords
+#                                                   (REQUIRES a public key already
+#                                                   added to a user's authorized_keys)
+# ==============================================================================
 
 # == Argument parsing ==========================================================
-# Usage: bash scripts/setup-debian.sh [--swap [SIZE]]
-# Examples:
-#   bash scripts/setup-debian.sh            → no swap
-#   bash scripts/setup-debian.sh --swap     → 1G swap (default)
-#   bash scripts/setup-debian.sh --swap 2G  → 2G swap
-
 SWAP_ENABLED=false
 SWAP_SIZE="1G"
+SSH_PORT="22"
+HARDEN_SSH=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --swap)
       SWAP_ENABLED=true
-      # Check if next argument exists and doesn't start with --
-      # If so, treat it as the size value
       if [[ -n "${2-}" && "${2}" != --* ]]; then
         SWAP_SIZE="$2"
-        shift  # consume the size argument
+        shift
       fi
-      shift  # consume --swap
+      shift
+      ;;
+    --ssh-port)
+      if [[ -n "${2-}" && "${2}" != --* ]]; then
+        SSH_PORT="$2"
+        shift
+      else
+        echo "❌ --ssh-port requires a value (e.g. --ssh-port 10022)"
+        exit 1
+      fi
+      shift
+      ;;
+    --harden-ssh)
+      HARDEN_SSH=true
+      shift
       ;;
     *)
       echo "Unknown argument: $1"
-      echo "Usage: bash scripts/setup-debian.sh [--swap [SIZE]]"
+      echo "Usage: bash setup-debian.sh [--swap [SIZE]] [--ssh-port PORT] [--harden-ssh]"
       exit 1
       ;;
   esac
 done
 
 # == Require root ==============================================================
-if [ "$(id -u)" -ne 0 ]; then
-  echo "❌ This script must be run as root (use sudo)"
+if [[ "$(id -u)" -ne 0 ]]; then
+  echo "❌ This script must be run as root"
+  exit 1
+fi
+
+# == Sanity check: this script targets Debian only =============================
+DISTRO_ID="$(. /etc/os-release && echo "$ID")"
+if [[ "$DISTRO_ID" != "debian" ]]; then
+  echo "❌ This script targets Debian, but detected: $DISTRO_ID"
+  echo "   Write a separate setup-${DISTRO_ID}.sh for that distro."
   exit 1
 fi
 
@@ -45,37 +78,23 @@ apt upgrade -y
 echo "✅ System updated"
 
 # == Remove conflicting packages ===============================================
-# These are unofficial Docker packages that conflict with the official ones.
-# apt remove is safe to run even if packages aren't installed — it just skips them.
 echo "Removing any conflicting Docker packages..."
 apt remove -y docker.io docker-compose docker-doc podman-docker containerd runc 2>/dev/null || true
 echo "✅ Conflicting packages removed (or were not installed)"
 
 # == Install Docker via official apt repository ================================
-# This follows the official Docker documentation for Debian exactly.
-# We check first so the script is safe to re-run (idempotent).
 if command -v docker &>/dev/null; then
   echo "✅ Docker already installed ($(docker --version)), skipping"
 else
   echo "Installing Docker..."
 
-  # Install prerequisites needed to add the Docker apt repository
   apt install -y ca-certificates curl
-
-  # Create the keyrings directory with correct permissions
-  # -m 0755: directory readable by all, writable only by root
   install -m 0755 -d /etc/apt/keyrings
 
-  # Download Docker's official GPG key — used to verify package authenticity
   curl -fsSL https://download.docker.com/linux/debian/gpg \
     -o /etc/apt/keyrings/docker.asc
-
-  # Make the key readable by all users (apt needs to read it)
   chmod a+r /etc/apt/keyrings/docker.asc
 
-  # Add the Docker apt repository using the DEB822 format
-  # $(. /etc/os-release && echo "$VERSION_CODENAME") reads the Debian version
-  # codename (e.g. "bookworm") from the OS release file
   tee /etc/apt/sources.list.d/docker.sources <<EOF
 Types: deb
 URIs: https://download.docker.com/linux/debian
@@ -84,15 +103,7 @@ Components: stable
 Signed-By: /etc/apt/keyrings/docker.asc
 EOF
 
-  # Refresh package index to include the new Docker repository
   apt update -y
-
-  # Install Docker Engine, CLI, containerd, and Compose plugin
-  # docker-ce:              Docker daemon
-  # docker-ce-cli:          docker command line tool
-  # containerd.io:          container runtime Docker uses internally
-  # docker-buildx-plugin:   extended build capabilities (multi-platform etc.)
-  # docker-compose-plugin:  docker compose v2 (the "docker compose" command)
   apt install -y \
     docker-ce \
     docker-ce-cli \
@@ -100,89 +111,81 @@ EOF
     docker-buildx-plugin \
     docker-compose-plugin
 
-  # Enable and start Docker so it runs on boot
   systemctl enable docker
   systemctl start docker
-
   echo "✅ Docker installed ($(docker --version))"
 fi
 
-# == Deploy user ===============================================================
-if id "deploy" &>/dev/null; then
-  echo "✅ User 'deploy' already exists, skipping creation"
-else
-  echo "Creating user 'deploy'..."
-  adduser --disabled-password --gecos "" deploy
-  echo "✅ User 'deploy' created"
+# == Firewall (UFW) ============================================================
+# NOTE: ports PUBLISHED by Docker (80/443 from nginx-certbot) bypass UFW —
+# Docker inserts its own iptables rules ahead of UFW's. UFW still protects
+# the SSH port and every non-Docker service on the host.
+if ! command -v ufw &>/dev/null; then
+  echo "Installing UFW..."
+  apt install -y ufw
 fi
 
-# Add to docker group — safe to run multiple times, no duplicate membership
-usermod -aG docker deploy
-echo "✅ User 'deploy' added to docker group"
+ufw allow "${SSH_PORT}/tcp"
+ufw allow 80/tcp
+ufw allow 443/tcp
+ufw --force enable   # --force skips the interactive "may disrupt ssh" prompt
+echo "✅ Firewall enabled (allowed: SSH ${SSH_PORT}, 80, 443)"
 
-# == SSH directory =============================================================
-SSH_DIR="/home/deploy/.ssh"
-AUTH_KEYS="$SSH_DIR/authorized_keys"
+# == Helper: create a user with an SSH directory ===============================
+# Arguments:
+#   $1 — username
+#   $2 — extra group to add the user to (e.g. "docker" or "sudo")
+create_user_with_ssh() {
+  local username="$1"
+  local extra_group="$2"
+  local ssh_dir="/home/${username}/.ssh"
+  local auth_keys="${ssh_dir}/authorized_keys"
 
-mkdir -p "$SSH_DIR"
-chmod 700 "$SSH_DIR"
-chown deploy:deploy "$SSH_DIR"
+  if id "$username" &>/dev/null; then
+    echo "✅ User '$username' already exists, skipping creation"
+  else
+    echo "Creating user '$username'..."
+    adduser --disabled-password --gecos "" "$username"
+    echo "✅ User '$username' created"
+  fi
 
-if [ ! -f "$AUTH_KEYS" ]; then
-  touch "$AUTH_KEYS"
-  chmod 600 "$AUTH_KEYS"
-  chown deploy:deploy "$AUTH_KEYS"
-  echo "✅ Created $AUTH_KEYS"
-  echo "⚠  Remember to add your public key to $AUTH_KEYS"
-else
-  echo "✅ $AUTH_KEYS already exists, skipping"
-fi
+  usermod -aG "$extra_group" "$username"
+  echo "✅ User '$username' added to '$extra_group' group"
 
-# == Admin user (splinter) =====================================================
-if id "splinter" &>/dev/null; then
-  echo "✅ User 'splinter' already exists, skipping creation"
-else
-  echo "Creating user 'splinter'..."
-  adduser --disabled-password --gecos "" splinter
-  echo "✅ User 'splinter' created"
-fi
+  mkdir -p "$ssh_dir"
+  chmod 700 "$ssh_dir"
+  chown "${username}:${username}" "$ssh_dir"
 
-# Add to sudo group - gives full sudo access
-usermod -aG sudo splinter
-echo "✅ User 'splinter' added to sudo group"
+  if [[ ! -f "$auth_keys" ]]; then
+    touch "$auth_keys"
+    chmod 600 "$auth_keys"
+    chown "${username}:${username}" "$auth_keys"
+    echo "✅ Created $auth_keys"
+    echo "⚠  Remember to add a public key to $auth_keys"
+  else
+    echo "✅ $auth_keys already exists, skipping"
+  fi
+}
 
-# SSH directory for splinter
-SPLINTER_SSH_DIR="/home/splinter/.ssh"
-SPLINTER_AUTH_KEYS="$SPLINTER_SSH_DIR/authorized_keys"
-
-mkdir -p "$SPLINTER_SSH_DIR"
-chmod 700 "$SPLINTER_SSH_DIR"
-chown splinter:splinter "$SPLINTER_SSH_DIR"
-
-if [[ ! -f "$SPLINTER_AUTH_KEYS" ]]; then
-  touch "$SPLINTER_AUTH_KEYS"
-  chmod 600 "$SPLINTER_AUTH_KEYS"
-  chown splinter:splinter "$SPLINTER_AUTH_KEYS"
-  echo "✅ Created $SPLINTER_AUTH_KEYS"
-  echo "⚠  Remember to add your public key to $SPLINTER_AUTH_KEYS"
-else
-  echo "✅ $SPLINTER_AUTH_KEYS already exists, skipping"
-fi
+# == Users =====================================================================
+# deploy   — unprivileged CI user; can run Docker, no sudo
+# splinter — admin user with sudo for manual maintenance
+create_user_with_ssh "deploy" "docker"
+create_user_with_ssh "splinter" "sudo"
 
 # == Web directory =============================================================
 WEB_DIR="/var/www/donbass-post-web"
-
 mkdir -p "$WEB_DIR"
 chown deploy:deploy "$WEB_DIR"
 chmod 755 "$WEB_DIR"
 echo "✅ $WEB_DIR ready"
 
 # == Swap ======================================================================
-if [ "$SWAP_ENABLED" = true ]; then
+if [[ "$SWAP_ENABLED" = true ]]; then
   if swapon --show | grep -q "/swapfile"; then
     echo "✅ Swap already active, skipping"
   else
-    if [ ! -f /swapfile ]; then
+    if [[ ! -f /swapfile ]]; then
       echo "Configuring ${SWAP_SIZE} swap..."
       fallocate -l "$SWAP_SIZE" /swapfile
       chmod 600 /swapfile
@@ -198,11 +201,61 @@ else
   echo "⏭  Swap skipped (pass --swap or --swap 2G to enable)"
 fi
 
+# == SSH hardening (opt-in) ====================================================
+if [[ "$HARDEN_SSH" = true ]]; then
+  # Safety guard: refuse to disable passwords unless at least one user
+  # already has a non-empty authorized_keys — otherwise you lock yourself out.
+  if [[ -s /home/deploy/.ssh/authorized_keys || -s /home/splinter/.ssh/authorized_keys ]]; then
+    # -s tests "file exists AND is non-empty"
+
+    # sed -i edits the file in place:
+    #   s/pattern/replacement/  — substitute
+    #   ^#\?  — line start, optional leading # (handles commented defaults)
+    sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+    sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+
+    # Validate config before reloading — a broken sshd_config + reload
+    # could kill SSH entirely
+    if sshd -t; then
+      systemctl reload sshd
+      echo "✅ SSH hardened (root login + password auth disabled)"
+      echo "⚠  Keep your current session open and verify key login works"
+      echo "   from a SECOND terminal before disconnecting!"
+    else
+      echo "❌ sshd config validation failed — NOT reloading, fix manually"
+      exit 1
+    fi
+  else
+    echo "❌ Refusing to harden SSH: no public key found in any authorized_keys."
+    echo "   Add a key first, then re-run with --harden-ssh"
+    exit 1
+  fi
+else
+  echo "⏭  SSH hardening skipped (pass --harden-ssh after adding public keys)"
+fi
+
 # == Summary ===================================================================
 echo ""
 echo "✅ VPS setup complete"
 echo ""
-echo "Next steps:"
-echo "  1. Add your deploy user's public SSH key to $AUTH_KEYS"
-echo "  2. Update VPS_USERNAME secret in GitHub to 'deploy'"
-echo "  3. Push a commit to trigger the first deployment"
+echo "── Manual steps remaining ────────────────────────────────────────────"
+echo ""
+echo "1. Generate keypairs on your LOCAL machine:"
+echo "     ssh-keygen -t ed25519 -C github-actions-deploy -f ~/.ssh/deploy_key"
+echo "     ssh-keygen -t ed25519 -C splinter-admin -f ~/.ssh/splinter_key"
+echo ""
+echo "2. Add the PUBLIC keys on this server:"
+echo "     deploy:   /home/deploy/.ssh/authorized_keys"
+echo "     splinter: /home/splinter/.ssh/authorized_keys"
+echo ""
+echo "3. GitHub repository secrets (Settings → Secrets and variables → Actions):"
+echo "     VPS_HOST      — this server's public IP"
+echo "     VPS_SSH_PORT  — ${SSH_PORT}"
+echo "     VPS_USERNAME  — deploy"
+echo "     VPS_SSH_KEY   — full contents of the PRIVATE key (~/.ssh/deploy_key),"
+echo "                     including BEGIN/END lines"
+echo ""
+echo "4. Verify key-based login from a second terminal, then re-run this"
+echo "   script with --harden-ssh to disable root login and password auth"
+echo ""
+echo "5. Push a commit (or run workflow_dispatch) to trigger the first deploy"
