@@ -405,6 +405,28 @@ echo "$0"      # correct
 echo "${1:-no argument provided}"   # correct — with a default
 ```
 
+# $@ and $* both mean "all positional arguments" — the difference is QUOTING,
+# exactly like array [@] vs [*]:
+
+"$@"   # → "$1" "$2" "$3"     each argument stays a SEPARATE word  ← almost always what you want
+"$*"   # → "$1 $2 $3"          all joined into ONE word (separated by first char of IFS, usually space)
+ $@    # → unquoted: both split on whitespace — identical to $*
+ $*    # → unquoted: same as $@
+
+# Practical illustration:
+show() {
+  echo "count with \$@: $#"      # number of args
+  for a in "$@"; do echo "@ → [$a]"; done   # each arg intact (spaces preserved)
+  for a in "$*"; do echo "* → [$a]"; done   # ONE iteration, everything joined
+}
+show "first arg" "second"
+# @ → [first arg]
+# @ → [second]
+# * → [first arg second]      ← joined into one string
+
+# Rule: use "$@" to forward arguments to another command unchanged.
+ssh_exec() { ssh -p "$PORT" "$USER@$HOST" "$@"; }   # passes args through faithfully
+
 ---
 
 ## Pattern Matching in `[[ ]]`
@@ -518,6 +540,24 @@ trap 'rm -f /tmp/tempfile' EXIT
 # $LINENO = current line, $BASH_COMMAND = the command that ran, $? = its exit code
 trap 'echo "✗ line $LINENO: [$BASH_COMMAND] exited $?" >&2' ERR
 ```
+
+`>&2`
+It redirects that command's stdout to stderr (file descriptor 2). Breaking it
+down using what's already in your notes:
+```bash
+echo "oops" >&2     # send this line to stderr instead of stdout
+#         │└─ fd 2 (stderr)
+#         └─ & means "the file descriptor numbered...", not a literal file named "2"
+```
+
+Without the `&`, `>2` would create a file literally named `2`. With `&`, bash
+reads `2` as "file descriptor 2" = stderr. So `>&2` = "send my normal output to
+the error stream."
+
+Why do it in the trap? Error/diagnostic messages belong on stderr, not stdout —
+so they show up even when someone pipes the script's normal output to a file,
+and they don't pollute that captured output. It's the same stdout/stderr
+separation from your notes, applied deliberately.
 
 `$FUNCNAME` is an array of the call stack — niche, useful only inside logging
 helpers: `FUNCNAME[0]` is the current function, `FUNCNAME[1]` is its caller.
