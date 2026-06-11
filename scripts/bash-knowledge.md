@@ -85,9 +85,13 @@ echo "${UNSET:-fallback}"   # fallback
 echo "${EMPTY-fallback}"    # (empty)
 echo "${UNSET-fallback}"    # fallback
 
-# ${VAR:+replacement}  → "replacement" if VAR set+non-empty, else "" (opposite of :-)
+# ${VAR:+replacement}  → "replacement" if VAR set+non-empty, else "" (opposite of `:-`)
 echo "${VAR:+found}"        # found
 echo "${EMPTY:+found}"      # (empty)
+
+# ${VAR+replacement}  → "replacement" if VAR set(even if empty), else "" (opposite of `-`)
+echo "${VAR+found}" # found
+echo "${EMPTY+found}" # found
 
 # ${VAR:?message}  → use VAR if set+non-empty, else print message and EXIT
 echo "${VAR:?must be set}"  # hello
@@ -130,8 +134,8 @@ Any command can follow `if` — no brackets required:
 
 ```bash
 if command -v docker &>/dev/null; then echo "docker exists"; fi
-if grep -q "x" file;            then echo "found"; fi
-if id "deploy" &>/dev/null;     then echo "user exists"; fi
+if grep -q "x" file;              then echo "found"; fi
+if id "deploy" &>/dev/null;       then echo "user exists"; fi
 ```
 
 Here `&>/dev/null` silences the command's normal output — you only care about the
@@ -194,6 +198,15 @@ if command -v docker; then ...         # correct
 [[ $N -lt 10 ]]      # less than
 [[ $N -le 10 ]]      # less than or equal
 [[ $N -ge 5 ]]       # greater than or equal
+```
+
+Personal example:
+```bash
+if [[ -s "$(dirname $0)/test.txt" ]]; then
+  echo "test.txt exists and non-empty"
+else
+  echo "test.txt not exists or empty"
+fi
 ```
 
 ---
