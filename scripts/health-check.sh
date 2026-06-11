@@ -10,10 +10,19 @@ set -euo pipefail
 # ==============================================================================
 
 # == Config ====================================================================
-VPS_USER="deploy"
-VPS_HOST="194.164.245.175"
-VPS_PORT="10022"
-COMPOSE_DIR="/home/deploy/telegram-bot"   # literal path — safer than remote ~
+# Find the env file next to this script, regardless of where it's called from.
+# $0 is the script path; dirname strips the filename to get the directory.
+ENV_FILE="$(dirname $0)/health-check.env"
+
+if [[ ! -f "$ENV_FILE" ]]; then
+  echo "❌ Missing $ENV_FILE"
+  echo "   Copy health-check.env.example → health-check.env and fill it in"
+  exit 1
+fi
+
+# . and source are identical — both run the file in the current shell,
+# so the variables it defines become available below.
+source "$ENV_FILE"
 
 CONTAINERS=(
   "postgres"
