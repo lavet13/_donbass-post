@@ -231,7 +231,23 @@ COUNT=$((COUNT + 1))          # arithmetic expansion — no $ needed on inner va
 RESULT=$(( (A + B) * 2 ))     # + - * / % ** ( )
 ```
 
-`$(( ))` is INTEGER ONLY — no floats. For decimals use `awk` or `bc`.
+> [!NOTE]
+> the bc command doesn't exist on mingw64
+> explore the awk features, what else can I do with awk in context of bash
+```bash
+# $(( )) is integer-only. For decimals, shell out to bc or awk.
+
+# bc — calculator; 'scale' = number of decimal places. -l loads math funcs (sqrt, s, c...)
+echo "scale=2; 10 / 3" | bc        # 3.33
+RESULT="$(echo "scale=4; 22 / 7" | bc)"   # 3.1428
+
+# awk handles floats natively; printf for formatting
+awk 'BEGIN { print 10 / 3 }'             # 3.3333333333
+awk 'BEGIN { printf "%.2f\n", 10 / 3 }'  # 3.33
+
+# Comparing floats (bash [[ ]] can't): bc returns 1 (true) or 0 (false)
+if (( $(echo "3.5 > 2.1" | bc -l) )); then echo "bigger"; fi
+```
 
 ---
 
@@ -315,11 +331,32 @@ echo <(echo hi)    # /dev/fd/63 — echo just prints the filename, doesn't read 
 
 ### Reading `diff` output
 
-```
-2c2          # line 2 of file1 Changed to line 2 of file2 (a=added, d=deleted)
-< b          # '<' = file1 side
----
-> x          # '>' = file2 side
+```bash
+# diff default format: [leftLines][cmd][rightLines]
+#   d = delete from left   a = add from right   c = change
+#   '<' marks a left-file line, '>' marks a right-file line, '---' separates a change
+
+# delete:
+diff <(printf 'a\nb\nc\n') <(printf 'a\nc\n')
+# 2d1        delete line 2 (b) from left
+# < b
+
+# add:
+diff <(printf 'a\nc\n') <(printf 'a\nb\nc\n')
+# 1a2        after line 1 of left, add line 2 of right (b)
+# > b
+
+# change:
+diff <(printf 'a\nb\nc\n') <(printf 'a\nx\nc\n')
+# 2c2        line 2 of left changes to line 2 of right
+# < b
+# ---
+# > x
+
+# -u (unified, what git uses): ' '=context, '-'=removed, '+'=added
+#   @@ -1,3 +1,3 @@  →  left: from line 1, 3 lines | right: from line 1, 3 lines
+
+# -c (context, older): '***'=left block, '---'=right block, '!'=changed line
 ```
 
 ---
@@ -342,6 +379,17 @@ for ((i=0; i<3; i++)); do echo "$i: ${FRUITS[$i]}"; done
 
 # range
 for i in {1..5}; do echo "$i"; done
+```
+
+```typescript
+// classic counting loop
+for (let i = 1; i <= 5; i++) console.log(i);
+
+// Array.from with a length + mapper (1..5)
+Array.from({ length: 5 }, (_, i) => i + 1).forEach((i) => console.log(i));
+
+// spread of keys() (0..4, then offset)
+[...Array(5).keys()].forEach((i) => console.log(i + 1));
 ```
 
 ### `[@]` vs `[*]` — the distinction is about QUOTING
@@ -421,12 +469,15 @@ echo "${1:-no argument provided}"   # correct — with a default
 # $@ and $* both mean "all positional arguments" — the difference is QUOTING,
 # exactly like array [@] vs [*]:
 
+```bash
 "$@"   # → "$1" "$2" "$3"     each argument stays a SEPARATE word  ← almost always what you want
 "$*"   # → "$1 $2 $3"          all joined into ONE word (separated by first char of IFS, usually space)
  $@    # → unquoted: both split on whitespace — identical to $*
  $*    # → unquoted: same as $@
+```
 
 # Practical illustration:
+```bash
 show() {
   echo "count with \$@: $#"      # number of args
   for a in "$@"; do echo "@ → [$a]"; done   # each arg intact (spaces preserved)
@@ -439,6 +490,7 @@ show "first arg" "second"
 
 # Rule: use "$@" to forward arguments to another command unchanged.
 ssh_exec() { ssh -p "$PORT" "$USER@$HOST" "$@"; }   # passes args through faithfully
+```
 
 ---
 
@@ -466,8 +518,29 @@ echo "${BASH_REMATCH[0]}"    # telegram-bot-1 (whole match)
 echo "${BASH_REMATCH[1]}"    # telegram (group 1)
 ```
 
-ERE essentials: `^ $ . * + ? [abc] [^abc] [0-9] [a-z] (a|b)`
-(Use `[0-9]` rather than `\d` — `\d` isn't reliably supported.)
+> [!NOTE]
+> Explore once again PCRE features.
+
+```bash
+# ERE essentials (used by [[ =~ ]] and `grep -E`, `sed -E`):
+# ^       anchor: start of string
+# $       anchor: end of string
+# .       any single character
+# *       zero or more of the preceding element
+# +       one or more of the preceding element
+# ?       zero or one of the preceding element
+# {n,m}   interval: between n and m of the preceding element  (e.g. [0-9]{1,3})
+# [abc]   one char from the set
+# [^abc]  one char NOT in the set
+# [0-9]   one char in the range
+# [a-z]   one char in the range
+# (a|b)   group + alternation (a OR b)
+# |       alternation (OR)
+
+# NO non-capturing groups in bash. POSIX ERE has only capturing ( ).
+# (?:...) , \d , \w , lookahead/lookbehind, backreferences = PCRE features, NOT available here.
+# Every ( ) populates BASH_REMATCH. Use [0-9] not \d.
+```
 
 ### BRE vs ERE — why `sed` needs backslashes
 
@@ -478,6 +551,25 @@ and must be escaped to get special meaning:
 # \? = zero or one of the preceding element (here: an optional '#')
 sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
 #         ^#\?  matches both "PermitRootLogin yes" AND "#PermitRootLogin yes"
+```
+
+```bash
+# sed uses BRE by default. Enable ERE with -E (or GNU -r):
+sed -E 's/(foo|bar)+/X/' file     # ERE: + ( ) | are special as-is
+sed    's/\(foo\|bar\)\+/X/' file # BRE: same meaning, everything escaped
+
+# BRE essentials (the FULL list):
+# ^ $ . [abc] [^abc] [0-9] [a-z]   → same as ERE (no escaping needed)
+# *                                 → zero or more (same as ERE)
+# \?                                → zero or one     (escaped in BRE!)
+# \+                                → one or more     (escaped in BRE!)
+# \{n,m\}                           → interval        (escaped in BRE!)
+# \( \)                             → grouping        (escaped in BRE!)
+# \|                                → alternation     (escaped in BRE, GNU)
+# \1 \2                             → backreferences to groups
+#
+# Rule of thumb: in BRE, the "powerful" metachars need a backslash to wake up.
+# In ERE they're special by default and a backslash makes them literal. Opposite worlds.
 ```
 
 In ERE (`grep -E`, `[[ =~ ]]`) you'd write plain `#?`. Same meaning, different escaping.
@@ -512,6 +604,27 @@ type command           # "command is a shell builtin" — implemented inside bas
 
 Builtins (`echo cd set export local shift read command`) live in bash's own code;
 external commands (`ls grep sed`) are files found via `$PATH`.
+
+```bash
+# export — mark a variable so CHILD processes inherit it (makes it an env var)
+NAME="deploy"                 # shell variable — visible only in THIS shell/script
+export NAME                   # now commands this script runs will see it
+export PATH="$PATH:/new/dir"  # common: extend PATH for child commands
+export DEBUG=1 node app.js    # inline: set for just this one command's environment
+
+GREETING="hi"
+bash -c 'echo "$GREETING"'    # (empty) — child didn't inherit
+export GREETING
+bash -c 'echo "$GREETING"'    # hi — now it does
+
+# set — two unrelated jobs:
+# 1) toggle shell options
+set -euo pipefail
+# 2) replace the positional parameters ($1, $2, ...); -- ends option parsing
+set -- apple banana cherry    # $1=apple $2=banana $3=cherry
+echo "$1 / $#"                # apple / 3
+set                           # with NO args: prints all shell variables
+```
 
 ---
 
@@ -558,9 +671,9 @@ trap 'echo "✗ line $LINENO: [$BASH_COMMAND] exited $?" >&2' ERR
 It redirects that command's stdout to stderr (file descriptor 2). Breaking it
 down using what's already in your notes:
 ```bash
-echo "oops" >&2     # send this line to stderr instead of stdout
-#         │└─ fd 2 (stderr)
-#         └─ & means "the file descriptor numbered...", not a literal file named "2"
+echo "oops" >&2  # send this line to stderr instead of stdout
+#            │└─ fd 2 (stderr)
+#            └─ & means "the file descriptor numbered...", not a literal file named "2"
 ```
 
 Without the `&`, `>2` would create a file literally named `2`. With `&`, bash
@@ -575,6 +688,22 @@ separation from your notes, applied deliberately.
 `$FUNCNAME` is an array of the call stack — niche, useful only inside logging
 helpers: `FUNCNAME[0]` is the current function, `FUNCNAME[1]` is its caller.
 
+```bash
+# $FUNCNAME — call-stack array, only meaningful inside a function.
+#   [0] = current function, [1] = its caller, [2] = caller's caller ...
+outer() { inner; }
+inner() {
+  echo "running: ${FUNCNAME[0]}"    # inner
+  echo "called by: ${FUNCNAME[1]}"  # outer
+}
+outer
+
+# Practical use: a log helper that auto-tags WHO logged
+log() { echo "[${FUNCNAME[1]}] $*"; }   # [1] = caller of log()
+deploy() { log "starting"; }            # → [deploy] starting
+deploy
+```
+
 ---
 
 ## `read` — interactive input
@@ -582,6 +711,19 @@ helpers: `FUNCNAME[0]` is the current function, `FUNCNAME[1]` is its caller.
 ```bash
 read -p "Username: " USERNAME
 read -s -p "Password: " PASSWORD   # -s hides typing
+```
+
+```bash
+read -p "Prompt: " VAR     # -p TEXT  : print prompt (no newline) before reading
+read -s -p "Pass: " PW     # -s       : silent — don't echo typed chars (passwords)
+read -r LINE               # -r       : raw — backslash is literal, not an escape (ALWAYS use)
+read -n 1 KEY              # -n N     : read at most N chars, return immediately (no Enter)
+read -t 5 VAR              # -t N     : time out after N seconds
+read -a ARR                # -a NAME  : split input words into array NAME
+read A B C                 # multiple vars: split one line on whitespace into each
+
+# Safe everyday pattern — combine -r and -p:
+read -rp "Continue? [y/N] " answer
 ```
 
 ---

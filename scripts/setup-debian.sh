@@ -30,7 +30,7 @@ while [[ $# -gt 0 ]]; do
     --swap)
       SWAP_ENABLED=true
       if [[ -n "${2-}" && "${2}" != --* ]]; then
-        SWAP_SIZE="$2"
+        SWAP_SIZE="${2^^}"
         shift
       fi
       shift
