@@ -4,13 +4,13 @@ import { VALID_SLUGS } from "..";
 import {
   NotificationTypeNames,
   type NotificationType,
-} from "@/types/notification-types";
+} from "@/notifications/notification-types";
 import {
-  getAllManagers,
-  getManagerNotifications,
+  getManagerSubscriptions,
   isManagerSubscribed,
-  setManagerPreferences,
-} from "@/services/manager-preferences.service";
+  setManagerSubscriptions,
+} from "@/notifications/subscriptions";
+import { getAllManagers } from "@/managers/service";
 
 /**
  * /appendpreference <chatId> <slug>
@@ -81,8 +81,8 @@ export const appendPreferenceCommand = new Command<TContext>(
         return;
       }
 
-      const current = await getManagerNotifications(chatId);
-      await setManagerPreferences(chatId, [...current, slug]);
+      const current = await getManagerSubscriptions(chatId);
+      await setManagerSubscriptions(chatId, [...current, slug]);
 
       await ctx.reply(
         `✅ Менеджер <code>${chatId}</code> подписан на <b>${NotificationTypeNames[slug]}</b>.\n\n` +

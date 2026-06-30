@@ -183,3 +183,46 @@ The takeaway: organization is a *gradual, reactive* process. You don't design
 the perfect tree upfront. You start layered, and you promote a feature folder
 the moment a domain's pieces start feeling scattered. Reacting to real pain
 beats predicting it.
+
+## What goes where: classifying a file by its job
+
+The folder names (`services/`, `utils/`, `types/`) describe a file's *job*, not
+its topic. When unsure where a file goes, ask what KIND of work it does:
+
+### util — a pure, stateless helper
+- Takes input, returns output. No DB, no network, no app state, no side effects.
+- Could be copy-pasted into any project unchanged.
+- Examples: `formatRussianDate(date)`, `emptyAsUndefined(schema)`, `assertNever(x)`.
+- Test: "Does this depend on anything specific to my app?" No → util.
+
+### service — business logic that touches state
+- Talks to the DB (Prisma), an external API, or coordinates app data.
+- Knows about YOUR domain (managers, notifications, roles).
+- Examples: `addManager()`, `getUserPermissions()`, `sendToManagers()`.
+- Test: "Does this read/write data or know my domain rules?" Yes → service.
+
+### type — shape definitions only, no runtime behavior
+- `type`/`interface`/`enum`-like const objects. Compiles away (mostly).
+- Examples: `TContext`, `Permission`, `OnlinePickupPayload`.
+- Test: "Is this only describing a shape, with no logic that runs?" Yes → type.
+
+### command / route / middleware — an entry point (a "handler")
+- Code the outside world calls: a Telegram command, an HTTP route, middleware.
+- Thin: parse input → call a service → format a reply. Logic lives in services.
+- Test: "Is this triggered by an external event (message, request)?" Yes → handler.
+
+### The decision flow, in order
+1. Pure function, no app knowledge?              → `utils/`
+2. Only describes a shape, no runtime logic?     → `types/`
+3. Triggered by an external event?               → a handler (`commands/`, `routes/`)
+4. Touches DB / external state / domain rules?   → `services/` (or feature folder)
+5. Cross-cutting plumbing (db client, config)?   → `core/` / `lib/`
+
+### The smell that means a file is in the wrong place
+- A "util" that imports `prisma` → it's a service, not a util.
+- A "service" that parses `ctx.message.text` → handler logic leaked into a service.
+- A command handler with 40 lines of DB logic → extract to a service, call it.
+
+A handler should read like a recipe: get input, call a service, reply. If you
+can't summarize a file's job in one sentence using ONE of these words
+(util/type/handler/service), the file is probably doing two jobs — split it.

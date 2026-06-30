@@ -765,3 +765,17 @@ curl -fsSL https://raw.githubusercontent.com/USER/REPO/main/scripts/setup.sh \
 - `curl -f` fail on HTTP error `-s` silent `-S` but still show real errors `-L` follow redirects
 - `bash -s` read script from stdin (the pipe)
 - `--` end bash's own options; everything after goes to the SCRIPT as `$1 $2 ...`
+
+```bash
+# GUARD:  [ test ] || action   →  "do it unless it's already done" (idempotency)
+[ -d ~/.config ]            || mkdir ~/.config          # make dir if missing
+[ -f .env ]                 || cp .env.example .env      # seed file if absent
+command -v jq >/dev/null    || sudo apt-get install -y jq  # install if not present
+
+# SWALLOW:  command || true  →  "let this one fail without killing the script"
+grep -q PATTERN file || true   # grep exits 1 on no-match; don't let set -e abort
+pipx install ruff    || true   # already-installed exits non-zero
+
+# The && twin: chain only-on-success
+mkdir build && cd build        # cd only if mkdir worked
+```

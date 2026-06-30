@@ -2,27 +2,25 @@ import {
   formatAliParcelPickupMessage,
   formatOnlinePickupMessage,
   formatPickUpPointDeliveryOrderMessage,
-} from "@/formatters/messages";
+} from "@/notifications/formatters";
 import type {
   AliParcelPickupPayload,
   OnlinePickupPayload,
   PickUpPointDeliveryOrderPayload,
-} from "@/types/notifications";
+} from "@/notifications/types";
 import {
   NotificationTypes,
   type NotificationType,
-} from "@/types/notification-types";
-import {
-  getManagersForNotification,
-  getAllManagers,
-} from "@/services/manager-preferences.service";
+} from "@/notifications/notification-types";
+import { getAllManagers } from "@/managers/service";
+import { getManagersForType } from "@/notifications/subscriptions";
 import { prisma } from "@/prisma";
 import type { TCustomBot } from "@/bot";
 
 /**
  * Result of sending notifications to managers
  */
-export interface NotificationResult {
+interface NotificationResult {
   success: boolean;
   sent: number;
   failed: number;
@@ -42,13 +40,13 @@ export interface NotificationResult {
  * @param payload - Optional payload to log
  * @returns Statistics about the send operation
  */
-export async function sendToManagers(
+async function sendToManagers(
   bot: TCustomBot,
   message: string,
   notificationType: NotificationType,
   payload?: any,
 ): Promise<NotificationResult> {
-  const targetManagers = await getManagersForNotification(notificationType);
+  const targetManagers = await getManagersForType(notificationType);
   const allManagers = await getAllManagers();
 
   if (allManagers.length === 0) {

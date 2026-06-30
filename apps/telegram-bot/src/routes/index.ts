@@ -6,13 +6,13 @@ import {
   notifyAliParcelPickup,
   notifyOnlinePickup,
   notifyPickUpPointDeliveryOrder,
-} from "@/services/notification.service";
-import { NotificationTypes } from "@/types/notification-types";
+} from "@/notifications/service";
+import { NotificationTypes } from "@/notifications/notification-types";
 import {
   AliParcelPickupSchema,
   type OnlinePickupPayload,
   type PickUpPointDeliveryOrderPayload,
-} from "@/types/notifications";
+} from "@/notifications/types";
 import type { Update } from "grammy/types";
 import { version } from "../../package.json";
 import { parseBody } from "@/utils/validate";

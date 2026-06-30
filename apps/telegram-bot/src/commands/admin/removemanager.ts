@@ -1,12 +1,11 @@
 import { getBotManager } from "@/bot";
-import {
-  getAllManagers,
-  removeManager,
-} from "@/services/manager-preferences.service";
+import { removeManager } from "@/managers/service";
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
 import { setCommandsForChat } from "@/commands/utils";
 import { publicCommands } from "@/commands/groups";
+import { assertNever } from "@/utils/assert-never";
+import { env } from "@/env";
 
 /**
  * /removemanager <chatId>
@@ -44,33 +43,49 @@ export const removeManagerCommand = new Command<TContext>(
       return;
     }
 
-    const existingManagers = await getAllManagers();
-    if (!existingManagers) {
-      await ctx.reply(
-        `❌ Активный менеджер с Chat ID <code>${chatId}</code> не найден.`,
-        { parse_mode: "HTML" },
-      );
-      return;
-    }
-
     // Prevent self-removal
-    if (ctx.from?.id === chatId) {
+    if (env.NODE_ENV === "production" && ctx.from?.id === chatId) {
       await ctx.reply("⛔ Нельзя удалить самого себя.", { parse_mode: "HTML" });
       return;
     }
 
     try {
-      await removeManager(chatId);
+      const result = await removeManager(chatId);
 
-      const bot = getBotManager().getBot();
-      // Demote the removed manager's chat menu back to public commands only.
-      await setCommandsForChat(bot, chatId, publicCommands);
+      switch (result) {
+        case "user_not_found":
+          await ctx.reply(`❌ Пользователь <code>${chatId}</code> не найден.`, {
+            parse_mode: "HTML",
+          });
+          return;
 
-      await ctx.reply(
-        `✅ Менеджер <code>${chatId}</code> деактивирован.\n\n` +
-          `Данные сохранены в базе. Для полного удаления обратитесь к администратору БД.`,
-        { parse_mode: "HTML" },
-      );
+        case "not_a_manager":
+          await ctx.reply(`⚠ <code>${chatId}</code> не является менеджером.`, {
+            parse_mode: "HTML",
+          });
+          return;
+
+        case "revoked": {
+          // Only demote the menu when something was actually revoked.
+          const bot = getBotManager().getBot();
+          await setCommandsForChat(bot, chatId, publicCommands);
+          await ctx.reply(`✅ Менеджер <code>${chatId}</code> удалён.`, {
+            parse_mode: "HTML",
+          });
+          return;
+        }
+
+        case "user_deactivated": {
+          await ctx.reply(
+            `✅ Менеджер <code>${chatId}</code> деактивирован.\n`,
+            { parse_mode: "HTML" },
+          );
+          return;
+        }
+
+        default:
+          return assertNever(result);
+      }
     } catch (err) {
       console.error("Error in /removemanager:", err);
       await ctx.reply(

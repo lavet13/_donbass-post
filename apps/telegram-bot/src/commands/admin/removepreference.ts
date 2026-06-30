@@ -1,16 +1,16 @@
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
-import { VALID_SLUGS } from "..";
+import { VALID_SLUGS } from "@/commands";
 import {
   NotificationTypeNames,
   type NotificationType,
-} from "@/types/notification-types";
+} from "@/notifications/notification-types";
 import {
-  getAllManagers,
-  getManagerNotifications,
+  getManagerSubscriptions,
   isManagerSubscribed,
-  setManagerPreferences,
-} from "@/services/manager-preferences.service";
+  setManagerSubscriptions,
+} from "@/notifications/subscriptions";
+import { getAllManagers } from "@/managers/service";
 
 /**
  * /removepreference <chatId> <slug>
@@ -72,8 +72,8 @@ export const removePreferenceCommand = new Command<TContext>(
     }
 
     try {
-      const isSubscribed = await isManagerSubscribed(chatId, slug);
-      if (!isSubscribed) {
+      const subscribed = await isManagerSubscribed(chatId, slug);
+      if (!subscribed) {
         await ctx.reply(
           `⚠ Менеджер <code>${chatId}</code> не подписан на <b>${NotificationTypeNames[slug]}</b>.`,
           { parse_mode: "HTML" },
@@ -81,9 +81,9 @@ export const removePreferenceCommand = new Command<TContext>(
         return;
       }
 
-      const current = await getManagerNotifications(chatId);
+      const current = await getManagerSubscriptions(chatId);
       const updated = current.filter((s) => s !== slug);
-      await setManagerPreferences(chatId, updated);
+      await setManagerSubscriptions(chatId, updated);
 
       if (updated.length === 0) {
         await ctx.reply(

@@ -1,21 +1,17 @@
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
-import { VALID_SLUGS } from "..";
+import { VALID_SLUGS } from "@/commands";
 import {
   NotificationTypeNames,
   type NotificationType,
-} from "@/types/notification-types";
-import {
-  getAllManagers,
-  setManagerPreferences,
-} from "@/services/manager-preferences.service";
+} from "@/notifications/notification-types";
+import { getAllManagers } from "@/managers/service";
+import { setManagerSubscriptions } from "@/notifications/subscriptions";
 
 export const setPreferenceCommand = new Command<TContext>(
   "setpreferences",
   "Задать настройки уведомлений менеджера",
   async (ctx) => {
-    const item = ctx.match;
-    console.log({ item });
     const text = ctx.message?.text ?? "";
     // e.g. "/setpreferences 123456789 online-pickup-rf pick-up-point-delivery-order"
     const parts = text.trim().split(/\s+/).slice(1);
@@ -66,7 +62,7 @@ export const setPreferenceCommand = new Command<TContext>(
     }
 
     try {
-      await setManagerPreferences(chatId, slugs);
+      await setManagerSubscriptions(chatId, slugs);
 
       if (slugs.length === 0) {
         await ctx.reply(

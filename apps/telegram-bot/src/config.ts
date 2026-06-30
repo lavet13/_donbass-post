@@ -1,6 +1,6 @@
 import { env, type RawEnv } from "@/env";
 import { prisma } from "@/prisma";
-import { NotificationTypes } from "@/types/notification-types";
+import { NotificationTypes } from "@/notifications/notification-types";
 import type { AppConfig } from "@/types/config";
 
 function buildConfig(env: RawEnv): AppConfig {

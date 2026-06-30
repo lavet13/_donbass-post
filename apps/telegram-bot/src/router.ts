@@ -142,7 +142,7 @@ export type Router = ReturnType<typeof createRouter>;
 export function error(
   message: string,
   init: ResponseInit | undefined = { status: 400 },
-) {
+): Response {
   return Response.json({ error: message }, init);
 }
 

@@ -6,19 +6,21 @@ import { useFieldAccessibility } from "../hooks/use-field-accessibility";
 import { Input } from "@donbass-post/ui/input";
 import type { TextField, TextProps } from "@radix-ui/themes";
 
+type InputComponent<InputComponentProps> =
+  | ((
+      props: InputComponentProps,
+    ) => React.JSX.Element | React.ComponentClass<InputComponentProps, any>)
+  | React.ForwardRefExoticComponent<
+      InputComponentProps & React.RefAttributes<HTMLInputElement>
+    >;
+
 const PhoneField: FC<
   Omit<TextField.RootProps, "value" | "onChange"> &
     DefaultInputComponentProps & {
       label?: string;
       ariaLabel?: string;
     } & Omit<TextProps, "onChange">
-> = ({
-  label,
-  "aria-label": ariaLabelProp,
-  ariaLabel,
-  color,
-  ...props
-}) => {
+> = ({ label, "aria-label": ariaLabelProp, ariaLabel, color, ...props }) => {
   const {
     field,
     defaultAriaLabel,
@@ -38,11 +40,12 @@ const PhoneField: FC<
           {label}
         </FormLabel>
       )}
+      {/* HACK: dual-source-of-truth here. The type hasn't been exported */}
       <RPNInput
         color={color}
         id={formItemId}
         name={field.name}
-        inputComponent={Input}
+        inputComponent={Input as InputComponent<DefaultInputComponentProps>}
         aria-label={defaultAriaLabel}
         aria-describedby={ariaDescribedBy}
         aria-invalid={!!error}

@@ -3,8 +3,8 @@ import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
 import { version } from "../../../package.json";
 import { getCommandListText } from "@/commands/utils";
-import { userHasPermission } from "../guards";
-import { Permissions } from "@/types/rbac";
+import { userHasPermission } from "@/rbac/guards";
+import { Permissions } from "@/rbac/types";
 
 export const statusCommand = new Command<TContext>(
   "status",

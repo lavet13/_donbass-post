@@ -6,6 +6,15 @@ import { useFieldAccessibility } from "@/hooks/use-field-accessibility";
 import { Input } from "@donbass-post/ui/input";
 import type { TextField, TextProps } from "@radix-ui/themes";
 
+type InputComponent<InputComponentProps> =
+  | ((
+      props: InputComponentProps,
+    ) => React.JSX.Element | React.ComponentClass<InputComponentProps, any>)
+  | React.ForwardRefExoticComponent<
+      InputComponentProps & React.RefAttributes<HTMLInputElement>
+    >;
+
+
 const PhoneField: FC<
   Omit<TextField.RootProps, "value" | "onChange"> &
     DefaultInputComponentProps & {
@@ -42,7 +51,7 @@ const PhoneField: FC<
         color={color}
         id={formItemId}
         name={field.name}
-        inputComponent={Input}
+        inputComponent={Input as InputComponent<DefaultInputComponentProps>}
         aria-label={defaultAriaLabel}
         aria-describedby={ariaDescribedBy}
         aria-invalid={!!error}

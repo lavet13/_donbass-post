@@ -41,6 +41,9 @@ model UserRole {
   role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId String @map("role_id")
 
+  revokedAt DateTime? @map("revoked_at") // null = active, timestamp = when revoked
+  grantedAt DateTime @default(now()) @map("granted_at") // assignment lifespan start
+
   @@id([userId, roleId])
   @@index([roleId])
   @@map("user_roles")

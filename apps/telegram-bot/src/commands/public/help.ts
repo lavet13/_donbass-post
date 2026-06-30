@@ -1,8 +1,8 @@
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
-import { userHasPermission } from "@/commands/guards";
+import { userHasPermission } from "@/rbac/guards";
 import { getCommandListText } from "@/commands/utils";
-import { Permissions } from "@/types/rbac";
+import { Permissions } from "@/rbac/types";
 
 export const helpCommand = new Command<TContext>(
   "help",

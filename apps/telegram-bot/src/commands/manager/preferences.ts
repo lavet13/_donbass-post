@@ -1,6 +1,6 @@
-import { getManagerNotifications } from "@/services/manager-preferences.service";
+import { getManagerSubscriptions } from "@/notifications/subscriptions";
 import type { TContext } from "@/types/context";
-import { NotificationTypeNames } from "@/types/notification-types";
+import { NotificationTypeNames } from "@/notifications/notification-types";
 import { Command, LanguageCodes } from "@grammyjs/commands";
 
 /**
@@ -19,7 +19,7 @@ export const preferencesCommand = new Command<TContext>(
 
     try {
       // Get user's notification subscriptions
-      const userNotifications = await getManagerNotifications(userId);
+      const userNotifications = await getManagerSubscriptions(userId);
 
       if (userNotifications.length === 0) {
         // Manager in database but with no subscriptions

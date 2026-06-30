@@ -33,6 +33,7 @@
       "cache": false
     },
     "db:migrate": {
+      "persistent": false,
       "cache": false
     },
     "db:reset": {

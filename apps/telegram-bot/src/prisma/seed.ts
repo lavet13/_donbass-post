@@ -1,7 +1,7 @@
 import { env } from "@/env";
 import type { Prisma } from "@/lib/prisma/client";
 import { prisma } from "@/prisma";
-import type { NotificationType } from "@/types/notification-types";
+import type { NotificationType } from "@/notifications/notification-types";
 import {
   Permissions,
   Roles,
@@ -9,7 +9,7 @@ import {
   type Permission,
   type Role,
   type Wildcard,
-} from "@/types/rbac";
+} from "@/rbac/types";
 
 const ROLE_DEFINITIONS = [
   {
@@ -71,31 +71,31 @@ async function main() {
 
   for (const type of notificationTypes) {
     await prisma.notificationType.upsert({
-      where: {
-        slug: type.slug,
-      },
+      where: { slug: type.slug },
       update: type,
       create: type,
     });
     console.log(`✅ Created/Updated notification type: ${type.name}`);
   }
 
+  // This RoleGetPayload would be satisfied if you provide id, other than that
+  // it skips just to be aware of.
   const rolesCreated = new Map<
     (typeof ROLE_DEFINITIONS)[number]["name"],
-    Prisma.RoleModel
+    Prisma.RoleGetPayload<{
+      select: {
+        id: true;
+      };
+    }>
   >([]);
 
   // 2. Create role and permissions
   for (const { name, description, permissions } of ROLE_DEFINITIONS) {
     const roleRecord = await prisma.role.upsert({
-      create: {
-        name,
-        description,
-      },
+      create: { name, description },
       update: {},
-      where: {
-        name,
-      },
+      where: { name },
+      select: { id: true },
     });
 
     rolesCreated.set(name, roleRecord);
@@ -106,21 +106,14 @@ async function main() {
 
     for (const perm of resolved) {
       const permRecord = await prisma.permission.upsert({
-        create: {
-          name: perm,
-        },
+        create: { name: perm },
         update: {},
-        where: {
-          name: perm,
-        },
+        where: { name: perm },
       });
 
       // 3. Linking role with their permissions
       await prisma.rolePermission.upsert({
-        create: {
-          roleId: roleRecord.id,
-          permissionId: permRecord.id,
-        },
+        create: { roleId: roleRecord.id, permissionId: permRecord.id },
         update: {},
         where: {
           roleId_permissionId: {
@@ -141,48 +134,72 @@ async function main() {
     console.warn("⚠ No MANAGER_CHAT_IDS found in environment");
   }
 
-  for (const chatId of managerChatIds) {
-    const telegramUser = await prisma.telegramUser.upsert({
-      where: {
-        chatId: BigInt(chatId),
-      },
-      update: {
-        isActive: true,
-      },
-      create: {
-        chatId: BigInt(chatId),
-        isActive: true,
-      },
-    });
+  const activeManagerCount = await prisma.userRole.count({
+    where: {
+      revokedAt: null, // not revoked
+      role: { name: Roles.MANAGER }, // is the manager role
+      user: { isActive: true }, // on an enabled account
+    },
+  });
 
-    const managerRecord = rolesCreated.get("manager")!;
+  // Bootstrap-only when there's no managers in the database
+  if (activeManagerCount > 0) {
+    console.warn("Managers already exist — skipping env bootstrap");
+  } else {
+    for (const chatId of managerChatIds) {
+      const telegramUser = await prisma.telegramUser.upsert({
+        where: { chatId: BigInt(chatId), isActive: true },
+        update: { isActive: true },
+        create: { chatId: BigInt(chatId), isActive: true },
+        select: { id: true },
+      });
 
-    await prisma.userRole.upsert({
-      create: {
-        roleId: managerRecord.id,
-        userId: telegramUser.id,
-      },
-      update: {},
-      where: {
-        userId_roleId: {
-          roleId: managerRecord.id,
-          userId: telegramUser.id,
+      const managerRecord = rolesCreated.get("manager")!;
+
+      await prisma.userRole.upsert({
+        create: { roleId: managerRecord.id, userId: telegramUser.id },
+        update: { revokedAt: null },
+        where: {
+          userId_roleId: { roleId: managerRecord.id, userId: telegramUser.id },
         },
+      });
+
+      // 5. Create Manager profile if doesn't exist
+      await prisma.manager.upsert({
+        where: { telegramUserId: telegramUser.id },
+        update: {},
+        create: { telegramUserId: telegramUser.id },
+        select: { id: true },
+      });
+
+      console.log(`✅ Created/Updated manager: ${chatId}`);
+    }
+  }
+
+  // Gate: only backfill when the NEW table is empty. Once it has any rows
+  // (from this backfill OR from migrated runtime writes), never run again —
+  // so a runtime-removed subscription can't be resurrected from the frozen old table.
+  const existingPrefsCount = await prisma.notificationPreferences.count();
+
+  if (existingPrefsCount > 0) {
+    console.warn(
+      "NotificationPreferences already populated — skipping backfill",
+    );
+  } else {
+    // read OLD rows, carrying the bridge field manager.telegramUserId
+    const oldPrefs = await prisma.managerNotificationPreferences.findMany({
+      select: {
+        notificationTypeId: true,
+        manager: { select: { telegramUserId: true } }, // the bridge to userId
       },
     });
 
-    // 5. Create Manager profile if doesn't exist
-    await prisma.manager.upsert({
-      where: {
-        telegramUserId: telegramUser.id,
-      },
-      update: {},
-      create: {
-        telegramUserId: telegramUser.id,
-      },
+    await prisma.notificationPreferences.createMany({
+      data: oldPrefs.map((p) => ({
+        userId: p.manager.telegramUserId,
+        notificationTypeId: p.notificationTypeId,
+      })),
     });
-
-    console.log(`✅ Created/Updated manager: ${chatId}`);
   }
 
   const rootChatId = env.ROOT_ADMIN_CHAT_ID;
@@ -194,13 +211,15 @@ async function main() {
       where: { chatId: BigInt(rootChatId) },
       update: { isActive: true },
       create: { chatId: BigInt(rootChatId), isActive: true },
+      select: { id: true },
     });
 
     const rootRole = rolesCreated.get("root")!; // safe: we just seeded it above
     await prisma.userRole.upsert({
       where: { userId_roleId: { userId: rootUser.id, roleId: rootRole.id } },
-      update: {},
+      update: { revokedAt: null },
       create: { userId: rootUser.id, roleId: rootRole.id },
+      select: { userId: true },
     });
 
     console.log(`✅ Root admin bootstrapped: ${rootChatId}`);

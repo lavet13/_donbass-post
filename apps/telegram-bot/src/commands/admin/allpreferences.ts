@@ -1,6 +1,6 @@
-import { getAllPreferences } from "@/services/manager-preferences.service";
+import { getAllManagerSubscriptions } from "@/notifications/subscriptions";
 import type { TContext } from "@/types/context";
-import { NotificationTypeNames } from "@/types/notification-types";
+import { NotificationTypeNames } from "@/notifications/notification-types";
 import { Command, LanguageCodes } from "@grammyjs/commands";
 
 export const allPreferencesCommand = new Command<TContext>(
@@ -8,9 +8,9 @@ export const allPreferencesCommand = new Command<TContext>(
   "Настройки всех менеджеров",
   async (ctx) => {
     try {
-      const allPreferences = await getAllPreferences();
+      const allSubscriptions = await getAllManagerSubscriptions();
 
-      if (allPreferences.length === 0) {
+      if (allSubscriptions.length === 0) {
         await ctx.reply(
           "<b>Менеджеры не настроены</b>\n\n" +
             "В базе данных нет активных менеджеров.\n" +
@@ -22,13 +22,13 @@ export const allPreferencesCommand = new Command<TContext>(
 
       const lines: string[] = ["👥 <b>Настройки уведомлений менеджеров</b>\n"];
 
-      if (allPreferences.length === 0) {
+      if (allSubscriptions.length === 0) {
         lines.push("В базе данных нет менеджеров с настройками\n");
         await ctx.reply(lines.join("\n"), { parse_mode: "HTML" });
         return;
       }
 
-      for (const [index, preference] of allPreferences.entries()) {
+      for (const [index, preference] of allSubscriptions.entries()) {
         lines.push(`${index + 1}. Chat ID: <code>${preference.chatId}</code>`);
 
         if (preference.notifications.length === 0) {

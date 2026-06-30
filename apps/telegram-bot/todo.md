@@ -1,103 +1,77 @@
 # Telegram Bot — TODO
 
-Tracking items parked during the RBAC migration. Tags follow the
+Tracking items parked during the RBAC + notifications migration. Tags follow the
 `todo-comments.nvim` convention (FIX/HACK/PERF/NOTE/TODO).
 
 ---
 
-## RBAC migration — remaining steps
+## Notification migration — remaining
 
-The migration is functionally complete and behavior-preserving. What's left:
+- [ ] **FIX: two competing recipient functions** — `getRecipientsForType` (no
+  role gate, future client shape) vs `getManagersForType` (manager-gated,
+  current behavior). Only the latter is used. Delete `getRecipientsForType`;
+  relax the gate later when clients receive notifications (see NOTE below).
+- [ ] **FIX: `getUserSubscriptions` missing `BigInt(chatId)`** — raw number on a
+  BigInt column silently matches nothing. Rewrite to enter via `telegramUser`
+  (plain map, not flatMap-over-one-row).
+- [ ] **TODO: delete unused `getAllAvailableNotificationTypes`.**
+- [ ] **TODO: Step 4 — drop legacy tables** once verified in prod:
+  `Manager` + `managers`, `ManagerNotificationPreferences` +
+  `manager_notification_preferences`. Reads are now migrated; verify, then drop.
 
-- [ ] **TEST: manual verification pass (do this first)**
-  Poke the running bot, no test framework needed:
-  - Remove a manager (`/removemanager <id>`) → confirm their access is actually
-    revoked (they can no longer use `/status`, `/preferences`).
-  - Root user → confirm full access to all admin commands.
-  - A plain (non-manager) user → confirm denied.
-  This is the safety check before trusting RBAC in production. We caught the
-  `isActive` regression by reasoning; this confirms it live.
+## RBAC migration — remaining
 
-- [ ] **TODO: commit the RBAC migration as one clean unit, then bump version**
-  `yarn workspace @donbass-post/tg-bot version minor --immediate`
-  (minor = new backward-compatible feature, per semver). `/status` reads the
-  version from package.json, so it updates automatically.
+- [ ] **TODO: commit RBAC + soft-delete + notif migration, then bump version**
+  `yarn workspace @donbass-post/tg-bot version minor --immediate` (new feature).
+- [ ] **FIX: revert `NODE_ENV === "production"` self-removal gate** in
+  removeManagerCommand — test with a second chatId instead (keep rules
+  environment-agnostic). Later: replace "is self?" with "would this leave zero
+  active managers?" (the real invariant).
 
-- [ ] **TODO: Step 7 — drop the legacy tables (separate future session)**
-  Once the manual pass confirms the new RBAC paths work in production, remove:
-  - `Manager` model + `managers` table
-  - `ManagerNotificationPreferences` + `manager_notification_preferences` table
-  Blocked until ALL read paths are migrated off them — notably the
-  command-menu scoping in `registerCommands` (`getAllManagers()`) and the
-  notification routing still read the old `Manager` table. Migrate those reads
-  to RBAC/`NotificationPreferences` first, THEN drop the tables.
+## Known wrinkles (documented, fix when they cost)
 
----
+- [ ] **NOTE: notifications are manager-only** — `getManagersForType` gates on
+  the manager role. When clients should receive notifications, relax the gate
+  (or revive the general `getRecipientsForType` shape).
+- [ ] **NOTE: seed re-asserts managers from `MANAGER_CHAT_IDS`** — now
+  bootstrap-only (runs only when zero active managers). Authority is runtime.
+- [ ] **NOTE: `manager-preferences.service.ts` double duty** — manager CRUD +
+  notification subscriptions. Split during the notifications/ folder extraction:
+  subscription fns → `notifications/preferences.ts`, manager fns → `managers/`.
+- [ ] **NOTE: menu button vs in-message command list use different sources** —
+  setCommandsForChat scopes via env (getRootAdminChatId); getCommandListText
+  via RBAC. Scope menus from DB roles so both agree (env→RBAC read-path).
+- [ ] **PERF/TODO: extract `getManagerRole()`** — `role.findUnique({name:MANAGER})`
+  now repeats 3× (add/remove/setSubscriptions). Extract the lookup only (the
+  surrounding guards differ in shape), during the notifications split.
 
-## Known wrinkles (documented, fix when they start costing)
+## Structural cleanup (reactive — pure file moves)
 
-- [ ] **HACK: `removeManager` overloads `telegram_users.is_active`**
-  (in `services/manager-preferences.service.ts`)
-  It flips the base-user `is_active` flag to revoke the *manager role*. Once
-  client features land, a fired manager shouldn't also be a disabled client.
-  Fix: add `isActive`/`revokedAt` to the `UserRole` model and soft-delete the
-  role assignment instead; reserve `is_active` for account-level enablement.
+See `project-organization-strategies.md`.
 
-- [ ] **NOTE: seed re-asserts managers from `MANAGER_CHAT_IDS` every deploy**
-  (in `prisma/seed.ts`)
-  Intentional for now — the env secret is the source of truth for managers, so
-  the unconditional upsert is harmless. IF runtime manager management becomes
-  authoritative, switch to a bootstrap-only fallback ("seed from env only when
-  zero managers exist") to stop `/removemanager` being undone on next deploy.
+- [ ] **TODO: consolidate RBAC into `src/rbac/`** — guards/service/cache/types
+  already copied there; flip imports as a clean isolated commit.
+- [ ] **TODO: extract `notifications/` feature folder** — the signal has arrived
+  (notif work spans services/types/formatters/seed/routes). Move + rename the
+  subscription fns here in one commit.
+- [ ] **TODO: `core/` for shared infra** (prisma/config/env/router/bot) — later,
+  big import churn, only once feature folders exist to contrast against.
+- [ ] **NOTE: root `yarn db:migrate` fights the interactive prompt** — generate
+  migrations from inside apps/telegram-bot; consider dropping db:migrate from
+  root package.json (keep db:deploy).
+- [ ] **FIX: `packages/forms` type error** (pre-existing, unrelated) —
+  react-phone-number-input `inputComponent` rejects the `FC`-typed `Input`
+  (React's FC return widened to ReactNode|Promise). Cast or retype Input.
 
-- [ ] **NOTE: `manager-preferences.service.ts` is doing double duty**
-  It mixes "manager CRUD" with "notification subscription" logic. When
-  notifications gets extracted into a feature folder, split these — subscription
-  functions belong with notifications, not managers.
+## Done (RBAC + soft-delete + notification migration)
 
-- [ ] **NOTE: menu button vs in-message command list use different sources**
-  Verified in dev: removing ROOT_ADMIN_CHAT_ID leaves the RBAC-based
-  getCommandListText showing admin commands (DB has the root role), but the
-  Telegram menu button stays empty because setCommandsForChat scopes it via
-  getRootAdminChatId() (env). Fix as part of the env→RBAC read-path migration:
-  scope menus from DB roles so both paths agree. Not a bug — a consistency gap.
-
----
-
-## Structural cleanup (parked — pure file moves, zero behavior change)
-
-Do these reactively, when a domain's scattered pieces start to annoy. Not now.
-See `project-organization-strategies.md` for the reasoning.
-
-- [ ] **TODO: consolidate RBAC into a `src/rbac/` feature folder**
-  Already staged as a dormant copy. Flip imports when ready (clean isolated
-  commit). First good feature-folder candidate.
-  Target: `rbac/{guards,service,cache,types}.ts`
-
-- [ ] **TODO: extract `notifications/` feature folder (later)**
-  Wait for the signal: when "add a notification type" forces edits across
-  `types/`, `formatters/`, `services/`, `seed.ts`, `routes/`.
-  Target: `notifications/{service,formatters,types,notification-types,preferences}.ts`
-
-- [ ] **TODO: introduce a `core/` folder for shared infra (later)**
-  Move cross-cutting wiring: `prisma/`, `config.ts`, `env.ts`, `router.ts`,
-  `bot.ts`. Keep `server.ts` at root, leave `middleware/` and `utils/` as-is.
-  Big import-path churn for zero behavior change — only worth it once the
-  feature folders exist to contrast against.
-
----
-
-## Done this session (for reference)
-
-- ✅ RBAC schema (roles, permissions, join tables, `NotificationPreferences`)
-- ✅ Migration generated + verified additive (old tables intact)
-- ✅ Idempotent seed: roles, permissions, wildcard expansion, root bootstrap
-- ✅ Permission/role helpers + some/every combinators
-- ✅ In-memory cache with invalidation wired into add/removeManager
-- ✅ `registerCommands` + all commands switched to permission checks
-- ✅ Removed `isRootAdmin` / `isActiveManager` from hot path
-- ✅ Fixed `isActive` regression in `getUserPermissions`/`getUserRoles`
-- ✅ `env.ts` hardening (`emptyAsUndefined` — empty secret no longer becomes 0)
-- ✅ Command localization (RU/UK/EN)
-- ✅ Structural cleanup: `types/context.ts`, `utils/date.ts`
-- ✅ Typed permission/role slugs (`rbac.ts`) — typos now caught at compile time
+- ✅ RBAC schema, additive migration, idempotent seed (roles/perms/wildcard/root)
+- ✅ Permission/role helpers + some/every combinators + in-memory cache
+- ✅ All commands switched to permission checks; isRootAdmin/isActiveManager gone
+- ✅ `revokedAt`/`grantedAt` on UserRole — role revocation off `is_active`
+- ✅ Two-gate reads (account is_active + role revokedAt); add/remove rewired
+- ✅ Notification prefs: backfilled (gated), writes + reads migrated to new table
+- ✅ getAllManagers/getManagersForType/getUserSubscriptions/getAllSubscriptions/
+  isSubscribed/setUserSubscriptions → all on RBAC + NotificationPreferences
+- ✅ env.ts hardening (emptyAsUndefined); typed slugs; assertNever exhaustiveness
+- ✅ Structural: types/context.ts, utils/date.ts, utils/assert-never.ts

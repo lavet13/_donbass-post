@@ -1,10 +1,10 @@
 import type { Bot } from "grammy";
-import { NotificationTypes } from "@/types/notification-types";
+import { NotificationTypes } from "@/notifications/notification-types";
 import {
   getRootAdminChatId,
   userHasPermission,
-} from "@/commands/guards";
-import { getAllManagers } from "@/services/manager-preferences.service";
+} from "@/rbac/guards";
+import { getAllManagers } from "@/managers/service";
 import {
   adminCommands,
   managerCommands,
@@ -18,7 +18,7 @@ import "@/commands/manager";
 import "@/commands/admin";
 
 import { setCommandsForChat, suggestionHandler } from "@/commands/utils";
-import { Permissions } from "@/types/rbac";
+import { Permissions } from "@/rbac/types";
 
 export const VALID_SLUGS = Object.values(NotificationTypes);
 

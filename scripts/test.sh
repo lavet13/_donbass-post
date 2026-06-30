@@ -36,3 +36,6 @@ if [[ -s "$(dirname $0)/test.txt" ]]; then
 else
   echo "test.txt not exists or empty"
 fi
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+echo "$SCRIPT_DIR"
