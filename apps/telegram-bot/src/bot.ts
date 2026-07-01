@@ -5,6 +5,7 @@ import { registerCommands } from "@/commands";
 import type { Update } from "grammy/types";
 import type { TContext } from "@/types/context";
 import { commands } from "@grammyjs/commands";
+import { withTimeout } from "@/utils/with-timeout";
 
 export type TCustomBot = Bot<TContext>;
 
@@ -58,7 +59,7 @@ export class BotManager {
 
       // CRITICAL: Initialize bot info for webhook mode
       // This fetches bot information from Telegram
-      await this.bot.init();
+      await withTimeout(this.bot.init(), 10_000, "bot.init() (Telegram getMe)");
 
       // Register commands flavor middleware — required for commandNotFound /
       // ctx.getNearestCommand to work
@@ -179,7 +180,11 @@ export class BotManager {
     await bot.handleUpdate(update);
   }
 
-  async setWebhook(bot: TCustomBot, url: string, secret?: string): Promise<void> {
+  async setWebhook(
+    bot: TCustomBot,
+    url: string,
+    secret?: string,
+  ): Promise<void> {
     try {
       await bot.api.setWebhook(url, { secret_token: secret || undefined });
       this.mode = "webhook";
