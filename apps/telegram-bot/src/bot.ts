@@ -6,6 +6,8 @@ import type { Update } from "grammy/types";
 import type { TContext } from "@/types/context";
 import { commands } from "@grammyjs/commands";
 import { withTimeout } from "@/utils/with-timeout";
+import { env } from "@/env";
+import { SocksProxyAgent } from "socks-proxy-agent";
 
 export type TCustomBot = Bot<TContext>;
 
@@ -48,7 +50,20 @@ export class BotManager {
     }
 
     try {
-      this.bot = new Bot<TContext>(token);
+      // Gated: only build an agent when a proxy is configured. Unset (local dev,
+      // where Telegram is directly reachable) => undefined => grammY behaves exactly
+      // as before. This keeps the proxy inert everywhere except prod-behind-the-block.
+      const proxyUrl = env.TELEGRAM_PROXY;
+      this.bot = new Bot<TContext>(token, {
+        client: proxyUrl
+          ? {
+              baseFetchConfig: {
+                agent: new SocksProxyAgent(proxyUrl),
+                compress: true,
+              },
+            }
+          : undefined,
+      });
 
       this.bot.api.config.use(
         autoRetry({

@@ -27,6 +27,7 @@ const BaseSchema = z.object({
     }),
   DATABASE_URL: z.string().min(1, "Database URL is required"),
   ROOT_ADMIN_CHAT_ID: blankToUndefined(z.coerce.number<string>().int("ROOT_ADMIN_CHAT_ID should be an integer").optional()),
+  TELEGRAM_PROXY: blankToUndefined(z.url().optional()),
   // TEST_VALUE: z
   //   .unknown()
   //   .transform((val) => {
