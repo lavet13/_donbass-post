@@ -91,26 +91,11 @@ model TelegramUser {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  managerProfile          Manager?
   clientProfile           Client?
   userRoles               UserRole[]
   notificationPreferences NotificationPreferences[]
 
   @@map("telegram_users")
-}
-
-/// Manager profile - extends TelegramUser
-/// These are staff members who receive notifications
-model Manager {
-  id        String   @id @default(cuid(2))
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  telegramUserId String                           @unique @map("telegram_user_id")
-  telegramUser   TelegramUser                     @relation(fields: [telegramUserId], references: [id], onDelete: Cascade)
-  preferences    ManagerNotificationPreferences[]
-
-  @@map("managers")
 }
 
 /// Client profile - extends TelegramUser
@@ -137,7 +122,6 @@ model NotificationType {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  preferences             ManagerNotificationPreferences[]
   notificationPreferences NotificationPreferences[]
 
   @@map("notification_types")
@@ -155,20 +139,6 @@ model NotificationPreferences {
 
   @@unique([userId, notificationTypeId])
   @@map("notification_preferences")
-}
-
-model ManagerNotificationPreferences {
-  id        String   @id @default(cuid(2))
-  createdAt DateTime @default(now()) @map("created_at")
-
-  managerId String  @map("manager_id")
-  manager   Manager @relation(fields: [managerId], references: [id], onDelete: Cascade)
-
-  notificationTypeId String           @map("notification_type_id")
-  notificationType   NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
-
-  @@unique([managerId, notificationTypeId])
-  @@map("manager_notification_preferences")
 }
 
 model NotificationLog {

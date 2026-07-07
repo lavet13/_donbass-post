@@ -3,7 +3,7 @@ import { userHasPermission } from "@/rbac/guards";
 import type { TContext } from "@/types/context";
 import { prisma } from "@/prisma";
 import { getCommandListText } from "@/commands/utils";
-import { Permissions } from "@/rbac/types";
+import { Permissions, Roles } from "@/rbac/types";
 
 export const managersCommand = new Command<TContext>(
   "managers",
@@ -12,13 +12,13 @@ export const managersCommand = new Command<TContext>(
     const manager = await userHasPermission(ctx, Permissions.BOT_VIEW_STATUS);
     const admin = await userHasPermission(ctx, Permissions.USERS_MANAGE);
 
-    const managers = await prisma.manager.findMany({
+    const managers = await prisma.userRole.findMany({
       where: {
-        telegramUser: { isActive: true },
+        revokedAt: null,
+        role: { name: Roles.MANAGER },
+        user: { isActive: true },
       },
-      include: {
-        telegramUser: true,
-      },
+      select: { user: { select: { chatId: true } } },
     });
 
     if (managers.length === 0) {
@@ -31,11 +31,9 @@ export const managersCommand = new Command<TContext>(
     }
 
     const list = managers.map(
-      (manager, index) =>
-        `${index + 1}. Chat ID: <code>${manager.telegramUser.chatId}</code>`,
+      (row, index) =>
+        `${index + 1}. Chat ID: <code>${row.user.chatId}</code>`,
     );
-
-    console.log({ manager, admin });
 
     await ctx.reply(
       `👥 <b>Список менеджеров</b>\n\n` +

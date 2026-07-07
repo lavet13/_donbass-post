@@ -164,42 +164,8 @@ async function main() {
         },
       });
 
-      // 5. Create Manager profile if doesn't exist
-      await prisma.manager.upsert({
-        where: { telegramUserId: telegramUser.id },
-        update: {},
-        create: { telegramUserId: telegramUser.id },
-        select: { id: true },
-      });
-
       console.log(`✅ Created/Updated manager: ${chatId}`);
     }
-  }
-
-  // Gate: only backfill when the NEW table is empty. Once it has any rows
-  // (from this backfill OR from migrated runtime writes), never run again —
-  // so a runtime-removed subscription can't be resurrected from the frozen old table.
-  const existingPrefsCount = await prisma.notificationPreferences.count();
-
-  if (existingPrefsCount > 0) {
-    console.warn(
-      "NotificationPreferences already populated — skipping backfill",
-    );
-  } else {
-    // read OLD rows, carrying the bridge field manager.telegramUserId
-    const oldPrefs = await prisma.managerNotificationPreferences.findMany({
-      select: {
-        notificationTypeId: true,
-        manager: { select: { telegramUserId: true } }, // the bridge to userId
-      },
-    });
-
-    await prisma.notificationPreferences.createMany({
-      data: oldPrefs.map((p) => ({
-        userId: p.manager.telegramUserId,
-        notificationTypeId: p.notificationTypeId,
-      })),
-    });
   }
 
   const rootChatId = env.ROOT_ADMIN_CHAT_ID;

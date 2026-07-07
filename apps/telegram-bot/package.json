@@ -10,7 +10,7 @@
     "check-types": "tsc -b",
     "lint": "eslint .",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev && prisma generate",
+    "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "yarn dlx prisma db seed",
     "db:studio": "prisma studio --port 5556",
