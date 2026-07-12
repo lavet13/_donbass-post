@@ -1,6 +1,7 @@
 import type { NotificationType } from "@/notifications/notification-types";
 import { prisma } from "@/prisma";
 import { Roles } from "@/rbac/types";
+import { assertNever } from "@/utils/assert-never";
 
 /**
  * Get managers who should receive a specific notification type
@@ -133,17 +134,35 @@ export async function isManagerSubscribed(
   }
 }
 
-type SetUserSubscriptionsResult =
+export function subscriptionErrorReply(
+  result: SetManagerSubscriptionsResult,
+): string | null {
+  switch (result) {
+    case "preferences_set":
+      return null; // success — the caller sends its own confirmation
+    case "user_not_found":
+      return "❌ Пользователь не найден.";
+    case "user_deactivated":
+      return "❌ Аккаунт менеджера деактивирован.";
+    case "user_role_not_found":
+      return "❌ У пользователя нет роли менеджера.";
+    case "user_role_revoked":
+      return "❌ Роль менеджера была отозвана.";
+    default:
+      return assertNever(result); // // compile error if a token is left unhandled
+  }
+}
+
+type SetManagerSubscriptionsResult =
   | "user_not_found"
   | "user_deactivated"
-  | "role_not_found"
   | "user_role_not_found"
   | "user_role_revoked"
   | "preferences_set";
 export async function setManagerSubscriptions(
   chatId: number,
   notificationTypes: NotificationType[],
-): Promise<SetUserSubscriptionsResult> {
+): Promise<SetManagerSubscriptionsResult> {
   try {
     const user = await prisma.telegramUser.findUnique({
       where: {
@@ -157,22 +176,11 @@ export async function setManagerSubscriptions(
 
     if (user.isActive === false) return "user_deactivated";
 
-    const managerRole = await prisma.role.findUnique({
-      where: {
-        name: Roles.MANAGER,
-      },
-    });
-
-    // Check if manager role exists
-    if (!managerRole) return "role_not_found";
-
     // Check if the user has manager role
-    const hasManagerRole = await prisma.userRole.findUnique({
+    const hasManagerRole = await prisma.userRole.findFirst({
       where: {
-        userId_roleId: {
-          userId: user.id,
-          roleId: managerRole.id,
-        },
+        userId: user.id,
+        role: { name: Roles.MANAGER },
       },
     });
 

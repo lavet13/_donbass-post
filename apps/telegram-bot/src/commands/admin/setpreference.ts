@@ -1,76 +1,61 @@
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
 import { VALID_SLUGS } from "@/commands";
+import { NotificationTypeNames } from "@/notifications/notification-types";
 import {
-  NotificationTypeNames,
-  type NotificationType,
-} from "@/notifications/notification-types";
-import { getAllManagers } from "@/managers/service";
-import { setManagerSubscriptions } from "@/notifications/subscriptions";
+  setManagerSubscriptions,
+  subscriptionErrorReply,
+} from "@/notifications/subscriptions";
+import { isNotificationSlug, resolveManagerCommand } from "@/commands/args";
 
 export const setPreferenceCommand = new Command<TContext>(
   "setpreferences",
   "Задать настройки уведомлений менеджера",
   async (ctx) => {
-    const text = ctx.message?.text ?? "";
     // e.g. "/setpreferences 123456789 online-pickup-rf pick-up-point-delivery-order"
-    const parts = text.trim().split(/\s+/).slice(1);
-    if (parts.length < 2) {
-      await ctx.reply(
-        "❌ <b>Использование:</b>\n" +
-          "<code>/setpreferences &lt;chatId&gt; [slug1 slug2 ...]</code>\n\n" +
-          "Доступные типы уведомлений:\n" +
-          VALID_SLUGS.map(
-            (s) => `<code>${s}</code> — ${NotificationTypeNames[s]}`,
-          ).join("\n") +
-          "\n\nЧтобы <b>снять все</b> подписки — укажите только chatId без слагов.",
-        { parse_mode: "HTML" },
-      );
+    const USAGE =
+      "❌ <b>Использование:</b>\n" +
+      "<code>/setpreferences &lt;chatId&gt; [slug1 slug2 ...]</code>\n\n" +
+      "Доступные типы уведомлений:\n" +
+      VALID_SLUGS.map(
+        (s) => `<code>${s}</code> — ${NotificationTypeNames[s]}`,
+      ).join("\n") +
+      "\n\nЧтобы <b>снять все</b> подписки — укажите только chatId без слагов.";
+
+    const parsed = await resolveManagerCommand(ctx.message?.text ?? "", USAGE);
+    if (!parsed.ok) {
+      await ctx.reply(parsed.error, { parse_mode: "HTML" });
       return;
     }
 
-    const [chatIdStr, ...slugs] = parts as [string, ...NotificationType[]];
-    const chatId = parseInt(chatIdStr, 10);
-
-    if (isNaN(chatId)) {
-      await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {
-        parse_mode: "HTML",
-      });
-      return;
-    }
-
-    const invalidSlugs = slugs.filter((s) => !VALID_SLUGS.includes(s));
-    if (invalidSlugs.length > 0) {
+    const { chatId } = parsed;
+    const valid = parsed.rest.filter(isNotificationSlug);
+    if (valid.length !== parsed.rest.length) {
+      const invalid = parsed.rest.filter((s) => !isNotificationSlug(s));
       await ctx.reply(
-        "❌ Неизвестные типы уведомлений:\n" +
-          `${invalidSlugs.map((s) => `<code>${s}</code>`).join(", ")}\n\n` +
-          "Доступные:\n" +
-          VALID_SLUGS.map((s) => `  <code>${s}</code>`).join("\n"),
-        { parse_mode: "HTML" },
-      );
-      return;
-    }
-
-    const allManagers = await getAllManagers();
-    if (!allManagers.includes(chatId)) {
-      await ctx.reply(
-        `❌ Менеджер с Chat ID <code>${chatId}</code> не найден в базе данных.\n` +
-          "Сначала добавьте его через /addmanager.",
-        { parse_mode: "HTML" },
+        `❌ Неизвестные типы: ${invalid.map((s) => `<code>${s}</code>`).join(", ")}`,
+        {
+          parse_mode: "HTML",
+        },
       );
       return;
     }
 
     try {
-      await setManagerSubscriptions(chatId, slugs);
+      const result = await setManagerSubscriptions(chatId, valid);
+      const errorReply = subscriptionErrorReply(result);
+      if (errorReply) {
+        await ctx.reply(errorReply, { parse_mode: "HTML" });
+        return;
+      }
 
-      if (slugs.length === 0) {
+      if (valid.length === 0) {
         await ctx.reply(
           `✅ Все подписки для менеджера <code>${chatId}</code> сняты.`,
           { parse_mode: "HTML" },
         );
       } else {
-        const list = slugs
+        const list = valid
           .map((s) => `  ${NotificationTypeNames[s]}`)
           .join("\n");
 

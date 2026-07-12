@@ -56,10 +56,7 @@ export async function getUserRoles(userId: bigint): Promise<Set<string>> {
 
   if (!user) return new Set([]);
 
-  const names = user.userRoles.map((ur) => ur.role.name);
+  const names = user.userRoles.map((row) => row.role.name);
 
   return new Set(names);
-}
-
-export async function getManagerRole() {
 }

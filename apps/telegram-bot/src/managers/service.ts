@@ -4,7 +4,6 @@ import { Roles } from "@/rbac/types";
 
 type AddManagerResult =
   | "fresh_manager"
-  | "manager_role_not_found"
   | "reactivated_manager"
   | "already_manager";
 /**
@@ -52,26 +51,16 @@ export async function addManager({
             select: { id: true, chatId: true },
           }));
 
-        const managerRole = await tx.role.findUnique({
-          where: {
-            name: Roles.MANAGER,
-          },
-        });
-
-        // Check if manager role exists
-        if (!managerRole)
-          return {
-            statusToken: "manager_role_not_found",
-            ...telegramUser,
-          };
-
         // Check if the user has manager role(reactivated)
-        const hasManagerRole = await tx.userRole.findUnique({
+        const hasManagerRole = await tx.userRole.findFirst({
           where: {
-            userId_roleId: {
-              userId: telegramUser.id,
-              roleId: managerRole.id,
-            },
+            userId: telegramUser.id,
+            role: { name: Roles.MANAGER },
+          },
+          select: {
+            roleId: true,
+            userId: true,
+            revokedAt: true,
           },
         });
 
@@ -79,8 +68,8 @@ export async function addManager({
           // Add manager role for the user
           await tx.userRole.create({
             data: {
-              userId: telegramUser.id,
-              roleId: managerRole.id,
+              user: { connect: { id: telegramUser.id } },
+              role: { connect: { name: Roles.MANAGER } },
             },
           });
 
@@ -94,8 +83,8 @@ export async function addManager({
           await tx.userRole.update({
             where: {
               userId_roleId: {
-                roleId: managerRole.id,
-                userId: telegramUser.id,
+                roleId: hasManagerRole.roleId,
+                userId: hasManagerRole.userId,
               },
             },
             data: {
@@ -173,8 +162,25 @@ export async function removeManager(
 
 /**
  * Telegram users with an active manager-role assignment
+ *
+ *  PERF: If the manager list ever grows, the honest version is a single targeted query
+ *  telegramUser.findFirst({
+ *    where: {
+ *       chatId, isActive: true,
+ *       userRoles: { some: { revokedAt: null, role: { name: MANAGER } } }
+ *     },
+ *     select: { id: true }
+ *  }) — returning { userId } | null.
+ *
+ *   Not now (YAGNI, and getAllManagers is reused elsewhere), but it's the same smell,
+ *   so I'm naming it. getAllManagers now does more work per call, and it's on hot paths.
+ *   It was already findMany over all manager assignments; adding id to the select is free.
+ *   But note resolveManagerCommand calls getAllManagers() (full table scan of active managers)
+ *   on every admin command just to resolve one chatId.
  */
-export async function getAllManagers(): Promise<number[]> {
+export async function getAllManagers(): Promise<
+  { chatId: number; userId: string }[]
+> {
   try {
     const assignments = await prisma.userRole.findMany({
       where: {
@@ -182,10 +188,13 @@ export async function getAllManagers(): Promise<number[]> {
         role: { name: Roles.MANAGER },
         user: { isActive: true },
       },
-      select: { user: { select: { chatId: true } } },
+      select: { user: { select: { chatId: true, id: true } } },
     });
 
-    return assignments.map((a) => Number(a.user.chatId));
+    return assignments.map((row) => ({
+      chatId: Number(row.user.chatId),
+      userId: row.user.id,
+    }));
   } catch (err) {
     console.error("Failed to get all managers:", err);
     return [];

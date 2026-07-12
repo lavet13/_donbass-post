@@ -5,6 +5,7 @@ on:
     branches: ["main"]
     paths:
       - "apps/telegram-bot/**"
+      - "!apps/telegram-bot/*.md"
       - "packages/eslint-config/**"
       - "packages/typescript-config/**"
       - "packages/prettier-config/**"

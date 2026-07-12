@@ -1,16 +1,10 @@
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
-import { VALID_SLUGS } from "..";
-import {
-  NotificationTypeNames,
-  type NotificationType,
-} from "@/notifications/notification-types";
-import {
-  getManagerSubscriptions,
-  isManagerSubscribed,
-  setManagerSubscriptions,
-} from "@/notifications/subscriptions";
-import { getAllManagers } from "@/managers/service";
+import { VALID_SLUGS } from "@/commands";
+import { NotificationTypeNames } from "@/notifications/notification-types";
+import { prisma } from "@/prisma";
+import { isNotificationSlug, resolveManagerCommand } from "@/commands/args";
+import { getManagerSubscriptions } from "@/notifications/subscriptions";
 
 /**
  * /appendpreference <chatId> <slug>
@@ -25,73 +19,62 @@ export const appendPreferenceCommand = new Command<TContext>(
   "appendpreference",
   "Добавить тип уведомлений менеджеру",
   async (ctx) => {
-    const text = ctx.message?.text ?? "";
-    const parts = text.trim().split(/\s+/).slice(1); // drop /appendpreference
+    const USAGE =
+      "❌ <b>Использование:</b>\n" +
+      "<code>/appendpreference &lt;chatId&gt; &lt;slug&gt;</code>\n\n" +
+      "Доступные слаги:\n" +
+      VALID_SLUGS.map(
+        (s) => `<code>${s}</code> — ${NotificationTypeNames[s]}`,
+      ).join("\n");
 
-    if (parts.length < 2) {
-      await ctx.reply(
-        "❌ <b>Использование:</b>\n" +
-          "<code>/appendpreference &lt;chatId&gt; &lt;slug&gt;</code>\n\n" +
-          "Доступные слаги:\n" +
-          VALID_SLUGS.map(
-            (s) => `<code>${s}</code> — ${NotificationTypeNames[s]}`,
-          ).join("\n"),
-        { parse_mode: "HTML" },
-      );
+    const parsed = await resolveManagerCommand(ctx.message?.text ?? "", USAGE);
+    if (!parsed.ok) {
+      await ctx.reply(parsed.error, { parse_mode: "HTML" });
       return;
     }
 
-    const [chatIdStr, slug] = parts as [string, NotificationType];
-    const chatId = parseInt(chatIdStr, 10);
-
-    if (isNaN(chatId)) {
-      await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {
-        parse_mode: "HTML",
-      });
-      return;
-    }
-
-    if (!VALID_SLUGS.includes(slug as NotificationType)) {
-      await ctx.reply(
-        `❌ Неизвестный слаг: <code>${slug}</code>\n\n` +
-          "Доступные:\n" +
-          VALID_SLUGS.map((s) => `<code>${s}</code>`).join("\n"),
-        { parse_mode: "HTML" },
-      );
-      return;
-    }
-
-    const allManagers = await getAllManagers();
-    if (!allManagers.includes(chatId)) {
-      await ctx.reply(
-        `❌ Менеджер с Chat ID <code>${chatId}</code> не найден.\n` +
-          "Сначала добавьте его через /addmanager.",
-        { parse_mode: "HTML" },
-      );
+    const { chatId, userId } = parsed;
+    const [slug] = parsed.rest;
+    if (!slug || !isNotificationSlug(slug)) {
+      await ctx.reply(USAGE, { parse_mode: "HTML" });
       return;
     }
 
     try {
-      const alreadySubscribed = await isManagerSubscribed(chatId, slug);
-      if (alreadySubscribed) {
+      const notification = await prisma.notificationType.findUnique({
+        where: { slug },
+      });
+
+      if (!notification) {
+        await ctx.reply("❌ Данное уведомление не найдено!", {
+          parse_mode: "HTML",
+        });
+        return;
+      }
+
+      // count === 0 was already subscribed (warn); count === 1 newly added (success)
+      const { count } = await prisma.notificationPreferences.createMany({
+        data: [{ userId, notificationTypeId: notification.id }],
+        skipDuplicates: true,
+      });
+
+      if (count > 0) {
+        // reading to decide a write is the race; reading to display after a write is fine.
+        // newly added(success)
+        const current = await getManagerSubscriptions(chatId);
+        await ctx.reply(
+          `✅ Менеджер <code>${chatId}</code> подписан на <b>${NotificationTypeNames[slug]}</b>.\n\n` +
+            "Текущие подписки:\n" +
+            current.map((s) => `${NotificationTypeNames[s]}`).join("\n"),
+          { parse_mode: "HTML" },
+        );
+      } else {
+        // already subscribed(warn)
         await ctx.reply(
           `⚠ Менеджер <code>${chatId}</code> уже подписан на <b>${NotificationTypeNames[slug]}</b>.`,
           { parse_mode: "HTML" },
         );
-        return;
       }
-
-      const current = await getManagerSubscriptions(chatId);
-      await setManagerSubscriptions(chatId, [...current, slug]);
-
-      await ctx.reply(
-        `✅ Менеджер <code>${chatId}</code> подписан на <b>${NotificationTypeNames[slug]}</b>.\n\n` +
-          "Текущие подписки:\n" +
-          [...current, slug]
-            .map((s) => `${NotificationTypeNames[s]}`)
-            .join("\n"),
-        { parse_mode: "HTML" },
-      );
     } catch (err) {
       console.error("Error in /appendpreference:", err);
       await ctx.reply("❌ Произошла ошибка. Попробуйте позже.");

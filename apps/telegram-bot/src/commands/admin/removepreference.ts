@@ -1,16 +1,10 @@
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
+import { NotificationTypeNames } from "@/notifications/notification-types";
+import { prisma } from "@/prisma";
+import { isNotificationSlug, resolveManagerCommand } from "@/commands/args";
 import { VALID_SLUGS } from "@/commands";
-import {
-  NotificationTypeNames,
-  type NotificationType,
-} from "@/notifications/notification-types";
-import {
-  getManagerSubscriptions,
-  isManagerSubscribed,
-  setManagerSubscriptions,
-} from "@/notifications/subscriptions";
-import { getAllManagers } from "@/managers/service";
+import { getManagerSubscriptions } from "@/notifications/subscriptions";
 
 /**
  * /removepreference <chatId> <slug>
@@ -25,79 +19,56 @@ export const removePreferenceCommand = new Command<TContext>(
   "removepreference",
   "Удалить тип уведомления у менеджера",
   async (ctx) => {
-    const text = ctx.message?.text ?? "";
-    const parts = text.trim().split(/\s+/).slice(1);
+    const USAGE =
+      "❌ <b>Использование:</b>\n" +
+      "<code>/removepreference &lt;chatId&gt; &lt;slug&gt;</code>\n\n" +
+      "Доступные слаги:\n" +
+      VALID_SLUGS.map(
+        (s) => `<code>${s}</code> — ${NotificationTypeNames[s]}`,
+      ).join("\n");
 
-    if (parts.length < 2) {
-      await ctx.reply(
-        "❌ <b>Использование:</b>\n" +
-          "<code>/removepreference &lt;chatId&gt; &lt;slug&gt;</code>\n\n" +
-          "Доступные слаги:\n" +
-          VALID_SLUGS.map(
-            (s) => `  • <code>${s}</code> — ${NotificationTypeNames[s]}`,
-          ).join("\n"),
-        { parse_mode: "HTML" },
-      );
+    const parsed = await resolveManagerCommand(ctx.message?.text ?? "", USAGE);
+    if (!parsed.ok) {
+      await ctx.reply(parsed.error, { parse_mode: "HTML" });
       return;
     }
 
-    const [chatIdStr, slug] = parts as [string, NotificationType];
-    const chatId = parseInt(chatIdStr!, 10);
-
-    if (isNaN(chatId)) {
-      await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {
-        parse_mode: "HTML",
-      });
-      return;
-    }
-
-    if (!VALID_SLUGS.includes(slug as NotificationType)) {
-      await ctx.reply(
-        `❌ Неизвестный слаг: <code>${slug}</code>\n\n` +
-          "Доступные:\n" +
-          VALID_SLUGS.map((s) => `  • <code>${s}</code>`).join("\n"),
-        { parse_mode: "HTML" },
-      );
-      return;
-    }
-
-    const allManagers = await getAllManagers();
-    if (!allManagers.includes(chatId)) {
-      await ctx.reply(
-        `❌ Менеджер с Chat ID <code>${chatId}</code> не найден.\n` +
-          "Сначала добавьте его через /addmanager.",
-        { parse_mode: "HTML" },
-      );
+    const { chatId, userId } = parsed;
+    const [slug] = parsed.rest;
+    if (!slug || !isNotificationSlug(slug)) {
+      await ctx.reply(USAGE, { parse_mode: "HTML" });
       return;
     }
 
     try {
-      const subscribed = await isManagerSubscribed(chatId, slug);
-      if (!subscribed) {
+      // count === 0 wasn't subscribed. count === 1 removed subscription.
+      const { count } = await prisma.notificationPreferences.deleteMany({
+        where: { userId, notificationType: { slug } },
+      });
+
+      if (count > 0) {
+        // reading to decide a write is the race; reading to display after a write is fine.
+        // removed subscription(successfully)
+        const remaining = await getManagerSubscriptions(chatId);
+        const tail =
+          remaining.length === 0
+            ? "⚠ Менеджер больше не подписан ни на одно уведомление."
+            : "Оставшиеся подписки:\n" +
+              remaining
+                .map((s) => `  • ${NotificationTypeNames[s]}`)
+                .join("\n");
+
+        await ctx.reply(
+          `✅ Подписка на <b>${NotificationTypeNames[slug]}</b> удалена у менеджера <code>${chatId}</code>.\n\n${tail}`,
+          { parse_mode: "HTML" },
+        );
+      } else {
+        // not subscribed(warn)
         await ctx.reply(
           `⚠ Менеджер <code>${chatId}</code> не подписан на <b>${NotificationTypeNames[slug]}</b>.`,
           { parse_mode: "HTML" },
         );
         return;
-      }
-
-      const current = await getManagerSubscriptions(chatId);
-      const updated = current.filter((s) => s !== slug);
-      await setManagerSubscriptions(chatId, updated);
-
-      if (updated.length === 0) {
-        await ctx.reply(
-          `✅ Подписка на <b>${NotificationTypeNames[slug]}</b> удалена у менеджера <code>${chatId}</code>.\n\n` +
-            "⚠ Менеджер больше не подписан ни на одно уведомление.",
-          { parse_mode: "HTML" },
-        );
-      } else {
-        await ctx.reply(
-          `✅ Подписка на <b>${NotificationTypeNames[slug]}</b> удалена у менеджера <code>${chatId}</code>.\n\n` +
-            "Оставшиеся подписки:\n" +
-            updated.map((s) => `  • ${NotificationTypeNames[s]}`).join("\n"),
-          { parse_mode: "HTML" },
-        );
       }
     } catch (err) {
       console.error("Error in /removepreference:", err);

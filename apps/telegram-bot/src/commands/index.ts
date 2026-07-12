@@ -111,7 +111,7 @@ export async function registerCommands(bot: Bot<TContext>) {
     // This is per-chat rather than global so that only known managers
     // see these commands in their menu — not every user.
     const managerIds = await getAllManagers();
-    for (const chatId of managerIds) {
+    for (const { chatId } of managerIds) {
       await setCommandsForChat(bot, chatId, publicCommands, managerCommands);
     }
 

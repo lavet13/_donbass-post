@@ -79,11 +79,6 @@ export const addManagerCommand = new Command<TContext>(
             { parse_mode: "HTML" },
           );
           return;
-        case "manager_role_not_found":
-          await ctx.reply(`❌ Не найдена роль <b>Менеджер</b>`, {
-            parse_mode: "HTML",
-          });
-          return;
         case "reactivated_manager":
           await ctx.reply(
             `❕ Реактивирована роль менеджера` +
