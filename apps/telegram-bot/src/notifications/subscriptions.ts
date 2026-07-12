@@ -100,40 +100,6 @@ export async function getAllManagerSubscriptions(): Promise<
   }
 }
 
-/*
- * Check if a manager is subscribed to a notification type
- * */
-export async function isManagerSubscribed(
-  chatId: number,
-  notificationType: NotificationType,
-): Promise<boolean> {
-  try {
-    const manager = await prisma.telegramUser.findUnique({
-      where: {
-        chatId: BigInt(chatId),
-        userRoles: { some: { role: { name: Roles.MANAGER } } },
-        notificationPreferences: {
-          some: { notificationType: { slug: notificationType } },
-        },
-      },
-      select: {
-        notificationPreferences: {
-          select: { notificationType: { select: { slug: true } } },
-        },
-      },
-    });
-
-    if (!manager) return false;
-
-    return manager.notificationPreferences.some(
-      (np) => np.notificationType.slug === notificationType,
-    );
-  } catch (err) {
-    console.error("Failed to check manager subscription:", err);
-    return false;
-  }
-}
-
 export function subscriptionErrorReply(
   result: SetManagerSubscriptionsResult,
 ): string | null {
