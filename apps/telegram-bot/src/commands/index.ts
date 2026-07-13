@@ -1,9 +1,6 @@
 import type { Bot } from "grammy";
 import { NotificationTypes } from "@/notifications/notification-types";
-import {
-  getRootAdminChatId,
-  userHasPermission,
-} from "@/rbac/guards";
+import { getRootAdminChatId, userHasPermission } from "@/rbac/guards";
 import { getAllManagers } from "@/managers/service";
 import {
   adminCommands,
@@ -31,13 +28,15 @@ export async function registerCommands(bot: Bot<TContext>) {
     bot.use(publicCommands);
 
     // managerCommands = /status, /preferences → gated by bot:view-status
-    const managerRouter = bot.filter(
-      async (ctx) => userHasPermission(ctx, Permissions.BOT_VIEW_STATUS),
+    const managerRouter = bot.filter(async (ctx) =>
+      userHasPermission(ctx, Permissions.BOT_VIEW_STATUS),
     );
     managerRouter.use(managerCommands);
 
     // adminCommands = /addmanager etc. → gated by users:manage
-    const adminRouter = bot.filter(async (ctx) => userHasPermission(ctx, Permissions.USERS_MANAGE));
+    const adminRouter = bot.filter(async (ctx) =>
+      userHasPermission(ctx, Permissions.USERS_MANAGE),
+    );
     adminRouter.use(adminCommands);
 
     bot
@@ -56,7 +55,10 @@ export async function registerCommands(bot: Bot<TContext>) {
         }
 
         // Case 2: Manager typed an admin-only command
-        const isManager = await userHasPermission(ctx, Permissions.BOT_VIEW_STATUS);
+        const isManager = await userHasPermission(
+          ctx,
+          Permissions.BOT_VIEW_STATUS,
+        );
         if (isManager) {
           const adminSuggestion = ctx.getNearestCommand(adminCommands);
           if (adminSuggestion) {

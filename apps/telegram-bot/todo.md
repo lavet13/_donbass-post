@@ -13,6 +13,34 @@ Tracking items parked during the RBAC + notifications migration. Tags follow the
 - [ ] **zod validation for `/api/notify/*`** — endpoints hand-roll request validation (manual
       field checks, no library). Migrate to zod: one schema per endpoint, parse at the handler
       boundary, 400 with flattened issues on failure. Bonus: `z.infer` gives request types for free.
+- [ ] **PERF/FIX: `setMyCommands` 429 storm on boot** — `registerCommands` fires one
+      `setMyCommands` per scope×language PLUS one per-manager (`setCommandsForChat` loop) PLUS
+      root admin, on EVERY startup; tsx restarts on every file save → hammers Telegram's
+      rate limit (seen: `429 retry_after: 841`). Command scopes are server-side Telegram state
+      that persists across restarts, so re-pushing identical lists every boot is wasted calls.
+      Quick: gate registration (or just the per-chat loops) behind NODE_ENV/REGISTER_COMMANDS
+      so dev restarts don't re-push. Better: only call setMyCommands when the command set
+      actually changed (hash/version check).
+- [ ] **register manager/admin command scopes reactively, not per-boot** — instead of looping
+      every manager at startup, set each chat's scope when a manager is added/removed
+      (/addmanager, /removemanager). Removes the boot-time amplifier above AND resolves the
+      parked "menu button vs command list use different sources" note (both would read from the
+      RBAC/DB write-path). Structural fix.
+- [ ] **PERF: skip re-pushing unchanged command scopes on boot** — for boot-time scopes
+      (public/all_private_chats/admin), hash each scope's command list, store last-applied hash
+      (small table or JSON), only call setMyCommands when it differs. Idempotency via fingerprint
+      (like a migration checksum). Prod-side polish; #1 dev-gate already handles dev.
+- [ ] **TODO: lint for dead exports** — extract-and-replace refactors leave orphaned exported
+      helpers that `tsc` won't flag (exports are assumed used-externally). Add knip / ts-prune /
+      eslint no-unused-exports so the next `isManagerSubscribed` shows up automatically.
+- [ ] **TODO: drop `AppConfig.managers`, source manager count from DB** — `config.managers.chatIds`
+      is read by status.ts + server.ts but holds the env BOOTSTRAP list, so /status shows the seeded
+      count, not the live one. Migrate both to `(await getAllManagers()).length`, delete the config
+      field + its config.ts mapping. Keep MANAGER_CHAT_IDS (seed.ts still needs it).
+- [ ] **PERF: `getAllManagers()` is a full-scan used to resolve one chatId** in
+      resolveManagerCommand — fine at current scale, but if the manager list grows, swap to a
+      targeted `telegramUser.findFirst({ where:{ chatId, isActive:true, userRoles:{ some:{ revokedAt:null,
+      role:{ name:MANAGER } } } }, select:{ id:true } })` → `{ userId } | null`. YAGNI for now.
 
 ## Structural cleanup (reactive — pure file moves)
 
@@ -89,3 +117,8 @@ See `project-organization-strategies.md`.
 - ✅ **append/remove → single-row atomic ops** — createMany{skipDuplicates}/deleteMany with
   count-as-signal; killed the read-modify-write race; setManagerSubscriptions kept for
   /setpreferences [2026-07-11]
+- ✅ **resolveManagerCommand returns userId** — append/remove dropped their redundant manager
+  findUnique; getAllManagers → {chatId,userId}[] [2026-07-11]
+- ✅ **Deleted orphaned isManagerSubscribed** — dead after the atomic count refactor [2026-07-11]
+- ✅ **Gated command registration** — REGISTER_COMMANDS flag (default false), fixes dev 429 storm
+  from tsx restart-on-save [2026-07-11]

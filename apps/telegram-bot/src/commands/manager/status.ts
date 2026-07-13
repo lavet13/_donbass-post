@@ -5,6 +5,7 @@ import { version } from "../../../package.json";
 import { getCommandListText } from "@/commands/utils";
 import { userHasPermission } from "@/rbac/guards";
 import { Permissions } from "@/rbac/types";
+import { getAllManagers } from "@/managers/service";
 
 export const statusCommand = new Command<TContext>(
   "status",
@@ -19,7 +20,7 @@ export const statusCommand = new Command<TContext>(
     const heapUsedMB = Math.round(memoryUsage.heapUsed / 1024 / 1024);
     const heapTotalMB = Math.round(memoryUsage.heapTotal / 1024 / 1024);
 
-    const managerCount = config.managers.chatIds.length;
+    const managerCount = (await getAllManagers()).length;
 
     const manager = await userHasPermission(ctx, Permissions.BOT_VIEW_STATUS);
     const admin = await userHasPermission(ctx, Permissions.USERS_MANAGE);

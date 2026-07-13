@@ -2,6 +2,7 @@ import { serve } from "srvx/node";
 import { createRoutes } from "@/routes";
 import { getBotManager } from "@/bot";
 import { config, validateNotificationTypes } from "@/config";
+import { getAllManagers } from "./managers/service";
 
 async function startApp() {
   const botManager = getBotManager();
@@ -59,7 +60,7 @@ async function startApp() {
 
     console.warn(`📊 Bot mode: ${botManager.getMode()}`);
     console.warn(`🌍 Environment: ${config.server.nodeEnv}`);
-    console.warn(`👥 Managers configured: ${config.managers.chatIds.length}`);
+    console.warn(`👥 Managers configured: ${(await getAllManagers()).length}`);
 
     const shutdown = async () => {
       console.warn("\nShutting down gracefully...");

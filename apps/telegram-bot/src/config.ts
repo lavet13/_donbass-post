@@ -34,9 +34,6 @@ function buildConfig(env: RawEnv): AppConfig {
       port: env.PORT, // already a number from transform
       nodeEnv: env.NODE_ENV,
     },
-    managers: {
-      chatIds: env.MANAGER_CHAT_IDS, // already number[] from transform
-    },
   };
 }
 

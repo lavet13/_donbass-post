@@ -19,7 +19,4 @@ export type AppConfig = {
     port: number;
     nodeEnv: "development" | "production";
   };
-  managers: {
-    chatIds: number[];
-  };
 };
