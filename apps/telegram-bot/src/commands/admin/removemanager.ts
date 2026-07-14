@@ -1,11 +1,10 @@
-import { getBotManager } from "@/bot";
 import { removeManager } from "@/managers/service";
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
-import { setCommandsForChat } from "@/commands/utils";
-import { publicCommands } from "@/commands/groups";
+import { clearCommandsForChat } from "@/commands/utils";
 import { assertNever } from "@/utils/assert-never";
 import { env } from "@/env";
+import { parseChatId } from "../args";
 
 /**
  * /removemanager <chatId>
@@ -34,9 +33,9 @@ export const removeManagerCommand = new Command<TContext>(
     }
 
     const [chatIdStr] = parts as [string];
-    const chatId = parseInt(chatIdStr, 10);
+    const chatId = parseChatId(chatIdStr);
 
-    if (isNaN(chatId)) {
+    if (chatId === null) {
       await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {
         parse_mode: "HTML",
       });
@@ -67,8 +66,7 @@ export const removeManagerCommand = new Command<TContext>(
 
         case "revoked": {
           // Only demote the menu when something was actually revoked.
-          const bot = getBotManager().getBot();
-          await setCommandsForChat(bot, chatId, publicCommands);
+          await clearCommandsForChat(ctx.api, chatId);
           await ctx.reply(`✅ Менеджер <code>${chatId}</code> удалён.`, {
             parse_mode: "HTML",
           });

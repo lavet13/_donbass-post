@@ -6,7 +6,7 @@ import {
   managerCommands,
   publicCommands,
 } from "@/commands/groups";
-import type { Bot } from "grammy";
+import type { Api } from "grammy";
 import type { BotCommand } from "grammy/types";
 
 export function getCommandListText({
@@ -54,7 +54,7 @@ export function getCommandListText({
  * @param groups - One or more CommandGroups whose commands will be merged
  */
 export async function setCommandsForChat(
-  bot: Bot<TContext>,
+  api: Api,
   chatId: number,
   ...groups: CommandGroup<TContext>[]
 ) {
@@ -83,9 +83,20 @@ export async function setCommandsForChat(
     }
 
     // Step 3: Send the merged list for this language + chat
-    await bot.api.setMyCommands(mergeCommands, {
+    await api.setMyCommands(mergeCommands, {
       scope: { type: "chat", chat_id: chatId },
       language_code: languageCode, // undefined = default language
+    });
+  }
+}
+
+// Inverse of setCommandsForChat — clears the chat scope for EVERY language variant,
+// so the chat falls back to all_private_chats across the board (not just default language).
+export async function clearCommandsForChat(api: Api, chatId: number) {
+  for (const languageCode of LOCALES) {
+    await api.deleteMyCommands({
+      scope: { chat_id: chatId, type: "chat" },
+      language_code: languageCode,
     });
   }
 }

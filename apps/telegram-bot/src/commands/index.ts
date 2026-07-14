@@ -1,7 +1,6 @@
 import type { Bot } from "grammy";
 import { NotificationTypes } from "@/notifications/notification-types";
 import { getRootAdminChatId, userHasPermission } from "@/rbac/guards";
-import { getAllManagers } from "@/managers/service";
 import {
   adminCommands,
   managerCommands,
@@ -109,21 +108,13 @@ export async function registerCommands(bot: Bot<TContext>) {
       });
     }
 
-    // Set manager commands scoped to each manager's specific chat.
-    // This is per-chat rather than global so that only known managers
-    // see these commands in their menu — not every user.
-    const managerIds = await getAllManagers();
-    for (const { chatId } of managerIds) {
-      await setCommandsForChat(bot, chatId, publicCommands, managerCommands);
-    }
-
     // Set admin commands scoped only to the root admin's chat.
     // ROOT_ADMIN_CHAT_ID is guaranteed to exist in production by validateConfig()
     // which throws on startup if it's missing. Safe to skip only in development.
     const adminId = getRootAdminChatId();
     if (adminId) {
       await setCommandsForChat(
-        bot,
+        bot.api,
         adminId,
         publicCommands,
         managerCommands,

@@ -1,10 +1,10 @@
-import { getBotManager } from "@/bot";
 import { addManager } from "@/managers/service";
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
 import { setCommandsForChat } from "@/commands/utils";
 import { managerCommands, publicCommands } from "../groups";
 import { assertNever } from "@/utils/assert-never";
+import { parseChatId } from "@/commands/args";
 
 /**
  * /addmanager <chatId> [username] [firstName] [lastName]
@@ -39,9 +39,9 @@ export const addManagerCommand = new Command<TContext>(
       string,
     ];
 
-    const chatId = parseInt(chatIdStr, 10);
+    const chatId = parseChatId(chatIdStr);
 
-    if (isNaN(chatId)) {
+    if (chatId === null) {
       await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {
         parse_mode: "HTML",
       });
@@ -56,20 +56,24 @@ export const addManagerCommand = new Command<TContext>(
         lastName,
       });
 
-      const bot = getBotManager().getBot();
+      if (
+        result === "fresh_manager" ||
+        result === "reactivated_manager" ||
+        result === "already_manager"
+      ) {
+        await setCommandsForChat(
+          ctx.api,
+          chatId,
+          publicCommands,
+          managerCommands,
+        );
+      }
 
       const displayName = [firstName, lastName].filter(Boolean).join(" ");
       const usernameStr = username ? ` (@${username})` : "";
 
       switch (result) {
         case "fresh_manager":
-          // Update the new manager's chat menu to show public + manager commands.
-          await setCommandsForChat(
-            bot,
-            chatId,
-            publicCommands,
-            managerCommands,
-          );
           await ctx.reply(
             `✅ Менеджер добавлен:\n\n` +
               `Chat ID: <code>${chatId}</code>\n` +
