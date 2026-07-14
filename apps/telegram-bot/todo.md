@@ -13,15 +13,6 @@ Tracking items parked during the RBAC + notifications migration. Tags follow the
 - [ ] **zod validation for `/api/notify/*`** — endpoints hand-roll request validation (manual
       field checks, no library). Migrate to zod: one schema per endpoint, parse at the handler
       boundary, 400 with flattened issues on failure. Bonus: `z.infer` gives request types for free.
-- [ ] **#3 register manager/admin command scopes reactively, not per-boot** — set each chat's
-      scope in the /addmanager /removemanager HANDLERS (not the boot loop, not the service).
-      Removes the boot-time 429 amplifier AND resolves the "menu button vs command list use
-      different sources" note (both read the RBAC/DB write-path). Change setCommandsForChat's
-      first param bot→api so handlers pass ctx.api. Remove = deleteMyCommands(chat scope) →
-      falls back to all_private_chats.
-- [ ] **#2 PERF: skip re-pushing unchanged boot scopes** — hash each scope's serialized payload
-      (commands+scope+language), store last-applied hash (Prisma table CommandScopeState), only
-      setMyCommands when it differs. Migration-checksum pattern. Prod polish; dev-gate handles dev.
 - [ ] **TODO: lint for dead exports** — knip / ts-prune / eslint no-unused-exports, so the next
       orphaned export (like isManagerSubscribed) surfaces automatically (tsc won't — exports are
       assumed used).
@@ -39,9 +30,6 @@ See `project-organization-strategies.md`.
 
 - [ ] **TODO: `core/` for shared infra** (prisma/config/env/router/bot) — later,
       big import churn, only once feature folders exist to contrast against.
-- [ ] **NOTE: menu button vs in-message command list use different sources** —
-      setCommandsForChat scopes via env (getRootAdminChatId); getCommandListText
-      via RBAC. Scope menus from DB roles so both agree (env→RBAC read-path).
 
 ## CI / infra
 
@@ -101,7 +89,14 @@ See `project-organization-strategies.md`.
 - ✅ **resolveManagerCommand returns userId** — append/remove dropped their redundant manager
   findUnique; getAllManagers → {chatId,userId}[] [2026-07-11]
 - ✅ **Deleted orphaned isManagerSubscribed** — dead after the atomic count refactor [2026-07-11]
-- ✅ **Gated command registration (429 quick-fix)** — REGISTER_COMMANDS flag; superseded the
-  "429 storm on boot" quick-half. Structural halves tracked as #3 (reactive) + #2 (hash) [2026-07-11]
+- ~~✅ Gated command registration (429 quick-fix) — REGISTER_COMMANDS flag~~
+  → **REVERTED.** #1 not landed — gating dev hid useful signal; #3 was the real fix.
+  (Check REGISTER_COMMANDS isn't left dead in env.ts.)
 - ✅ **Manager double-check collapsed** — resolveManagerCommand returns userId; per-command
   findUnique gone (was the "verify twice" wrinkle) [2026-07-11]
+- ✅ **#3 reactive command registration** — deleted per-manager boot loop; set scope in
+  /addmanager (all 3 add outcomes), clear in /removemanager (revoked); setCommandsForChat
+  bot→api; symmetric per-language clearCommandsForChat. Closes menu-source mismatch. [2026-07-11]
+- ✅ **#2 hash-gated boot registration — considered, YAGNI** — after #3, residual is ~12 fixed
+  prod-only calls on rare restarts, under the limit; a persisted checksum can desync from
+  Telegram's real state. Not worth the complexity at this scale. [2026-07-11]
