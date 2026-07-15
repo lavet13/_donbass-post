@@ -1,5 +1,5 @@
 import type {
-    AliParcelPickupPayload,
+  AliParcelPickupPayload,
   OnlinePickupPayload,
   PickUpPointDeliveryOrderPayload,
 } from "@/notifications/types";
@@ -19,7 +19,7 @@ export function formatOnlinePickupMessage(
   // Contact preferences for sender
   const senderPrefs: string[] = [];
   if (payload.telegramSender) senderPrefs.push("Telegram");
-  if (payload.whatsappSender) senderPrefs.push("MAX");
+  if (payload.whatsAppSender) senderPrefs.push("MAX"); // was whatsappSender — casing typo
   if (senderPrefs.length > 0) {
     lines.push(`💬 Предпочтения: ${senderPrefs.join(", ")}`);
   }
@@ -54,31 +54,29 @@ export function formatOnlinePickupMessage(
   // Contact preferences for recipient
   const recipientPrefs: string[] = [];
   if (payload.telegramRecipient) recipientPrefs.push("Telegram");
-  if (payload.whatsappRecipient) recipientPrefs.push("WhatsApp");
+  if (payload.whatsAppRecipient) recipientPrefs.push("WhatsApp"); // was whatsappRecipient
   if (recipientPrefs.length > 0) {
     lines.push(`💬 Предпочтения: ${recipientPrefs.join(", ")}`);
   }
 
-  // Delivery address
-  if (payload.pointTo) {
+  // Delivery: XOR'd by the schema — exactly one of these is present.
+  // `!== undefined` not `!!`: pointTo is a number, and !!0 is false.
+  if (payload.pointTo !== undefined) {
     lines.push(`📍 Пункт выдачи: ${payload.pointTo}`);
-  } else if (payload.pickupAddressRecipient) {
+  } else if (payload.pickupAddressRecipient !== undefined) {
     lines.push(`📍 Адрес доставки: ${payload.pickupAddressRecipient}`);
   }
 
   lines.push(`💰 Оплата доставки: ${payload.shippingPayment}`);
 
-  // Customer information (if provided)
-  if (
-    payload.surnameCustomer ||
-    payload.nameCustomer ||
-    payload.patronymicCustomer
-  ) {
+  // Customer: the schema's refine makes this all-or-nothing (0 or 4 fields),
+  // so one check answers for the whole group.
+  if (payload.nameCustomer) {
     lines.push(
       "",
       "💼 <b>Заказчик:</b>",
       `ФИО: ${payload.surnameCustomer} ${payload.nameCustomer} ${payload.patronymicCustomer}`,
-      `📱 Телефон: ${payload.phoneCustomer || "—"}`,
+      `📱 Телефон: ${payload.phoneCustomer}`,
     );
   }
 
@@ -98,13 +96,14 @@ export function formatPickUpPointDeliveryOrderMessage(
     "",
   ];
 
-  // Sender information
+  // ---- Sender: sibling keys, exactly one present (schema refine) -------------
   lines.push("👤 <b>Отправитель:</b>");
 
-  if (payload.sender.nameSender && payload.sender.surnameSender) {
-    // Physical person
+  if (payload.sender) {
+    // Physical person. Inside this branch TS knows every field is present —
+    // no `|| ""` / `|| "—"` fallbacks needed; the schema guarantees them.
     lines.push(
-      `ФИО: ${payload.sender.surnameSender} ${payload.sender.nameSender} ${payload.sender.patronymicSender || ""}`,
+      `ФИО: ${payload.sender.surnameSender} ${payload.sender.nameSender} ${payload.sender.patronymicSender}`,
     );
 
     const senderPrefs: string[] = [];
@@ -114,31 +113,33 @@ export function formatPickUpPointDeliveryOrderMessage(
       lines.push(`💬 Предпочтения: ${senderPrefs.join(", ")}`);
     }
 
-    if (payload.sender.emailSender) {
-      lines.push(`📧 Email: ${payload.sender.emailSender}`);
-    }
-  } else if (payload.sender.companySender) {
-    // Company
+    lines.push(`📧 Email: ${payload.sender.emailSender}`);
+  } else if (payload.companySender) {
+    // Company — companySender is now a SIBLING key, not a field inside sender.
     lines.push(
-      `🏢 Компания: ${payload.sender.companySender}`,
-      `🆔 ИНН: <code>${payload.sender.innSender || "—"}</code>`,
-      `📧 Email: ${payload.sender.emailSender || "—"}`,
+      `🏢 Компания: ${payload.companySender.companySender}`,
+      `🆔 ИНН: <code>${payload.companySender.innSender}</code>`,
+      `📧 Email: ${payload.companySender.emailSender}`,
     );
   }
 
-  lines.push(
-    `📱 Телефон: ${payload.sender.phoneSender}`,
-    `📍 Адрес забора: ${payload.sender.pickupAddress}`,
-    `🏙 Пункт отправления: ${payload.sender.pointFrom}`,
-  );
+  // Fields both branches share. `??` gives a union both members satisfy,
+  // so this narrows honestly — no non-null assertion needed.
+  const sender = payload.sender ?? payload.companySender;
+  if (sender) {
+    lines.push(
+      `📱 Телефон: ${sender.phoneSender}`,
+      `📍 Адрес забора: ${sender.pickupAddress}`,
+      `🏙 Пункт отправления: ${sender.pointFrom}`,
+    );
+  }
 
-  // Recipient information
+  // ---- Recipient -----------------------------------------------------------
   lines.push("", "👥 <b>Получатель:</b>");
 
-  if (payload.recipient.nameRecipient && payload.recipient.surnameRecipient) {
-    // Physical person
+  if (payload.recipient) {
     lines.push(
-      `ФИО: ${payload.recipient.surnameRecipient} ${payload.recipient.nameRecipient} ${payload.recipient.patronymicRecipient || ""}`,
+      `ФИО: ${payload.recipient.surnameRecipient} ${payload.recipient.nameRecipient} ${payload.recipient.patronymicRecipient}`,
     );
 
     const recipientPrefs: string[] = [];
@@ -147,38 +148,36 @@ export function formatPickUpPointDeliveryOrderMessage(
     if (recipientPrefs.length > 0) {
       lines.push(`💬 Предпочтения: ${recipientPrefs.join(", ")}`);
     }
-  } else if (payload.recipient.companyRecipient) {
-    // Company
+  } else if (payload.companyRecipient) {
     lines.push(
-      `🏢 Компания: ${payload.recipient.companyRecipient}`,
-      `🆔 ИНН: <code>${payload.recipient.innRecipient || "—"}</code>`,
-      `📧 Email: ${payload.recipient.emailRecipient || "—"}`,
+      `🏢 Компания: ${payload.companyRecipient.companyRecipient}`,
+      `🆔 ИНН: <code>${payload.companyRecipient.innRecipient}</code>`,
+      `📧 Email: ${payload.companyRecipient.emailRecipient}`,
     );
   }
 
-  lines.push(
-    `📱 Телефон: ${payload.recipient.phoneRecipient}`,
-    `📍 Адрес доставки: ${payload.recipient.deliveryAddress}`,
-  );
-
-  if (payload.recipient.pointTo) {
-    lines.push(`🏙 Пункт выдачи: ${payload.sender.pointFrom}`);
-  }
-
-  if (payload.recipient.deliveryCompany) {
+  const recipient = payload.recipient ?? payload.companyRecipient;
+  if (recipient) {
     lines.push(
-      `🚚 Транспортная компания: ${payload.recipient.deliveryCompany}`,
+      `📱 Телефон: ${recipient.phoneRecipient}`,
+      `📍 Адрес доставки: ${recipient.deliveryAddress}`,
+      // BUG FIX: was printing payload.sender.pointFrom — the SENDER's point.
+      `🏙 Пункт выдачи: ${recipient.pointTo}`,
     );
+
+    if (recipient.deliveryCompany !== undefined) {
+      lines.push(`🚚 Транспортная компания: ${recipient.deliveryCompany}`);
+    }
   }
 
-  // Customer information (if provided)
-  if (payload.customer) {
+  // ---- Customer (optional; at most one of the two) --------------------------
+  const customer = payload.customer ?? payload.companyCustomer;
+  if (customer) {
     lines.push("", "💼 <b>Заказчик:</b>");
 
-    if (payload.customer.nameCustomer && payload.customer.surnameCustomer) {
-      // Physical person
+    if (payload.customer) {
       lines.push(
-        `ФИО: ${payload.customer.surnameCustomer} ${payload.customer.nameCustomer} ${payload.customer.patronymicCustomer || ""}`,
+        `ФИО: ${payload.customer.surnameCustomer} ${payload.customer.nameCustomer} ${payload.customer.patronymicCustomer}`,
       );
 
       const customerPrefs: string[] = [];
@@ -187,19 +186,18 @@ export function formatPickUpPointDeliveryOrderMessage(
       if (customerPrefs.length > 0) {
         lines.push(`💬 Предпочтения: ${customerPrefs.join(", ")}`);
       }
-    } else if (payload.customer.companyCustomer) {
-      // Company
+    } else if (payload.companyCustomer) {
       lines.push(
-        `🏢 Компания: ${payload.customer.companyCustomer}`,
-        `🆔 ИНН: <code>${payload.customer.innCustomer || "—"}</code>`,
-        `📧 Email: ${payload.customer.emailCustomer || "—"}`,
+        `🏢 Компания: ${payload.companyCustomer.companyCustomer}`,
+        `🆔 ИНН: <code>${payload.companyCustomer.innCustomer}</code>`,
+        `📧 Email: ${payload.companyCustomer.emailCustomer}`,
       );
     }
 
-    lines.push(`📱 Телефон: ${payload.customer.phoneCustomer}`);
+    lines.push(`📱 Телефон: ${customer.phoneCustomer}`); // shared by both branches
   }
 
-  // Cargo data
+  // ---- Cargo ---------------------------------------------------------------
   lines.push(
     "",
     "📦 <b>Информация о грузе:</b>",
@@ -227,14 +225,13 @@ export function formatPickUpPointDeliveryOrderMessage(
     lines.push(`💵 Наложенный платеж: ${payload.cargoData.cashOnDelivery} ₽`);
   }
 
-  // Additional services
+  // Additional services — the frontend sends { id } ONLY (no name/price).
+  // `service.name` used to print `undefined`. See the todo about resolving names.
   if (payload.additionalService && payload.additionalService.length > 0) {
     lines.push(
       "",
       "➕ <b>Дополнительные услуги:</b>",
-      ...payload.additionalService.map(
-        (service) => `  • Услуга: ${service.name}`,
-      ),
+      ...payload.additionalService.map((service) => `  • Услуга #${service.id}`),
     );
   }
 
