@@ -462,6 +462,7 @@ __metadata:
     eslint: "npm:^9.36.0"
     globals: "npm:^16.4.0"
     grammy: "npm:^1.44.0"
+    libphonenumber-js: "npm:^1.13.8"
     prettier: "npm:^3.8.0"
     prisma: "npm:^7.8.0"
     socks-proxy-agent: "npm:^10.1.0"
@@ -7344,6 +7345,13 @@ __metadata:
   version: 1.12.38
   resolution: "libphonenumber-js@npm:1.12.38"
   checksum: 10c0/aac8aae95b6d79ddbab9450110bfd7a77e12a68102e970d172f51821a394d375229289030695f2d96a3f142ace2a481bfef2bb7fe29c5e5be07c62ad64b981b4
+  languageName: node
+  linkType: hard
+
+"libphonenumber-js@npm:^1.13.8":
+  version: 1.13.8
+  resolution: "libphonenumber-js@npm:1.13.8"
+  checksum: 10c0/8115a709393f655c98bff70c4a6e80ad7ff402a3def177bc5042ccdd9849c900f0c766f3254c64897b4c77566108822e493b13fd6943d3b079fad5506245308e
   languageName: node
   linkType: hard
 

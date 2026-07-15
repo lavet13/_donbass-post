@@ -14,6 +14,7 @@ export const useMediaQuery = (query: string): boolean => {
     setIsMatched(result.matches);
 
     return () => result.removeEventListener("change", onChange);
+    // eslint-disable-next-line
   }, []);
 
   return isMatched;

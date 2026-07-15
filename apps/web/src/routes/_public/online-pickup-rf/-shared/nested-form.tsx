@@ -869,7 +869,7 @@ export const OnlinePickupRFForm = withForm({
                       pressed={field.state.value}
                       onPressedChange={field.handleChange}
                     >
-                      <span className="min-w-0 flex-1 flex-shrink truncate">
+                      <span className="min-w-0 flex-1 shrink truncate">
                         Третье лицо-Заказчик(ПРИ НАЛИЧИИ)
                       </span>
                       {field.state.value ? <ChevronDown /> : <ChevronUp />}
@@ -957,7 +957,7 @@ export const OnlinePickupRFForm = withForm({
                     />
 
                     <form.AppField
-                      name="phoneSender"
+                      name="phoneCustomer"
                       validators={{
                         onChange: ({ value }) => {
                           return !isPossiblePhoneNumber(value)
@@ -970,36 +970,8 @@ export const OnlinePickupRFForm = withForm({
                           <div className="flex flex-col">
                             <field.PhoneField
                               label="Телефон"
-                              ariaLabel="Заполните телефон отправителя/у кого забрать груз"
+                              ariaLabel="Заполните телефон заказчика"
                               placeholder="Заполните телефон"
-                              rightElement={
-                                <TextField.Slot side="right">
-                                  <Popover.Root>
-                                    <Popover.Trigger>
-                                      <IconButton
-                                        color="gray"
-                                        type="button"
-                                        className="[&_svg]:size-3.5"
-                                        size="2"
-                                        variant="ghost"
-                                      >
-                                        <CircleAlertIcon />
-                                      </IconButton>
-                                    </Popover.Trigger>
-                                    <Popover.Content
-                                      align="end"
-                                      side="bottom"
-                                      size="1"
-                                      maxWidth="300px"
-                                    >
-                                      <Text size="1" as="p" trim="both">
-                                        Если телефон не отвечает, забор не
-                                        производиться
-                                      </Text>
-                                    </Popover.Content>
-                                  </Popover.Root>
-                                </TextField.Slot>
-                              }
                             />
                           </div>
                         );

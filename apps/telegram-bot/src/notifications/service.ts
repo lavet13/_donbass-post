@@ -20,7 +20,7 @@ import type { TCustomBot } from "@/bot";
 /**
  * Result of sending notifications to managers
  */
-interface NotificationResult {
+export interface NotificationResult {
   success: boolean;
   sent: number;
   failed: number;

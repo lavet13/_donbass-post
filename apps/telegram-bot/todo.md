@@ -23,6 +23,17 @@ Tracking items parked during the RBAC + notifications migration. Tags follow the
 - [ ] **PERF: `getAllManagers()` full-scan to resolve one chatId** in resolveManagerCommand —
       fine now; if managers grow, targeted findFirst({ chatId, isActive, userRoles some MANAGER })
       → { userId } | null. YAGNI.
+- [ ] **port `validatePickupTime` to the server** — frontend enforces `с ЧЧ:ММ до ЧЧ:ММ` + a
+      ≥2-hour gap; server currently has a placeholder refine. Regex covers the format; the
+      2-hour rule needs its own refine.
+- [ ] **restructure `notifications/types.ts`** — one file now holds shared helpers
+      (phoneSchema/emailSchema/text3to50/innSchema/positive), three payload schemas, and their
+      sub-objects (~400 lines). Split: `notifications/schemas/_helpers.ts` + one file per payload
+      (`online-pickup.ts`, `pick-up-point-delivery.ts`, `ali-parcel-pickup.ts`), re-exported from
+      an index. Do it once the third schema settles — file moves are cheap, churn isn't.
+- [ ] **extract `handleNotify()` in routes/index.ts** — the 3 notify handlers are ~45 identical
+      lines each, differing only in schema / notify fn / log label. Generic helper collapses
+      ~135 lines → ~35 and makes schema↔sender mismatches a compile error. (Rule of three, met.)
 
 ## Structural cleanup (reactive — pure file moves)
 
@@ -30,6 +41,13 @@ See `project-organization-strategies.md`.
 
 - [ ] **TODO: `core/` for shared infra** (prisma/config/env/router/bot) — later,
       big import churn, only once feature folders exist to contrast against.
+- [ ] **`packages/contracts` — share zod schemas between web + bot** — the payload shape is
+      defined twice: `apps/web/src/features/.../types.ts` (hand-written TS) and the bot's zod
+      schemas. In a Yarn 4 monorepo the fix is a workspace package (like @donbass-post/forms/ui)
+      exporting the schemas; web imports for form validation, bot for parseBody, `z.infer` replaces
+      BOTH hand-written types. NOT gRPC/protobuf — that's for polyglot boundaries; both sides are TS.
+      **Blocked on owning the endpoint**: web currently POSTs to the co-worker's workplace-post.ru,
+      so a shared contract wouldn't bind the actual receiver. Do this WITH that migration.
 
 ## CI / infra
 
@@ -53,6 +71,11 @@ See `project-organization-strategies.md`.
       AnkiWeb. AnkiWeb is the zero-effort default and the privacy delta is small, so
       this is want-not-need. (Not bot code — parked here for lack of a better home;
       move if you keep a personal-infra list.)
+- [ ] **NOTE: capture chmod / chown in bash-knowledge.md** — permissions (rwx, octal 755/644,
+      symbolic u+x), ownership (chown user:group), -R recursive. Check existing bash-knowledge.md
+      coverage first, then ref + cards.
+- [ ] **NOTE: capture find `-path` vs `-name`, and `sed -n 'A,Bp'` line-range printing** in
+      bash-knowledge.md when the chmod/chown one gets done.
 
 ## Done
 
@@ -100,3 +123,5 @@ See `project-organization-strategies.md`.
 - ✅ **#2 hash-gated boot registration — considered, YAGNI** — after #3, residual is ~12 fixed
   prod-only calls on rare restarts, under the limit; a persisted checksum can desync from
   Telegram's real state. Not worth the complexity at this scale. [2026-07-11]
+- ✅ **Dropped AppConfig.managers, manager count from DB** — status.ts/server.ts →
+  getAllManagers().length; config field + mapping removed; MANAGER_CHAT_IDS kept for seed [done earlier]

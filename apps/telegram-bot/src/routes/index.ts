@@ -6,16 +6,18 @@ import {
   notifyAliParcelPickup,
   notifyOnlinePickup,
   notifyPickUpPointDeliveryOrder,
+  type NotificationResult,
 } from "@/notifications/service";
 import { NotificationTypes } from "@/notifications/notification-types";
 import {
   AliParcelPickupSchema,
-  type OnlinePickupPayload,
-  type PickUpPointDeliveryOrderPayload,
+  PickUpPointDeliverySchema,
+  OnlinePickupSchema,
 } from "@/notifications/types";
 import type { Update } from "grammy/types";
 import { version } from "../../package.json";
 import { parseBody } from "@/utils/validate";
+import type z from "zod";
 
 export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
@@ -115,8 +117,8 @@ export function createRoutes(bot: TCustomBot): Router {
       await botManager.handleWebhookUpdate(bot, update);
 
       return new Response("OK", { status: 200 });
-    } catch (error) {
-      console.error("Webhook processing error:", error);
+    } catch (err) {
+      console.error("Webhook processing error:", err);
       return new Response("Error processing update", { status: 500 });
     }
   });
@@ -126,8 +128,8 @@ export function createRoutes(bot: TCustomBot): Router {
       const bot = botManager.getBot();
       const info = await botManager.getWebhookInfo(bot);
       return Response.json(info);
-    } catch (error) {
-      console.error("Error getting webhook info:", error);
+    } catch (err) {
+      console.error("Error getting webhook info:", err);
       return new Response("Error getting webhook info", { status: 500 });
     }
   });
@@ -148,291 +150,79 @@ export function createRoutes(bot: TCustomBot): Router {
 
   router.post(
     `/api/notify/${NotificationTypes.ONLINE_PICKUP_RF}`,
-    async (request) => {
-      try {
-        const payload = await parseJSON<OnlinePickupPayload>(request);
-
-        const requiredFields = [
-          "surnameSender",
-          "nameSender",
-          "patronymicSender",
-          "phoneSender",
-          "cityRegion",
-          "pickupAddress",
-          "pickupTime",
-          "totalWeight",
-          "cubicMeter",
-          "description",
-          "surnameRecipient",
-          "nameRecipient",
-          "patronymicRecipient",
-          "phoneRecipient",
-          "emailRecipient",
-          "shippingPayment",
-        ];
-
-        const missingFields = requiredFields.filter(
-          (field) => !payload[field as keyof OnlinePickupPayload],
-        );
-
-        if (missingFields.length > 0) {
-          return error(`Missing required fields: ${missingFields.join(", ")}`);
-        }
-
-        const result = await notifyOnlinePickup(bot, payload);
-
-        if (!result.success) {
-          console.error("Failed to send notifications:", result.errors);
-
-          // If all failed, return error
-          if (result.sent === 0) {
-            return error("Failed to send notifications to any manager", {
-              status: 500,
-            });
-          }
-
-          // Partial success
-          return Response.json({
-            success: true,
-            message: "Notification sent with some failures",
-            status: {
-              sent: result.sent,
-              failed: result.failed,
-              skipped: result.skipped,
-            },
-            warnings: result.errors,
-          });
-        }
-
-        return Response.json({
-          success: true,
-          message: "Notification sent successfully",
-          status: {
-            sent: result.sent,
-            failed: result.failed,
-            skipped: result.skipped,
-          },
-        });
-      } catch (err) {
-        console.error("Error in /api/notify/online-pickup:", err);
-
-        if (err instanceof Error && err.message === "Invalid JSON body") {
-          return error("Invalid JSON body");
-        }
-
-        return error("Internal server error", { status: 500 });
-      }
-    },
+    (req) =>
+      handleNotify(
+        req,
+        OnlinePickupSchema,
+        (p) => notifyOnlinePickup(bot, p),
+        NotificationTypes.ONLINE_PICKUP_RF,
+      ),
     requireJSON,
   );
 
   router.post(
     `/api/notify/${NotificationTypes.PICK_UP_POINT_DELIVERY}`,
-    async (request) => {
-      try {
-        const payload =
-          await parseJSON<PickUpPointDeliveryOrderPayload>(request);
-
-        // Validate required fields
-        const errors: string[] = [];
-
-        // Sender validation
-        if (!payload.sender) {
-          errors.push("sender is required");
-        } else {
-          if (!payload.sender.phoneSender)
-            errors.push("sender.phoneSender is required");
-          if (!payload.sender.pickupAddress)
-            errors.push("sender.pickupAddress is required");
-          if (!payload.sender.pointFrom)
-            errors.push("sender.pointFrom is required");
-
-          // Either physical person OR company fields must be present
-          const hasPhysicalFields =
-            payload.sender.nameSender && payload.sender.surnameSender;
-          const hasCompanyFields =
-            payload.sender.companySender && payload.sender.innSender;
-
-          if (!hasPhysicalFields && !hasCompanyFields) {
-            errors.push(
-              "sender must have either physical person fields (nameSender, surnameSender) or company fields (companySender, innSender)",
-            );
-          }
-        }
-
-        // Recipient validation
-        if (!payload.recipient) {
-          errors.push("recipient is required");
-        } else {
-          if (!payload.recipient.phoneRecipient)
-            errors.push("recipient.phoneRecipient is required");
-          if (!payload.recipient.deliveryAddress)
-            errors.push("recipient.deliveryAddress is required");
-
-          // Either physical person OR company fields must be present
-          const hasPhysicalFields =
-            payload.recipient.nameRecipient &&
-            payload.recipient.surnameRecipient;
-          const hasCompanyFields =
-            payload.recipient.companyRecipient &&
-            payload.recipient.innRecipient;
-
-          if (!hasPhysicalFields && !hasCompanyFields) {
-            errors.push(
-              "recipient must have either physical person fields (nameRecipient, surnameRecipient) or company fields (companyRecipient, innRecipient)",
-            );
-          }
-        }
-
-        // Cargo data validation
-        if (!payload.cargoData) {
-          errors.push("cargoData is required");
-        } else {
-          if (!payload.cargoData.shippingPayment)
-            errors.push("cargoData.shippingPayment is required");
-          if (!payload.cargoData.description)
-            errors.push("cargoData.description is required");
-          if (payload.cargoData.weightHeaviestPosition === undefined)
-            errors.push("cargoData.weightHeaviestPosition is required");
-          if (payload.cargoData.totalWeight === undefined)
-            errors.push("cargoData.totalWeight is required");
-          if (payload.cargoData.declaredPrice === undefined)
-            errors.push("cargoData.declaredPrice is required");
-          if (payload.cargoData.cubicMeter === undefined)
-            errors.push("cargoData.cubicMeter is required");
-        }
-
-        // Customer validation (if provided)
-        if (payload.customer) {
-          if (!payload.customer.phoneCustomer)
-            errors.push(
-              "customer.phoneCustomer is required when customer is provided",
-            );
-
-          const hasPhysicalFields =
-            payload.customer.nameCustomer && payload.customer.surnameCustomer;
-          const hasCompanyFields =
-            payload.customer.companyCustomer && payload.customer.innCustomer;
-
-          if (!hasPhysicalFields && !hasCompanyFields) {
-            errors.push(
-              "customer must have either physical person fields (nameCustomer, surnameCustomer) or company fields (companyCustomer, innCustomer)",
-            );
-          }
-        }
-
-        if (errors.length > 0) {
-          return error(`Validation errors: ${errors.join("; ")}`, {
-            status: 400,
-          });
-        }
-
-        const result = await notifyPickUpPointDeliveryOrder(bot, payload);
-
-        if (!result.success) {
-          console.error("Failed to send notifications:", result.errors);
-
-          // If all failed, return error
-          if (result.sent === 0) {
-            return error("Failed to send notifications to managers", {
-              status: 500,
-            });
-          }
-
-          // Partial success
-          return Response.json({
-            success: true,
-            message: "Notification sent with some failures",
-            status: {
-              sent: result.sent,
-              failed: result.failed,
-              skipped: result.skipped,
-            },
-            warnings: result.errors,
-          });
-        }
-
-        // Partial success
-        return Response.json({
-          success: true,
-          message: "Notification sent successfully",
-          status: {
-            sent: result.sent,
-            failed: result.failed,
-            skipped: result.skipped,
-          },
-        });
-      } catch (err) {
-        console.error(
-          "Error in /api/notify/pick-up-point-delivery-order:",
-          err,
-        );
-
-        if (err instanceof Error && err.message === "Invalid JSON body") {
-          return error("Invalid JSON body");
-        }
-
-        return error("Internal server error", { status: 500 });
-      }
-    },
+    (req) =>
+      handleNotify(
+        req,
+        PickUpPointDeliverySchema,
+        (p) => notifyPickUpPointDeliveryOrder(bot, p),
+        NotificationTypes.PICK_UP_POINT_DELIVERY,
+      ),
     requireJSON,
   );
 
   router.post(
     `/api/notify/${NotificationTypes.ALI_PARCEL_PICKUP}`,
-    async (request) => {
-      try {
-        const body = await parseJSON(request);
-        const result = parseBody(AliParcelPickupSchema, body);
-
-        if (!result.success) {
-          return result.response;
-        }
-
-        const notifResult = await notifyAliParcelPickup(bot, result.data);
-
-        if (notifResult.sent === 0 && notifResult.failed > 0) {
-          console.error("Failed to send notifications:", notifResult.errors);
-          return error("Failed to send notifications to any manager", {
-            status: 500,
-          });
-        }
-
-        if (notifResult.failed > 0) {
-          console.error("Partial failure:", notifResult.errors);
-          return Response.json({
-            success: true,
-            message: "Notification sent with some failures",
-            status: {
-              sent: notifResult.sent,
-              failed: notifResult.failed,
-              skipped: notifResult.skipped,
-            },
-            warnings: notifResult.errors,
-          });
-        }
-
-        return Response.json({
-          success: true,
-          message: "Notification sent successfully",
-          status: {
-            sent: notifResult.sent,
-            failed: notifResult.failed,
-            skipped: notifResult.skipped,
-          },
-        });
-      } catch (err) {
-        console.error("Error in /api/notify/ali-parcel-pickup:", err);
-
-        if (err instanceof Error && err.message === "Invalid JSON body") {
-          return error("Invalid JSON body");
-        }
-
-        return error("Internal server error:", { status: 500 });
-      }
-    },
+    (req) =>
+      handleNotify(
+        req,
+        AliParcelPickupSchema,
+        (p) => notifyAliParcelPickup(bot, p),
+        NotificationTypes.ALI_PARCEL_PICKUP,
+      ),
     requireJSON,
   );
 
   return router;
+}
+
+async function handleNotify<T>(
+  request: Request,
+  schema: z.ZodType<T>,
+  send: (payload: T) => Promise<NotificationResult>,
+  label: string,
+): Promise<Response> {
+  try {
+    const body = await parseJSON(request);
+    const parsed = parseBody(schema, body);
+    if (!parsed.success) return parsed.response; // 400 with zod's message
+
+    const result = await send(parsed.data);
+    const status = {
+      sent: result.sent,
+      failed: result.failed,
+      skipped: result.skipped,
+    };
+
+    if (result.sent === 0 && result.failed > 0)
+      return error("Failed to send notifications to any manager", {
+        status: 500,
+      });
+
+    return Response.json({
+      success: true,
+      message:
+        result.failed > 0
+          ? "Notification sent with some failures"
+          : "Notification sent successfully",
+      status,
+      ...(result.failed > 0 && { warnings: result.errors }), // only include when there are failures
+    });
+  } catch (err) {
+    console.error(`Error in /api/notify/${label}:`, err);
+    if (err instanceof Error && err.message === "Invalid JSON body")
+      return error("Invalid JSON body");
+    return error("Internal server error", { status: 500 });
+  }
 }

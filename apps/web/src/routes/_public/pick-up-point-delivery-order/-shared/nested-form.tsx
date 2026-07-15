@@ -1794,7 +1794,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
                     className={cn(
                       "bg-accentA-3 text-accentA-11 flex items-center justify-center rounded-md py-2 text-3xl font-bold",
                       isPlaceholderData &&
-                        "animate-[pulse_1.5s_cubic-bezier(0.4,_0,_0.6,_1)_infinite] opacity-70",
+                        "animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite] opacity-70",
                     )}
                   >
                     {calculateDeliveryResult.price +
