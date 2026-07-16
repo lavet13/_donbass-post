@@ -10,30 +10,44 @@ Tracking items parked during the RBAC + notifications migration. Tags follow the
 - [ ] **FIX: replace `NODE_ENV==="production"` self-removal gate** with the real
       invariant — "would this leave zero active managers?" (count check, like the
       backfill gate). Environment-independent; also solves single-user testing.
-- [ ] **zod validation for `/api/notify/*`** — endpoints hand-roll request validation (manual
-      field checks, no library). Migrate to zod: one schema per endpoint, parse at the handler
-      boundary, 400 with flattened issues on failure. Bonus: `z.infer` gives request types for free.
+- [ ] **FIX: PickUpPointDelivery schema models the WRONG shape** — the real producer (old PHP
+      site's JS) sends ONE `sender`/`recipient`/`customer` key whose VALUE is either the
+      individual or company shape — NOT sibling keys (`sender` | `companySender`). That's the
+      React app's shape, and it posts to workplace-post.ru, not here. Fix: `z.union([Individual,
+    Company])` on each sub-object value; delete the three top-level XOR refines (the union
+      carries the XOR). Also: `recipient.pointTo` is NEVER sent (drop it), `deliveryCompany`
+      arrives as a resolved NAME string not an id, and the company-recipient branch sends
+      neither. Then revert formatters.ts to nested branching.
+- [ ] **verify OnlinePickup's remaining rules against its real producer** — whatsApp casing and
+      pointTo-as-string confirmed; still unverified: whether the pointTo XOR pickupAddressRecipient
+      and the 4-field customer all-or-nothing refines match what the old site actually sends. If it
+      can send neither, the XOR 400s working traffic.
 - [ ] **TODO: lint for dead exports** — knip / ts-prune / eslint no-unused-exports, so the next
       orphaned export (like isManagerSubscribed) surfaces automatically (tsc won't — exports are
       assumed used).
-- [ ] **TODO: drop `AppConfig.managers`, source manager count from DB** — config.managers.chatIds
-      (status.ts + server.ts) holds the env BOOTSTRAP list → /status shows the seeded count, not
-      the live one. Migrate both to `(await getAllManagers()).length`, delete the field + config.ts
-      mapping. Keep MANAGER_CHAT_IDS (seed.ts needs it).
 - [ ] **PERF: `getAllManagers()` full-scan to resolve one chatId** in resolveManagerCommand —
       fine now; if managers grow, targeted findFirst({ chatId, isActive, userRoles some MANAGER })
       → { userId } | null. YAGNI.
-- [ ] **port `validatePickupTime` to the server** — frontend enforces `с ЧЧ:ММ до ЧЧ:ММ` + a
-      ≥2-hour gap; server currently has a placeholder refine. Regex covers the format; the
-      2-hour rule needs its own refine.
-- [ ] **restructure `notifications/types.ts`** — one file now holds shared helpers
-      (phoneSchema/emailSchema/text3to50/innSchema/positive), three payload schemas, and their
-      sub-objects (~400 lines). Split: `notifications/schemas/_helpers.ts` + one file per payload
-      (`online-pickup.ts`, `pick-up-point-delivery.ts`, `ali-parcel-pickup.ts`), re-exported from
-      an index. Do it once the third schema settles — file moves are cheap, churn isn't.
-- [ ] **extract `handleNotify()` in routes/index.ts** — the 3 notify handlers are ~45 identical
-      lines each, differing only in schema / notify fn / log label. Generic helper collapses
-      ~135 lines → ~35 and makes schema↔sender mismatches a compile error. (Rule of three, met.)
+- [ ] **restructure `notifications/types.ts`** — one file holds shared helpers
+      (phone/email/text3to50/inn/positive/validatePickupTime), three payload schemas, and their
+      sub-objects (~400 lines). Split: `notifications/schemas/_helpers.ts` + one file per payload,
+      re-exported from an index. Do it once the schemas settle — file moves are cheap, churn isn't.
+- [ ] **`/api/notify` receives display STRINGS, not ids** — the old site resolves
+      pointFrom/deliveryCompany to names (`${point.name}, ${point.address}`) before POSTing, so
+      the bot prints text it can't join on. Migrate to sending raw ids + DB lookup at format time.
+- [ ] **old-site JS: fix `getFormattedServices` (additionalService never arrives)** — the fn has a
+      block body with no `return` → undefined → JSON.stringify drops the key, so services NEVER
+      reach the bot. Its lookup is also wrong: `additionalServices.indexOf(service.id)` searches an
+      object array for a primitive (always -1), and `additionalServices[s.id]` indexes by id, not
+      position (and the array was .reverse()d). Correct form:
+        const getFormattedServices = (services) =>
+          services.map((s) => additionalServices.find((as) => as.id === s.id)).filter(Boolean);
+      Until this lands, the bot's `additionalService` schema ({id,name,price}) is never exercised —
+      and a partial fix (adding `return` without fixing the lookup) would send bare {id} and 400.
+- [ ] **old-site JS: company customers silently dropped** — the payload gates `customer` on
+      `inputs.nameCustomer`, which only exists in the individual markup.
+- [ ] **old-site JS: recipient transform resolves pointTo OR deliveryCompany** (early return),
+      never both.
 
 ## Structural cleanup (reactive — pure file moves)
 
@@ -41,13 +55,11 @@ See `project-organization-strategies.md`.
 
 - [ ] **TODO: `core/` for shared infra** (prisma/config/env/router/bot) — later,
       big import churn, only once feature folders exist to contrast against.
-- [ ] **`packages/contracts` — share zod schemas between web + bot** — the payload shape is
-      defined twice: `apps/web/src/features/.../types.ts` (hand-written TS) and the bot's zod
-      schemas. In a Yarn 4 monorepo the fix is a workspace package (like @donbass-post/forms/ui)
-      exporting the schemas; web imports for form validation, bot for parseBody, `z.infer` replaces
-      BOTH hand-written types. NOT gRPC/protobuf — that's for polyglot boundaries; both sides are TS.
-      **Blocked on owning the endpoint**: web currently POSTs to the co-worker's workplace-post.ru,
-      so a shared contract wouldn't bind the actual receiver. Do this WITH that migration.
+- [ ] **`packages/contracts` — share zod schemas between web + bot** — payload shape defined twice.
+      A Yarn 4 workspace package (like @donbass-post/forms/ui) exporting the schemas; `z.infer`
+      replaces both hand-written types. NOT gRPC — both sides are TS. **Blocked on owning the
+      endpoint**: web POSTs to workplace-post.ru, and the bot's real client is the PHP site's JS,
+      so a shared contract wouldn't bind either producer today. Do this WITH that migration.
 
 ## CI / infra
 
@@ -59,10 +71,12 @@ See `project-organization-strategies.md`.
 
 ## Known wrinkles (documented, fix when they cost)
 
-- [ ] **HACK: `phone-field.tsx` casts `Input as InputComponent<...>`** — silences
-      a react-phone-number-input vs FC return-type mismatch; the local
-      `InputComponent` type duplicates the library's. If the lib's signature drifts,
-      the cast hides it. Acceptable; revisit if the lib updates.
+- [ ] **HACK: `phone-field.tsx` casts `Input as InputComponent<...>`** — silences a
+      react-phone-number-input vs FC return-type mismatch; the local `InputComponent` type
+      duplicates the library's. If the lib's signature drifts, the cast hides it.
+- [ ] **NOTE: `/api/notify`'s real client is the old PHP site's JS, not apps/web** — apps/web
+      POSTs to workplace-post.ru (co-worker's backend). Always verify payload shapes against the
+      old-site JS until the migration lands.
 
 ## Backlog / low priority (non-bot infra)
 
@@ -125,3 +139,17 @@ See `project-organization-strategies.md`.
   Telegram's real state. Not worth the complexity at this scale. [2026-07-11]
 - ✅ **Dropped AppConfig.managers, manager count from DB** — status.ts/server.ts →
   getAllManagers().length; config field + mapping removed; MANAGER_CHAT_IDS kept for seed [done earlier]
+- ✅ **zod validation for `/api/notify/*`** — schemas at the handler boundary, hand-written payload
+  interfaces → `z.infer`, `!payload[f]` falsy-check bug gone. Shape corrections outstanding (see
+  Remaining) [2026-07-12]
+- ✅ **extract `handleNotify()`** — 3 handlers ~45 identical lines each → generic helper (~135 → ~35);
+  schema↔sender mismatch is now a compile error [2026-07-12]
+- ✅ **port `validatePickupTime`** — via `.superRefine` (message-returning fn drops straight in);
+  regex anchored, since the server has no input mask [2026-07-12]
+- ✅ **fix(web): customer phone bound to `phoneSender`** — overwrote the sender's phone;
+  `phoneCustomer` never populated [2026-07-12]
+- ✅ **fix: formatter printed sender's pointFrom as the recipient's pickup point** [2026-07-12]
+- ✅ **Corrected /api/notify payload shapes to the real producer** — z.union per sub-object
+  (sender/recipient/customer are one key, two shapes); XOR refines deleted (the union carries it);
+  formatters narrow with `in`; point*/deliveryCompany are display strings [2026-07-12]
+- ✅ **fix: whatsapp casing in formatters** — client sends whatsApp*; formatter read whatsapp* [2026-07-12]

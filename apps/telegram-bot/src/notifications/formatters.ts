@@ -19,7 +19,7 @@ export function formatOnlinePickupMessage(
   // Contact preferences for sender
   const senderPrefs: string[] = [];
   if (payload.telegramSender) senderPrefs.push("Telegram");
-  if (payload.whatsAppSender) senderPrefs.push("MAX"); // was whatsappSender — casing typo
+  if (payload.whatsAppSender) senderPrefs.push("MAX");
   if (senderPrefs.length > 0) {
     lines.push(`💬 Предпочтения: ${senderPrefs.join(", ")}`);
   }
@@ -54,29 +54,31 @@ export function formatOnlinePickupMessage(
   // Contact preferences for recipient
   const recipientPrefs: string[] = [];
   if (payload.telegramRecipient) recipientPrefs.push("Telegram");
-  if (payload.whatsAppRecipient) recipientPrefs.push("WhatsApp"); // was whatsappRecipient
+  if (payload.whatsAppRecipient) recipientPrefs.push("WhatsApp");
   if (recipientPrefs.length > 0) {
     lines.push(`💬 Предпочтения: ${recipientPrefs.join(", ")}`);
   }
 
-  // Delivery: XOR'd by the schema — exactly one of these is present.
-  // `!== undefined` not `!!`: pointTo is a number, and !!0 is false.
-  if (payload.pointTo !== undefined) {
+  // Delivery address
+  if (payload.pointTo) {
     lines.push(`📍 Пункт выдачи: ${payload.pointTo}`);
-  } else if (payload.pickupAddressRecipient !== undefined) {
+  } else if (payload.pickupAddressRecipient) {
     lines.push(`📍 Адрес доставки: ${payload.pickupAddressRecipient}`);
   }
 
   lines.push(`💰 Оплата доставки: ${payload.shippingPayment}`);
 
-  // Customer: the schema's refine makes this all-or-nothing (0 or 4 fields),
-  // so one check answers for the whole group.
-  if (payload.nameCustomer) {
+  // Customer information (if provided)
+  if (
+    payload.surnameCustomer ||
+    payload.nameCustomer ||
+    payload.patronymicCustomer
+  ) {
     lines.push(
       "",
       "💼 <b>Заказчик:</b>",
       `ФИО: ${payload.surnameCustomer} ${payload.nameCustomer} ${payload.patronymicCustomer}`,
-      `📱 Телефон: ${payload.phoneCustomer}`,
+      `📱 Телефон: ${payload.phoneCustomer || "—"}`,
     );
   }
 
@@ -96,12 +98,13 @@ export function formatPickUpPointDeliveryOrderMessage(
     "",
   ];
 
-  // ---- Sender: sibling keys, exactly one present (schema refine) -------------
+  // Sender information
   lines.push("👤 <b>Отправитель:</b>");
 
-  if (payload.sender) {
-    // Physical person. Inside this branch TS knows every field is present —
-    // no `|| ""` / `|| "—"` fallbacks needed; the schema guarantees them.
+  // `"x" in obj` is a TYPE GUARD for unions: testing a key unique to one branch narrows
+  // payload.sender to that branch inside the block (and to the other in the else).
+  if ("nameSender" in payload.sender) {
+    // → SenderIndividualObj. All its fields are required, so no `|| ""` fallbacks.
     lines.push(
       `ФИО: ${payload.sender.surnameSender} ${payload.sender.nameSender} ${payload.sender.patronymicSender}`,
     );
@@ -114,30 +117,26 @@ export function formatPickUpPointDeliveryOrderMessage(
     }
 
     lines.push(`📧 Email: ${payload.sender.emailSender}`);
-  } else if (payload.companySender) {
-    // Company — companySender is now a SIBLING key, not a field inside sender.
+  } else {
+    // → SenderCompanyObj (no third case — the union has exactly two members)
     lines.push(
-      `🏢 Компания: ${payload.companySender.companySender}`,
-      `🆔 ИНН: <code>${payload.companySender.innSender}</code>`,
-      `📧 Email: ${payload.companySender.emailSender}`,
+      `🏢 Компания: ${payload.sender.companySender}`,
+      `🆔 ИНН: <code>${payload.sender.innSender}</code>`,
+      `📧 Email: ${payload.sender.emailSender}`,
     );
   }
 
-  // Fields both branches share. `??` gives a union both members satisfy,
-  // so this narrows honestly — no non-null assertion needed.
-  const sender = payload.sender ?? payload.companySender;
-  if (sender) {
-    lines.push(
-      `📱 Телефон: ${sender.phoneSender}`,
-      `📍 Адрес забора: ${sender.pickupAddress}`,
-      `🏙 Пункт отправления: ${sender.pointFrom}`,
-    );
-  }
+  // Shared by both branches → accessible without narrowing.
+  lines.push(
+    `📱 Телефон: ${payload.sender.phoneSender}`,
+    `📍 Адрес забора: ${payload.sender.pickupAddress}`,
+    `🏙 Пункт отправления: ${payload.sender.pointFrom}`,
+  );
 
-  // ---- Recipient -----------------------------------------------------------
+  // Recipient
   lines.push("", "👥 <b>Получатель:</b>");
 
-  if (payload.recipient) {
+  if ("nameRecipient" in payload.recipient) {
     lines.push(
       `ФИО: ${payload.recipient.surnameRecipient} ${payload.recipient.nameRecipient} ${payload.recipient.patronymicRecipient}`,
     );
@@ -148,34 +147,32 @@ export function formatPickUpPointDeliveryOrderMessage(
     if (recipientPrefs.length > 0) {
       lines.push(`💬 Предпочтения: ${recipientPrefs.join(", ")}`);
     }
-  } else if (payload.companyRecipient) {
+  } else {
     lines.push(
-      `🏢 Компания: ${payload.companyRecipient.companyRecipient}`,
-      `🆔 ИНН: <code>${payload.companyRecipient.innRecipient}</code>`,
-      `📧 Email: ${payload.companyRecipient.emailRecipient}`,
+      `🏢 Компания: ${payload.recipient.companyRecipient}`,
+      `🆔 ИНН: <code>${payload.recipient.innRecipient}</code>`,
+      `📧 Email: ${payload.recipient.emailRecipient}`,
     );
   }
 
-  const recipient = payload.recipient ?? payload.companyRecipient;
-  if (recipient) {
-    lines.push(
-      `📱 Телефон: ${recipient.phoneRecipient}`,
-      `📍 Адрес доставки: ${recipient.deliveryAddress}`,
-      // BUG FIX: was printing payload.sender.pointFrom — the SENDER's point.
-      `🏙 Пункт выдачи: ${recipient.pointTo}`,
-    );
+  lines.push(
+    `📱 Телефон: ${payload.recipient.phoneRecipient}`,
+    `📍 Адрес доставки: ${payload.recipient.deliveryAddress}`,
+  );
 
-    if (recipient.deliveryCompany !== undefined) {
-      lines.push(`🚚 Транспортная компания: ${recipient.deliveryCompany}`);
-    }
+  // Both optional, present on BOTH branches → no narrowing needed, prints for either shape.
+  if (payload.recipient.pointTo) {
+    lines.push(`🏙 Пункт выдачи: ${payload.recipient.pointTo}`);
+  }
+  if (payload.recipient.deliveryCompany) {
+    lines.push(`🚚 Транспортная компания: ${payload.recipient.deliveryCompany}`);
   }
 
-  // ---- Customer (optional; at most one of the two) --------------------------
-  const customer = payload.customer ?? payload.companyCustomer;
-  if (customer) {
+  // Customer (optional)
+  if (payload.customer) {
     lines.push("", "💼 <b>Заказчик:</b>");
 
-    if (payload.customer) {
+    if ("nameCustomer" in payload.customer) {
       lines.push(
         `ФИО: ${payload.customer.surnameCustomer} ${payload.customer.nameCustomer} ${payload.customer.patronymicCustomer}`,
       );
@@ -186,18 +183,18 @@ export function formatPickUpPointDeliveryOrderMessage(
       if (customerPrefs.length > 0) {
         lines.push(`💬 Предпочтения: ${customerPrefs.join(", ")}`);
       }
-    } else if (payload.companyCustomer) {
+    } else {
       lines.push(
-        `🏢 Компания: ${payload.companyCustomer.companyCustomer}`,
-        `🆔 ИНН: <code>${payload.companyCustomer.innCustomer}</code>`,
-        `📧 Email: ${payload.companyCustomer.emailCustomer}`,
+        `🏢 Компания: ${payload.customer.companyCustomer}`,
+        `🆔 ИНН: <code>${payload.customer.innCustomer}</code>`,
+        `📧 Email: ${payload.customer.emailCustomer}`,
       );
     }
 
-    lines.push(`📱 Телефон: ${customer.phoneCustomer}`); // shared by both branches
+    lines.push(`📱 Телефон: ${payload.customer.phoneCustomer}`); // shared by both branches
   }
 
-  // ---- Cargo ---------------------------------------------------------------
+  // Cargo data
   lines.push(
     "",
     "📦 <b>Информация о грузе:</b>",
@@ -225,13 +222,14 @@ export function formatPickUpPointDeliveryOrderMessage(
     lines.push(`💵 Наложенный платеж: ${payload.cargoData.cashOnDelivery} ₽`);
   }
 
-  // Additional services — the frontend sends { id } ONLY (no name/price).
-  // `service.name` used to print `undefined`. See the todo about resolving names.
+  // Additional services
   if (payload.additionalService && payload.additionalService.length > 0) {
     lines.push(
       "",
       "➕ <b>Дополнительные услуги:</b>",
-      ...payload.additionalService.map((service) => `  • Услуга #${service.id}`),
+      ...payload.additionalService.map(
+        (service) => `  • Услуга: ${service.name}`,
+      ),
     );
   }
 

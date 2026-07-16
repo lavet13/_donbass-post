@@ -50,7 +50,9 @@ const SenderIndividualObj = z.object({
   phoneSender: phoneSchema,
   telegramSender: z.boolean().default(false),
   whatsAppSender: z.boolean().default(false),
-  pointFrom: z.number({ error: "Выберите населенный пункт" }).int(), // form sends parsed int
+  pointFrom: z
+    .string({ error: "Выберите населенный пункт" })
+    .min(1, "Выберите населенный пункт"),
   pickupAddress: text3to50(
     "Адрес обязателен",
     "Адрес не должно быть короче 3 символов и длиннее 50",
@@ -65,7 +67,9 @@ const SenderCompanyObj = z.object({
   ),
   phoneSender: phoneSchema,
   emailSender: emailSchema,
-  pointFrom: z.number({ error: "Выберите населенный пункт" }).int(),
+  pointFrom: z
+    .string({ error: "Выберите населенный пункт" })
+    .min(1, "Выберите населенный пункт"),
   pickupAddress: text3to50(
     "Адрес обязателен",
     "Адрес не должно быть короче 3 символов и длиннее 50",
@@ -89,12 +93,18 @@ const RecipientIndividualObj = z.object({
   phoneRecipient: phoneSchema,
   telegramRecipient: z.boolean().default(false),
   whatsAppRecipient: z.boolean().default(false),
-  deliveryCompany: z.number().int().optional(), // form has NO validator here -> optional
+  deliveryCompany: z
+    .string({ error: "Транспортная компания должна быть заполнена!" })
+    .min(1, { error: "Транспортная компания должна быть заполнена!" })
+    .optional(),
   deliveryAddress: text3to50(
     "Адрес получателя или ТК обязателен",
     "Адрес получателя или ТК не должно быть короче 3 символов и длиннее 50",
   ),
-  pointTo: z.number({ error: "Выберите населенный пункт" }).int(),
+  pointTo: z
+    .string({ error: "Выберите населенный пункт" })
+    .min(1, "Выберите населенный пункт")
+    .optional(),
 });
 
 const RecipientCompanyObj = z.object({
@@ -109,8 +119,14 @@ const RecipientCompanyObj = z.object({
     "Адрес не должно быть короче 3 символов и длиннее 50",
   ),
   innRecipient: innSchema,
-  deliveryCompany: z.number().int().optional(),
-  pointTo: z.number({ error: "Выберите населенный пункт" }).int(),
+  deliveryCompany: z
+    .string({ error: "Транспортная компания должна быть заполнена!" })
+    .min(1, { error: "Транспортная компания должна быть заполнена!" })
+    .optional(),
+  pointTo: z
+    .string({ error: "Выберите населенный пункт" })
+    .min(1, "Выберите населенный пункт")
+    .optional(),
 });
 
 const CustomerIndividualObj = z.object({
@@ -165,38 +181,19 @@ const CargoData = z.object({
   height: z.number().optional(),
 });
 
-export const PickUpPointDeliverySchema = z
-  .object({
-    sender: SenderIndividualObj.optional(), // the INNER objects, not the wrappers
-    companySender: SenderCompanyObj.optional(),
-    recipient: RecipientIndividualObj.optional(),
-    companyRecipient: RecipientCompanyObj.optional(),
-    customer: CustomerIndividualObj.optional(),
-    companyCustomer: CustomerCompanyObj.optional(),
-    cargoData: CargoData,
-    additionalService: z.array(z.object({ id: z.number() })).optional(),
-    timestamp: z.string().default(() => new Date().toISOString()),
-    source: z.string().default("web"),
-  })
-  // XOR in JS is just: boolean !== boolean. Exactly one truthy → true; both or neither → false.
-  .refine((d) => !!d.sender !== !!d.companySender, {
-    error:
-      "Укажите отправителя: либо физ. лицо (sender), либо компанию (companySender), но не оба",
-    path: ["sender"],
-  })
-  .refine((d) => !!d.recipient !== !!d.companyRecipient, {
-    error:
-      "Укажите получателя: либо recipient, либо companyRecipient, но не оба",
-    path: ["recipient"],
-  })
-  // customer is OPTIONAL: neither is fine, but not both.
-  // The !(a && b) "at most one" pattern you asked about is on the cheat-sheet card,
-  // framed as "optional but mutually exclusive"
-  .refine((d) => !(d.customer && d.companyCustomer), {
-    error:
-      "Заказчик: укажите либо физ.лицо (customer), либо компанию (companyCustomer), но не оба",
-    path: ["customer"],
-  });
+export const PickUpPointDeliverySchema = z.object({
+  sender: z.union([SenderIndividualObj, SenderCompanyObj]),
+  recipient: z.union([RecipientIndividualObj, RecipientCompanyObj]),
+  customer: z.union([CustomerIndividualObj, CustomerCompanyObj]).optional(),
+  cargoData: CargoData,
+  additionalService: z
+    .array(
+      z.object({ id: z.number(), name: z.string(), price: z.number().int() }),
+    )
+    .optional(),
+  timestamp: z.string().default(() => new Date().toISOString()),
+  source: z.string().default("web"),
+});
 
 export type PickUpPointDeliveryOrderPayload = z.infer<
   typeof PickUpPointDeliverySchema
@@ -264,7 +261,10 @@ export const OnlinePickupSchema = z
     emailRecipient: emailSchema,
     telegramRecipient: z.boolean().default(false),
     whatsAppRecipient: z.boolean().default(false),
-    pointTo: z.number({ error: "Выберите населенный пункт" }).int().optional(),
+    pointTo: z
+      .string({ error: "Выберите населенный пункт" })
+      .min(1, "Выберите населенный пункт")
+      .optional(),
     pickupAddressRecipient: text3to50(
       "Адрес обязателен",
       "Адрес не должно быть короче 3 символов и длиннее 50",
