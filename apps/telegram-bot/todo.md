@@ -14,7 +14,7 @@ Tracking items parked during the RBAC + notifications migration. Tags follow the
       site's JS) sends ONE `sender`/`recipient`/`customer` key whose VALUE is either the
       individual or company shape — NOT sibling keys (`sender` | `companySender`). That's the
       React app's shape, and it posts to workplace-post.ru, not here. Fix: `z.union([Individual,
-    Company])` on each sub-object value; delete the three top-level XOR refines (the union
+  Company])` on each sub-object value; delete the three top-level XOR refines (the union
       carries the XOR). Also: `recipient.pointTo` is NEVER sent (drop it), `deliveryCompany`
       arrives as a resolved NAME string not an id, and the company-recipient branch sends
       neither. Then revert formatters.ts to nested branching.
@@ -40,10 +40,11 @@ Tracking items parked during the RBAC + notifications migration. Tags follow the
       reach the bot. Its lookup is also wrong: `additionalServices.indexOf(service.id)` searches an
       object array for a primitive (always -1), and `additionalServices[s.id]` indexes by id, not
       position (and the array was .reverse()d). Correct form:
-        const getFormattedServices = (services) =>
-          services.map((s) => additionalServices.find((as) => as.id === s.id)).filter(Boolean);
-      Until this lands, the bot's `additionalService` schema ({id,name,price}) is never exercised —
-      and a partial fix (adding `return` without fixing the lookup) would send bare {id} and 400.
+      const getFormattedServices = (services) =>
+      services.map((s) => additionalServices.find((as) => as.id === s.id)).filter(Boolean);
+      The bot side is READY (schema declares {id,name,price}, formatter prints service.name) — it's
+      simply never exercised. A partial fix (adding `return` without fixing the lookup) sends bare
+      {id} and 400s. Fix both together or neither.
 - [ ] **old-site JS: company customers silently dropped** — the payload gates `customer` on
       `inputs.nameCustomer`, which only exists in the individual markup.
 - [ ] **old-site JS: recipient transform resolves pointTo OR deliveryCompany** (early return),
@@ -128,7 +129,6 @@ See `project-organization-strategies.md`.
 - ✅ **Deleted orphaned isManagerSubscribed** — dead after the atomic count refactor [2026-07-11]
 - ~~✅ Gated command registration (429 quick-fix) — REGISTER_COMMANDS flag~~
   → **REVERTED.** #1 not landed — gating dev hid useful signal; #3 was the real fix.
-  (Check REGISTER_COMMANDS isn't left dead in env.ts.)
 - ✅ **Manager double-check collapsed** — resolveManagerCommand returns userId; per-command
   findUnique gone (was the "verify twice" wrinkle) [2026-07-11]
 - ✅ **#3 reactive command registration** — deleted per-manager boot loop; set scope in
@@ -151,5 +151,7 @@ See `project-organization-strategies.md`.
 - ✅ **fix: formatter printed sender's pointFrom as the recipient's pickup point** [2026-07-12]
 - ✅ **Corrected /api/notify payload shapes to the real producer** — z.union per sub-object
   (sender/recipient/customer are one key, two shapes); XOR refines deleted (the union carries it);
-  formatters narrow with `in`; point*/deliveryCompany are display strings [2026-07-12]
+  formatters narrow with `in`; point\*/deliveryCompany are display strings [2026-07-12]
 - ✅ **fix: whatsapp casing in formatters** — client sends whatsApp*; formatter read whatsapp* [2026-07-12]
+- ✅ **REGISTER_COMMANDS removed from env.ts** — no dead config left from the reverted #1 gate;
+  verified absent from src/ [2026-07-12]
