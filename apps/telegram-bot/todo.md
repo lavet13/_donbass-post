@@ -7,14 +7,11 @@ Tracking items parked during the RBAC + notifications migration. Tags follow the
 
 ## Remaining — do next
 
-- [ ] **FIX: replace `NODE_ENV==="production"` self-removal gate** with the real
-      invariant — "would this leave zero active managers?" (count check, like the
-      backfill gate). Environment-independent; also solves single-user testing.
 - [ ] **FIX: PickUpPointDelivery schema models the WRONG shape** — the real producer (old PHP
       site's JS) sends ONE `sender`/`recipient`/`customer` key whose VALUE is either the
       individual or company shape — NOT sibling keys (`sender` | `companySender`). That's the
       React app's shape, and it posts to workplace-post.ru, not here. Fix: `z.union([Individual,
-  Company])` on each sub-object value; delete the three top-level XOR refines (the union
+Company])` on each sub-object value; delete the three top-level XOR refines (the union
       carries the XOR). Also: `recipient.pointTo` is NEVER sent (drop it), `deliveryCompany`
       arrives as a resolved NAME string not an id, and the company-recipient branch sends
       neither. Then revert formatters.ts to nested branching.
@@ -155,3 +152,10 @@ See `project-organization-strategies.md`.
 - ✅ **fix: whatsapp casing in formatters** — client sends whatsApp*; formatter read whatsapp* [2026-07-12]
 - ✅ **REGISTER_COMMANDS removed from env.ts** — no dead config left from the reverted #1 gate;
   verified absent from src/ [2026-07-12]
+- ✅ **NODE_ENV self-removal gate → "would this leave zero active managers?" count invariant** —
+  in removeManager (service), counted + written in one transaction; last_manager token +
+  assertNever; "active manager" now defined identically across all queries [2026-07-12]
+- ✅ **set/clearCommandsForChat are best-effort** — own try/catch; a failed menu push no longer
+  reports a committed add/remove as ❌ (fixes /addmanager <fake chatId> for testing) [2026-07-12]
+- ✅ **fix(notes): psql connect command** — `docker compose exec … -U "$POSTGRES_USER"` expanded on
+  the HOST (empty); corrected to `sh -c '…'` so the container expands its own env [2026-07-12]
