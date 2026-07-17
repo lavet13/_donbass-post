@@ -116,7 +116,7 @@ type RemoveManagerResult =
   | "revoked"
   | "not_a_manager"
   | "user_not_found"
-  | "user_deactivated";
+  | "last_manager";
 /**
  * Revoke a user's manager role (soft-delete the UserRole assignment).
  * Sets revoked_at on the manager role only — leaves the account (is_active)
@@ -126,34 +126,52 @@ export async function removeManager(
   chatId: number,
 ): Promise<RemoveManagerResult> {
   try {
-    const user = await prisma.telegramUser.findUnique({
-      where: { chatId: BigInt(chatId) },
-    });
+    const result = await prisma.$transaction(
+      async (tx): Promise<RemoveManagerResult> => {
+        const user = await tx.telegramUser.findUnique({
+          where: { chatId: BigInt(chatId) },
+          select: { id: true },
+        });
 
-    if (!user) return "user_not_found";
+        if (!user) return "user_not_found";
 
-    if (user.isActive === false) return "user_deactivated";
+        // Is the target actually an active manager? (Also gives us roleId for the update.)
+        const assignment = await tx.userRole.findFirst({
+          where: {
+            userId: user.id,
+            revokedAt: null,
+            user: { isActive: true },
+            role: { name: Roles.MANAGER },
+          },
+          select: { roleId: true },
+        });
 
-    const { count } = await prisma.userRole.updateMany({
-      where: {
-        userId: user.id,
-        role: {
-          name: Roles.MANAGER, // filter via the relation, no need to fetch role.id separately
-        },
-        revokedAt: null, // don't re-revoke an already-revoked row (keeps original timestamp)
+        if (!assignment) return "not_a_manager";
+
+        // THE INVARIANT: count active managers OTHER than the target.
+        // Inside the transaction, so the count can't go stale before the write.
+        const others = await tx.userRole.count({
+          where: {
+            revokedAt: null, // null = active
+            role: { name: Roles.MANAGER },
+            user: { isActive: true, id: { not: user.id } },
+          },
+        });
+        if (others === 0) return "last_manager"; // removing this one would leave zero
+
+        await tx.userRole.update({
+          where: {
+            userId_roleId: { userId: user.id, roleId: assignment.roleId },
+          },
+          data: { revokedAt: new Date() },
+        });
+        return "revoked";
       },
-      data: {
-        revokedAt: new Date(),
-      },
-    });
+    );
 
-    invalidateUser(user.chatId);
+    if (result === "revoked") invalidateUser(BigInt(chatId)); // cache, not DB lookup
 
-    if (count > 0) {
-      return "revoked";
-    } else {
-      return "not_a_manager";
-    }
+    return result;
   } catch (err) {
     console.error("Failed to remove manager:", err);
     throw err;

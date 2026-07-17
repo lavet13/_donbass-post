@@ -47,7 +47,7 @@ Tracking items parked during the RBAC + notifications migration. Tags follow the
       {id} and 400s. Fix both together or neither.
 - [ ] **old-site JS: company customers silently dropped** — the payload gates `customer` on
       `inputs.nameCustomer`, which only exists in the individual markup.
-- [ ] **old-site JS: recipient transform resolves pointTo OR deliveryCompany** (early return),
+- [ ] **NOTE: old-site JS: recipient transform resolves pointTo OR deliveryCompany** (early return),
       never both.
 
 ## Structural cleanup (reactive — pure file moves)

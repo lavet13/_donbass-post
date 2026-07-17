@@ -3,7 +3,6 @@ import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
 import { clearCommandsForChat } from "@/commands/utils";
 import { assertNever } from "@/utils/assert-never";
-import { env } from "@/env";
 import { parseChatId } from "../args";
 
 /**
@@ -42,12 +41,6 @@ export const removeManagerCommand = new Command<TContext>(
       return;
     }
 
-    // Prevent self-removal
-    if (env.NODE_ENV === "production" && ctx.from?.id === chatId) {
-      await ctx.reply("⛔ Нельзя удалить самого себя.", { parse_mode: "HTML" });
-      return;
-    }
-
     try {
       const result = await removeManager(chatId);
 
@@ -66,16 +59,25 @@ export const removeManagerCommand = new Command<TContext>(
 
         case "revoked": {
           // Only demote the menu when something was actually revoked.
-          await clearCommandsForChat(ctx.api, chatId);
+          try {
+            await clearCommandsForChat(ctx.api, chatId);
+          } catch (err) {
+            console.error(
+              `Command scope not cleared for ${chatId} (role still revoked):`,
+              err,
+            );
+          }
+
           await ctx.reply(`✅ Менеджер <code>${chatId}</code> удалён.`, {
             parse_mode: "HTML",
           });
           return;
         }
 
-        case "user_deactivated": {
+        case "last_manager": {
           await ctx.reply(
-            `✅ Менеджер <code>${chatId}</code> деактивирован.\n`,
+            "⛔ Нельзя удалить последнего активного менеджера — уведомления будет некому получать.\n" +
+              "Сначала добавьте другого через /addmanager.",
             { parse_mode: "HTML" },
           );
           return;

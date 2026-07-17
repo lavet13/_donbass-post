@@ -56,16 +56,17 @@ export const addManagerCommand = new Command<TContext>(
         lastName,
       });
 
-      if (
-        result === "fresh_manager" ||
-        result === "reactivated_manager" ||
-        result === "already_manager"
-      ) {
+      try {
         await setCommandsForChat(
           ctx.api,
           chatId,
           publicCommands,
           managerCommands,
+        );
+      } catch (err) {
+        console.error(
+          `Command scope not set for ${chatId} (manager still added):`,
+          err,
         );
       }
 
