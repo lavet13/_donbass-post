@@ -1,20 +1,11 @@
 # Telegram Bot — TODO
 
-Tracking items parked during the RBAC + notifications migration. Tags follow the
-`todo-comments.nvim` convention (FIX/HACK/PERF/NOTE/TODO).
+Backlog + progress log. Tags follow the `todo-comments.nvim` convention (FIX/HACK/PERF/NOTE/TODO).
 
 ---
 
 ## Remaining — do next
 
-- [ ] **FIX: PickUpPointDelivery schema models the WRONG shape** — the real producer (old PHP
-      site's JS) sends ONE `sender`/`recipient`/`customer` key whose VALUE is either the
-      individual or company shape — NOT sibling keys (`sender` | `companySender`). That's the
-      React app's shape, and it posts to workplace-post.ru, not here. Fix: `z.union([Individual,
-Company])` on each sub-object value; delete the three top-level XOR refines (the union
-      carries the XOR). Also: `recipient.pointTo` is NEVER sent (drop it), `deliveryCompany`
-      arrives as a resolved NAME string not an id, and the company-recipient branch sends
-      neither. Then revert formatters.ts to nested branching.
 - [ ] **verify OnlinePickup's remaining rules against its real producer** — whatsApp casing and
       pointTo-as-string confirmed; still unverified: whether the pointTo XOR pickupAddressRecipient
       and the 4-field customer all-or-nothing refines match what the old site actually sends. If it
@@ -32,20 +23,11 @@ Company])` on each sub-object value; delete the three top-level XOR refines (the
 - [ ] **`/api/notify` receives display STRINGS, not ids** — the old site resolves
       pointFrom/deliveryCompany to names (`${point.name}, ${point.address}`) before POSTing, so
       the bot prints text it can't join on. Migrate to sending raw ids + DB lookup at format time.
-- [ ] **old-site JS: fix `getFormattedServices` (additionalService never arrives)** — the fn has a
-      block body with no `return` → undefined → JSON.stringify drops the key, so services NEVER
-      reach the bot. Its lookup is also wrong: `additionalServices.indexOf(service.id)` searches an
-      object array for a primitive (always -1), and `additionalServices[s.id]` indexes by id, not
-      position (and the array was .reverse()d). Correct form:
-      const getFormattedServices = (services) =>
-      services.map((s) => additionalServices.find((as) => as.id === s.id)).filter(Boolean);
-      The bot side is READY (schema declares {id,name,price}, formatter prints service.name) — it's
-      simply never exercised. A partial fix (adding `return` without fixing the lookup) sends bare
-      {id} and 400s. Fix both together or neither.
 - [ ] **old-site JS: company customers silently dropped** — the payload gates `customer` on
       `inputs.nameCustomer`, which only exists in the individual markup.
-- [ ] **NOTE: old-site JS: recipient transform resolves pointTo OR deliveryCompany** (early return),
-      never both.
+- [ ] **NOTE: old-site JS: recipient transform resolves pointTo OR deliveryCompany** (early
+      return), never both — so deliveryCompany would ship as a raw id. Latent only: pointTo is
+      never set for this endpoint today, so the branch never fires.
 
 ## Structural cleanup (reactive — pure file moves)
 
@@ -75,6 +57,10 @@ See `project-organization-strategies.md`.
 - [ ] **NOTE: `/api/notify`'s real client is the old PHP site's JS, not apps/web** — apps/web
       POSTs to workplace-post.ru (co-worker's backend). Always verify payload shapes against the
       old-site JS until the migration lands.
+- [ ] **TEST: removeManager's last-manager invariant is the first real test candidate** — guards
+      a catastrophic silent state (zero managers → notifications go nowhere, only a warning
+      logged), tricky logic, hard to reproduce by hand. Needs a real Postgres → integration test
+      + test-DB scaffolding. Do it if/when that scaffolding exists.
 
 ## Backlog / low priority (non-bot infra)
 
@@ -135,10 +121,9 @@ See `project-organization-strategies.md`.
   prod-only calls on rare restarts, under the limit; a persisted checksum can desync from
   Telegram's real state. Not worth the complexity at this scale. [2026-07-11]
 - ✅ **Dropped AppConfig.managers, manager count from DB** — status.ts/server.ts →
-  getAllManagers().length; config field + mapping removed; MANAGER_CHAT_IDS kept for seed [done earlier]
+  getAllManagers().length; config field + mapping removed; MANAGER_CHAT_IDS kept for seed
 - ✅ **zod validation for `/api/notify/*`** — schemas at the handler boundary, hand-written payload
-  interfaces → `z.infer`, `!payload[f]` falsy-check bug gone. Shape corrections outstanding (see
-  Remaining) [2026-07-12]
+  interfaces → `z.infer`, `!payload[f]` falsy-check bug gone [2026-07-12]
 - ✅ **extract `handleNotify()`** — 3 handlers ~45 identical lines each → generic helper (~135 → ~35);
   schema↔sender mismatch is now a compile error [2026-07-12]
 - ✅ **port `validatePickupTime`** — via `.superRefine` (message-returning fn drops straight in);
@@ -148,7 +133,7 @@ See `project-organization-strategies.md`.
 - ✅ **fix: formatter printed sender's pointFrom as the recipient's pickup point** [2026-07-12]
 - ✅ **Corrected /api/notify payload shapes to the real producer** — z.union per sub-object
   (sender/recipient/customer are one key, two shapes); XOR refines deleted (the union carries it);
-  formatters narrow with `in`; point\*/deliveryCompany are display strings [2026-07-12]
+  formatters narrow with `in`; pointFrom/pointTo/deliveryCompany are display strings [2026-07-12]
 - ✅ **fix: whatsapp casing in formatters** — client sends whatsApp*; formatter read whatsapp* [2026-07-12]
 - ✅ **REGISTER_COMMANDS removed from env.ts** — no dead config left from the reverted #1 gate;
   verified absent from src/ [2026-07-12]
