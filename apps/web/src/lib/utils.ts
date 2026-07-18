@@ -166,22 +166,26 @@ export function validatePickupTime(
     return "Пожалуйста, укажите время";
   }
 
-  const match = value.match(/с\s*(\d{2}):(\d{2})\s*до\s*(\d{2}):(\d{2})/);
+  const match = value.match(/\s*(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/);
 
   if (!match) {
     return "Заполните до конца";
   }
 
-  const [, startHour, startMinute, endHour, endMinute] = match;
-
-  const startHourNum = parseInt(startHour);
-  const startMinuteNum = parseInt(startMinute);
-  const endHourNum = parseInt(endHour);
-  const endMinuteNum = parseInt(endMinute);
+  const [, sh, sm, eh, em] = match;
+  const startHour = Number(sh); // groups are always the 2-digit strings
+  const startMin = Number(sm);
+  const endHour = Number(eh);
+  const endMin = Number(em);
 
   // Convert to minutes for comparison
-  const startTotalMinutes = startHourNum * 60 + startMinuteNum;
-  const endTotalMinutes = endHourNum * 60 + endMinuteNum;
+  const startTotalMinutes = startHour * 60 + startMin;
+  const endTotalMinutes = endHour * 60 + endMin;
+
+  // Check if end time is after start time
+  if (endTotalMinutes <= startTotalMinutes) {
+    return "Время окончания должно быть позже времени начала";
+  }
 
   // Check if duration is at least 2 hours (120 minutes)
   const durationMinutes = Math.abs(endTotalMinutes - startTotalMinutes);

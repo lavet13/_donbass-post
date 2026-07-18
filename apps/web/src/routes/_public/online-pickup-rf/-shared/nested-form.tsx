@@ -276,9 +276,9 @@ export const OnlinePickupRFForm = withForm({
                       isAllowed={(values) => {
                         const formattedValue = values.formattedValue;
 
-                        // Match pattern: с ЧЧ:ММ до ЧЧ:ММ
+                        // Match pattern: ЧЧ:ММ - ЧЧ:ММ
                         const match = formattedValue.match(
-                          /с\s*(\d{0,2}):?(\d{0,2})\s*(?:до\s*(\d{0,2}):?(\d{0,2}))?/,
+                          /(\d{0,2}):?(\d{0,2})\s*(?:-\s*(\d{0,2}):?(\d{0,2}))?/,
                         );
 
                         if (!match) return true; // Allow if pattern doesn't match yet (user is typing)
@@ -328,7 +328,7 @@ export const OnlinePickupRFForm = withForm({
 
                         return true;
                       }}
-                      format="с ##:## до ##:##"
+                      format="##:## - ##:##"
                       label="Время забора груза(промежуток времени не менее 2-х часов)"
                       ariaLabel="Заполните время забора груза(промежуток времени не менее 2-х часов)"
                       placeholder="Промежуток времени не менее 2-х часов"

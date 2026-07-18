@@ -4,7 +4,7 @@ import { z } from "zod";
 // ======== Helpers =====================================================
 export const phoneSchema = z
   .string({ error: "Заполните телефон!" })
-  .refine((val) => isPossiblePhoneNumber(val), {
+  .refine((val) => isPossiblePhoneNumber(val, { defaultCountry: "RU" }), {
     error: "Проверьте правильно ли ввели номер телефона!",
   });
 export const emailSchema = z.email({ pattern: z.regexes.email });
@@ -17,6 +17,14 @@ export const text3to50 = (required: string, range: string) =>
     .trim()
     .min(1, required)
     .min(3, range)
+    .max(50, range);
+
+export const text2to50 = (required: string, range: string) =>
+  z
+    .string({ error: required })
+    .trim()
+    .min(1, required)
+    .min(2, range)
     .max(50, range);
 
 export const innSchema = z
@@ -39,7 +47,7 @@ const SenderIndividualObj = z.object({
     "Фамилия обязательна",
     "Фамилия не должна быть короче 3 символов и длиннее 50",
   ),
-  nameSender: text3to50(
+  nameSender: text2to50(
     "Имя обязательно",
     "Имя не должно быть короче 3 символов и длиннее 50",
   ),
@@ -82,7 +90,7 @@ const RecipientIndividualObj = z.object({
     "Фамилия обязательна",
     "Фамилия не должна быть короче 3 символов и длиннее 50",
   ),
-  nameRecipient: text3to50(
+  nameRecipient: text2to50(
     "Имя обязательно",
     "Имя не должно быть короче 3 символов и длиннее 50",
   ),
@@ -134,7 +142,7 @@ const CustomerIndividualObj = z.object({
     "Фамилия обязательна",
     "Фамилия не должна быть короче 3 символов и длиннее 50",
   ),
-  nameCustomer: text3to50(
+  nameCustomer: text2to50(
     "Имя обязательно",
     "Имя не должно быть короче 3 символов и длиннее 50",
   ),
@@ -158,11 +166,9 @@ const CustomerCompanyObj = z.object({
 });
 
 const CargoData = z.object({
-  // Form offers exactly three payers -> z.enum beats z.string(): it rejects garbage AND
-  // z.infer narrows the type to the literal union instead of `string`.
-  shippingPayment: z.enum(["Отправитель", "Получатель", "Третье лицо"], {
-    error: "Выберите плательщика доставки",
-  }),
+  shippingPayment: z
+    .string({ error: "Выберите плательщика доставки" })
+    .min(1, "Выберите плательщика доставки"),
   description: text3to50(
     "Заполните краткое описание",
     "Краткое описание не должно быть короче 3 символов и длиннее 50",
@@ -206,7 +212,7 @@ export const OnlinePickupSchema = z
       "Фамилия обязательна",
       "Фамилия не должна быть короче 3 символов и длиннее 50",
     ),
-    nameSender: text3to50(
+    nameSender: text2to50(
       "Имя обязательно",
       "Имя не должно быть короче 3 символов и длиннее 50",
     ),
@@ -249,7 +255,7 @@ export const OnlinePickupSchema = z
       "Фамилия обязательна",
       "Фамилия не должна быть короче 3 символов и длиннее 50",
     ),
-    nameRecipient: text3to50(
+    nameRecipient: text2to50(
       "Имя обязательно",
       "Имя не должно быть короче 3 символов и длиннее 50",
     ),
@@ -269,16 +275,16 @@ export const OnlinePickupSchema = z
       "Адрес обязателен",
       "Адрес не должно быть короче 3 символов и длиннее 50",
     ).optional(),
-    shippingPayment: z.enum(["Отправитель", "Получатель", "Третье лицо"], {
-      error: "Выберите плательщика доставки",
-    }),
+    shippingPayment: z
+      .string({ error: "Выберите плательщика доставки" })
+      .min(1, "Выберите плательщика доставки"),
 
     // Customer information (optional)
     surnameCustomer: text3to50(
       "Фамилия обязательна",
       "Фамилия не должна быть короче 3 символов и длиннее 50",
     ).optional(),
-    nameCustomer: text3to50(
+    nameCustomer: text2to50(
       "Имя обязательно",
       "Имя не должно быть короче 3 символов и длиннее 50",
     ).optional(),
@@ -348,26 +354,36 @@ function validatePickupTime(value: string | undefined): string | undefined {
     return "Пожалуйста, укажите время";
   }
 
-  const match = value.match(/с\s*(\d{2}):(\d{2})\s*до\s*(\d{2}):(\d{2})/);
+  const timeRangeRegex = /^(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})$/;
+  const match = value.match(timeRangeRegex);
 
   if (!match) {
-    return "Заполните до конца";
+    return "Некорректный формат времени";
   }
 
-  const [, startHour, startMinute, endHour, endMinute] = match;
+  const [, sh, sm, eh, em] = match;
+  const startHour = Number(sh); // groups are always the 2-digit strings
+  const startMin = Number(sm);
+  const endHour = Number(eh);
+  const endMin = Number(em);
 
-  const startHourNum = parseInt(startHour!);
-  const startMinuteNum = parseInt(startMinute!);
-  const endHourNum = parseInt(endHour!);
-  const endMinuteNum = parseInt(endMinute!);
+  // Validate hours and minutes
+  if (startHour > 23 || endHour > 23 || startMin > 59 || endMin > 59) {
+    return "Некорректное время";
+  }
 
   // Convert to minutes for comparison
-  const startTotalMinutes = startHourNum * 60 + startMinuteNum;
-  const endTotalMinutes = endHourNum * 60 + endMinuteNum;
+  const startTimeInMinutes = startHour * 60 + startMin;
+  const endTimeInMinutes = endHour * 60 + endMin;
 
-  // Check if duration is at least 2 hours (120 minutes)
-  const durationMinutes = Math.abs(endTotalMinutes - startTotalMinutes);
-  if (durationMinutes < 120) {
+  // Check if end time is after start time
+  if (endTimeInMinutes <= startTimeInMinutes) {
+    return "Время окончания должно быть позже времени начала";
+  }
+
+  // Check if the range is at least 2 hours (120 minutes)
+  const diffInMinutes = Math.abs(endTimeInMinutes - startTimeInMinutes);
+  if (diffInMinutes < 120) {
     return "Промежуток времени должен быть не менее 2-х часов";
   }
 
