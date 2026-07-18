@@ -29,7 +29,7 @@ export function formatOnlinePickupMessage(
     "📍 <b>Забор посылки:</b>",
     `Город/Регион: ${payload.cityRegion}`,
     `Адрес: ${payload.pickupAddress}`,
-    `⏰ Время: ${payload.pickupTime}`,
+    `⏰ Время забора: ${payload.pickupTime}`,
     "",
     "📦 <b>Информация о посылке:</b>",
     `Вес: ${payload.totalWeight} кг`,
