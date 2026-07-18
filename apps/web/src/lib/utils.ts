@@ -166,7 +166,7 @@ export function validatePickupTime(
     return "Пожалуйста, укажите время";
   }
 
-  const match = value.match(/\s*(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/);
+  const match = value.match(/^(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})$/);
 
   if (!match) {
     return "Заполните до конца";

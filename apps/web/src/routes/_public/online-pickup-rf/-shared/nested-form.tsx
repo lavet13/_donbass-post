@@ -278,7 +278,7 @@ export const OnlinePickupRFForm = withForm({
 
                         // Match pattern: ЧЧ:ММ - ЧЧ:ММ
                         const match = formattedValue.match(
-                          /(\d{0,2}):?(\d{0,2})\s*(?:-\s*(\d{0,2}):?(\d{0,2}))?/,
+                          /\s*(\d{0,2}):?(\d{0,2})\s*(?:-\s*(\d{0,2}):?(\d{0,2}))?/,
                         );
 
                         if (!match) return true; // Allow if pattern doesn't match yet (user is typing)
