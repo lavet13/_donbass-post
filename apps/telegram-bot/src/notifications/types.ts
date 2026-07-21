@@ -2,30 +2,33 @@ import { isPossiblePhoneNumber } from "libphonenumber-js";
 import { z } from "zod";
 
 // ======== Helpers =====================================================
-export const phoneSchema = z
-  .string({ error: "Заполните телефон!" })
-  .refine((val) => isPossiblePhoneNumber(val, { defaultCountry: "RU" }), {
-    error: "Проверьте правильно ли ввели номер телефона!",
-  });
+
+/**
+ * Phone validation for RU numbers. `defaultCountry: "RU"` lets national formats parse,
+ * so all of these PASS (formatting chars are ignored):
+ *   "+79991234567"          international, no spaces
+ *   "89991234567"           national, leading 8
+ *   "9991234567"            bare 10-digit national
+ *   "+7 (999) 123-45-67"    masked (what the form's Inputmask produces)
+ *   "8 (999) 123-45-67"     masked, leading 8
+ * FAIL: fewer than ~10 digits, or non-RU numbers without a valid country prefix.
+ * Note: this checks length plausibility, not that the number is real
+ * (isPossible ≠ isValid). The form submits the MASKED string; that's fine — the
+ * library strips parens/spaces/dashes before checking.
+ */
+export const phoneSchema = (
+  required: string | undefined = "Телефон не может быть пустым",
+  filled: string | undefined = "Заполните телефон полностью!",
+) =>
+  z
+    .string({ error: required })
+    .refine((val) => isPossiblePhoneNumber(val, { defaultCountry: "RU" }), {
+      error: filled,
+    });
 export const emailSchema = z.email({ pattern: z.regexes.email });
 
-// Frontend repeats: !value.length -> "X обязательна", then length<3||>50 -> "X не должна быть...".
-// One helper, two messages. .trim() first so "   " counts as empty (the form doesn't trim — we're stricter).
-export const text3to50 = (required: string, range: string) =>
-  z
-    .string({ error: required })
-    .trim()
-    .min(1, required)
-    .min(3, range)
-    .max(50, range);
-
-export const text2to50 = (required: string, range: string) =>
-  z
-    .string({ error: required })
-    .trim()
-    .min(1, required)
-    .min(2, range)
-    .max(50, range);
+export const text = (minNum: number, required: string, minMsg: string) =>
+  z.string({ error: required }).trim().min(1, required).min(minNum, minMsg);
 
 export const innSchema = z
   .string({ error: "ИНН обязателен" })
@@ -43,71 +46,81 @@ export const pickupTimeSchema = z
 
 // ====================== Main =============================================
 const SenderIndividualObj = z.object({
-  surnameSender: text3to50(
-    "Фамилия обязательна",
-    "Фамилия не должна быть короче 3 символов и длиннее 50",
+  surnameSender: text(
+    2,
+    "Фамилия отправителя не может быть пустым!",
+    "Минимальная длина фамилии отправителя 2 символа!",
   ),
-  nameSender: text2to50(
-    "Имя обязательно",
-    "Имя не должно быть короче 3 символов и длиннее 50",
+  nameSender: text(
+    2,
+    "Имя отправителя не может быть пустым!",
+    "Минимальная длина имени отправителя 2 символа!",
   ),
-  patronymicSender: text3to50(
-    "Отчество обязательно",
-    "Отчество не должно быть короче 3 символов и длиннее 50",
+  patronymicSender: text(
+    2,
+    "Отчество отправителя обязательно!",
+    "Минимальная длина отчества отправителя 2 символа!",
   ),
-  phoneSender: phoneSchema,
+  phoneSender: phoneSchema("Телефон отправителя не может быть пустым!"),
   telegramSender: z.boolean().default(false),
   whatsAppSender: z.boolean().default(false),
   pointFrom: z
     .string({ error: "Выберите населенный пункт" })
     .min(1, "Выберите населенный пункт"),
-  pickupAddress: text3to50(
-    "Адрес обязателен",
-    "Адрес не должно быть короче 3 символов и длиннее 50",
+  pickupAddress: text(
+    2,
+    "Адрес доставки груза не может быть пустым!",
+    "Минимальная длина адреса забора груза 2 символа!",
   ),
   emailSender: emailSchema,
 });
 
 const SenderCompanyObj = z.object({
-  companySender: text3to50(
-    "Компания обязательна",
-    "Компания не должна быть короче 3 символов и длиннее 50",
+  companySender: text(
+    2,
+    "Компания должна быть заполнена!",
+    "Минимальная длина компании 2 символа!",
   ),
-  phoneSender: phoneSchema,
+  phoneSender: phoneSchema("Телефон отправителя не может быть пустым!"),
   emailSender: emailSchema,
   pointFrom: z
     .string({ error: "Выберите населенный пункт" })
     .min(1, "Выберите населенный пункт"),
-  pickupAddress: text3to50(
-    "Адрес обязателен",
-    "Адрес не должно быть короче 3 символов и длиннее 50",
+  pickupAddress: text(
+    2,
+    "Адрес доставки груза не может быть пустым!",
+    "Минимальная длина адреса забора груза 2 символа!",
   ),
   innSender: innSchema,
 });
 
 const RecipientIndividualObj = z.object({
-  surnameRecipient: text3to50(
-    "Фамилия обязательна",
-    "Фамилия не должна быть короче 3 символов и длиннее 50",
+  surnameRecipient: text(
+    2,
+    "Фамилия получателя не может быть пустым!",
+    "Минимальная длина фамилии получателя 2 символа!",
   ),
-  nameRecipient: text2to50(
-    "Имя обязательно",
-    "Имя не должно быть короче 3 символов и длиннее 50",
+  nameRecipient: text(
+    2,
+    "Имя получателя не может быть пустым!",
+    "Минимальная длина имени получателя 2 символа!",
   ),
-  patronymicRecipient: text3to50(
-    "Отчество обязательно",
-    "Отчество не должно быть короче 3 символов и длиннее 50",
+  patronymicRecipient: text(
+    2,
+    "Отчество получателя обязательно!",
+    "Минимальная длина отчества получателя 2 символа!",
   ),
-  phoneRecipient: phoneSchema,
+  phoneRecipient: phoneSchema("Телефон получателя не может быть пустым!"),
   telegramRecipient: z.boolean().default(false),
   whatsAppRecipient: z.boolean().default(false),
   deliveryCompany: z
     .string({ error: "Транспортная компания должна быть заполнена!" })
     .min(1, { error: "Транспортная компания должна быть заполнена!" })
     .optional(),
-  deliveryAddress: text3to50(
-    "Адрес получателя или ТК обязателен",
-    "Адрес получателя или ТК не должно быть короче 3 символов и длиннее 50",
+  deliveryAddress: text(
+    2,
+    "Адрес получателя или ТК",
+    "Минимальная длина адреса доставки груза 2 символа!",
   ),
   pointTo: z
     .string({ error: "Выберите населенный пункт" })
@@ -116,15 +129,17 @@ const RecipientIndividualObj = z.object({
 });
 
 const RecipientCompanyObj = z.object({
-  companyRecipient: text3to50(
-    "Компания обязательна",
-    "Компания не должна быть короче 3 символов и длиннее 50",
+  companyRecipient: text(
+    2,
+    "Компания не может быть пустой!",
+    "Минимальная длина компании 2 символа!",
   ),
-  phoneRecipient: phoneSchema,
+  phoneRecipient: phoneSchema("Телефон получателя не может быть пустым!"),
   emailRecipient: emailSchema,
-  deliveryAddress: text3to50(
-    "Адрес обязателен",
-    "Адрес не должно быть короче 3 символов и длиннее 50",
+  deliveryAddress: text(
+    2,
+    "Адрес получателя или ТК",
+    "Минимальная длина адреса доставки груза 2 символа!",
   ),
   innRecipient: innSchema,
   deliveryCompany: z
@@ -138,29 +153,33 @@ const RecipientCompanyObj = z.object({
 });
 
 const CustomerIndividualObj = z.object({
-  surnameCustomer: text3to50(
-    "Фамилия обязательна",
-    "Фамилия не должна быть короче 3 символов и длиннее 50",
+  surnameCustomer: text(
+    2,
+    "Фамилия заказчика не может быть пустым!",
+    "Минимальная длина фамилии заказчика 2 символа!",
   ),
-  nameCustomer: text2to50(
-    "Имя обязательно",
-    "Имя не должно быть короче 3 символов и длиннее 50",
+  nameCustomer: text(
+    2,
+    "Имя заказчика не может быть пустым!",
+    "Минимальная длина имени заказчика 2 символа!",
   ),
-  patronymicCustomer: text3to50(
-    "Отчество обязательно",
-    "Отчество не должно быть короче 3 символов и длиннее 50",
+  patronymicCustomer: text(
+    2,
+    "Отчество заказчика обязательно!",
+    "Минимальная длина отчества заказчика 2 символа!",
   ),
-  phoneCustomer: phoneSchema,
+  phoneCustomer: phoneSchema("Телефон заказчика не может быть пустым!"),
   telegramCustomer: z.boolean().default(false),
   whatsAppCustomer: z.boolean().default(false),
 });
 
 const CustomerCompanyObj = z.object({
-  companyCustomer: text3to50(
-    "Компания обязательна",
-    "Компания не должна быть короче 3 символов и длиннее 50",
+  companyCustomer: text(
+    2,
+    "Компания не может быть пустой!",
+    "Минимальная длина компании 2 символа!",
   ),
-  phoneCustomer: phoneSchema,
+  phoneCustomer: phoneSchema("Телефон заказчика не может быть пустым!"),
   emailCustomer: emailSchema,
   innCustomer: innSchema,
 });
@@ -169,9 +188,10 @@ const CargoData = z.object({
   shippingPayment: z
     .string({ error: "Выберите плательщика доставки" })
     .min(1, "Выберите плательщика доставки"),
-  description: text3to50(
-    "Заполните краткое описание",
-    "Краткое описание не должно быть короче 3 символов и длиннее 50",
+  description: text(
+    2,
+    "Заполните краткое описание!",
+    "Минимальная длина описания 2 символа!",
   ),
   weightHeaviestPosition: positive("Заполните вес самой тяжелой позиции"),
   totalWeight: positive("Заполните общий вес"),
@@ -208,30 +228,35 @@ export type PickUpPointDeliveryOrderPayload = z.infer<
 export const OnlinePickupSchema = z
   .object({
     // Sender information
-    surnameSender: text3to50(
-      "Фамилия обязательна",
-      "Фамилия не должна быть короче 3 символов и длиннее 50",
+    surnameSender: text(
+      2,
+      "Фамилия отправителя обязательна!",
+      "Минимальная длина фамилии отправителя 2 символа!",
     ),
-    nameSender: text2to50(
-      "Имя обязательно",
-      "Имя не должно быть короче 3 символов и длиннее 50",
+    nameSender: text(
+      2,
+      "Имя отправителя обязательно!",
+      "Минимальная длина имени отправителя 2 символа!",
     ),
-    patronymicSender: text3to50(
-      "Отчество обязательно",
-      "Отчество не должно быть короче 3 символов и длиннее 50",
+    patronymicSender: text(
+      2,
+      "Отчество отправителя обязательно!",
+      "Минимальная длина отчества отправителя 2 символа!",
     ),
-    phoneSender: phoneSchema,
+    phoneSender: phoneSchema("Телефон отправителя не может быть пустым!"),
     telegramSender: z.boolean().default(false),
     whatsAppSender: z.boolean().default(false),
 
     // Pickup details
-    cityRegion: text3to50(
-      "Город и область обязательно",
-      "Город и область не должно быть короче 3 символов и длиннее 50",
+    cityRegion: text(
+      2,
+      "Заполните город и область",
+      "Минимальная длина города/области 2 символа!",
     ),
-    pickupAddress: text3to50(
+    pickupAddress: text(
+      5,
       "Заполните адрес забора",
-      "Адрес забора не должен быть короче 3 символов и длиннее 50",
+      "Минимальная длина адреса забора 5 символов!",
     ),
     pickupTime: pickupTimeSchema,
 
@@ -241,29 +266,29 @@ export const OnlinePickupSchema = z
       25,
       "Не должен превышать 25",
     ),
-    description: text3to50(
-      "Заполните краткое описание",
-      "Краткое описание не должно быть короче 3 символов и длиннее 50",
-    ),
+    description: z.string({ error: "Это не строка!" }).optional(),
     // Dimension helpers — no frontend validation; used only to compute cubicMeter.
     long: z.number().optional(),
     width: z.number().optional(),
     height: z.number().optional(),
 
     // Recipient information
-    surnameRecipient: text3to50(
-      "Фамилия обязательна",
-      "Фамилия не должна быть короче 3 символов и длиннее 50",
+    surnameRecipient: text(
+      2,
+      "Фамилия получателя обязательна",
+      "Минимальная длина фамилии получателя 2 символа!",
     ),
-    nameRecipient: text2to50(
+    nameRecipient: text(
+      2,
       "Имя обязательно",
-      "Имя не должно быть короче 3 символов и длиннее 50",
+      "Минимальная длина имени получателя 2 символа!",
     ),
-    patronymicRecipient: text3to50(
+    patronymicRecipient: text(
+      2,
       "Отчество обязательно",
-      "Отчество не должно быть короче 3 символов и длиннее 50",
+      "Минимальная длина отчества получателя 2 символа!",
     ),
-    phoneRecipient: phoneSchema,
+    phoneRecipient: phoneSchema("Телефон получателя не может быть пустым!"),
     emailRecipient: emailSchema,
     telegramRecipient: z.boolean().default(false),
     whatsAppRecipient: z.boolean().default(false),
@@ -271,28 +296,32 @@ export const OnlinePickupSchema = z
       .string({ error: "Выберите населенный пункт" })
       .min(1, "Выберите населенный пункт")
       .optional(),
-    pickupAddressRecipient: text3to50(
+    pickupAddressRecipient: text(
+      2,
       "Адрес обязателен",
-      "Адрес не должно быть короче 3 символов и длиннее 50",
+      "Минимальная длина адреса доставки 2 символа!",
     ).optional(),
     shippingPayment: z
       .string({ error: "Выберите плательщика доставки" })
       .min(1, "Выберите плательщика доставки"),
 
     // Customer information (optional)
-    surnameCustomer: text3to50(
-      "Фамилия обязательна",
-      "Фамилия не должна быть короче 3 символов и длиннее 50",
+    surnameCustomer: text(
+      2,
+      "Фамилия заказчика обязательна!",
+      "Минимальная длина фамилии заказчика 2 символа!",
     ).optional(),
-    nameCustomer: text2to50(
-      "Имя обязательно",
-      "Имя не должно быть короче 3 символов и длиннее 50",
+    nameCustomer: text(
+      2,
+      "Имя заказчика обязательна!",
+      "Минимальная длина имени заказчика 2 символа!",
     ).optional(),
-    patronymicCustomer: text3to50(
-      "Отчество обязательно",
-      "Отчество не должно быть короче 3 символов и длиннее 50",
+    patronymicCustomer: text(
+      2,
+      "Отчество заказчика обязательно!",
+      "Минимальная длина отчества заказчика 2 символа!",
     ).optional(),
-    phoneCustomer: phoneSchema.optional(),
+    phoneCustomer: phoneSchema().optional(),
 
     timestamp: z.string().default(() => new Date().toISOString()),
     source: z.string().default("web"),
@@ -330,19 +359,10 @@ export const OnlinePickupSchema = z
 export type OnlinePickupPayload = z.infer<typeof OnlinePickupSchema>;
 
 export const AliParcelPickupSchema = z.object({
-  address: text3to50(
-    "Адрес обязателен!",
-    "Адрес должен содержать от 3 до 50 символов",
-  ),
-  track: text3to50(
-    "Трек обязателен!",
-    "Трек должен содержать от 3 до 50 символов",
-  ),
-  code: text3to50(
-    "Код обязателен!",
-    "Код должен содержать от 3 до 50 символов",
-  ),
-  phone: phoneSchema,
+  address: text(3, "Адрес обязателен!", "Минимальная длина адреса 3 символа!"),
+  track: text(3, "Трек обязателен!", "Минимальная длина трека 3 символа!"),
+  code: text(3, "Код обязателен!", "Минимальная длина кода 3 символа!"),
+  phone: phoneSchema(),
   timestamp: z.string().default(() => new Date().toISOString()),
   source: z.string().default("web"),
 });
@@ -358,7 +378,7 @@ function validatePickupTime(value: string | undefined): string | undefined {
   const match = value.match(timeRangeRegex);
 
   if (!match) {
-    return "Некорректный формат времени";
+    return "Некорректный формат времени(пример: 10:00 - 12:00)";
   }
 
   const [, sh, sm, eh, em] = match;
