@@ -4,17 +4,85 @@ Backlog + progress log. Tags follow the `todo-comments.nvim` convention (FIX/HAC
 
 ---
 
+## 🔴 Urgent — spreadsheet ingestion (manual job to delegate)
+
+- [ ] **Automate the 6-file → 3-upload pipeline** — a manager drops six spreadsheets into
+      Telegram ("Ваня, обновляй <date>"); they're consolidated into three workbooks by hand and
+      uploaded through the old site's PrimeFaces `upload.php`. Fully specced from a
+      before/after pair [2026-07-23] — no unknowns left.
+
+      **Auth:** `POST https://workplace-post.ru/api/auth/manager` with `{login, password}`
+      → `{tokenManager}`; send `Authorization: Bearer <tokenManager>` on all three uploads.
+      Credentials go in env (never committed); token lifetime not yet measured — fetch fresh
+      per run rather than caching until we know.
+
+      **Transform, source → output (verified against real files, not assumed):**
+
+      1. `Отслеживание июн.xlsx` + `Отслеживание июл.xlsx` → **`отслеживание.xlsx`** →
+         `POST /api/cargo-tracking/upload-data`
+         - Merge the two workbooks sheet-by-sheet, keeping all three sheet names and columns:
+           `Ведомость грузов` (A:F) · `Учет прибывших` (A:D) · `СВХ ведомости` (A:F).
+         - Both months end up in one sheet (verified: 1442 rows spanning 06.2026 + 07.2026).
+         - **Move the header from row 2 to row 1** — row 1 in the source is a stray `1`.
+         - Convert leaked Excel serials to real dates (`46192` → `2026-07-03`); leave
+           `dd.mm.yyyy` strings as-is.
+         - Trim on first blank ТТН — `max_row` is padded to 50000.
+         - Do NOT over-clean: the junk row in `Учет прибывших` and the unnamed 6th column in
+           `СВХ ведомости` are present in the accepted output.
+
+      2. `Ведомость_прибывших_из_ЛДНР_в_Ростов.xlsx` + `Ведомость учета прибывших - ЛНР.xlsx`
+         → **`отслеживание_ростов.xlsx`** → `POST /api/tracking`
+         - ONE sheet, two column blocks **side by side, positional — NOT a join**:
+           cols 1–5 = Ростов (Дата прибытия · № ТТН · Дата выдачи, пересылки · Отпралено Др дост ·
+           Трек, идентификатор, код), cols 6–9 = ЛНР (№ ТТН · Дата передачи (в "ПЛ") ·
+           Населенный пункт выдачи · № декларации "ПЛ"). Blocks have different lengths
+           (225 vs 186 in the sample); shorter one just runs out.
+         - **Current-period sheet only** from each source (`Июль 26`, `26`). The ~100 historical
+           month sheets are NOT uploaded — this is what keeps the job small.
+         - Dates are written with a **leading backtick** (`` `03.07.2026 ``) to force text.
+
+      3. `Ведомость заказов ALI.xlsx` + `2019 Ведомость заказов ИМ.xlsx` → **`им.xlsx`** →
+         `POST /api/im-tracking`
+         - ONE sheet, the two **aggregate** sheets stacked vertically (`им` then `ALI`;
+           verified 180 + 779 = 959 rows). Monthly sheets are ignored.
+         - Keep 5 columns: `ПРОМОКОД` · `СУММА В ТТН` · `дата` · `ОПЛАТА БЕЗНАЛ` ·
+           `идентификатор`.
+         - **Map by header NAME, not position** — `идентификатор` is col 24 in ИМ but col 22 in
+           ALI (ИМ has extra `ОПЛАТА НАЛ` / `ДРУГИЕ ДОСТАВЩИКИ`). All five names are unique in
+           both sources, so name-mapping is safe here (unlike the tracking family, where
+           `СУММА`/`ДАТА` repeat).
+         - Skip rows 2–3 of the aggregate sheets — they're TOTALS, not data.
+
+      **Still to capture before writing the uploader:** one real upload request per endpoint
+      (DevTools → Network) to confirm multipart field name + content-type, and whether the API
+      is idempotent on re-upload of the same period.
+
+      **Implementation shape:** `bot.on("message:document")` → `getFile` → parse with SheetJS
+      (already a dependency in apps/web) → the three transforms above → auth → three POSTs,
+      behind a manager-only RBAC gate, one success/failure reply per upload. Route by filename
+      pattern (batch order isn't guaranteed) and reject unrecognised names loudly. **Verify the
+      Bot API `getFile` size ceiling** before committing — largest source file here is 3.1 MB.
+
 ## Remaining — do next
 
-- [ ] **verify OnlinePickup's remaining rules against its real producer** — whatsApp casing and
-      pointTo-as-string confirmed; still unverified: whether the pointTo XOR pickupAddressRecipient
-      and the 4-field customer all-or-nothing refines match what the old site actually sends. If it
-      can send neither, the XOR 400s working traffic.
-- [ ] **verify a COMPANY-branch pick-up-point submit end-to-end** — the payload now keys by mode
-      (`companySender`/`companyRecipient`/`companyCustomer`) and the notify transform renames them
-      back to `sender`/`recipient`/`customer`. Individual branch verified in prod; company branch
-      only reasoned through. Confirm: workplace-post.ru 200 AND the notify lands with the renamed
-      keys AND the manager message arrives.
+- [ ] **localStorage persistence for apps/web forms** — same behaviour as the pick-up-point form
+      (survive reload and section toggles). **Check TanStack Form first**: it may already have a
+      persistence/hydration story, and hand-rolling over it would be the wrong kind of work.
+      Verify against the installed version's docs before writing anything. The pick-up-point
+      lessons that transfer regardless: store the meaningful state, not raw control values; replay
+      structure before pouring values; namespace the storage key per form.
+- [ ] **refactor `packages/ui/src/ui/main-nav.tsx` to the Radix-UI compound pattern** — same
+      treatment already applied to `<???>` (confirm which component that was — the note had the
+      same path twice). Goal is adopting Radix's model project-wide; the hooks involved have gone
+      stale in memory. Worth reading Radix's own source for a complex primitive (Drawer/Dialog) to
+      re-derive the pattern rather than copying an API surface: context + slot/asChild composition,
+      controllable state (`useControllableState`), `useComposedRefs`, `useLayoutEffect` SSR guard.
+      Card/ref this once the pattern is re-learned — it's exactly the reproduce-from-memory kind.
+- [ ] **Yandex Maps clusterer on the web app** — `ymap3-components`, "Example 2: map with
+      clusterer": `YMapCustomClusterer` with `marker` / `cluster` / `gridSize={64}` / `features`,
+      inside `YMapComponentsProvider apiKey=…`. Needs an API key + the point list (reuse
+      `/api/point/post` from workplace-post.ru, which already returns `{id,name,address}`).
+      Open: do the points need coordinates the current API doesn't return? Check before starting.
 - [ ] **TODO: lint for dead exports** — knip / ts-prune / eslint no-unused-exports, so the next
       orphaned export (like isManagerSubscribed) surfaces automatically (tsc won't — exports are
       assumed used).
@@ -31,30 +99,6 @@ Backlog + progress log. Tags follow the `todo-comments.nvim` convention (FIX/HAC
 - [ ] **NOTE: old-site JS: recipient transform resolves pointTo OR deliveryCompany** (early
       return), never both — so deliveryCompany would ship as a raw id. Latent only: pointTo is
       never set for this endpoint today, so the branch never fires.
-- [ ] **NOTE (cosmetic): pick-up-point schema messages say "2 символа", server says 3** — safe by
-      construction (workplace-post.ru 400s first, so the bot's message never reaches a user).
-      Bump to 3 only if the mismatch bothers you when reading the file.
-
-## Needs a decision before it's a task
-
-- [ ] **auth: JWT access+refresh vs server-side sessions, and a multi-provider identity model** —
-      the bot has authorization (RBAC on chatId) but no authentication; Telegram *is* the identity
-      provider today. Questions to answer FIRST, in order:
-      1. Which surface actually needs a logged-in user? (apps/web? the mini-app?) If none, this is
-         premature — it's blocked on the same thing as `packages/contracts`: owning the endpoint.
-      2. Identity model before tokens: `User` ← `AuthIdentity(provider, providerId, userId)` so
-         telegram / email / phone all resolve to one user. Current `telegramUser.chatId` is the
-         one-provider version — widening it later is another staged migration.
-      3. What does JWT buy over an opaque token in an httpOnly cookie + a `Session` row? One API,
-         one consumer → stateless verification isn't worth much, and the refresh half is a session
-         table anyway (rotation + revocation). `revokedAt` semantics already exist from the RBAC work.
-      Provider notes: **Telegram Login Widget** is the cheap bridge — payload is HMAC-SHA256 signed
-      with the bot token, verifiable server-side, links to the chatId already stored. **Phone** is
-      possible two ways: the bot's `request_contact` button gives a Telegram-verified number for
-      free (but only for existing bot users), or SMS OTP via a provider — costs money and needs one
-      that delivers to RU/DNR numbers. **Email** needs a mail sender + verification flow.
-      Scale/reversibility puts this at `docs/plans/` level if it ever goes ahead; consider moving
-      to ideas.md until question 1 has an answer.
 
 ## Structural cleanup (reactive — pure file moves)
 
@@ -178,6 +222,10 @@ See `project-organization-strategies.md`.
 - ✅ **online-pickup-rf notify outage closed** — pickupTime regex expected Cyrillic but the form's
   Inputmask emits "HH:MM - HH:MM"; shippingPayment enum drift; phone national-format rejection.
   Anchored regex + `.string().min(1)` + `defaultCountry:"RU"`; prod-verified both modes [2026-07-18]
+- ✅ **OnlinePickup rules verified against the real producer** — both delivery modes (pointTo and
+  pickupAddressRecipient) exercised in prod plus the worst-case toggle sequence, so the XOR holds
+  against real traffic; the 4-field customer all-or-nothing matches the form, which toggles those
+  four as one unit. whatsApp casing + pointTo-as-string already confirmed earlier [2026-07-19]
 - ✅ **dimensions no longer required** — длина/ширина/высота are computation inputs, not fields;
   cubicMeter's `>0` is the single volume invariant. cubicMeter locked via readOnly (online-pickup
   builds its payload from FormData, and `disabled` drops a control from FormData) [2026-07-19]
@@ -189,6 +237,9 @@ See `project-organization-strategies.md`.
 - ✅ **payload keyed by mode** — `[isCompanySender ? "companySender" : "sender"]: data` (+ recipient,
   customer) per the workplace-post.ru API spec; notify transform renames company keys back on
   EVERY return path (the early returns for pointFrom/deliveryCompany were skipping it) [2026-07-23]
+- ✅ **COMPANY-branch submit verified end-to-end** — company recipient (Компания + ИНН) posted to
+  workplace-post.ru, notify accepted the renamed keys, and the manager message arrived in Telegram
+  with the company block rendered correctly [2026-07-23]
 - ✅ **old-site JS: company customers no longer dropped** — the payload gate was `inputs.nameCustomer`
   (only present in the individual markup); now `fields.some(f => f === "nameCustomer" ||
   f === "companyCustomer")` [2026-07-23]
@@ -213,3 +264,8 @@ See `project-organization-strategies.md`.
   after restore [2026-07-23]
 - ✅ **deliveryCompany omitted when falsy** — `parseId` (strict `Number.isInteger`) + spread-if;
   a `0` was 400ing the notify with "Invalid input" [2026-07-23]
+- ✅ **pick-up-point "2 символа" vs server "3" — considered, left as-is** — safe by construction
+  (workplace-post.ru 400s first, so the bot's message never reaches a user); not worth a churn
+  commit [2026-07-23]
+- ✅ **auth (JWT/multi-provider identity) moved to ideas.md** — speculative, blocked on "which
+  surface needs a logged-in user"; not committed work [2026-07-23]
