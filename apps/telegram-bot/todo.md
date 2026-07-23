@@ -10,6 +10,11 @@ Backlog + progress log. Tags follow the `todo-comments.nvim` convention (FIX/HAC
       pointTo-as-string confirmed; still unverified: whether the pointTo XOR pickupAddressRecipient
       and the 4-field customer all-or-nothing refines match what the old site actually sends. If it
       can send neither, the XOR 400s working traffic.
+- [ ] **verify a COMPANY-branch pick-up-point submit end-to-end** — the payload now keys by mode
+      (`companySender`/`companyRecipient`/`companyCustomer`) and the notify transform renames them
+      back to `sender`/`recipient`/`customer`. Individual branch verified in prod; company branch
+      only reasoned through. Confirm: workplace-post.ru 200 AND the notify lands with the renamed
+      keys AND the manager message arrives.
 - [ ] **TODO: lint for dead exports** — knip / ts-prune / eslint no-unused-exports, so the next
       orphaned export (like isManagerSubscribed) surfaces automatically (tsc won't — exports are
       assumed used).
@@ -17,17 +22,39 @@ Backlog + progress log. Tags follow the `todo-comments.nvim` convention (FIX/HAC
       fine now; if managers grow, targeted findFirst({ chatId, isActive, userRoles some MANAGER })
       → { userId } | null. YAGNI.
 - [ ] **restructure `notifications/types.ts`** — one file holds shared helpers
-      (phone/email/text3to50/inn/positive/validatePickupTime), three payload schemas, and their
+      (phone/email/text/inn/positive/validatePickupTime), three payload schemas, and their
       sub-objects (~400 lines). Split: `notifications/schemas/_helpers.ts` + one file per payload,
       re-exported from an index. Do it once the schemas settle — file moves are cheap, churn isn't.
 - [ ] **`/api/notify` receives display STRINGS, not ids** — the old site resolves
       pointFrom/deliveryCompany to names (`${point.name}, ${point.address}`) before POSTing, so
       the bot prints text it can't join on. Migrate to sending raw ids + DB lookup at format time.
-- [ ] **old-site JS: company customers silently dropped** — the payload gates `customer` on
-      `inputs.nameCustomer`, which only exists in the individual markup.
 - [ ] **NOTE: old-site JS: recipient transform resolves pointTo OR deliveryCompany** (early
       return), never both — so deliveryCompany would ship as a raw id. Latent only: pointTo is
       never set for this endpoint today, so the branch never fires.
+- [ ] **NOTE (cosmetic): pick-up-point schema messages say "2 символа", server says 3** — safe by
+      construction (workplace-post.ru 400s first, so the bot's message never reaches a user).
+      Bump to 3 only if the mismatch bothers you when reading the file.
+
+## Needs a decision before it's a task
+
+- [ ] **auth: JWT access+refresh vs server-side sessions, and a multi-provider identity model** —
+      the bot has authorization (RBAC on chatId) but no authentication; Telegram *is* the identity
+      provider today. Questions to answer FIRST, in order:
+      1. Which surface actually needs a logged-in user? (apps/web? the mini-app?) If none, this is
+         premature — it's blocked on the same thing as `packages/contracts`: owning the endpoint.
+      2. Identity model before tokens: `User` ← `AuthIdentity(provider, providerId, userId)` so
+         telegram / email / phone all resolve to one user. Current `telegramUser.chatId` is the
+         one-provider version — widening it later is another staged migration.
+      3. What does JWT buy over an opaque token in an httpOnly cookie + a `Session` row? One API,
+         one consumer → stateless verification isn't worth much, and the refresh half is a session
+         table anyway (rotation + revocation). `revokedAt` semantics already exist from the RBAC work.
+      Provider notes: **Telegram Login Widget** is the cheap bridge — payload is HMAC-SHA256 signed
+      with the bot token, verifiable server-side, links to the chatId already stored. **Phone** is
+      possible two ways: the bot's `request_contact` button gives a Telegram-verified number for
+      free (but only for existing bot users), or SMS OTP via a provider — costs money and needs one
+      that delivers to RU/DNR numbers. **Email** needs a mail sender + verification flow.
+      Scale/reversibility puts this at `docs/plans/` level if it ever goes ahead; consider moving
+      to ideas.md until question 1 has an answer.
 
 ## Structural cleanup (reactive — pure file moves)
 
@@ -57,6 +84,10 @@ See `project-organization-strategies.md`.
 - [ ] **NOTE: `/api/notify`'s real client is the old PHP site's JS, not apps/web** — apps/web
       POSTs to workplace-post.ru (co-worker's backend). Always verify payload shapes against the
       old-site JS until the migration lands.
+- [ ] **NOTE: pick-up-point form is ~1500 lines of imperative DOM rebuilding** — six near-identical
+      change handlers, hand-rolled persistence, manual state replay. All of it is what the
+      apps/web React replacement gives for free. Don't invest further beyond keeping it correct;
+      the fix is the migration, not more patches.
 - [ ] **TEST: removeManager's last-manager invariant is the first real test candidate** — guards
       a catastrophic silent state (zero managers → notifications go nowhere, only a warning
       logged), tricky logic, hard to reproduce by hand. Needs a real Postgres → integration test
@@ -144,3 +175,41 @@ See `project-organization-strategies.md`.
   reports a committed add/remove as ❌ (fixes /addmanager <fake chatId> for testing) [2026-07-12]
 - ✅ **fix(notes): psql connect command** — `docker compose exec … -U "$POSTGRES_USER"` expanded on
   the HOST (empty); corrected to `sh -c '…'` so the container expands its own env [2026-07-12]
+- ✅ **online-pickup-rf notify outage closed** — pickupTime regex expected Cyrillic but the form's
+  Inputmask emits "HH:MM - HH:MM"; shippingPayment enum drift; phone national-format rejection.
+  Anchored regex + `.string().min(1)` + `defaultCountry:"RU"`; prod-verified both modes [2026-07-18]
+- ✅ **dimensions no longer required** — длина/ширина/высота are computation inputs, not fields;
+  cubicMeter's `>0` is the single volume invariant. cubicMeter locked via readOnly (online-pickup
+  builds its payload from FormData, and `disabled` drops a control from FormData) [2026-07-19]
+- ✅ **validation harvest against workplace-post.ru** — degenerate payloads → 400s revealed the real
+  ruleset (min-3 names/addresses, min-9 phones). Proved the bot was STRICTER than the gate [2026-07-23]
+- ✅ **notify schemas aligned to the gate** — four `textNtoM` helpers → one
+  `text(min, required, minMsg)`; every pick-up-point field min-2 (looser than the server's 3, so
+  the server rejects first); online-pickup matched to its own form [2026-07-23]
+- ✅ **payload keyed by mode** — `[isCompanySender ? "companySender" : "sender"]: data` (+ recipient,
+  customer) per the workplace-post.ru API spec; notify transform renames company keys back on
+  EVERY return path (the early returns for pointFrom/deliveryCompany were skipping it) [2026-07-23]
+- ✅ **old-site JS: company customers no longer dropped** — the payload gate was `inputs.nameCustomer`
+  (only present in the individual markup); now `fields.some(f => f === "nameCustomer" ||
+  f === "companyCustomer")` [2026-07-23]
+- ✅ **pick-up-point: client validation deleted, server errors rendered** — clearAllErrors removes
+  ALL `.form-error-message` spans (the old code removed one nextElementSibling → duplicates piled
+  up on resubmit); renderServerErrors joins per field, `path.split('.').pop()` for nested keys,
+  focuses the first invalid [2026-07-23]
+- ✅ **pick-up-point: event delegation** — form-level input/change/keyup listeners replaced per-input
+  binding; every `inputs = {…}` map deleted (7 copies, several hundred lines), grep-verified zero
+  [2026-07-23]
+- ✅ **pick-up-point: persistence** — per-form STORAGE_KEY; phones survive reload AND section toggle
+  (keyup only fires on real keystrokes, never on programmatic mask init); toggle/customer/service
+  state replayed via `__senderMode`/`__recipientMode`/`__customerMode`/`__customerOpen`/`__services`
+  + `dispatchEvent('change')`; replay moved to the END of ready (the `#customer-toggle` listener is
+  registered near the bottom of the file) [2026-07-23]
+- ✅ **AutoNumeric fields handled generically** — `AutoNumeric.isManagedByAutoNumeric(el)` /
+  `getAutoNumericElement(el).set()/.getNumber()` instead of a hardcoded list of numeric names
+  [2026-07-23]
+- ✅ **justified client guards** (things the server can't see through a mask) — incomplete phone via
+  `inputmask.isComplete()`, empty shippingPayment, null cashOnDelivery; `novalidate` on the form
+  (native email validation threw "not focusable" on the collapsed section); isAdult button synced
+  after restore [2026-07-23]
+- ✅ **deliveryCompany omitted when falsy** — `parseId` (strict `Number.isInteger`) + spread-if;
+  a `0` was 400ing the notify with "Invalid input" [2026-07-23]
