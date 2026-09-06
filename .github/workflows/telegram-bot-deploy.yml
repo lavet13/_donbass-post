@@ -35,6 +35,9 @@ jobs:
         run: |
           # Base .env
           cat > apps/telegram-bot/.env << EOF
+          RAPIDAPI_KEY=${{ secrets.RAPIDAPI_KEY }}
+          TRACK_GLOBAL_BEARER=${{ secrets.TRACK_GLOBAL_BEARER }}
+          RAPIDAPI_HOST=${{ secrets.RAPIDAPI_HOST }}
           TELEGRAM_PROXY=${{ secrets.TELEGRAM_PROXY }}
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
           PORT=3000

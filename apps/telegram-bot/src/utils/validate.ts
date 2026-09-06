@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { error } from "@/router";
+import { validationError } from "@/router";
 
 export function parseBody<T>(
   schema: z.ZodSchema<T>,
@@ -8,12 +8,21 @@ export function parseBody<T>(
   const result = schema.safeParse(data);
 
   if (!result.success) {
-    const messages = result.error.issues.map(i => i.message).join("; ");
-    console.log({ messages });
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of result.error.issues) {
+      if (issue.path.length === 0) continue;
+      const key = issue.path.join(".");
+      if (!(key in fieldErrors)) {
+        fieldErrors[key] = issue.message;
+      }
+    }
+
+    const prettifiedErrors = z.prettifyError(result.error);
+    console.error({ prettifiedErrors });
 
     return {
       success: false,
-      response: error(`${messages}`),
+      response: validationError(fieldErrors),
     };
   }
 

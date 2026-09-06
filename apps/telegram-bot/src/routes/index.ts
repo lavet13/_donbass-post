@@ -18,6 +18,11 @@ import type { Update } from "grammy/types";
 import { version } from "../../package.json";
 import { parseBody } from "@/utils/validate";
 import type z from "zod";
+import { prisma } from "@/prisma";
+import { parseInteger } from "@/utils/parse";
+import type { TrackGlobalResponse } from "@/track-global/types";
+import { isFresh } from "@/track-global/service";
+import type { Prisma } from "@/lib/prisma/client";
 
 export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
@@ -184,7 +189,95 @@ export function createRoutes(bot: TCustomBot): Router {
     requireJSON,
   );
 
+  router.get("/api/track-global", async (request) => {
+    if (!config.trackGlobal.key || !config.trackGlobal.bearer)
+      return error("tracking not configured", { status: 503 });
+
+    // read + normalize the key so " ab12 " and "AB12" share ONE cache row
+    const track = new URL(request.url).searchParams
+      .get("track")
+      ?.trim()
+      .toUpperCase();
+    if (!track) return error("track query param required");
+
+    // cache-first: a single primary-key lookup, zero upstream cost
+    const cached = await prisma.trackGlobalCache.findUnique({
+      where: { track },
+    });
+    if (cached && isFresh(cached)) {
+      return Response.json({ source: "cached", data: cached.payload });
+    }
+
+    let res: Response;
+    try {
+      res = await fetch(
+        `https://${config.trackGlobal.host}/search?track=${encodeURIComponent(track)}`,
+        {
+          headers: {
+            "x-rapidapi-key": config.trackGlobal.key,
+            "x-rapidapi-host": config.trackGlobal.host,
+            Authorization: `Bearer ${config.trackGlobal.bearer}`, // the 401 proved this is required too
+          },
+        },
+      );
+    } catch {
+      // fetch REJECTS only on a network failure — request never reached RapidAPI.
+      // Better to hand back a stale parcel than nothing, if we have one.
+      if (cached)
+        return Response.json({ source: "stale", data: cached.payload });
+      return error("tracking service unreachable", { status: 503 });
+    }
+
+    // headers are present regardless of status code
+    const rateLimit = {
+      remaining: headerInt(res.headers, "x-ratelimit-requests-remaining"),
+      limit: headerInt(res.headers, "x-ratelimit-requests-limit"),
+      resetSec: headerInt(res.headers, "x-ratelimit-requests-reset"),
+    };
+    console.warn(
+      `track-global quota: ${rateLimit.remaining}/${rateLimit.limit}, resets in ${rateLimit.resetSec}s`,
+    );
+
+    // quota gone: RapidAPI 429s once the certain amount of requests are spent
+    if (res.status === 429) {
+      // const resetSec =
+      //   Number(res.headers.get("x-ratelimit-requests-reset")) || null;
+      if (cached)
+        return Response.json({
+          source: "stale",
+          data: cached.payload,
+          quotaResetSec: rateLimit.resetSec,
+        });
+      return Response.json(
+        {
+          error: "Дневной лимит проверок исчерпан, попробуйте позже",
+          quotaResetSec: rateLimit.resetSec,
+        },
+        { status: 429 },
+      );
+    }
+
+    // any other non-2xx (bad creds, upstream 5xx): surface it, DON'T cache garbage
+    if (!res.ok) return error(`upstream error ${res.status}`, { status: 502 });
+
+    // success -> write cache, then serve. status:1 = real hit, 0 = not found (cache briefly)
+    const body = (await res.json()) as TrackGlobalResponse;
+    const found = body.data?.status === 1;
+    const payload = body.data as unknown as Prisma.InputJsonValue;
+    await prisma.trackGlobalCache.upsert({
+      where: { track },
+      create: { track, payload, found },
+      update: { payload, found, fetchedAt: new Date() }, // bump the freshness clock
+    });
+
+    return Response.json({ source: "live", data: body.data });
+  });
+
   return router;
+}
+
+function headerInt(headers: Headers, name: string): number | null {
+  return parseInteger(headers.get(name));
 }
 
 async function handleNotify<T>(

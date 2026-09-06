@@ -4,7 +4,7 @@ import { Command, LanguageCodes } from "@grammyjs/commands";
 import { setCommandsForChat } from "@/commands/utils";
 import { managerCommands, publicCommands } from "../groups";
 import { assertNever } from "@/utils/assert-never";
-import { parseChatId } from "@/commands/args";
+import { parseInteger } from "@/utils/parse";
 
 /**
  * /addmanager <chatId> [username] [firstName] [lastName]
@@ -39,7 +39,7 @@ export const addManagerCommand = new Command<TContext>(
       string,
     ];
 
-    const chatId = parseChatId(chatIdStr);
+    const chatId = parseInteger(chatIdStr);
 
     if (chatId === null) {
       await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {

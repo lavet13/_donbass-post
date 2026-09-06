@@ -34,6 +34,11 @@ function buildConfig(env: RawEnv): AppConfig {
       port: env.PORT, // already a number from transform
       nodeEnv: env.NODE_ENV,
     },
+    trackGlobal: {
+      key: env.RAPIDAPI_KEY,
+      bearer: env.TRACK_GLOBAL_BEARER,
+      host: env.RAPIDAPI_HOST,
+    },
   };
 }
 

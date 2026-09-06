@@ -3,7 +3,7 @@ import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
 import { clearCommandsForChat } from "@/commands/utils";
 import { assertNever } from "@/utils/assert-never";
-import { parseChatId } from "../args";
+import { parseInteger } from "@/utils/parse";
 
 /**
  * /removemanager <chatId>
@@ -32,7 +32,7 @@ export const removeManagerCommand = new Command<TContext>(
     }
 
     const [chatIdStr] = parts as [string];
-    const chatId = parseChatId(chatIdStr);
+    const chatId = parseInteger(chatIdStr);
 
     if (chatId === null) {
       await ctx.reply(`❌ Некорректный Chat ID: <code>${chatIdStr}</code>`, {

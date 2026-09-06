@@ -19,4 +19,9 @@ export type AppConfig = {
     port: number;
     nodeEnv: "development" | "production";
   };
+  trackGlobal: {
+    key: string | undefined;
+    bearer: string | undefined;
+    host: string;
+  },
 };
