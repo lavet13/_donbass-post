@@ -1,4 +1,3 @@
-import { fetch } from "undici";
 import { getBotManager, type TCustomBot } from "@/bot";
 import { config } from "@/config";
 import { cors, handleOptions, requireJSON } from "@/middleware";
@@ -223,7 +222,7 @@ export function createRoutes(bot: TCustomBot): Router {
             Authorization: `Bearer ${config.trackGlobal.bearer}`, // the 401 proved this is required too
           },
           dispatcher,
-        },
+        } as RequestInit & { dispatcher?: unknown },
       );
     } catch {
       // fetch REJECTS only on a network failure — request never reached RapidAPI.
