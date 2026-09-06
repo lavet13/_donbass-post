@@ -460,6 +460,7 @@ __metadata:
     dotenv: "npm:^17.2.3"
     dotenv-expand: "npm:^12.0.3"
     eslint: "npm:^9.36.0"
+    fetch-socks: "npm:^1.3.3"
     globals: "npm:^16.4.0"
     grammy: "npm:^1.44.0"
     libphonenumber-js: "npm:^1.13.8"
@@ -6116,6 +6117,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fetch-socks@npm:^1.3.3":
+  version: 1.3.3
+  resolution: "fetch-socks@npm:1.3.3"
+  dependencies:
+    socks: "npm:^2.8.7"
+    undici: "npm:>=7"
+  checksum: 10c0/ae65a0ca23c5474ea386aa861fdb89dc8188be02e4bcd23220a89aca02f3f76fb086d2b5b8ba0724e36c90940e2df59efde7dc3c3b59545fd59254627af60608
+  languageName: node
+  linkType: hard
+
 "file-entry-cache@npm:^8.0.0":
   version: 8.0.0
   resolution: "file-entry-cache@npm:8.0.0"
@@ -6790,6 +6801,13 @@ __metadata:
   version: 10.1.0
   resolution: "ip-address@npm:10.1.0"
   checksum: 10c0/0103516cfa93f6433b3bd7333fa876eb21263912329bfa47010af5e16934eeeff86f3d2ae700a3744a137839ddfad62b900c7a445607884a49b5d1e32a3d7566
+  languageName: node
+  linkType: hard
+
+"ip-address@npm:^10.1.1":
+  version: 10.7.0
+  resolution: "ip-address@npm:10.7.0"
+  checksum: 10c0/bb6f514708b84ec75ad4d8156f3d571a5b8e592a15359386100f4f8d7366a4b7723d54b88a30d80b3f51ca5f4dee239e94ef4b53765b9c41a8ea46b421307d14
   languageName: node
   linkType: hard
 
@@ -9726,6 +9744,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"socks@npm:^2.8.7":
+  version: 2.8.10
+  resolution: "socks@npm:2.8.10"
+  dependencies:
+    ip-address: "npm:^10.1.1"
+    smart-buffer: "npm:^4.2.0"
+  checksum: 10c0/9ac7f4329ed064585975206d9582119a1f168b249dd6119a939f839e0ea7a590d4fdccff9a4112f13b478177207959096f70224f021eaeb3ce69bc8129f80ef4
+  languageName: node
+  linkType: hard
+
 "solid-js@npm:^1.9.5, solid-js@npm:^1.9.9":
   version: 1.9.11
   resolution: "solid-js@npm:1.9.11"
@@ -10485,6 +10513,13 @@ __metadata:
   version: 7.18.2
   resolution: "undici-types@npm:7.18.2"
   checksum: 10c0/85a79189113a238959d7a647368e4f7c5559c3a404ebdb8fc4488145ce9426fcd82252a844a302798dfc0e37e6fb178ff481ed03bc4caf634c5757d9ef43521d
+  languageName: node
+  linkType: hard
+
+"undici@npm:>=7":
+  version: 8.10.2
+  resolution: "undici@npm:8.10.2"
+  checksum: 10c0/66d7fc69149207cab570d6abbc9e965b6afe1ae889a7d46945b431165c973d6a56f3dd8b70a856e7ae1e550b6366a1cde6f06e68640587f0dadca38de72995ee
   languageName: node
   linkType: hard
 

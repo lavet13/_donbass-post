@@ -28,6 +28,7 @@ const BaseSchema = z.object({
   DATABASE_URL: z.string().min(1, "Database URL is required"),
   ROOT_ADMIN_CHAT_ID: blankToUndefined(z.coerce.number<string>().int("ROOT_ADMIN_CHAT_ID should be an integer").optional()),
   TELEGRAM_PROXY: blankToUndefined(z.url().optional()),
+  TRACK_GLOBAL_PROXY: blankToUndefined(z.url().optional()),
   RAPIDAPI_KEY: blankToUndefined(z.string().optional()),
   TRACK_GLOBAL_BEARER: blankToUndefined(z.string().optional()),
   RAPIDAPI_HOST: blankToUndefined(z.string().optional()).default("track-global.p.rapidapi.com"),

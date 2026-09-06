@@ -23,5 +23,6 @@ export type AppConfig = {
     key: string | undefined;
     bearer: string | undefined;
     host: string;
+    proxy: string | undefined;
   },
 };

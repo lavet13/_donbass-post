@@ -1,3 +1,4 @@
+import { fetch } from "undici";
 import { getBotManager, type TCustomBot } from "@/bot";
 import { config } from "@/config";
 import { cors, handleOptions, requireJSON } from "@/middleware";
@@ -23,6 +24,7 @@ import { parseInteger } from "@/utils/parse";
 import type { TrackGlobalResponse } from "@/track-global/types";
 import { isFresh } from "@/track-global/service";
 import type { Prisma } from "@/lib/prisma/client";
+import { makeProxyDispatcher } from "@/utils/proxy";
 
 export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
@@ -208,6 +210,8 @@ export function createRoutes(bot: TCustomBot): Router {
       return Response.json({ source: "cached", data: cached.payload });
     }
 
+    const dispatcher = makeProxyDispatcher(config.trackGlobal.proxy);
+
     let res: Response;
     try {
       res = await fetch(
@@ -218,6 +222,7 @@ export function createRoutes(bot: TCustomBot): Router {
             "x-rapidapi-host": config.trackGlobal.host,
             Authorization: `Bearer ${config.trackGlobal.bearer}`, // the 401 proved this is required too
           },
+          dispatcher,
         },
       );
     } catch {
@@ -258,7 +263,13 @@ export function createRoutes(bot: TCustomBot): Router {
     }
 
     // any other non-2xx (bad creds, upstream 5xx): surface it, DON'T cache garbage
-    if (!res.ok) return error(`upstream error ${res.status}`, { status: 502 });
+    if (!res.ok) {
+      const detail = await res.text().catch(() => ""); // read the body once; .catch guards empty/non-JSON
+      console.error(
+        `track-global upstream ${res.status}: ${detail.slice(0, 300)}`,
+      ); // cap the log line
+      return error(`upstream error ${res.status}`, { status: 502 });
+    }
 
     // success -> write cache, then serve. status:1 = real hit, 0 = not found (cache briefly)
     const body = (await res.json()) as TrackGlobalResponse;

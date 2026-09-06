@@ -38,6 +38,7 @@ function buildConfig(env: RawEnv): AppConfig {
       key: env.RAPIDAPI_KEY,
       bearer: env.TRACK_GLOBAL_BEARER,
       host: env.RAPIDAPI_HOST,
+      proxy: env.TRACK_GLOBAL_PROXY ?? env.TELEGRAM_PROXY,
     },
   };
 }
