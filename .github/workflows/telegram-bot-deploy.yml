@@ -19,7 +19,7 @@ on:
         required: false
         default: "0"
       full_rebuild:
-        description: 'Enable full rebuild without Docker cache? true = full rebuild (slower), false = normal build (faster)'
+        description: "Enable full rebuild without Docker cache? true = full rebuild (slower), false = normal build (faster)"
         required: false
         default: "false"
 
@@ -136,6 +136,13 @@ jobs:
                 up -d --build
             fi
 
+            # nginx resolves `proxy_pass http://telegram-bot:3000` once at config-load and
+            # caches the IP forever. `up -d --build` gives the bot a fresh container IP, so
+            # nginx ends up dialing the dead old one (connect() refused → 502 everywhere).
+            # Restart ONLY nginx (don't bounce the bot again): re-runs the entrypoint, which
+            # re-copies nginx/conf.d -> live config AND re-resolves the upstream to the new IP.
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+              restart nginx-certbot
 
             # Run migrations against the live database
             # exec runs a command inside the already-running container

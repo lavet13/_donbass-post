@@ -89,6 +89,5 @@ jobs:
           script: |
             cd ~/telegram-bot
 
-            # Reload nginx config gracefully — || true in case config unchanged
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-              exec -T nginx-certbot nginx -s reload || true
+              restart nginx-certbot
