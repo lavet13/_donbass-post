@@ -24,6 +24,7 @@ import type { TrackGlobalResponse } from "@/track-global/types";
 import { isFresh } from "@/track-global/service";
 import type { Prisma } from "@/lib/prisma/client";
 import { makeProxyDispatcher } from "@/utils/proxy";
+import { fetch } from "undici";
 
 export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
@@ -222,9 +223,10 @@ export function createRoutes(bot: TCustomBot): Router {
             Authorization: `Bearer ${config.trackGlobal.bearer}`, // the 401 proved this is required too
           },
           dispatcher,
-        } as RequestInit & { dispatcher?: unknown },
+        },
       );
-    } catch {
+    } catch (err) {
+      console.error("track-global fetch failed:", err);
       // fetch REJECTS only on a network failure — request never reached RapidAPI.
       // Better to hand back a stale parcel than nothing, if we have one.
       if (cached)

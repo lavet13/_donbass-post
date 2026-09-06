@@ -10,5 +10,6 @@ export default defineConfig((options) => ({
   sourcemap: true,
   clean: true,
   treeshake: true,
+  external: ["undici", "fetch-socks", "socks"],
   minify: !options.watch && "terser",
 }));
