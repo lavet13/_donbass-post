@@ -246,8 +246,6 @@ export function createRoutes(bot: TCustomBot): Router {
 
     // quota gone: RapidAPI 429s once the certain amount of requests are spent
     if (res.status === 429) {
-      // const resetSec =
-      //   Number(res.headers.get("x-ratelimit-requests-reset")) || null;
       if (cached)
         return Response.json({
           source: "stale",
