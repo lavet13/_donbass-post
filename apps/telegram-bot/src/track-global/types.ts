@@ -34,6 +34,7 @@ export interface TrackGlobalData {
     events: TrackGlobalEvent[];
     found_in_services: Record<string, TrackGlobalService>;
   } | null;
+  checkedServices?: unknown; // unused in our UI and it's taking a tall on the nginx microcaching so we are skipping it
 }
 
 /** The full envelope RapidAPI returns. */

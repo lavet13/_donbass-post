@@ -1,3 +1,4 @@
+import { type TrackGlobalData, type TrackGlobalService } from "./types";
 /*
  * the TTL is "how long am I willing to trust a cached answer before re-asking upstream."
  * The right length depends on how likely that answer is to have gone stale. A found parcel
@@ -23,4 +24,38 @@ const MISS_TTL_MS = 30 * 60 * 1000;
 export function isFresh(row: { found: boolean; fetchedAt: Date }): boolean {
   const ttl = row.found ? FOUND_TTL_MS : MISS_TTL_MS;
   return Date.now() - row.fetchedAt.getTime() < ttl;
+}
+
+/**
+ * track.global embeds a huge SEO article (`full_text`, plus title/description/etc.)
+ * in every service entry, duplicated across found_in_services + checkedServices.
+ * The UI only needs name + image_path, so we keep those and drop the rest before caching —
+ * shrinks a ~40KB row to a fraction and keeps the nginx microcache lean.
+ */
+export function slimTrackData(data: TrackGlobalData) {
+  const slimServices = (
+    services: Record<string, TrackGlobalService> | undefined,
+  ) =>
+    Object.fromEntries(
+      Object.entries(services ?? {}).map(([alias, svc]) => [
+        alias,
+        {
+          id: svc.id,
+          name: svc.name,
+          alias: svc.alias,
+          image_path: svc.image_path,
+        },
+      ]),
+    );
+
+  return {
+    ...data,
+    result: data.result
+      ? {
+          ...data.result,
+          found_in_services: slimServices(data.result.found_in_services),
+        }
+      : data.result,
+    checkedServices: undefined, // this is what we are skipping essentially
+  } satisfies TrackGlobalData;
 }

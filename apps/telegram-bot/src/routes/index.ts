@@ -21,7 +21,7 @@ import type z from "zod";
 import { prisma } from "@/prisma";
 import { parseInteger } from "@/utils/parse";
 import type { TrackGlobalResponse } from "@/track-global/types";
-import { isFresh } from "@/track-global/service";
+import { isFresh, slimTrackData } from "@/track-global/service";
 import type { Prisma } from "@/lib/prisma/client";
 import { makeProxyDispatcher } from "@/utils/proxy";
 import { fetch } from "undici";
@@ -273,14 +273,15 @@ export function createRoutes(bot: TCustomBot): Router {
     // success -> write cache, then serve. status:1 = real hit, 0 = not found (cache briefly)
     const body = (await res.json()) as TrackGlobalResponse;
     const found = body.data?.status === 1;
-    const payload = body.data as unknown as Prisma.InputJsonValue;
+    const slim = slimTrackData(body.data);
+    const payload = slim as unknown as Prisma.InputJsonValue;
     await prisma.trackGlobalCache.upsert({
       where: { track },
       create: { track, payload, found },
       update: { payload, found, fetchedAt: new Date() }, // bump the freshness clock
     });
 
-    return Response.json({ source: "live", data: body.data });
+    return Response.json({ source: "live", data: slim });
   });
 
   return router;
