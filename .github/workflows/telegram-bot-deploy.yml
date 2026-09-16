@@ -9,6 +9,7 @@ on:
       - "packages/eslint-config/**"
       - "packages/typescript-config/**"
       - "packages/prettier-config/**"
+      - "nginx/**"
       - "docker-compose.yml"
       - "docker-compose.prod.yml"
       - ".github/workflows/telegram-bot-deploy.yml"
