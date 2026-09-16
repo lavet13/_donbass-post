@@ -27,10 +27,18 @@ export function isFresh(row: { found: boolean; fetchedAt: Date }): boolean {
 }
 
 /**
- * track.global embeds a huge SEO article (`full_text`, plus title/description/etc.)
- * in every service entry, duplicated across found_in_services + checkedServices.
- * The UI only needs name + image_path, so we keep those and drop the rest before caching —
- * shrinks a ~40KB row to a fraction and keeps the nginx microcache lean.
+ * Strip track.global's SEO payload before caching.
+ *
+ * Each response embeds a ~40KB article (`full_text` + meta) in every service
+ * object, duplicated across `found_in_services` and `checkedServices` — ~90% of
+ * the payload, none of it used by the UI. This keeps only the fields the client
+ * reads (id/name/alias/image_path) and drops `checkedServices` entirely.
+ *
+ * Pure: no I/O, no app state — but domain-specific (it knows track.global's
+ * shape), so it lives with the feature, not in generic `utils/`.
+ *
+ * @param data - the raw `data` object from a track.global response
+ * @returns a slimmed copy safe to cache and serve
  */
 export function slimTrackData(data: TrackGlobalData) {
   const slimServices = (

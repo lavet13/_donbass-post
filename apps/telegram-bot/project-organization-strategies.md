@@ -1,228 +1,205 @@
-# Feature-based vs Layer-based Organization
+# Where does this code go?
 
-A reference for deciding *where a file goes* and *how to group code* as a
-project grows. Written against the `donbass-post` telegram-bot, but the
-reasoning is general.
+A reference for deciding _where a file belongs_ as the project grows. Written
+against the `donbass-post` telegram-bot; the reasoning is general.
+
+The whole document answers one question — "what folder does this file go in?"
+— and the answer always comes from two independent axes. Learn the axes, then
+the procedure, then the folder strategy. Everything else is examples.
 
 ---
 
-## The core distinction
+## The two axes (this is the core — everything follows from it)
 
-There are two dominant ways to organize a codebase. They answer the same
-question — "what folder does this file belong in?" — with two different rules.
+Every file's home is decided by two questions that are INDEPENDENT of each
+other. Most "where does this go?" confusion comes from collapsing them into one.
 
-**Layer-based** groups files by their *technical role*:
+### Axis 1 — KIND: what does it DO? (decides util vs service vs type vs handler)
+
+- **Pure helper** — output depends only on its input; changes nothing outside
+  itself. No I/O, no side effects. Deterministic: same input → same output,
+  forever.
+- **Service** — does I/O or has side effects: reads/writes the DB, calls a
+  network API, reads env/clock, mutates shared state.
+- **Type** — only describes a shape; no code runs.
+- **Handler** — an entry point the outside world triggers (HTTP route, Telegram
+  command, middleware). Thin: parse → call a service → reply.
+
+Two terms worth nailing, because they define the pure/service line:
+
+- **I/O** = talking to anything OUTSIDE the function's own arguments and return
+  value — a file, the DB, `fetch`, `process.env`, `Date.now()`, a log. If the
+  function reaches out to get something it wasn't handed, that's I/O.
+- **Side effect** = CHANGING something outside itself — a DB write, mutating a
+  shared variable, a console log. Building and returning a _new_ object is not a
+  side effect; mutating the argument would be.
+
+A function with neither is **pure**.
+
+> **Worked example — `slimTrackData(data)`:** it strips the SEO blob from a
+> track.global payload. It touches only its `data` argument (no DB, no clock, no
+> env) and returns a _new_ object, mutating nothing. No I/O, no side effects →
+> **pure helper**.
+>
+> **Contrast — `isFresh(row)`:** looks similar, but it calls `Date.now()` —
+> reading the clock is I/O. So `isFresh` is technically _impure_, even though it
+> does no DB work. This matters less than you'd think (see Axis 2), but it's why
+> "looks like a helper" isn't the same as "is pure."
+
+### Axis 2 — SCOPE: who OWNS it? (decides generic `utils/` vs feature folder)
+
+- **Generic** — knows nothing about your business. A chat id is just an integer;
+  a date is just a date. Copy-pasteable into any project unchanged.
+- **Domain-owned** — knows a specific business concept's shape or rules.
+- **Shared infra** — plumbing many domains depend on (db client, router, config,
+  logger).
+
+> **The trap that bites everyone:** assuming _pure ⇒ generic `utils/`_. They're
+> different axes. `slimTrackData` is pure (Axis 1) but it KNOWS track.global's
+> payload shape — that `found_in_services` and `full_text` exist (Axis 2:
+> domain-owned). A pure-but-domain-specific function does NOT go in generic
+> `utils/`; it lives with its feature.
+
+### The two axes crossed → the folder
+
+|                   | generic              | domain-owned                     | shared infra     |
+| ----------------- | -------------------- | -------------------------------- | ---------------- |
+| **pure helper**   | `utils/`             | feature folder (`track-global/`) | `lib/` / `core/` |
+| **service** (I/O) | rare — usually infra | feature folder or `services/`    | `lib/` / `core/` |
+| **type**          | `types/` or inline   | feature folder `types.ts`        | `lib/` types     |
+| **handler**       | —                    | `routes/` / `commands/`          | —                |
+
+> **`slimTrackData`:** pure (row 1) × domain-owned (col 2) → **feature folder**
+> → `track-global/service.ts`, beside `isFresh`. Note `isFresh` lands in the
+> _same cell_ for a slightly different reason: it's impure (the clock) but also
+> domain-owned, and impure × domain → feature folder too. Different rows, same
+> destination — which is exactly why co-locating them is right.
+>
+> **`parseInteger`:** pure × generic (a number is a number) → **`utils/`**.
+> Same KIND as `slimTrackData` (both pure helpers), opposite SCOPE → opposite
+> home. That's the two axes doing their job.
+
+---
+
+## The procedure (run top to bottom, stop at the first match)
+
+**Step 1 — Say the file's job in ONE sentence using ONE noun:**
+util / type / handler / service. If you need "and" ("it validates _and_ saves"),
+it's two jobs — split it first, then place each half. Most placement confusion
+is really an unsplit file.
+
+**Step 2 — Classify KIND (Axis 1):**
+
+- describes a shape, no code runs → **type**
+- triggered by an external event (request, message) → **handler** (keep it thin)
+- reaches outside its args / changes outside state → **service**
+- output depends only on input, changes nothing → **pure helper**
+
+**Step 3 — Classify SCOPE (Axis 2):**
+
+- knows nothing about the business → **generic**
+- knows a domain's shape or rules → **domain-owned**
+- plumbing many domains use → **shared infra**
+
+**Step 4 — Cross them in the table above to get the folder.**
+
+**Step 5 — Apply the "3+ files" gate before making a NEW feature folder.**
+A domain earns its own folder once ~3 related files exist. Below that, a
+domain-owned file can sit in the layered folder (`services/rbac.service.ts`)
+until siblings accumulate. Never keep `x.ts` and `x/` side by side — promote
+fully or not at all; half-finished promotions are where ambiguity comes from.
+
+**Step 6 — Sanity-check with the smells (if one fires, you misclassified in
+Step 2 — go back):**
+
+- a "util" that imports `prisma` → it's a service
+- a "service" that parses `ctx.message.text` → handler logic leaked in
+- a handler with 40 lines of DB code → extract a service and call it
+- a file you can't name with one noun → it's doing two jobs
+
+> **Full worked example — `slimTrackData`:**
+> Step 1: "reshapes a track.global payload" — one noun, _helper_.
+> Step 2: touches only its arg → pure helper.
+> Step 3: knows `found_in_services`/`full_text` → domain-owned.
+> Step 4: helper × domain-owned → feature folder.
+> Step 5: track-global now has `types.ts` + `service.ts` + this ≈ 3 → folder
+> justified. → **`src/track-global/service.ts`**. Done.
+
+---
+
+## Layer-based vs feature-based (the folder strategy this all feeds)
+
+The table decides a file's KIND-folder (`utils/`, `services/`, `types/`). This
+section decides whether those live _by role_ (layer-based) or _by domain_
+(feature-based).
+
+**Layer-based** groups by technical role — all services together, all types
+together:
 
 ```
 src/
-├── services/      ← all DB/business logic, regardless of domain
-├── types/         ← all type definitions, regardless of domain
-├── middleware/    ← all middleware
-├── formatters/    ← all formatters
-└── commands/      ← all command handlers
+├── services/   ← all business logic, any domain
+├── types/      ← all shapes, any domain
+├── middleware/
+└── commands/
 ```
 
-The rule: *"What kind of thing is this?"* → a service goes in `services/`,
-a type goes in `types/`.
-
-**Feature-based** groups files by their *domain* (the business concept they
-serve):
+**Feature-based** groups by domain — everything about one concept together:
 
 ```
 src/
-├── rbac/          ← guards, service, cache, types — all RBAC code together
-├── notifications/ ← formatters, service, types — all notification code together
-└── managers/      ← commands, service — all manager code together
+├── rbac/          ← guards + service + cache + types, all RBAC
+├── notifications/ ← formatters + service + types, all notifications
+└── track-global/  ← service (isFresh, slimTrackData) + types
 ```
 
-The rule: *"What feature does this belong to?"* → anything about RBAC goes
-in `rbac/`, no matter whether it's a service, a type, or a guard.
+Same code either way — only the location changes. Organization is about
+_findability and change-locality_, not behavior.
 
----
+### Which to use, and when to switch
 
-## The same code, both ways
+**Layer-based wins** while the project is small, you're still learning it,
+infrastructure dominates, or features are thin (one service + one type each).
+**Your project is mostly here — stay layered by default.**
 
-Your RBAC code currently lives **layer-based** — scattered across folders by role:
+**Feature-based wins** when features are thick and independent, you change one
+feature at a time, or you want deletability (remove a feature = delete a folder).
 
-```
-src/commands/guards.ts          ← userHasPermission, userHasRole
-src/services/rbac.service.ts    ← getUserPermissions (DB queries)
-src/services/rbac.cache.ts      ← the in-memory cache
-src/types/rbac.ts               ← Permission, Role, WILDCARD
-```
+**The signal you've outgrown layers** — any one is a nudge, several mean act:
 
-The **feature-based** version of the *exact same code*:
+1. One change makes you open many folders (RBAC = `commands/` + `services/`×2 +
+   `types/`). Conceptually one thing, physically four.
+2. A layer folder spans unrelated domains (`services/` holds manager, notification,
+   rbac… — when it hits ~15–20 files across many domains, scanning stops helping).
+3. "Where does this go?" gets ambiguous (a file that's both "a guard" and "RBAC"
+   has two plausible homes; a feature folder removes the ambiguity).
 
-```
-src/rbac/
-├── guards.ts      ← userHasPermission, userHasRole
-├── service.ts     ← getUserPermissions
-├── cache.ts       ← the in-memory cache
-└── types.ts       ← Permission, Role, WILDCARD
-```
-
-Nothing about the code changes — only its location. That's the whole point:
-organization is about *findability and change-locality*, not behavior.
-
----
-
-## When each strategy wins
-
-### Layer-based wins when:
-
-- **The project is small.** Few features, so "all services in one folder" is
-  still easy to scan. (Your project is here.)
-- **You're learning the codebase / language.** Layers map to concepts you
-  already know ("this is a service, this is a type"), lowering cognitive load.
-- **Infrastructure dominates.** When most code is cross-cutting plumbing
-  (HTTP router, DB client, config, middleware) rather than distinct business
-  domains, layers reflect reality.
-- **Features are thin.** If each "feature" is just one service function and one
-  type, a feature folder would hold two files — not worth the nesting.
-
-### Feature-based wins when:
-
-- **Features are thick and independent.** Each domain has its own commands,
-  services, types, validators — enough that grouping them cuts navigation.
-- **You change one feature at a time.** If a typical task is "add a field to
-  notifications," having every notification file in one folder means you edit
-  in one place instead of jumping across `services/`, `types/`, `formatters/`.
-- **Multiple people / future-you work in parallel.** Feature folders create
-  natural ownership boundaries and reduce merge collisions.
-- **You want deletability.** Removing a feature = deleting one folder. With
-  layers, a feature's pieces are spread out, so removal means hunting.
-
----
-
-## The signal you've outgrown layer-based
-
-Watch for these. Any one is a nudge; several together mean it's time:
-
-1. **One change touches many folders.** Editing the RBAC feature makes you open
-   `commands/`, `services/` (twice), and `types/`. The feature is *conceptually*
-   one thing but *physically* four.
-2. **A layer folder spans unrelated domains.** Your `services/` holds
-   `manager-preferences`, `notification`, `rbac`, `rbac.cache` — four files
-   about three unrelated concerns. When `services/` hits ~15–20 files across
-   many domains, scanning it stops being useful.
-3. **"Where does this go?" gets ambiguous.** A file that's both "a guard" and
-   "RBAC" has two plausible homes under layers (`commands/guards.ts` vs a future
-   `rbac/`). Feature-based removes the ambiguity: it's RBAC, full stop.
-
-You are seeing a mild version of #1 and #2 with RBAC right now — which is
-exactly why `rbac/` is a sensible *first* feature folder, even while the rest of
-the app stays layered.
-
----
-
-## The hybrid (what most real projects actually do)
-
-You rarely pick one purely. The common, healthy shape is:
+### The hybrid most real projects land on
 
 ```
 src/
-├── rbac/            ← FEATURE: cohesive domain, grouped together
-├── notifications/   ← FEATURE: cohesive domain, grouped together
-│
-├── lib/  or  core/  ← SHARED infra used by all features
-│   ├── prisma/      (db client)
-│   ├── config.ts
-│   └── router.ts
-├── middleware/      ← cross-cutting, not owned by one feature
+├── rbac/            ← FEATURE: cohesive domain
+├── track-global/    ← FEATURE: cohesive domain
+├── lib/ or core/    ← SHARED infra (prisma, config, router)
+├── utils/           ← generic pure helpers (parseInteger)
+├── middleware/      ← cross-cutting, no single owner
 └── server.ts        ← entrypoint
 ```
 
-The rule of thumb for the split:
+Rule: **owned by exactly one domain → its feature folder; shared by many →
+layered infra.** This is "narrowest owner until shared" at the folder level —
+code lives with its feature until enough features need it, then graduates to
+`lib/`.
 
-- **Owned by exactly one domain?** → put it in that feature folder.
-- **Shared across many features (infra/plumbing)?** → keep it layered in
-  `lib/` / `core/` / `middleware/`.
+### Applied to donbass-post today
 
-This is the "narrowest owner until shared" principle applied at the folder
-level: code lives with its feature until enough features need it, then it
-graduates to shared infrastructure.
+- **Stay layered by default** — small, still learning; forcing feature folders
+  everywhere adds nesting without payoff.
+- **`rbac/` is the first feature folder worth making** — it's the domain thick
+  enough (guards + service + cache + types) that you already feel it scattered.
+- **`track-global/` is the second** — it grew to service + types this session.
+- **Don't** feature-folder notifications/managers yet — wait for the signal.
 
----
-
-## Decision heuristic (the short version)
-
-Ask, in order:
-
-1. **Is this shared infra (db, config, http, logging)?**
-   → layered `lib/` folder. Done.
-2. **Does it clearly belong to one domain, and does that domain already have
-   (or deserve) 3+ files?**
-   → feature folder.
-3. **Otherwise (small, thin, or you're unsure)?**
-   → layered. Don't over-structure ahead of need.
-
-And the meta-rule that prevents the mess you felt:
-
-> **Never keep `x.ts` and `x/` side by side.** A lone file is fine until it
-> gains a sibling; then promote it to a folder. Ambiguity comes from
-> half-finished promotions, not from choosing the "wrong" strategy.
-
----
-
-## Applied to your telegram-bot
-
-**Recommendation: stay layered for now.** The project is small enough that
-layers are still easy to navigate, and you're actively learning. Forcing
-feature folders everywhere would add nesting without payoff.
-
-**The one exception worth doing when it itches:** consolidate RBAC into
-`src/rbac/` (guards + service + cache + types). It's your first domain thick
-enough to justify a feature folder, and it's the one you currently feel
-scattered. You've already staged the copy — flipping the imports is a clean,
-isolated commit whenever you want it.
-
-**Don't** feature-folder notifications or managers yet — they're not painful
-enough. Wait for the signal (a change that makes you open three folders).
-
-The takeaway: organization is a *gradual, reactive* process. You don't design
-the perfect tree upfront. You start layered, and you promote a feature folder
-the moment a domain's pieces start feeling scattered. Reacting to real pain
-beats predicting it.
-
-## What goes where: classifying a file by its job
-
-The folder names (`services/`, `utils/`, `types/`) describe a file's *job*, not
-its topic. When unsure where a file goes, ask what KIND of work it does:
-
-### util — a pure, stateless helper
-- Takes input, returns output. No DB, no network, no app state, no side effects.
-- Could be copy-pasted into any project unchanged.
-- Examples: `formatRussianDate(date)`, `emptyAsUndefined(schema)`, `assertNever(x)`.
-- Test: "Does this depend on anything specific to my app?" No → util.
-
-### service — business logic that touches state
-- Talks to the DB (Prisma), an external API, or coordinates app data.
-- Knows about YOUR domain (managers, notifications, roles).
-- Examples: `addManager()`, `getUserPermissions()`, `sendToManagers()`.
-- Test: "Does this read/write data or know my domain rules?" Yes → service.
-
-### type — shape definitions only, no runtime behavior
-- `type`/`interface`/`enum`-like const objects. Compiles away (mostly).
-- Examples: `TContext`, `Permission`, `OnlinePickupPayload`.
-- Test: "Is this only describing a shape, with no logic that runs?" Yes → type.
-
-### command / route / middleware — an entry point (a "handler")
-- Code the outside world calls: a Telegram command, an HTTP route, middleware.
-- Thin: parse input → call a service → format a reply. Logic lives in services.
-- Test: "Is this triggered by an external event (message, request)?" Yes → handler.
-
-### The decision flow, in order
-1. Pure function, no app knowledge?              → `utils/`
-2. Only describes a shape, no runtime logic?     → `types/`
-3. Triggered by an external event?               → a handler (`commands/`, `routes/`)
-4. Touches DB / external state / domain rules?   → `services/` (or feature folder)
-5. Cross-cutting plumbing (db client, config)?   → `core/` / `lib/`
-
-### The smell that means a file is in the wrong place
-- A "util" that imports `prisma` → it's a service, not a util.
-- A "service" that parses `ctx.message.text` → handler logic leaked into a service.
-- A command handler with 40 lines of DB logic → extract to a service, call it.
-
-A handler should read like a recipe: get input, call a service, reply. If you
-can't summarize a file's job in one sentence using ONE of these words
-(util/type/handler/service), the file is probably doing two jobs — split it.
+Organization is _gradual and reactive_: start layered, promote a feature folder
+the moment a domain's pieces feel scattered. Reacting to real pain beats
+predicting it.

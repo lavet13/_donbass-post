@@ -134,8 +134,7 @@ See `project-organization-strategies.md`.
       the fix is the migration, not more patches.
 - [ ] **TEST: removeManager's last-manager invariant is the first real test candidate** — guards
       a catastrophic silent state (zero managers → notifications go nowhere, only a warning
-      logged), tricky logic, hard to reproduce by hand. Needs a real Postgres → integration test
-      + test-DB scaffolding. Do it if/when that scaffolding exists.
+      logged), tricky logic, hard to reproduce by hand. Needs a real Postgres → integration test + test-DB scaffolding. Do it if/when that scaffolding exists.
 
 ## Backlog / low priority (non-bot infra)
 
@@ -242,7 +241,7 @@ See `project-organization-strategies.md`.
   with the company block rendered correctly [2026-07-23]
 - ✅ **old-site JS: company customers no longer dropped** — the payload gate was `inputs.nameCustomer`
   (only present in the individual markup); now `fields.some(f => f === "nameCustomer" ||
-  f === "companyCustomer")` [2026-07-23]
+f === "companyCustomer")` [2026-07-23]
 - ✅ **pick-up-point: client validation deleted, server errors rendered** — clearAllErrors removes
   ALL `.form-error-message` spans (the old code removed one nextElementSibling → duplicates piled
   up on resubmit); renderServerErrors joins per field, `path.split('.').pop()` for nested keys,
@@ -253,8 +252,8 @@ See `project-organization-strategies.md`.
 - ✅ **pick-up-point: persistence** — per-form STORAGE_KEY; phones survive reload AND section toggle
   (keyup only fires on real keystrokes, never on programmatic mask init); toggle/customer/service
   state replayed via `__senderMode`/`__recipientMode`/`__customerMode`/`__customerOpen`/`__services`
-  + `dispatchEvent('change')`; replay moved to the END of ready (the `#customer-toggle` listener is
-  registered near the bottom of the file) [2026-07-23]
+  - `dispatchEvent('change')`; replay moved to the END of ready (the `#customer-toggle` listener is
+    registered near the bottom of the file) [2026-07-23]
 - ✅ **AutoNumeric fields handled generically** — `AutoNumeric.isManagedByAutoNumeric(el)` /
   `getAutoNumericElement(el).set()/.getNumber()` instead of a hardcoded list of numeric names
   [2026-07-23]
@@ -269,3 +268,6 @@ See `project-organization-strategies.md`.
   commit [2026-07-23]
 - ✅ **auth (JWT/multi-provider identity) moved to ideas.md** — speculative, blocked on "which
   surface needs a logged-in user"; not committed work [2026-07-23]
+- track.global parcel proxy: cached GET /api/track-global replacing the dead free iframe widget — cache-first (6h hit / 30min miss TTL), stale-on-429, SOCKS5 egress via the Telegram proxy, nginx 30s microcache. Feature complete.
+- CI: restart nginx-certbot after deploy — plain proxy_pass caches the bot's container IP, so a bot recreate 502'd every route until nginx reloaded.
+- perf: strip track.global SEO blob (full_text + checkedServices) before caching — ~40KB → few KB per row.
