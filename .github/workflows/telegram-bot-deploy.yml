@@ -25,7 +25,17 @@ on:
         default: "false"
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validate nginx config
+        run: |
+          docker compose -f docker-compose.test.yml run --rm nginx-test
+
   deploy:
+    needs: [validate]
     runs-on: ubuntu-latest
 
     steps:

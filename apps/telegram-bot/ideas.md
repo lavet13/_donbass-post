@@ -28,7 +28,7 @@ decision graduates to todo.md; anything that needs a real design gets a docs/pla
   saved something.
 
 - **auth: JWT access+refresh vs server-side sessions, and a multi-provider identity model** —
-  the bot has authorization (RBAC on chatId) but no authentication; Telegram *is* the identity
+  the bot has authorization (RBAC on chatId) but no authentication; Telegram _is_ the identity
   provider today, and a chatId arriving through Telegram's API is trusted implicitly. Nothing
   to forge, no session to hold. Questions to answer before this is a task, in order:
   1. **Which surface actually needs a logged-in user?** apps/web? the mini-app? If none, this
@@ -50,4 +50,13 @@ decision graduates to todo.md; anything that needs a real design gets a docs/pla
     phone signup needs SMS OTP from a provider: costs money and needs one that actually
     delivers to RU/DNR numbers.
   - **Email** — needs a mail sender + a verification flow. Most work, least leverage here.
-  If this ever goes ahead it's `docs/plans/` scale: multi-session and hard to reverse.
+    If this ever goes ahead it's `docs/plans/` scale: multi-session and hard to reverse.
+- fail2ban for abusive IPs (if abuse ever actually shows up — not before; rate-limit
+  handles the common case). Home: scripts/setup-debian.sh, next to the UFW section
+  (~line 119), since it's host provisioning. Shape: bind-mount nginx logs to a host
+  path → install fail2ban on the HOST (not a container) → jail with a filter matching
+  the access log's repeated 503/429-by-IP → banaction targets the DOCKER-USER iptables
+  chain (NOT default INPUT — same reason setup-debian.sh line 120 already notes Docker
+  publishes ports past UFW; a ban in INPUT would be bypassed too). Tune maxretry/findtime
+  so a normal human clicking a few times never trips it. Trigger to build it: the access
+  log shows a persistent abuser the per-IP rate-limit isn't already handling.

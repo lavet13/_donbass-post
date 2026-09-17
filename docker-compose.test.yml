@@ -1,0 +1,33 @@
+# offline nginx config validation. Never part of a deploy.
+services:
+  # one-shot: generate a throwaway self-signed cert into the volume (idempotent)
+  test-certs:
+    image: alpine/openssl:latest
+    volumes:
+      - nginx_test_certs:/certs
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        D=/certs/live/donbass-post.duckdns.org
+        # only generate if missing → re-running the test doesn't regenerate every time
+        if [ ! -f "$$D/fullchain.pem" ]; then
+          mkdir -p "$$D"
+          openssl req -x509 -newkey rsa:2048 -nodes -days 3650 \
+            -keyout "$$D/privkey.pem" -out "$$D/fullchain.pem" -subj "/CN=localhost"
+          cp "$$D/fullchain.pem" "$$D/chain.pem"
+        fi
+
+  nginx-test:
+    image: nginx:1.28.0-alpine
+    depends_on:
+      test-certs:
+        condition: service_completed_successfully # wait for certs to exist before testing
+    entrypoint: ["nginx", "-t"]
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - nginx_test_certs:/etc/letsencrypt:ro
+    extra_hosts:
+      - "telegram-bot:127.0.0.1" # satisfy proxy_pass name resolution at load
+
+volumes:
+  nginx_test_certs:
