@@ -18,6 +18,7 @@ services:
         fi
 
   nginx-test:
+    # Pinned to match prod's nginx in docker-compose.prod.yml (jonasal/nginx-certbot:5.6.0-nginx1.28.0).
     image: nginx:1.28.0-alpine
     depends_on:
       test-certs:

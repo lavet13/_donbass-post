@@ -1,7 +1,8 @@
 services:
   # == Nginx + Certbot =========================================================
+  # Pinned to match the nginx version in docker-compose.test.yml (nginx:1.28.0-alpine).
   nginx-certbot:
-    image: jonasal/nginx-certbot:5-alpine
+    image: jonasal/nginx-certbot:5.6.0-nginx1.28.0
     restart: unless-stopped
     ports:
       # Expose both HTTP and HTTPS to the internet
