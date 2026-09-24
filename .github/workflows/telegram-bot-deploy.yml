@@ -64,11 +64,19 @@ jobs:
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
 
           DATABASE_URL=${{ secrets.DATABASE_URL }}
+
+          MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER=${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_ODBC_USER=${{ secrets.MYSQL_ODBC_USER }}
+          MYSQL_ODBC_PASSWORD=${{ secrets.MYSQL_ODBC_PASSWORD }}
           EOF
 
           # Production overrides
           cat > apps/telegram-bot/.env.production << EOF
           DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres:5432/${{ secrets.POSTGRES_DB }}?schema=public
+          MYSQL_DATABASE_URL=mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@mysql:3306/${{ secrets.MYSQL_DATABASE }}
           EOF
 
       - name: Clean old source code

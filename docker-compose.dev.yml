@@ -4,3 +4,9 @@ services:
     # (prisma studio, psql, TablePlus, etc.)
     ports:
       - "127.0.0.1:5434:5432"
+
+  mysql:
+    ports:
+      - "127.0.0.1:3307:3306" # 3307 on host to avoid clashing if you run other mysql
+    volumes:
+      - ./mysql/init-dev/02-shadow-db.sh:/docker-entrypoint-initdb.d/02-shadow-db.sh:ro   # shadow DB — dev only

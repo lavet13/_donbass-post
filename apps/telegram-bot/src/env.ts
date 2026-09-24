@@ -26,6 +26,8 @@ const BaseSchema = z.object({
         .filter((id) => !isNaN(id));
     }),
   DATABASE_URL: z.string().min(1, "Database URL is required"),
+  MYSQL_DATABASE_URL: z.string().min(1, "MySQL Database URL is required"),
+  MYSQL_SHADOW_DATABASE_URL: blankToUndefined(z.string().optional()),
   ROOT_ADMIN_CHAT_ID: blankToUndefined(z.coerce.number<string>().int("ROOT_ADMIN_CHAT_ID should be an integer").optional()),
   TELEGRAM_PROXY: blankToUndefined(z.url().optional()),
   TRACK_GLOBAL_PROXY: blankToUndefined(z.url().optional()),

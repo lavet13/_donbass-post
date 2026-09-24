@@ -42,31 +42,33 @@ services:
         # Don't start the bot until postgres is actually ready to accept
         # connections — not just started
         condition: service_healthy
+      mysql:
+        # same for mysql
+        condition: service_healthy
     networks:
       - donbass-post-network
 
-  # Override postgres in prod — remove host port exposure,
-  # containers reach it directly via Docker network
-  #
-  # Windows machine (office)
-  # Excel/ODBC → connects to VPS_PUBLIC_IP:5432
-  #                   ↓
-  #             VPS host receives connection
-  #             Docker checks: is source IP = OFFICE_IP_1? ✅
-  #                   ↓
-  #             Docker forwards to container port 5432
-  #                   ↓
-  #             postgres container receives connection
-  #                   ↓
-  #             query runs, result returns same path back
   postgres:
     env_file:
       - apps/telegram-bot/.env
       - apps/telegram-bot/.env.production
+    # Postgres has no public ports because it's only reached by the bot container
+    # over the compose network
     ports: []
     expose:
       - "5432"
 
+  mysql:
+    env_file:
+      - apps/telegram-bot/.env
+      - apps/telegram-bot/.env.production
+    ports:
+      # ODBC clients (office PCs) connect from the internet → bind public, but
+      # the firewall/allowlist is what actually restricts.
+      # ODBC comment. 3306 public here (not 127.0.0.1) so external ODBC can reach.
+      - "3306:3306"
+      # NO shadow init mount (that's dev-only, in docker-compose.dev.yml).
+      # NO command override needed if base already sets charset.
 
 volumes:
   # Nginx/Certbot stores SSL certificates here

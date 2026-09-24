@@ -27,9 +27,35 @@ services:
       timeout: 5s
       retries: 5
 
+  mysql:
+    image: mysql:5.7           # pinned — matches reg.ru's 5.7.44, keeps ODBC auth compatible
+    container_name: donbass-post-mysql
+    restart: unless-stopped
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    environment:
+      TZ: "Europe/Moscow"
+    env_file:
+      - apps/telegram-bot/.env
+    expose:
+      - "3306"                 # internal only in base, like postgres
+    volumes:
+      - donbass-post-mysql-data:/var/lib/mysql
+      - ./mysql/init/01-readonly-user.sh:/docker-entrypoint-initdb.d/01-readonly-user.sh:ro
+    networks:
+      - donbass-post-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   # Postgres data persisted across container restarts
   donbass-post-data:
+    driver: local
+  donbass-post-mysql-data:
     driver: local
 
 networks:

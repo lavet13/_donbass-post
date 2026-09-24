@@ -1,0 +1,786 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../../lib/prisma-mysql"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model City {
+  City String? @db.VarChar(14)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model TZ {
+  Country3 String? @db.VarChar(9)
+  City     String? @db.VarChar(14)
+  Country  String? @db.VarChar(9)
+  Country2 String? @db.VarChar(9)
+  City2    String? @db.VarChar(14)
+  TZ       String? @db.VarChar(3)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model categoriya {
+  categoriya String? @db.VarChar(33)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model dostbezgr {
+  Country  String? @db.VarChar(9)
+  Country2 String? @db.VarChar(9)
+  TZ       Int?
+  pismo    Int?
+  Doc      Int?
+  Doc2     Int?
+
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 1 Int? @map("1")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 2 Int? @map("2")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 3 Int? @map("3")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 4 Int? @map("4")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 5 Int? @map("5")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 6 Int? @map("6")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 7 Int? @map("7")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 8 Int? @map("8")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 9 Int? @map("9")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 10 Int? @map("10")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 11 Int? @map("11")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 12 Int? @map("12")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 13 Int? @map("13")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 14 Int? @map("14")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 15 Int? @map("15")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 16 String? @map("16") @db.VarChar(5)
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model ds {
+  Country2 String? @map("\"Country2") @db.VarChar(10)
+  TZ       Int?
+
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 1000 Int? @map("1000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 2000 Int? @map("2000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 3000 Int? @map("3000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 4000 Int? @map("4000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 5000 Int? @map("5000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 7500 Int? @map("7500")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 10000 Int? @map("10000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 15000 Int? @map("15000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 20000 Int? @map("20000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 25000 Int? @map("25000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 27500 Int? @map("27500")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 30000 Int? @map("30000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 35000 Int? @map("35000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 40000 Int? @map("40000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 45000 Int? @map("45000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 50000 Int? @map("50000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 55000 Int? @map("55000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 60000 Int? @map("60000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 70000 Int? @map("70000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 80000 Int? @map("80000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 90000 Int? @map("90000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 100000 Int? @map("100000")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // " String? @map("\"") @db.VarChar(1)
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model ekspgr {
+  id       Int?
+  opisanie String? @db.VarChar(131)
+  priznak  String? @db.VarChar(8)
+  sht      String? @db.VarChar(2)
+  fact     String? @db.VarChar(3)
+  obiem    String? @db.VarChar(3)
+
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 1 Int? @map("1")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 2 Int? @map("2")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 3 String? @map("3") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 4 String? @map("4") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 5 String? @map("5") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 6 String? @map("6") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 7 String? @map("7") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 8 String? @map("8") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 9 String? @map("9") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 10 String? @map("10") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 11 String? @map("11") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 12 String? @map("12") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 13 String? @map("13") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 14 String? @map("14") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 15 String? @map("15") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 16 String? @map("16") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 17 String? @map("17") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 18 String? @map("18") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 19 String? @map("19") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 20 String? @map("20") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 21 String? @map("21") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 22 String? @map("22") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 23 String? @map("23") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 24 String? @map("24") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 25 String? @map("25") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 26 String? @map("26") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 27 String? @map("27") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 28 String? @map("28") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 29 String? @map("29") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 30 String? @map("30") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 31 String? @map("31") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 32 String? @map("32") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 33 String? @map("33") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 34 String? @map("34") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 35 String? @map("35") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 36 String? @map("36") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 37 String? @map("37") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 38 String? @map("38") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 39 String? @map("39") @db.VarChar(7)
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model mobile_office {
+  data        DateTime @default(now()) @db.DateTime(0)
+  name        String   @db.VarChar(255)
+  phone       String   @db.VarChar(255)
+  departament String   @db.VarChar(255)
+  opisanie    String   @db.VarChar(255)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model mobile_office_krym {
+  data        DateTime @default(now()) @db.DateTime(0)
+  name        String   @db.VarChar(255)
+  phone       String   @db.VarChar(255)
+  departament String   @db.VarChar(255)
+  opisanie    String   @db.VarChar(255)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model mobile_office_lnr {
+  data        DateTime @default(now()) @db.DateTime(0)
+  name        String   @db.VarChar(255)
+  phone       String   @db.VarChar(255)
+  departament String   @db.VarChar(255)
+  opisanie    String   @db.VarChar(255)
+
+  @@ignore
+}
+
+model mobile_phone {
+  id     Int    @id @default(autoincrement())
+  city   String @db.VarChar(30)
+  adress String @db.VarChar(255)
+  number String @db.VarChar(30)
+}
+
+model orders_aist {
+  id          Int      @id @default(autoincrement())
+  data        DateTime @default(now()) @db.DateTime(0)
+  tip_gruza   String   @db.VarChar(255)
+  name        String   @db.VarChar(255)
+  phone       String   @db.VarChar(255)
+  mail        String   @db.VarChar(255)
+  departament String   @db.VarChar(255)
+  gruz        String   @db.VarChar(255)
+  ves         String   @db.VarChar(255)
+  trek        String   @db.VarChar(255)
+  platej      String   @db.VarChar(255)
+}
+
+model orders_aliexpress {
+  id                Int       @id @default(autoincrement())
+  date              DateTime? @default(now()) @db.DateTime(0)
+  name              String    @db.VarChar(255)
+  phone             String    @db.VarChar(255)
+  passport          String    @db.VarChar(12)
+  vidan             String    @db.VarChar(255)
+  kogda             String    @db.VarChar(10)
+  pasldnr           String    @db.VarChar(99)
+  departament       String    @db.VarChar(255)
+  links             String    @db.VarChar(2500)
+  amount            String    @db.VarChar(255)
+  name_Otpravitelya String    @db.VarChar(20)
+  TK                String    @db.VarChar(20)
+  track_number      String    @db.VarChar(255)
+  mail              String    @db.VarChar(255)
+  citi_otprav       String    @db.VarChar(20)
+  phone_otprav      String    @db.VarChar(20)
+  kto_oplachivaet   String    @db.VarChar(20)
+  opisanie          String    @db.VarChar(20)
+  VIP               String    @db.VarChar(255)
+}
+
+model orders_aliexpress_krym {
+  id                Int       @id @default(autoincrement())
+  date              DateTime? @default(now()) @db.DateTime(0)
+  name              String    @db.VarChar(255)
+  phone             String    @db.VarChar(255)
+  passport          String    @db.VarChar(20)
+  vidan             String    @db.VarChar(20)
+  kogda             String    @db.VarChar(20)
+  pasldnr           String    @db.VarChar(20)
+  departament       String    @db.VarChar(255)
+  links             String    @db.VarChar(2500)
+  amount            String    @db.VarChar(255)
+  name_Otpravitelya String    @db.VarChar(20)
+  TK                String    @db.VarChar(20)
+  track_number      String    @db.VarChar(255)
+  mail              String    @db.VarChar(255)
+  citi_otprav       String    @db.VarChar(20)
+  phone_otprav      String    @db.VarChar(20)
+  kto_oplachivaet   String    @db.VarChar(20)
+  opisanie          String    @db.VarChar(20)
+  VIP               String    @db.VarChar(255)
+}
+
+model orders_banki_rf {
+  id          Int      @id @default(autoincrement())
+  date        DateTime @default(now()) @db.DateTime(0)
+  name        String   @db.VarChar(255)
+  phone       String   @db.VarChar(255)
+  timechek    String   @db.VarChar(255)
+  amount      String   @db.VarChar(255)
+  metod       String   @db.VarChar(255)
+  dkarta      String   @db.VarChar(255)
+  nameP       String   @db.VarChar(255)
+  phoneP      String   @db.VarChar(255)
+  departament String   @db.VarChar(255)
+
+  @@map("orders_banki-rf")
+}
+
+model orders_call_back {
+  id    Int      @id @default(autoincrement())
+  data  DateTime @default(now()) @db.DateTime(0)
+  name  String   @db.VarChar(255)
+  phone String   @db.VarChar(255)
+
+  @@map("orders_call-back")
+}
+
+model orders_call_backDO {
+  id    Int      @id @default(autoincrement())
+  data  DateTime @default(now()) @db.DateTime(0)
+  name  String   @db.VarChar(255)
+  phone String   @db.VarChar(255)
+
+  @@map("orders_call-backDO")
+}
+
+model orders_call_backGO {
+  id    Int      @id @default(autoincrement())
+  data  DateTime @default(now()) @db.DateTime(0)
+  name  String   @db.VarChar(255)
+  phone String   @db.VarChar(255)
+
+  @@map("orders_call-backGO")
+}
+
+model orders_cart {
+  id          Int      @id @default(autoincrement())
+  data        DateTime @default(now()) @db.DateTime(0)
+  name        String   @db.VarChar(255)
+  birth       String   @db.VarChar(255)
+  pass        String   @db.VarChar(255)
+  mail        String   @db.VarChar(255)
+  phone       String   @db.VarChar(255)
+  departament String   @db.VarChar(255)
+}
+
+model orders_commers {
+  id     Int      @id @default(autoincrement())
+  data   DateTime @default(now()) @db.DateTime(0)
+  name   String   @db.VarChar(255)
+  phone  String   @db.VarChar(255)
+  mail   String   @db.VarChar(255)
+  links  String   @db.VarChar(2550)
+  amount String   @db.VarChar(255)
+  weight String   @db.VarChar(10)
+}
+
+model orders_doski {
+  id           Int      @id @default(autoincrement())
+  data         DateTime @default(now()) @db.DateTime(0)
+  name         String   @db.VarChar(255)
+  phone        String   @db.VarChar(255)
+  TK           String   @db.VarChar(255)
+  trek         String   @db.VarChar(255)
+  opisanie     String   @db.VarChar(255)
+  nomer_karti  String   @db.VarChar(255)
+  FIO_karti    String   @db.VarChar(255)
+  summa        String   @db.VarChar(255)
+  name_poluch  String   @db.VarChar(255)
+  phone_poluch String   @db.VarChar(255)
+  departament  String   @db.VarChar(255)
+}
+
+model orders_dostavka_ali {
+  id          Int      @id @default(autoincrement())
+  data        DateTime @default(now()) @db.DateTime(0)
+  name        String   @db.VarChar(255)
+  phone       String   @db.VarChar(255)
+  mail        String   @db.VarChar(255)
+  departament String   @db.VarChar(255)
+  links       String   @db.VarChar(2500)
+  opisanie    String   @db.VarChar(2500)
+  razmer      String   @db.VarChar(255)
+  color       String   @db.VarChar(255)
+  colvo       String   @db.VarChar(255)
+  amount      String   @db.VarChar(255)
+
+  @@map("orders_dostavka-ali")
+}
+
+model orders_dostavka_rus {
+  id          Int      @id @default(autoincrement())
+  data        DateTime @default(now()) @db.DateTime(0)
+  name        String   @db.VarChar(255)
+  phone       String   @db.VarChar(255)
+  mail        String   @db.VarChar(255)
+  departament String   @db.VarChar(255)
+  links       String   @db.VarChar(2500)
+  opisanie    String   @db.VarChar(2500)
+  amount      String   @db.VarChar(255)
+
+  @@map("orders_dostavka-rus")
+}
+
+model orders_fromabroad {
+  id                Int       @id @default(autoincrement())
+  date              DateTime? @default(now()) @db.DateTime(0)
+  name              String    @db.VarChar(255)
+  phone             String    @db.VarChar(255)
+  passport          String    @db.VarChar(12)
+  vidan             String    @db.VarChar(255)
+  kogda             String    @db.VarChar(10)
+  pasldnr           String    @db.VarChar(99)
+  departament       String    @db.VarChar(255)
+  links             String    @db.VarChar(2500)
+  amount            String    @db.VarChar(255)
+  name_Otpravitelya String    @db.VarChar(20)
+  TK                String    @db.VarChar(20)
+  track_number      String    @db.VarChar(255)
+  mail              String    @db.VarChar(255)
+  citi_otprav       String    @db.VarChar(20)
+  phone_otprav      String    @db.VarChar(20)
+  kto_oplachivaet   String    @db.VarChar(20)
+  opisanie          String    @db.VarChar(20)
+  VIP               String    @db.VarChar(255)
+}
+
+model orders_hotline {
+  id        Int      @id @default(autoincrement())
+  data      DateTime @default(now()) @db.DateTime(0)
+  name      String   @db.VarChar(255)
+  mail      String   @db.VarChar(255)
+  phone     String   @db.VarChar(255)
+  complaint String   @db.VarChar(750)
+}
+
+model orders_iz_rf {
+  id                Int      @id @default(autoincrement())
+  data              DateTime @default(now()) @db.DateTime(0)
+  name              String   @db.VarChar(255)
+  phone             String   @db.VarChar(255)
+  passport          String   @db.VarChar(12)
+  vidan             String   @db.VarChar(255)
+  kogda             String   @db.VarChar(10)
+  pasldnr           String   @db.VarChar(99)
+  departament       String   @db.VarChar(255)
+  links             String   @db.VarChar(20)
+  amount            String   @db.VarChar(20)
+  name_Otpravitelya String   @db.VarChar(255)
+  TK                String   @db.VarChar(255)
+  track_number      String   @db.VarChar(255)
+  mail              String   @db.VarChar(20)
+  citi_otprav       String   @db.VarChar(255)
+  phone_otprav      String   @db.VarChar(255)
+  kto_oplachivaet   String   @db.VarChar(255)
+  opisanie          String   @db.VarChar(1500)
+  VIP               String   @db.VarChar(255)
+
+  @@map("orders_iz-rf")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model orders_iz_rf_test {
+  data              DateTime @default(now()) @db.DateTime(0)
+  name              String   @db.VarChar(255)
+  phone             String   @db.VarChar(255)
+  passport          String   @db.VarChar(12)
+  vidan             String   @db.VarChar(255)
+  kogda             String   @db.VarChar(10)
+  pasldnr           String   @db.VarChar(99)
+  departament       String   @db.VarChar(255)
+  links             String   @db.VarChar(20)
+  amount            String   @db.VarChar(20)
+  name_Otpravitelya String   @db.VarChar(255)
+  TK                String   @db.VarChar(255)
+  track_number      String   @db.VarChar(255)
+  mail              String   @db.VarChar(20)
+  citi_otprav       String   @db.VarChar(255)
+  phone_otprav      String   @db.VarChar(255)
+  kto_oplachivaet   String   @db.VarChar(255)
+  opisanie          String   @db.VarChar(1500)
+  VIP               String   @db.VarChar(255)
+
+  @@map("orders_iz-rf-test")
+  @@ignore
+}
+
+model orders_iz_krim_ldnr {
+  id                Int      @id @default(autoincrement())
+  data              DateTime @default(now()) @db.DateTime(0)
+  name              String   @db.VarChar(255)
+  phone             String   @db.VarChar(255)
+  passport          String   @db.VarChar(12)
+  vidan             String   @db.VarChar(255)
+  kogda             String   @db.VarChar(10)
+  pasldnr           String   @db.VarChar(99)
+  departament       String   @db.VarChar(255)
+  name_Otpravitelya String   @db.VarChar(255)
+  TK                String   @db.VarChar(255)
+  trek              String   @db.VarChar(255)
+  citi_otprav       String   @db.VarChar(255)
+  phone_otprav      String   @db.VarChar(255)
+  kto_oplachivaet   String   @db.VarChar(255)
+  opisanie          String   @db.VarChar(1500)
+  VIP               String   @db.VarChar(255)
+}
+
+model orders_sadovod {
+  id          Int      @unique(map: "id") @default(autoincrement()) @db.UnsignedInt
+  data        DateTime @default(now()) @db.DateTime(0)
+  name        String   @db.VarChar(50)
+  phone       String   @db.VarChar(20)
+  mail        String   @db.VarChar(50)
+  departament String   @db.VarChar(20)
+  links       String   @db.VarChar(2500)
+  opisanie    String   @db.VarChar(2500)
+  amount      String   @db.VarChar(20)
+}
+
+model orders_temernik {
+  id          Int      @unique(map: "id") @default(autoincrement()) @db.UnsignedInt
+  data        DateTime @default(now()) @db.DateTime(0)
+  name        String   @db.VarChar(50)
+  phone       String   @db.VarChar(20)
+  mail        String   @db.VarChar(50)
+  departament String   @db.VarChar(50)
+  links       String   @db.VarChar(2500)
+  opisanie    String   @db.VarChar(2500)
+  amount      String   @db.VarChar(20)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model podcategoriyaEksp {
+  id         Int?
+  categoriya String? @db.VarChar(33)
+  opisanie   String? @db.VarChar(132)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model termgr {
+  id       Int?
+  opisanie String? @db.VarChar(131)
+  priznak  String? @db.VarChar(8)
+  sht      Int?
+  fact     String? @db.VarChar(3)
+  obiem    String? @db.VarChar(3)
+
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 1 Int? @map("1")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 2 Int? @map("2")
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 3 String? @map("3") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 4 String? @map("4") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 5 String? @map("5") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 6 String? @map("6") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 7 String? @map("7") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 8 String? @map("8") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 9 String? @map("9") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 10 String? @map("10") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 11 String? @map("11") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 12 String? @map("12") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 13 String? @map("13") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 14 String? @map("14") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 15 String? @map("15") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 16 String? @map("16") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 17 String? @map("17") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 18 String? @map("18") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 19 String? @map("19") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 20 String? @map("20") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 21 String? @map("21") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 22 String? @map("22") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 23 String? @map("23") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 24 String? @map("24") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 25 String? @map("25") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 26 String? @map("26") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 27 String? @map("27") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 28 String? @map("28") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 29 String? @map("29") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 30 String? @map("30") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 31 String? @map("31") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 32 String? @map("32") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 33 String? @map("33") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 34 String? @map("34") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 35 String? @map("35") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 36 String? @map("36") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 37 String? @map("37") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 38 String? @map("38") @db.VarChar(6)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 39 String? @map("39") @db.VarChar(7)
+  @@ignore
+}
+
+model zabor_commerc {
+  id          Int      @id @default(autoincrement())
+  data        DateTime @default(now()) @db.DateTime(0)
+  trek        String   @db.VarChar(255)
+  tkadress    String   @db.VarChar(255)
+  name        String   @db.VarChar(2500)
+  naznachenie String   @db.VarChar(2500)
+  colvo       String   @db.VarChar(255)
+  amount      String   @db.VarChar(255)
+  kuda        String   @db.VarChar(255)
+  tel         String   @db.VarChar(255)
+  mail        String   @db.VarChar(255)
+}
+
+model zabor_gruza {
+  id                Int      @id @default(autoincrement())
+  data              DateTime @default(now()) @db.DateTime(0)
+  name_Otpravitelya String   @db.VarChar(255)
+  town_otprav       String   @db.VarChar(255)
+  citi_otprav       String   @db.VarChar(255)
+  time_otprav       String   @db.VarChar(255)
+  phone_otprav      String   @db.VarChar(255)
+  kto_oplachivaet   String   @db.VarChar(255)
+  kol_vo            String   @db.VarChar(255)
+  ves               String   @db.VarChar(255)
+  obyem             String   @db.VarChar(255)
+  stoimost          String   @db.VarChar(255)
+  ves_gruza         String   @db.VarChar(255)
+  name_gruz         String   @db.VarChar(255)
+  gabariti          String   @db.VarChar(255)
+  khrupkiy_gruz     String   @db.VarChar(255)
+  name_otprav       String   @db.VarChar(255)
+  citi_poluch       String   @db.VarChar(270)
+  phone_poluch      String   @db.VarChar(255)
+  departament       String   @db.VarChar(255)
+  name_zakaz        String   @db.VarChar(255)
+  mail              String   @db.VarChar(255)
+  phone_zakaz       String   @db.VarChar(255)
+}
+
+model zabor_gruzaDNR {
+  id                Int      @id @default(autoincrement())
+  data              DateTime @default(now()) @db.DateTime(0)
+  name_Otpravitelya String   @db.VarChar(255)
+  town_otprav       String   @db.VarChar(255)
+  citi_otprav       String   @db.VarChar(255)
+  time_otprav       String   @db.VarChar(255)
+  phone_otprav      String   @db.VarChar(255)
+  kto_oplachivaet   String   @db.VarChar(255)
+  kol_vo            String   @db.VarChar(255)
+  ves               String   @db.VarChar(255)
+  obyem             String   @db.VarChar(255)
+  stoimost          String   @db.VarChar(255)
+  ves_gruza         String   @db.VarChar(255)
+  name_gruz         String   @db.VarChar(255)
+  gabariti          String   @db.VarChar(255)
+  khrupkiy_gruz     String   @db.VarChar(255)
+  name_otprav       String   @db.VarChar(255)
+  citi_poluch       String   @db.VarChar(270)
+  phone_poluch      String   @db.VarChar(255)
+  departament       String   @db.VarChar(255)
+  name_zakaz        String   @db.VarChar(255)
+  mail              String   @db.VarChar(255)
+  phone_zakaz       String   @db.VarChar(255)
+}
+
+model zabor_gruzaKrym {
+  id                Int      @id @default(autoincrement())
+  data              DateTime @default(now()) @db.DateTime(0)
+  name_Otpravitelya String   @db.VarChar(255)
+  town_otprav       String   @db.VarChar(255)
+  citi_otprav       String   @db.VarChar(255)
+  time_otprav       String   @db.VarChar(255)
+  phone_otprav      String   @db.VarChar(255)
+  kto_oplachivaet   String   @db.VarChar(255)
+  kol_vo            String   @db.VarChar(255)
+  ves               String   @db.VarChar(255)
+  obyem             String   @db.VarChar(255)
+  stoimost          String   @db.VarChar(255)
+  ves_gruza         String   @db.VarChar(255)
+  name_gruz         String   @db.VarChar(255)
+  gabariti          String   @db.VarChar(255)
+  khrupkiy_gruz     String   @db.VarChar(255)
+  name_otprav       String   @db.VarChar(255)
+  citi_poluch       String   @db.VarChar(270)
+  phone_poluch      String   @db.VarChar(255)
+  departament       String   @db.VarChar(255)
+  name_zakaz        String   @db.VarChar(255)
+  mail              String   @db.VarChar(255)
+  phone_zakaz       String   @db.VarChar(255)
+}
+
+model zabor_gruzaLNR {
+  id                Int      @id @default(autoincrement())
+  data              DateTime @default(now()) @db.DateTime(0)
+  name_Otpravitelya String   @db.VarChar(255)
+  town_otprav       String   @db.VarChar(255)
+  citi_otprav       String   @db.VarChar(255)
+  time_otprav       String   @db.VarChar(255)
+  phone_otprav      String   @db.VarChar(255)
+  kto_oplachivaet   String   @db.VarChar(255)
+  kol_vo            String   @db.VarChar(255)
+  ves               String   @db.VarChar(255)
+  obyem             String   @db.VarChar(255)
+  stoimost          String   @db.VarChar(255)
+  ves_gruza         String   @db.VarChar(255)
+  name_gruz         String   @db.VarChar(255)
+  gabariti          String   @db.VarChar(255)
+  khrupkiy_gruz     String   @db.VarChar(255)
+  name_otprav       String   @db.VarChar(255)
+  citi_poluch       String   @db.VarChar(270)
+  phone_poluch      String   @db.VarChar(255)
+  departament       String   @db.VarChar(255)
+  name_zakaz        String   @db.VarChar(255)
+  mail              String   @db.VarChar(255)
+  phone_zakaz       String   @db.VarChar(255)
+}
+
+model zayvka_form {
+  id    Int       @id @default(autoincrement())
+  data  DateTime? @default(now()) @db.DateTime(0)
+  name  String    @db.VarChar(255)
+  mail  String    @db.VarChar(255)
+  phone String    @db.VarChar(255)
+}
