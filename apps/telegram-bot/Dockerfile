@@ -61,6 +61,7 @@ COPY --from=builder /app/apps/telegram-bot/src/lib/prisma/ apps/telegram-bot/src
 
 # prisma.config.ts tells db:deploy and db:seed where to find the schema
 COPY --from=builder /app/apps/telegram-bot/prisma.config.ts apps/telegram-bot/prisma.config.ts
+COPY --from=builder /app/apps/telegram-bot/prisma.config.mysql.ts apps/telegram-bot/prisma.config.mysql.ts
 
 WORKDIR /app/apps/telegram-bot
 
