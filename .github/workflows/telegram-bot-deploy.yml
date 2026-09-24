@@ -66,6 +66,7 @@ jobs:
           DATABASE_URL=${{ secrets.DATABASE_URL }}
 
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+          MYSQL_SHADOW_DATABASE_URL=${{ secrets.MYSQL_SHADOW_DATABASE_URL }}
           MYSQL_USER=${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
           MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
