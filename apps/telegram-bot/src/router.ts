@@ -110,28 +110,22 @@ export function createRouter() {
       const path = url.pathname;
 
       const methodRoutes = routes.get(method);
-      if (!methodRoutes) {
-        return new Response("Method Not Allowed", { status: 405 });
-      }
+      const route = methodRoutes?.get(path);
 
-      const route = methodRoutes.get(path);
-      if (!route) {
-        return new Response(
-          JSON.stringify({ error: "Not Found", path, method }),
-          {
-            status: 404,
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
-        );
-      }
+      const handler: RouteHandler = route
+        ? route.handler
+        : () =>
+            new Response(JSON.stringify({ error: "Not Found", path, method }), {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            });
+
+      const middlewares = route
+        ? [...globalMiddlewares, ...route.middlewares]
+        : [...globalMiddlewares]; // 404 still runs global mw (cors!)
 
       try {
-        // Combine global middlewares + route-specific middlewares
-        const allMiddlewares = [...globalMiddlewares, ...route.middlewares];
-
-        return await executeMiddlewares(request, allMiddlewares, route.handler);
+        return await executeMiddlewares(request, middlewares, handler);
       } catch (error) {
         console.error("Route handler error:", error);
         return new Response(
