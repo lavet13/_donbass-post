@@ -25,7 +25,7 @@ import { isFresh, slimTrackData } from "@/track-global/service";
 import type { Prisma } from "@/lib/prisma/client";
 import { makeProxyDispatcher } from "@/utils/proxy";
 import { fetch } from "undici";
-import { AliexpressTestSchema } from "@/orders/schemas";
+import { AliexpressTestSchema, AliJoomSchema } from "@/orders/schemas";
 import { prismaMysql } from "@/prisma/mysql";
 
 export function createRoutes(bot: TCustomBot): Router {
@@ -329,6 +329,47 @@ export function createRoutes(bot: TCustomBot): Router {
           mail: d.mail,
         }),
         label: "aliexpress-rostov",
+        successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
+      }),
+    requireJSON,
+  );
+
+  router.post(
+    "/api/orders/aliexpress-joom",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: AliJoomSchema,
+        writeOrder: (d) =>
+          prismaMysql.orders_dostavka_ali.create({
+            data: {
+              name: d.name,
+              phone: d.phone,
+              mail: d.mail ?? "",
+              departament: d.departament,
+              links: d.links,
+              amount: d.amount,
+              opisanie: d.opisanie,
+              razmer: d.razmer,
+              color: d.color,
+              colvo: d.colvo,
+            },
+          }),
+        toResponse: (d, created) => ({
+          orderId: created.id,
+          name: d.name,
+          phone: d.phone,
+          point: d.departament, // box key "point" ← field departament
+          links: d.links,
+          amount: d.amount,
+          description: d.opisanie,
+          size: d.razmer,
+          color: d.color,
+          quantity: d.colvo,
+          mail: d.mail,
+        }),
+        label: "aliexpress-joom",
+        successMsg: "Заявка успешно зарегистрирована!",
       }),
     requireJSON,
   );
@@ -833,7 +874,7 @@ async function handleNotify<T>(
     };
 
     if (result.sent === 0 && result.failed > 0)
-      return error("Failed to send notifications to any manager", {
+      return error("Не удалось отправить уведомления менеджерам", {
         status: 500,
       });
 
@@ -841,8 +882,8 @@ async function handleNotify<T>(
       success: true,
       message:
         result.failed > 0
-          ? "Notification sent with some failures"
-          : "Notification sent successfully",
+          ? "Уведомления отправлены менеджерам, но с ошибками"
+          : "Уведомления отправлены менеджерам успешно",
       status,
       ...(result.failed > 0 && { warnings: result.errors }), // only include when there are failures
     });
@@ -859,6 +900,7 @@ async function handleOrder<T>({
   schema,
   writeOrder,
   toResponse,
+  successMsg,
   send,
   label,
 }: {
@@ -866,6 +908,7 @@ async function handleOrder<T>({
   schema: z.ZodType<T>;
   writeOrder: (data: T) => Promise<{ id: number }>; // the MySQL insert — form-specific
   toResponse?: (data: T, created: { id: number }) => Record<string, unknown>;
+  successMsg: string;
   send?: (payload: T) => Promise<NotificationResult>; // the notify — reuses existing notifiers
   label: string;
 }): Promise<Response> {
@@ -914,7 +957,7 @@ async function handleOrder<T>({
       return Response.json({
         ...responseData,
         success: true,
-        message: "Заявка принята",
+        message: successMsg,
         notify: notifyStatus,
       });
     }
@@ -922,7 +965,7 @@ async function handleOrder<T>({
     return Response.json({
       ...responseData,
       success: true,
-      message: "Заявка принята",
+      message: successMsg,
     });
   } catch (err) {
     console.error(`Error in /api/orders/${label}:`, err);
