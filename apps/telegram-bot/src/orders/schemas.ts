@@ -25,3 +25,13 @@ export const AliJoomSchema = z.object({
   color: z.string(),
   colvo: z.string(),
 }).loose();
+
+export const DostavkaRusSchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+  mail: z.string().optional(), // "0" is valid here — no email validation
+  departament: z.string(),
+  links: z.string(),
+  amount: z.string(),
+  opisanie: z.string(),
+}).loose();

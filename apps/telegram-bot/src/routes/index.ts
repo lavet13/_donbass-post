@@ -25,7 +25,7 @@ import { isFresh, slimTrackData } from "@/track-global/service";
 import type { Prisma } from "@/lib/prisma/client";
 import { makeProxyDispatcher } from "@/utils/proxy";
 import { fetch } from "undici";
-import { AliexpressTestSchema, AliJoomSchema } from "@/orders/schemas";
+import { AliexpressTestSchema, AliJoomSchema, DostavkaRusSchema } from "@/orders/schemas";
 import { prismaMysql } from "@/prisma/mysql";
 
 export function createRoutes(bot: TCustomBot): Router {
@@ -369,6 +369,40 @@ export function createRoutes(bot: TCustomBot): Router {
           mail: d.mail,
         }),
         label: "aliexpress-joom",
+        successMsg: "Заявка успешно зарегистрирована!",
+      }),
+    requireJSON,
+  );
+
+  router.post(
+    "/api/orders/dostavka-rus",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: DostavkaRusSchema,
+        writeOrder: (d) =>
+          prismaMysql.orders_dostavka_rus.create({
+            data: {
+              name: d.name,
+              phone: d.phone,
+              mail: d.mail ?? "",
+              departament: d.departament,
+              links: d.links,
+              amount: d.amount,
+              opisanie: d.opisanie,
+            },
+          }),
+        toResponse: (d, created) => ({
+          orderId: created.id,
+          name: d.name,
+          phone: d.phone,
+          point: d.departament, // box key "point" ← field departament
+          links: d.links,
+          amount: d.amount,
+          description: d.opisanie,
+          mail: d.mail,
+        }),
+        label: "dostavka-rus",
         successMsg: "Заявка успешно зарегистрирована!",
       }),
     requireJSON,
