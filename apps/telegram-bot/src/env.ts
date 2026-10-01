@@ -2,6 +2,7 @@ import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 import { resolve } from "path";
 import z from "zod";
+import { blankToUndefined } from "@/validation/zod-utils";
 
 const BaseSchema = z.object({
   TELEGRAM_BOT_TOKEN: z.string().min(1, "TELEGRAM_BOT_TOKEN is required"),
@@ -119,21 +120,6 @@ function parseEnv(): RawEnv {
   }
 
   return result.data;
-}
-
-/**
- * Wraps a schema so blank/whitespace-only env strings become `undefined`
- * BEFORE the inner schema runs. Without this, z.coerce.number("") === 0,
- * which makes a missing var look like a real value of 0.
- *
- * @param schema - the schema to apply once the value is normalized
- */
-function blankToUndefined<T extends z.ZodType>(schema: T) {
-  return z.preprocess((val) => {
-    // Only strings can be "blank"; pass everything else through untouched.
-    if (typeof val === "string" && val.trim() === "") return undefined;
-    return val;
-  }, schema);
 }
 
 // Auto-load on import

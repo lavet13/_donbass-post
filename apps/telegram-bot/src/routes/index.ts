@@ -25,7 +25,12 @@ import { isFresh, slimTrackData } from "@/track-global/service";
 import type { Prisma } from "@/lib/prisma/client";
 import { makeProxyDispatcher } from "@/utils/proxy";
 import { fetch } from "undici";
-import { AliexpressTestSchema, AliJoomSchema, DostavkaRusSchema } from "@/orders/schemas";
+import {
+  AliexpressTestSchema,
+  AliJoomSchema,
+  DostavkaRusSchema,
+  IzRfSchema,
+} from "@/orders/schemas";
 import { prismaMysql } from "@/prisma/mysql";
 
 export function createRoutes(bot: TCustomBot): Router {
@@ -404,6 +409,49 @@ export function createRoutes(bot: TCustomBot): Router {
         }),
         label: "dostavka-rus",
         successMsg: "Заявка успешно зарегистрирована!",
+      }),
+    requireJSON,
+  );
+
+  router.post(
+    "/api/orders/iz-rf",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: IzRfSchema,
+        writeOrder: (d) =>
+          prismaMysql.orders_iz_rf.create({
+            data: {
+              name: d.name,
+              phone: d.phone,
+              mail: d.mail ?? "",
+              departament: d.departament,
+              opisanie: d.opisanie,
+              citi_otprav: d.citi_otprav,
+              TK: d.TK,
+              track_number: d.track_number,
+              name_Otpravitelya: d.name_Otpravitelya ?? "",
+              phone_otprav: d.phone_otprav ?? "",
+              kto_oplachivaet: d.kto_oplachivaet,
+              VIP: d.VIP,
+              passport: "",
+              vidan: "",
+              kogda: "",
+              pasldnr: "",
+              links: "",
+              amount: "",
+            },
+          }),
+        toResponse: (d, created) => ({
+          orderId: created.id,
+          trackNumber: d.track_number, // box "trackNumber" ← track_number
+          city: d.citi_otprav, // box "city"        ← citi_otprav
+          point: d.departament, // box "point"       ← departament
+          deliveryCompany: d.TK, // box "deliveryCompany" ← TK
+          mail: d.mail, // email line
+        }),
+        label: "iz-rf",
+        successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
       }),
     requireJSON,
   );
