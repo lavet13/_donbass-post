@@ -427,12 +427,12 @@ export function createRoutes(bot: TCustomBot): Router {
               mail: d.mail ?? "",
               departament: d.departament,
               opisanie: d.opisanie,
-              citi_otprav: d.citi_otprav,
+              citi_otprav: d.citi_otprav ?? "",
               TK: d.TK,
               track_number: d.track_number,
               name_Otpravitelya: d.name_Otpravitelya ?? "",
               phone_otprav: d.phone_otprav ?? "",
-              kto_oplachivaet: d.kto_oplachivaet,
+              kto_oplachivaet: d.kto_oplachivaet ?? "",
               VIP: d.VIP,
               passport: "",
               vidan: "",
@@ -451,6 +451,51 @@ export function createRoutes(bot: TCustomBot): Router {
           mail: d.mail, // email line
         }),
         label: "iz-rf",
+        successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
+      }),
+    requireJSON,
+  );
+
+  router.post(
+    "/api/orders/rus-shops",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: IzRfSchema,
+        writeOrder: (d) =>
+          prismaMysql.orders_iz_rf.create({
+            data: {
+              name: d.name,
+              phone: d.phone,
+              mail: d.mail ?? "",
+              departament: d.departament,
+              opisanie: d.opisanie,
+              citi_otprav: d.citi_otprav ?? "",
+              TK: d.TK,
+              track_number: d.track_number,
+              name_Otpravitelya: d.name_Otpravitelya ?? "",
+              phone_otprav: d.phone_otprav ?? "",
+              kto_oplachivaet: d.kto_oplachivaet ?? "",
+              VIP: d.VIP,
+              passport: "",
+              vidan: "",
+              kogda: "",
+              pasldnr: "",
+              links: "",
+              amount: "",
+            },
+          }),
+        toResponse: (d, created) => ({
+          orderId: created.id,
+          trackNumber: d.track_number,
+          phone: d.phone,
+          point: d.departament,
+          shopName: d.name_Otpravitelya, // "Название магазина"
+          description: d.opisanie,
+          deliveryCompany: d.TK,
+          mail: d.mail,
+        }),
+        label: "rus-shops",
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
       }),
     requireJSON,

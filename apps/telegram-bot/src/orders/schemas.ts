@@ -46,12 +46,12 @@ export const IzRfSchema = z
     phone: z.string(),
     mail: z.string().optional(), // "0" is valid here — no email validation
     departament: z.string(),
-    citi_otprav: z.string(),
+    citi_otprav: z.string().optional(),
     TK: z.string(),
     track_number: z.string(),
     name_Otpravitelya: z.string().optional(),
     phone_otprav: z.string().optional(),
-    kto_oplachivaet: z.string(),
+    kto_oplachivaet: z.string().optional(),
     VIP: z.string(),
     opisanie: z.string(),
   })
