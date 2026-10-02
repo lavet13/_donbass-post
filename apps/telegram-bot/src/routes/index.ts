@@ -30,6 +30,7 @@ import {
   AliJoomSchema,
   CartSchema,
   DostavkaRusSchema,
+  FromabroadSchema,
   IzRfSchema,
 } from "@/orders/schemas";
 import { prismaMysql } from "@/prisma/mysql";
@@ -530,6 +531,49 @@ export function createRoutes(bot: TCustomBot): Router {
         }),
         label: "cart",
         successMsg: "Заявка успешно зарегистрирована!",
+      }),
+    requireJSON,
+  );
+
+  router.post(
+    "/api/orders/fromabroad",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: FromabroadSchema,
+        writeOrder: (d) =>
+          prismaMysql.orders_fromabroad.create({
+            data: {
+              name: d.name,
+              phone: d.phone,
+              mail: d.mail ?? "",
+              departament: d.departament,
+              opisanie: d.opisanie,
+              citi_otprav: d.citi_otprav ?? "",
+              TK: d.TK,
+              track_number: d.track_number,
+              name_Otpravitelya: d.name_Otpravitelya ?? "",
+              phone_otprav: d.phone_otprav ?? "",
+              kto_oplachivaet: d.kto_oplachivaet ?? "",
+              amount: d.amount,
+              passport: "",
+              vidan: "",
+              kogda: "",
+              pasldnr: "",
+              links: "",
+              VIP: "",
+            },
+          }),
+        toResponse: (d, created) => ({
+          orderId: created.id,
+          trackNumber: d.track_number,
+          city: d.citi_otprav,
+          point: d.departament,
+          deliveryCompany: d.TK,
+          mail: d.mail,
+        }),
+        label: "fromabroad",
+        successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
       }),
     requireJSON,
   );

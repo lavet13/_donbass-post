@@ -67,3 +67,18 @@ export const CartSchema = z
     departament: z.string(),
   })
   .loose();
+
+export const FromabroadSchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+  mail: z.string().optional(),
+  track_number: z.string(),
+  amount: z.string(),
+  departament: z.string(),
+  name_Otpravitelya: z.string(),
+  phone_otprav: z.string(),
+  citi_otprav: z.string(),
+  kto_oplachivaet: z.string(),
+  TK: z.string(),          // not `required` in the form, but your buildBody sends it as "" → required is fine
+  opisanie: z.string(),    // same — textarea has no `required`, but send the key
+}).loose();
