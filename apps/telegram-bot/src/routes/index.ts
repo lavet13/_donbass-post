@@ -28,6 +28,7 @@ import { fetch } from "undici";
 import {
   AliexpressTestSchema,
   AliJoomSchema,
+  CartSchema,
   DostavkaRusSchema,
   IzRfSchema,
 } from "@/orders/schemas";
@@ -497,6 +498,38 @@ export function createRoutes(bot: TCustomBot): Router {
         }),
         label: "rus-shops",
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
+      }),
+    requireJSON,
+  );
+
+  router.post(
+    "/api/orders/cart",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: CartSchema,
+        writeOrder: (d) =>
+          prismaMysql.orders_cart.create({
+            data: {
+              name: d.name,
+              birth: d.birth,
+              pass: d.pass,
+              mail: d.mail ?? "",
+              phone: d.phone,
+              departament: d.departament,
+            },
+          }),
+        toResponse: (d, created) => ({
+          orderId: created.id,
+          name: d.name,
+          phone: d.phone,
+          point: d.departament,
+          birth: d.birth,
+          passport: d.pass, // box key "passport" ← field pass
+          mail: d.mail,
+        }),
+        label: "cart",
+        successMsg: "Заявка успешно зарегистрирована!",
       }),
     requireJSON,
   );

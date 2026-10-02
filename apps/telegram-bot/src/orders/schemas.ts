@@ -56,3 +56,14 @@ export const IzRfSchema = z
     opisanie: z.string(),
   })
   .loose();
+
+export const CartSchema = z
+  .object({
+    name: z.string(),
+    birth: z.string(), // DOB, free text ("1980.05.10") — no mask in the form
+    pass: z.string(), // passport series+number
+    mail: z.string().optional(),
+    phone: z.string(),
+    departament: z.string(),
+  })
+  .loose();
