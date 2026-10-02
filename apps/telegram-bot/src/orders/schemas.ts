@@ -94,3 +94,8 @@ export const BankiRfSchema = z.object({
   phoneP: z.string(),
   departament: z.string(),
 }).loose();
+
+export const CallBackSchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+}).loose();

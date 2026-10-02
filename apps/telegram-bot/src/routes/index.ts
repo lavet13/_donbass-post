@@ -29,6 +29,7 @@ import {
   AliexpressTestSchema,
   AliJoomSchema,
   BankiRfSchema,
+  CallBackSchema,
   CartSchema,
   DostavkaRusSchema,
   FromabroadSchema,
@@ -614,6 +615,23 @@ export function createRoutes(bot: TCustomBot): Router {
         // no mail key — this form sends no email
         label: "banki-rf",
         successMsg: "Заявка успешно зарегистрирована!",
+      }),
+    requireJSON,
+  );
+
+  router.post(
+    "/api/orders/call-back",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: CallBackSchema,
+        writeOrder: (d) =>
+          prismaMysql.orders_call_back.create({
+            data: { name: d.name, phone: d.phone },
+          }),
+        toResponse: () => ({}), // toast-only — no box fields to echo back
+        label: "call-back",
+        successMsg: "Оператор перезвонит вам",
       }),
     requireJSON,
   );
