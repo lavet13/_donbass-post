@@ -28,6 +28,7 @@ import { fetch } from "undici";
 import {
   AliexpressTestSchema,
   AliJoomSchema,
+  BankiRfSchema,
   CartSchema,
   DostavkaRusSchema,
   FromabroadSchema,
@@ -574,6 +575,45 @@ export function createRoutes(bot: TCustomBot): Router {
         }),
         label: "fromabroad",
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
+      }),
+    requireJSON,
+  );
+
+  router.post(
+    "/api/orders/banki-rf",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: BankiRfSchema,
+        writeOrder: (d) =>
+          prismaMysql.orders_banki_rf.create({
+            data: {
+              name: d.name,
+              phone: d.phone,
+              timechek: d.timechek,
+              amount: d.amount,
+              metod: d.metod,
+              dkarta: d.dkarta,
+              nameP: d.nameP,
+              phoneP: d.phoneP,
+              departament: d.departament,
+            },
+          }),
+        toResponse: (d, created) => ({
+          orderId: created.id,
+          nameSender: d.name,
+          phoneSender: d.phone,
+          amount: d.amount,
+          timecheck: d.timechek, // box key "timecheck" (c) <- column "timechek" (no c)
+          digits: d.dkarta,
+          method: d.metod, // box key "method" (h) <- column "metod" (no h)
+          nameRecipient: d.nameP,
+          phoneRecipient: d.phoneP,
+          point: d.departament,
+        }),
+        // no mail key — this form sends no email
+        label: "banki-rf",
+        successMsg: "Заявка успешно зарегистрирована!",
       }),
     requireJSON,
   );

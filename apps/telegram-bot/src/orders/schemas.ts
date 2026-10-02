@@ -82,3 +82,15 @@ export const FromabroadSchema = z.object({
   TK: z.string(),          // not `required` in the form, but your buildBody sends it as "" → required is fine
   opisanie: z.string(),    // same — textarea has no `required`, but send the key
 }).loose();
+
+export const BankiRfSchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+  timechek: z.string(),   // column spelling: timechek (no 'c')
+  amount: z.string(),
+  metod: z.string(),
+  dkarta: z.string(),
+  nameP: z.string(),
+  phoneP: z.string(),
+  departament: z.string(),
+}).loose();
