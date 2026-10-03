@@ -99,3 +99,10 @@ export const CallBackSchema = z.object({
   name: z.string(),
   phone: z.string(),
 }).loose();
+
+export const MobileOfficeSchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+  departament: z.string(),
+  opisanie: z.string(),
+}).loose();

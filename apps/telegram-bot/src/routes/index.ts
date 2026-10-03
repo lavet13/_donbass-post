@@ -34,6 +34,7 @@ import {
   DostavkaRusSchema,
   FromabroadSchema,
   IzRfSchema,
+  MobileOfficeSchema,
 } from "@/orders/schemas";
 import { prismaMysql } from "@/prisma/mysql";
 
@@ -632,6 +633,34 @@ export function createRoutes(bot: TCustomBot): Router {
         toResponse: () => ({}), // toast-only — no box fields to echo back
         label: "call-back",
         successMsg: "Оператор перезвонит вам",
+      }),
+    requireJSON,
+  );
+
+  router.post(
+    "/api/orders/mobile-office",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: MobileOfficeSchema,
+        writeOrder: (d) =>
+          prismaMysql.mobile_office.create({
+            data: {
+              name: d.name,
+              phone: d.phone,
+              departament: d.departament,
+              opisanie: d.opisanie,
+            },
+          }),
+        toResponse: (d, created) => ({
+          orderId: created.id,
+          name: d.name,
+          phone: d.phone,
+          point: d.departament, // box "point" ← departament
+          description: d.opisanie,
+        }),
+        label: "mobile-office",
+        successMsg: "Заявка успешно зарегистрирована!",
       }),
     requireJSON,
   );
