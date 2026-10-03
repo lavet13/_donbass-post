@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `mobile_office` ADD COLUMN `id` INTEGER NOT NULL AUTO_INCREMENT,
+    ADD PRIMARY KEY (`id` ASC);
+

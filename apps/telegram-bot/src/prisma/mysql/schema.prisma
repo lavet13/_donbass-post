@@ -223,13 +223,12 @@ model ekspgr {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model mobile_office {
+  id          Int      @id @default(autoincrement())
   data        DateTime @default(now()) @db.DateTime(0)
   name        String   @db.VarChar(255)
   phone       String   @db.VarChar(255)
   departament String   @db.VarChar(255)
   opisanie    String   @db.VarChar(255)
-
-  @@ignore
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
