@@ -1136,8 +1136,41 @@ export function createRoutes(bot: TCustomBot): Router {
     { id: 9, name: "БСД" },
   ];
 
+  // Hardcoded until these move to a real admin-managed source (like point/list).
+  // Shape mirrors workplace-post.ru/api/additional-service/pick-up exactly.
+  const PICKUP_ADDITIONAL_SERVICES = [
+    {
+      id: 2,
+      name: "Ценный-хрупкий груз",
+      price: 50,
+      active: true,
+      createdAt: "2023-11-10T13:26:38.939Z",
+      updatedAt: "2023-11-10T13:26:38.939Z",
+    },
+    {
+      id: 6,
+      name: "Страховка груза",
+      price: 50,
+      active: true,
+      createdAt: "2023-11-10T13:26:38.939Z",
+      updatedAt: "2023-11-10T13:26:38.939Z",
+    },
+    {
+      id: 8,
+      name: "Наложенный платеж",
+      price: 10,
+      active: true,
+      createdAt: "2023-12-01T22:58:25.559Z",
+      updatedAt: "2023-12-01T22:58:25.559Z",
+    },
+  ];
+
   router.get("/api/point/post", () => Response.json(PICKUP_POINTS));
   router.get("/api/delivery-company", () => Response.json(DELIVERY_COMPANIES));
+  router.get(
+    "/api/additional-service/pick-up",
+    () => Response.json(PICKUP_ADDITIONAL_SERVICES),
+  );
 
   return router;
 }
