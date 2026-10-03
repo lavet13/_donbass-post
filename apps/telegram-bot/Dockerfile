@@ -26,6 +26,14 @@ COPY packages/typescript-config/ packages/typescript-config/
 COPY packages/prettier-config/ packages/prettier-config/
 COPY apps/telegram-bot/ apps/telegram-bot/
 
+# Prisma resolves the datasource env vars when it LOADS the config — even for
+# `generate`, which never connects. Supply throwaway URLs so config load
+# succeeds at build time. Builder-only: the runner is a separate FROM and does
+# not inherit these, so the real URLs from docker compose are used at runtime.
+ENV DATABASE_URL="postgresql://u:p@localhost:5432/db" \
+    MYSQL_DATABASE_URL="mysql://u:p@localhost:3306/db" \
+    MYSQL_SHADOW_DATABASE_URL="mysql://u:p@localhost:3306/db"
+
 # Generate Prisma client (must happen before build)
 RUN yarn workspace @donbass-post/tg-bot db:generate
 RUN yarn workspace @donbass-post/tg-bot db:generate:mysql

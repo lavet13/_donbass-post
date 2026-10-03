@@ -138,6 +138,7 @@ jobs:
           # Comma-separated list of which env vars to forward into the SSH session
           envs: CERTBOT_EMAIL,STAGING,FULL_REBUILD
           script: |
+            set -e
             cd ~/telegram-bot
 
             if [[ "$FULL_REBUILD" == "true" ]]; then
