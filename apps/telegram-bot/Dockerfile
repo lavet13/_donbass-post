@@ -28,6 +28,7 @@ COPY apps/telegram-bot/ apps/telegram-bot/
 
 # Generate Prisma client (must happen before build)
 RUN yarn workspace @donbass-post/tg-bot db:generate
+RUN yarn workspace @donbass-post/tg-bot db:generate:mysql
 
 # Build the bot (tsup compiles TypeScript → dist/)
 RUN yarn workspace @donbass-post/tg-bot build
@@ -58,6 +59,7 @@ COPY --from=builder /app/apps/telegram-bot/dist/ apps/telegram-bot/dist/
 # (Prisma client is generated code, not a devDep artifact)
 COPY --from=builder /app/apps/telegram-bot/src/prisma/ apps/telegram-bot/src/prisma/
 COPY --from=builder /app/apps/telegram-bot/src/lib/prisma/ apps/telegram-bot/src/lib/prisma/
+COPY --from=builder /app/apps/telegram-bot/src/lib/prisma-mysql/ apps/telegram-bot/src/lib/prisma-mysql/
 
 # prisma.config.ts tells db:deploy and db:seed where to find the schema
 COPY --from=builder /app/apps/telegram-bot/prisma.config.ts apps/telegram-bot/prisma.config.ts

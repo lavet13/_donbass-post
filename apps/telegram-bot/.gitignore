@@ -28,4 +28,4 @@ dist-ssr
 *.sln
 *.sw?
 
-/src/lib/prisma
+/src/lib/prisma*
