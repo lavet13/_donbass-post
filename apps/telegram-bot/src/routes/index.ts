@@ -424,29 +424,7 @@ export function createRoutes(bot: TCustomBot): Router {
       handleOrder({
         request: req,
         schema: IzRfSchema,
-        writeOrder: (d) =>
-          prismaMysql.orders_iz_rf.create({
-            data: {
-              name: d.name,
-              phone: d.phone,
-              mail: d.mail ?? "",
-              departament: d.departament,
-              opisanie: d.opisanie,
-              citi_otprav: d.citi_otprav ?? "",
-              TK: d.TK,
-              track_number: d.track_number,
-              name_Otpravitelya: d.name_Otpravitelya ?? "",
-              phone_otprav: d.phone_otprav ?? "",
-              kto_oplachivaet: d.kto_oplachivaet ?? "",
-              VIP: d.VIP,
-              passport: "",
-              vidan: "",
-              kogda: "",
-              pasldnr: "",
-              links: "",
-              amount: "",
-            },
-          }),
+        writeOrder: writeIzRfOrder,
         toResponse: (d, created) => ({
           orderId: created.id,
           trackNumber: d.track_number, // box "trackNumber" ← track_number
@@ -467,29 +445,7 @@ export function createRoutes(bot: TCustomBot): Router {
       handleOrder({
         request: req,
         schema: IzRfSchema,
-        writeOrder: (d) =>
-          prismaMysql.orders_iz_rf.create({
-            data: {
-              name: d.name,
-              phone: d.phone,
-              mail: d.mail ?? "",
-              departament: d.departament,
-              opisanie: d.opisanie,
-              citi_otprav: d.citi_otprav ?? "",
-              TK: d.TK,
-              track_number: d.track_number,
-              name_Otpravitelya: d.name_Otpravitelya ?? "",
-              phone_otprav: d.phone_otprav ?? "",
-              kto_oplachivaet: d.kto_oplachivaet ?? "",
-              VIP: d.VIP,
-              passport: "",
-              vidan: "",
-              kogda: "",
-              pasldnr: "",
-              links: "",
-              amount: "",
-            },
-          }),
+        writeOrder: writeIzRfOrder,
         toResponse: (d, created) => ({
           orderId: created.id,
           trackNumber: d.track_number,
@@ -502,6 +458,27 @@ export function createRoutes(bot: TCustomBot): Router {
         }),
         label: "rus-shops",
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
+      }),
+    requireJSON,
+  );
+
+  router.post(
+    "/api/orders/package-delivery",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: IzRfSchema,
+        writeOrder: writeIzRfOrder,
+        toResponse: (d, created) => ({
+          orderId: created.id,
+          trackNumber: d.track_number,
+          city: d.citi_otprav,
+          point: d.departament, // client picks "Адресная доставка" vs "Пункт выдачи" off this
+          deliveryCompany: d.TK,
+          mail: d.mail,
+        }),
+        successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
+        label: "package-delivery",
       }),
     requireJSON,
   );
@@ -1167,9 +1144,8 @@ export function createRoutes(bot: TCustomBot): Router {
 
   router.get("/api/point/post", () => Response.json(PICKUP_POINTS));
   router.get("/api/delivery-company", () => Response.json(DELIVERY_COMPANIES));
-  router.get(
-    "/api/additional-service/pick-up",
-    () => Response.json(PICKUP_ADDITIONAL_SERVICES),
+  router.get("/api/additional-service/pick-up", () =>
+    Response.json(PICKUP_ADDITIONAL_SERVICES),
   );
 
   return router;
@@ -1177,6 +1153,33 @@ export function createRoutes(bot: TCustomBot): Router {
 
 function headerInt(headers: Headers, name: string): number | null {
   return parseInteger(headers.get(name));
+}
+
+// one place that knows the orders_iz-rf column set + its legacy NOT NULL blanks
+export function writeIzRfOrder(d: z.infer<typeof IzRfSchema>) {
+  return prismaMysql.orders_iz_rf.create({
+    data: {
+      name: d.name,
+      phone: d.phone,
+      mail: d.mail ?? "",
+      departament: d.departament,
+      name_Otpravitelya: d.name_Otpravitelya ?? "",
+      TK: d.TK,
+      track_number: d.track_number,
+      citi_otprav: d.citi_otprav ?? "",
+      phone_otprav: d.phone_otprav ?? "",
+      kto_oplachivaet: d.kto_oplachivaet ?? "",
+      VIP: d.VIP ?? "",
+      links: d.links ?? "",
+      amount: d.amount ?? "",
+      opisanie: d.opisanie ?? "",
+      // legacy NOT NULL columns no iz-rf form uses
+      passport: "",
+      vidan: "",
+      kogda: "",
+      pasldnr: "",
+    },
+  });
 }
 
 async function handleNotify<T>(

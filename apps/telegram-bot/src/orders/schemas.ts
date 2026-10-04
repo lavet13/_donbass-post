@@ -49,11 +49,13 @@ export const IzRfSchema = z
     citi_otprav: z.string().optional(),
     TK: z.string(),
     track_number: z.string(),
+    links: z.string().optional(),
+    amount: z.string().optional(),
     name_Otpravitelya: z.string().optional(),
     phone_otprav: z.string().optional(),
     kto_oplachivaet: z.string().optional(),
-    VIP: z.string(),
-    opisanie: z.string(),
+    VIP: z.string().optional(),
+    opisanie: z.string().optional(),
   })
   .loose();
 
