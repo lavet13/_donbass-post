@@ -65,6 +65,17 @@ Backlog + progress log. Tags follow the `todo-comments.nvim` convention (FIX/HAC
 
 ## Remaining — do next
 
+- [ ] **SMTP: reproduce the PHP order emails on the Node side** — migrated
+      `/api/orders/*` endpoints dropped the PHP customer-confirmation email (no mail
+      sender on Node yet). Full inventory from the legacy handlers (grep `->send(`):
+      every form sent ONE email to the customer (`$emailTo`); **two sent a second copy**
+      to `yuraturchin73@yandex.com` — `add_order_dostavka-ali.php` and
+      `add_order_dostavka-rus.php` (the `$turchin` recipient). `add_order_commers.php`
+      sent none (both sends commented). Both two-email forms are ALREADY live on Node
+      (dostavka-ali = aliexpress-rostov, dostavka-rus), so that manager copy is already
+      not going out. When SMTP lands: customer confirmation on all migrated forms, plus
+      yuraturchin73@yandex.com on dostavka-ali + dostavka-rus. Captured the address now
+      because it's the one piece not recoverable once reg.ru is frozen.
 - [ ] **localStorage persistence for apps/web forms** — same behaviour as the pick-up-point form
       (survive reload and section toggles). **Check TanStack Form first**: it may already have a
       persistence/hydration story, and hand-rolling over it would be the wrong kind of work.

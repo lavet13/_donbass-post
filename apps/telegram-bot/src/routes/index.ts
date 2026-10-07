@@ -484,6 +484,27 @@ export function createRoutes(bot: TCustomBot): Router {
   );
 
   router.post(
+    "/api/orders/registration-parcel-from-rf",
+    (req) =>
+      handleOrder({
+        request: req,
+        schema: IzRfSchema,
+        writeOrder: writeIzRfOrder,
+        toResponse: (d, created) => ({
+          orderId: created.id,
+          trackNumber: d.track_number,
+          city: d.citi_otprav,
+          point: d.departament,
+          deliveryCompany: d.TK,
+          mail: d.mail,
+        }),
+        successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
+        label: "registration-parcel-from-rf",
+      }),
+    requireJSON,
+  );
+
+  router.post(
     "/api/orders/cart",
     (req) =>
       handleOrder({
