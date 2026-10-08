@@ -6,6 +6,7 @@ import {
   positive,
   text,
 } from "@/validation/fields";
+import { discriminatedByPresence } from "@/validation/zod-utils";
 import { z } from "zod";
 
 const SenderIndividualObj = z.object({
@@ -171,9 +172,21 @@ const CargoData = z.object({
 });
 
 export const PickUpPointDeliverySchema = z.object({
-  sender: z.union([SenderIndividualObj, SenderCompanyObj]),
-  recipient: z.union([RecipientIndividualObj, RecipientCompanyObj]),
-  customer: z.union([CustomerIndividualObj, CustomerCompanyObj]).optional(),
+  sender: discriminatedByPresence({
+    marker: "companySender",
+    presentSchema: SenderCompanyObj,
+    absentSchema: SenderIndividualObj,
+  }),
+  recipient: discriminatedByPresence({
+    marker: "companyRecipient",
+    presentSchema: RecipientCompanyObj,
+    absentSchema: RecipientIndividualObj,
+  }),
+  customer: discriminatedByPresence({
+    marker: "companyCustomer",
+    presentSchema: CustomerCompanyObj,
+    absentSchema: CustomerIndividualObj,
+  }).optional(),
   cargoData: CargoData,
   additionalService: z
     .array(

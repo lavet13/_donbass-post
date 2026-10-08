@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { validationError } from "@/router";
+import { env } from "@/env";
 
 export function parseBody<T>(
   schema: z.ZodSchema<T>,
@@ -18,7 +19,7 @@ export function parseBody<T>(
     }
 
     const prettifiedErrors = z.prettifyError(result.error);
-    console.error({ prettifiedErrors });
+    if (env.NODE_ENV === "development") console.error({ prettifiedErrors });
 
     return {
       success: false,
