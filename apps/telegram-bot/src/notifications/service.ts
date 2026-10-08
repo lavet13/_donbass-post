@@ -51,6 +51,7 @@ async function sendToManagers(
 
   if (allManagers.length === 0) {
     console.warn("No manager chat IDs configured");
+    await logReceived(notificationType, payload, "no managers configured");
     return { success: false, sent: 0, failed: 0, skipped: 0, errors: [] };
   }
 
@@ -58,6 +59,7 @@ async function sendToManagers(
     console.warn(
       `No managers subscribed to notification type: ${notificationType}`,
     );
+    await logReceived(notificationType, payload, "no managers subscribed");
     return {
       success: false,
       sent: 0,
@@ -210,4 +212,24 @@ export async function notifyAliParcelPickup(
     NotificationTypes.ALI_PARCEL_PICKUP,
     payload,
   );
+}
+
+async function logReceived(
+  notificationType: NotificationType,
+  payload: any,
+  reason: string,
+) {
+  try {
+    await prisma.notificationLog.create({
+      data: {
+        managerChatId: null, // received, nobody to deliver to
+        notificationType,
+        payload: payload || null,
+        success: false,
+        errorMessage: reason,
+      },
+    });
+  } catch (e) {
+    console.error("Failed to persist received notification:", e);
+  }
 }

@@ -25,7 +25,10 @@ export const phoneSchema = (
     .refine((val) => isPossiblePhoneNumber(val, { defaultCountry: "RU" }), {
       error: filled,
     });
-export const emailSchema = z.email({ pattern: z.regexes.email });
+export const emailSchema = z.email({
+  pattern: z.regexes.email,
+  error: "Неверный формат email адреса",
+});
 
 export const text = (minNum: number, required: string, minMsg: string) =>
   z.string({ error: required }).trim().min(1, required).min(minNum, minMsg);

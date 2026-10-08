@@ -143,7 +143,7 @@ model NotificationPreferences {
 
 model NotificationLog {
   id               String   @id @default(cuid(2))
-  managerChatId    BigInt   @map("manager_chat_id")
+  managerChatId    BigInt?   @map("manager_chat_id") // null = received, not delivered to a specific manager(we want save the payload)
   notificationType String   @map("notification_type")
   payload          Json? // Store the notification payload
   success          Boolean
