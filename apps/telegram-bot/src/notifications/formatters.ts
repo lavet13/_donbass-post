@@ -274,7 +274,7 @@ export function formatOrderOnlinePayMessage(p: OrderOnlinePayPayload): string {
   lines.push(
     `🧾 ТТН: ${p.orderTtn}`,
     `💰 Плательщик: ${p.shippingPayment}`,
-    `🚚 Компания (id): ${p.deliveryCompany}`,
+    `🚚 Транспортная компания: ${p.deliveryCompany}`,
   );
   return lines.join("\n");
 }

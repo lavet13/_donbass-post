@@ -53,7 +53,6 @@ async function sendToManagers(
 
   if (allManagers.length === 0) {
     console.warn("No manager chat IDs configured");
-    await logReceived(notificationType, payload, "no managers configured");
     return { success: false, sent: 0, failed: 0, skipped: 0, errors: [] };
   }
 
@@ -61,7 +60,6 @@ async function sendToManagers(
     console.warn(
       `No managers subscribed to notification type: ${notificationType}`,
     );
-    await logReceived(notificationType, payload, "no managers subscribed");
     return {
       success: false,
       sent: 0,

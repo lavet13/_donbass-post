@@ -378,9 +378,8 @@ export const OrderOnlinePaySchema = z.object({
     .string({ error: "Выберите плательщика" })
     .min(1, "Выберите плательщика"),
   deliveryCompany: z
-    .number({ error: "id компании доставки должно быть числом!" })
-    .int()
-    .positive("Выберите компанию доставки!"), // 0 (unselected → +"" ) is rejected here
+    .string({ error: "Выберите компанию доставки!" })
+    .min(1, "Выберите компанию доставки!"),
   timestamp: z.string().default(() => new Date().toISOString()),
   source: z.string().default("web"),
 });
