@@ -1256,10 +1256,14 @@ async function handleNotify<T>(
       skipped: result.skipped,
     };
 
-    if (result.sent === 0 && result.failed > 0)
-      return error("Не удалось отправить уведомления менеджерам", {
-        status: 500,
-      });
+    if (!result.success) {
+      // sent === 0 — either no managers are configured/subscribed, or every send failed.
+      // Either way the order reached nobody; don't report success to the client.
+      return error(
+        "Заявка временно не может быть обработана. Пожалуйста, свяжитесь с нами по телефону.",
+        { status: 503 },
+      );
+    }
 
     return Response.json({
       success: true,
