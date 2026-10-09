@@ -5,6 +5,7 @@ import { createRouter, error, parseJSON, type Router } from "@/router";
 import {
   notifyAliParcelPickup,
   notifyOnlinePickup,
+  notifyOrderOnlinePay,
   notifyPickUpPointDeliveryOrder,
   type NotificationResult,
 } from "@/notifications/service";
@@ -13,6 +14,7 @@ import {
   AliParcelPickupSchema,
   PickUpPointDeliverySchema,
   OnlinePickupSchema,
+  OrderOnlinePaySchema,
 } from "@/notifications/types";
 import type { Update } from "grammy/types";
 import { version } from "../../package.json";
@@ -1188,6 +1190,18 @@ export function createRoutes(bot: TCustomBot): Router {
   router.get("/api/delivery-company", () => Response.json(DELIVERY_COMPANIES));
   router.get("/api/additional-service/pick-up", () =>
     Response.json(PICKUP_ADDITIONAL_SERVICES),
+  );
+
+  router.post(
+    `/api/notify/${NotificationTypes.ORDER_ONLINE_PAY}`,
+    (req) =>
+      handleNotify(
+        req,
+        OrderOnlinePaySchema,
+        (p) => notifyOrderOnlinePay(bot, p),
+        NotificationTypes.ORDER_ONLINE_PAY,
+      ),
+    requireJSON,
   );
 
   return router;

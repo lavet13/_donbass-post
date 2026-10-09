@@ -344,3 +344,45 @@ export const AliParcelPickupSchema = z.object({
 });
 
 export type AliParcelPickupPayload = z.infer<typeof AliParcelPickupSchema>;
+
+export const OrderOnlinePaySchema = z.object({
+  surnameRecipient: text(
+    3,
+    "Фамилия отправителя должно быть строкой!",
+    "Минимальная длина фамилии отправителя 3 символа!",
+  ),
+  nameRecipient: text(
+    3,
+    "Имя отправителя должно быть строкой!",
+    "Минимальная длина имени отправителя 3 символа!",
+  ),
+  patronymicRecipient: text(
+    3,
+    "Отчество отправителя должно быть строкой!",
+    "Минимальная длина отчества отправителя 3 символа!",
+  ),
+  email: emailSchema,
+  phoneRecipient: phoneSchema("Телефон отправителя не может быть пустым!"),
+  telegramRecipient: z
+    .boolean({ error: "Телеграмм должен быть логическим!" })
+    .default(false),
+  whatsAppRecipient: z
+    .boolean({ error: "WhatsApp должен быть логическим!" })
+    .default(false),
+  orderTtn: text(
+    3,
+    "ТТН должно быть строкой!",
+    "Минимальная длина ТТН 3 символа!",
+  ),
+  shippingPayment: z
+    .string({ error: "Выберите плательщика" })
+    .min(1, "Выберите плательщика"),
+  deliveryCompany: z
+    .number({ error: "id компании доставки должно быть числом!" })
+    .int()
+    .positive("Выберите компанию доставки!"), // 0 (unselected → +"" ) is rejected here
+  timestamp: z.string().default(() => new Date().toISOString()),
+  source: z.string().default("web"),
+});
+
+export type OrderOnlinePayPayload = z.infer<typeof OrderOnlinePaySchema>;

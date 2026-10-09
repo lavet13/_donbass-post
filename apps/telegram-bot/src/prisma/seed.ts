@@ -57,6 +57,11 @@ const notificationTypes = [
     name: "Забор посылки AliExpress",
     description: "Уведомления о новых заявках на забор посылок AliExpress",
   },
+  {
+    slug: "order-online-pay",
+    name: "Оплата за доставку ОНЛАЙН",
+    description: "Уведомления о новых заявках на оплату доставки ОНЛАЙН",
+  },
 ] satisfies {
   slug: NotificationType;
   name: string;

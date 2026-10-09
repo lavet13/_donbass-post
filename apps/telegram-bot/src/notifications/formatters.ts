@@ -1,6 +1,7 @@
 import type {
   AliParcelPickupPayload,
   OnlinePickupPayload,
+  OrderOnlinePayPayload,
   PickUpPointDeliveryOrderPayload,
 } from "@/notifications/types";
 import { formatRussianDateTime } from "@/utils/date";
@@ -165,7 +166,9 @@ export function formatPickUpPointDeliveryOrderMessage(
     lines.push(`🏙 Пункт выдачи: ${payload.recipient.pointTo}`);
   }
   if (payload.recipient.deliveryCompany) {
-    lines.push(`🚚 Транспортная компания: ${payload.recipient.deliveryCompany}`);
+    lines.push(
+      `🚚 Транспортная компания: ${payload.recipient.deliveryCompany}`,
+    );
   }
 
   // Customer (optional)
@@ -252,5 +255,26 @@ export function formatAliParcelPickupMessage(
     `🕐 Время: ${formatRussianDateTime(new Date())}`,
   ];
 
+  return lines.join("\n");
+}
+
+// formatters.ts
+export function formatOrderOnlinePayMessage(p: OrderOnlinePayPayload): string {
+  const lines = [
+    "💳 <b>Оплата за доставку ОНЛАЙН</b>",
+    "",
+    `ФИО: ${p.surnameRecipient} ${p.nameRecipient} ${p.patronymicRecipient}`,
+    `📧 Email: ${p.email}`,
+    `📱 Телефон: ${p.phoneRecipient}`,
+  ];
+  const prefs = [];
+  if (p.telegramRecipient) prefs.push("Telegram");
+  if (p.whatsAppRecipient) prefs.push("WhatsApp");
+  if (prefs.length) lines.push(`💬 Предпочтения: ${prefs.join(", ")}`);
+  lines.push(
+    `🧾 ТТН: ${p.orderTtn}`,
+    `💰 Плательщик: ${p.shippingPayment}`,
+    `🚚 Компания (id): ${p.deliveryCompany}`,
+  );
   return lines.join("\n");
 }

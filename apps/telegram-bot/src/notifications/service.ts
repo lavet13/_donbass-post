@@ -1,11 +1,13 @@
 import {
   formatAliParcelPickupMessage,
   formatOnlinePickupMessage,
+  formatOrderOnlinePayMessage,
   formatPickUpPointDeliveryOrderMessage,
 } from "@/notifications/formatters";
 import type {
   AliParcelPickupPayload,
   OnlinePickupPayload,
+  OrderOnlinePayPayload,
   PickUpPointDeliveryOrderPayload,
 } from "@/notifications/types";
 import {
@@ -210,6 +212,18 @@ export async function notifyAliParcelPickup(
     bot,
     message,
     NotificationTypes.ALI_PARCEL_PICKUP,
+    payload,
+  );
+}
+
+export async function notifyOrderOnlinePay(
+  bot: TCustomBot,
+  payload: OrderOnlinePayPayload,
+) {
+  return sendToManagers(
+    bot,
+    formatOrderOnlinePayMessage(payload),
+    NotificationTypes.ORDER_ONLINE_PAY,
     payload,
   );
 }
