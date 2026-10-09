@@ -171,6 +171,10 @@ jobs:
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
               exec -T telegram-bot yarn db:deploy
 
+            # MySQL order tables
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+              exec -T telegram-bot yarn db:deploy:mysql
+
             # Seed is idempotent — safe to run every deploy
             # Call compiled seed directly — no tsx, no yarn dlx, no network calls
             docker compose -f docker-compose.yml -f docker-compose.prod.yml \
