@@ -29,12 +29,30 @@ const BaseSchema = z.object({
   DATABASE_URL: z.string().min(1, "Database URL is required"),
   MYSQL_DATABASE_URL: z.string().min(1, "MySQL Database URL is required"),
   MYSQL_SHADOW_DATABASE_URL: blankToUndefined(z.string().optional()),
-  ROOT_ADMIN_CHAT_ID: blankToUndefined(z.coerce.number<string>().int("ROOT_ADMIN_CHAT_ID should be an integer").optional()),
+  ROOT_ADMIN_CHAT_ID: blankToUndefined(
+    z.coerce
+      .number<string>()
+      .int("ROOT_ADMIN_CHAT_ID should be an integer")
+      .optional(),
+  ),
   TELEGRAM_PROXY: blankToUndefined(z.url().optional()),
   TRACK_GLOBAL_PROXY: blankToUndefined(z.url().optional()),
   RAPIDAPI_KEY: blankToUndefined(z.string().optional()),
   TRACK_GLOBAL_BEARER: blankToUndefined(z.string().optional()),
-  RAPIDAPI_HOST: blankToUndefined(z.string().optional()).default("track-global.p.rapidapi.com"),
+  RAPIDAPI_HOST: blankToUndefined(z.string().optional()).default(
+    "track-global.p.rapidapi.com",
+  ),
+  SMTP_HOST: blankToUndefined(z.string().optional()),
+  SMTP_PORT: z.coerce
+    .number<string>()
+    .int("SMTP_PORT should be an integer")
+    .min(1)
+    .max(65535)
+    .default(465),
+  SMTP_USER: blankToUndefined(z.string().optional()),
+  SMTP_PASS: blankToUndefined(z.string().optional()),
+  MAIL_FROM: z.string().default('"Наша Почта" <no-reply@donbass-post.ru>'),
+  MAIL_COPY_TO: blankToUndefined(z.email().optional()),
   // TEST_VALUE: z
   //   .unknown()
   //   .transform((val) => {
@@ -80,6 +98,17 @@ const EnvSchema = z
     {
       error: "ROOT_ADMIN_CHAT_ID is required in production",
       path: ["ROOT_ADMIN_CHAT_ID"],
+    },
+  )
+  .refine(
+    (d) =>
+      d.NODE_ENV !== "production" ||
+      (d.SMTP_HOST !== undefined &&
+        d.SMTP_USER !== undefined &&
+        d.SMTP_PASS !== undefined),
+    {
+      error: "SMTP_HOST, SMTP_USER and SMTP_PASS are required in production",
+      path: ["SMTP_HOST"],
     },
   );
 

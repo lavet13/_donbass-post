@@ -2,7 +2,8 @@ import { serve } from "srvx/node";
 import { createRoutes } from "@/routes";
 import { getBotManager } from "@/bot";
 import { config, validateNotificationTypes } from "@/config";
-import { getAllManagers } from "./managers/service";
+import { getAllManagers } from "@/managers/service";
+import { verifyMail } from "@/mail";
 
 async function startApp() {
   const botManager = getBotManager();
@@ -10,6 +11,7 @@ async function startApp() {
   try {
     await botManager.initialize(config.telegram.token);
     await validateNotificationTypes();
+    await verifyMail();
 
     const bot = botManager.getBot();
 

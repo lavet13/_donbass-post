@@ -164,3 +164,21 @@ model TrackGlobalCache {
 
   @@map("track_global_cache")
 }
+
+/// One row per e-mail attempt. Separate from NotificationLog, which requires
+/// managerChatId — an e-mail has no chat id (nullable was reverted in 0d20b49).
+/// No payload column: the order itself already lives in MySQL.
+model EmailLog {
+  id           String   @id @default(cuid(2))
+  label        String // which form: "aliexpress-joom", …
+  recipient    String // address we tried
+  kind         String // "customer" | "copy"
+  success      Boolean
+  messageId    String?  @map("message_id") // SMTP Message-ID, to trace it in reg.ru's logs
+  errorMessage String?  @map("error_message")
+  sentAt       DateTime @default(now()) @map("sent_at")
+
+  @@index([sentAt])
+  @@index([recipient])
+  @@map("email_logs")
+}

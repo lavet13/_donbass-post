@@ -1,6 +1,10 @@
 import { getBotManager, type TCustomBot } from "@/bot";
 import { config } from "@/config";
-import { cors, handleOptions, requireJSON } from "@/middleware";
+import {
+  cors,
+  handleOptions,
+  requireJSON,
+} from "@/middleware";
 import { createRouter, error, parseJSON, type Router } from "@/router";
 import {
   notifyAliParcelPickup,
@@ -39,6 +43,7 @@ import {
   MobileOfficeSchema,
 } from "@/orders/schemas";
 import { prismaMysql } from "@/prisma/mysql";
+import { sendOrderConfirmation, siteFromRequest, type Row } from "@/mail";
 
 export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
@@ -380,6 +385,18 @@ export function createRoutes(bot: TCustomBot): Router {
           quantity: d.colvo,
           mail: d.mail,
         }),
+        confirmation: (d) => [
+          ["ФИО получателя", d.name],
+          ["Телефон", d.phone],
+          ["Пункт выдачи", d.departament],
+          ["Ссылки на товары", d.links],
+          ["Общая сумма", d.amount],
+          ["Описание", d.opisanie],
+          ["Размер товара", d.razmer],
+          ["Цвет товара", d.color],
+          ["Количество", d.colvo],
+        ],
+        customerEmail: (d) => d.mail,
         label: "aliexpress-joom",
         successMsg: "Заявка успешно зарегистрирована!",
       }),
@@ -414,6 +431,15 @@ export function createRoutes(bot: TCustomBot): Router {
           description: d.opisanie,
           mail: d.mail,
         }),
+        confirmation: (d) => [
+          ["ФИО получателя", d.name],
+          ["Телефон", d.phone],
+          ["Пункт выдачи", d.departament],
+          ["Ссылки на товары", d.links],
+          ["Общая сумма", d.amount],
+          ["Описание", d.opisanie],
+        ],
+        customerEmail: (d) => d.mail,
         label: "dostavka-rus",
         successMsg: "Заявка успешно зарегистрирована!",
       }),
@@ -1290,6 +1316,8 @@ async function handleOrder<T>({
   successMsg,
   send,
   label,
+  confirmation,
+  customerEmail,
 }: {
   request: Request;
   schema: z.ZodType<T>;
@@ -1298,6 +1326,8 @@ async function handleOrder<T>({
   successMsg: string;
   send?: (payload: T) => Promise<NotificationResult>; // the notify — reuses existing notifiers
   label: string;
+  confirmation?: (data: T) => Row[]; // rows for the customer e-mail
+  customerEmail?: (data: T) => string | undefined;
 }): Promise<Response> {
   try {
     const body = await parseJSON(request);
@@ -1312,6 +1342,17 @@ async function handleOrder<T>({
     } catch (dbErr) {
       console.error(`[orders/${label}] DB write failed:`, dbErr);
       return error("Не удалось сохранить заявку", { status: 500 });
+    }
+
+    if (confirmation) {
+      // Not awaited: the client gets its 200 now; a slow mail server can't delay it.
+      // sendOrderConfirmation never throws, so this can't become an unhandled rejection.
+      void sendOrderConfirmation(
+        confirmation(parsed.data),
+        customerEmail?.(parsed.data),
+        siteFromRequest(request),
+        label,
+      );
     }
 
     // db-columns vs box-keys; client have different keys vs what we have in DB

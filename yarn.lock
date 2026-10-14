@@ -454,6 +454,7 @@ __metadata:
     "@prisma/adapter-pg": "npm:^7.8.0"
     "@prisma/client": "npm:^7.8.0"
     "@types/node": "npm:^25.0.8"
+    "@types/nodemailer": "npm:^8.0.2"
     "@vitest/coverage-v8": "npm:^4.1.2"
     cross-env: "npm:^10.1.0"
     date-fns: "npm:^4.1.0"
@@ -465,6 +466,7 @@ __metadata:
     globals: "npm:^16.4.0"
     grammy: "npm:^1.44.0"
     libphonenumber-js: "npm:^1.13.8"
+    nodemailer: "npm:^10.1.1"
     prettier: "npm:^3.8.0"
     prisma: "npm:^7.8.0"
     socks: "npm:2.8.10"
@@ -4054,6 +4056,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~7.18.0"
   checksum: 10c0/4cf0834a6f6933bf0aca6afead117ae3db3b8f02a5f7187a24f871db0fb9344e5e46573ba387bc53b7505e1e219c4c535cbe67221ced95bb5ad98573223b19d0
+  languageName: node
+  linkType: hard
+
+"@types/nodemailer@npm:^8.0.2":
+  version: 8.0.2
+  resolution: "@types/nodemailer@npm:8.0.2"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/1ad3f83ac130cf9af65ce9eb7985b08b27b4723316c2be621522effc31c63d7d2d76880815490499fbe8b1aff3da889d24b54b3db892526d1166b12702404ff0
   languageName: node
   linkType: hard
 
@@ -8195,6 +8206,13 @@ __metadata:
   version: 2.0.36
   resolution: "node-releases@npm:2.0.36"
   checksum: 10c0/85d8d7f4b6248c8372831cbcc3829ce634cb2b01dbd85e55705cefc8a9eda4ce8121bd218b9629cf2579aef8a360541bad409f3925a35675c825b9471a49d7e9
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^10.1.1":
+  version: 10.1.1
+  resolution: "nodemailer@npm:10.1.1"
+  checksum: 10c0/1906b51e3f40f97acc7b5990b721a54581541e543117d3ff22255a173c4b7cc4a77212195b56ae2f69ecc021885d30714c5f7a2f05396b66e2ae4a7b864a87ae
   languageName: node
   linkType: hard
 

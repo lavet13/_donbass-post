@@ -39,7 +39,7 @@ const CORS_CONFIG = {
 /**
  * Check if origin is allowed
  */
-function isOriginAllowed(origin: string | null): boolean {
+export function isOriginAllowed(origin: string | null): boolean {
   // Allow requests with no Origin header (e.g., Telegram webhooks, curl, server-to-server)
   if (!origin) {
     return true;
