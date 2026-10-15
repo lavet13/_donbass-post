@@ -84,16 +84,19 @@ export function orderConfirmation({
   site: string;
   title?: string;
 }) {
+  const filled = rows.filter(
+    ([, v]) => v !== undefined && v !== null && v !== "",
+  );
   const help = `${site}/post-karantin.php#openModal-callcenter`;
   const html = `<h3>${esc(title)}</h3>
 <h5>Указанные данные</h5>
-${rows.map(([l, v]) => `<p><b>${esc(l)}</b><br>${esc(v)}</p>`).join("\n")}
+${filled.map(([l, v]) => `<p><b>${esc(l)}</b><br>${esc(v)}</p>`).join("\n")}
 <p><i>Это письмо сформировано автоматически службой уведомлений сайта компании. Отвечать на него не нужно.</i></p>
 <p><b>Если Вы обнаружили ошибку в указанных данных - обратитесь по телефонам, указанным на сайте <a href="${esc(help)}">Наша Почта</a>.</b></p>`;
   const text = [
     title,
     "",
-    ...rows.map(([l, v]) => `${l}: ${v ?? ""}`),
+    ...filled.map(([l, v]) => `${l}: ${v}`),
     "",
     "Это письмо сформировано автоматически. Отвечать на него не нужно.",
     `Если Вы обнаружили ошибку в указанных данных, обратитесь по телефонам на сайте: ${help}`,

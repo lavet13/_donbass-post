@@ -178,6 +178,30 @@ export function createRoutes(bot: TCustomBot): Router {
         OnlinePickupSchema,
         (p) => notifyOnlinePickup(bot, p),
         NotificationTypes.ONLINE_PICKUP_RF,
+        {
+          title: "Заявка на забор груза по РФ успешно зарегистрирована",
+          to: (d) => d.emailRecipient,
+          rows: (d) => [
+            [
+              "Отправитель",
+              `${d.surnameSender} ${d.nameSender} ${d.patronymicSender}`,
+            ],
+            ["Телефон отправителя", d.phoneSender],
+            ["Город и область забора", d.cityRegion],
+            ["Адрес забора", d.pickupAddress],
+            ["Время забора", d.pickupTime],
+            ["Вес, кг", d.totalWeight],
+            ["Объём, м³", d.cubicMeter],
+            ["Описание", d.description],
+            [
+              "Получатель",
+              `${d.surnameRecipient} ${d.nameRecipient} ${d.patronymicRecipient}`,
+            ],
+            ["Пункт выдачи", d.pointTo], // the client already sends "name, address" here
+            ["Адрес доставки", d.pickupAddressRecipient],
+            ["Оплата доставки", d.shippingPayment],
+          ],
+        },
       ),
     requireJSON,
   );
@@ -1267,6 +1291,11 @@ async function handleNotify<T>(
   schema: z.ZodType<T>,
   send: (payload: T) => Promise<NotificationResult>,
   label: string,
+  mail?: {
+    rows: (data: T) => Row[];
+    to: (data: T) => string | undefined;
+    title?: string;
+  },
 ): Promise<Response> {
   try {
     const body = await parseJSON(request);
@@ -1287,6 +1316,18 @@ async function handleNotify<T>(
         "Заявка временно не может быть обработана. Пожалуйста, свяжитесь с нами по телефону.",
         { status: 503 },
       );
+    }
+
+    if (mail) {
+      // after the 503 gate: confirm only an order a manager actually got
+      void sendOrderConfirmation({
+        rows: mail.rows(parsed.data),
+        customer: mail.to(parsed.data),
+        site: siteFromRequest(request),
+        label,
+        confirmationTitle: mail.title,
+        // no mailToCopy — the copy belongs to the two order forms only
+      });
     }
 
     return Response.json({
