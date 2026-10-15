@@ -88,11 +88,70 @@ export function orderConfirmation({
     ([, v]) => v !== undefined && v !== null && v !== "",
   );
   const help = `${site}/post-karantin.php#openModal-callcenter`;
-  const html = `<h3>${esc(title)}</h3>
-<h5>Указанные данные</h5>
-${filled.map(([l, v]) => `<p><b>${esc(l)}</b><br>${esc(v)}</p>`).join("\n")}
-<p><i>Это письмо сформировано автоматически службой уведомлений сайта компании. Отвечать на него не нужно.</i></p>
-<p><b>Если Вы обнаружили ошибку в указанных данных - обратитесь по телефонам, указанным на сайте <a href="${esc(help)}">Наша Почта</a>.</b></p>`;
+  // Brand palette — taken from the site (color-red.css) so the mail looks like the forms
+  const BRAND = "#ed1b23";
+  const INK = "#1f2328"; // body text
+  const MUTED = "#6b7280"; // labels, footer
+  const LINE = "#ececec"; // row separators
+  const BG = "#f3f4f6"; // page behind the card
+  const FONT = "Arial, Helvetica, sans-serif"; // web fonts don't load in most mail clients
+
+  /** One label/value line of the data table. The first row has no top border. */
+  function rowHtml([label, value]: Row, i: number) {
+    const border = i ? `border-top:1px solid ${LINE};` : "";
+    return `
+          <tr>
+            <td style="padding:12px 0;${border}font:13px/1.4 ${FONT};color:${MUTED};width:38%;vertical-align:top;">${esc(label)}</td>
+            <td style="padding:12px 0 12px 16px;${border}font:15px/1.45 ${FONT};color:${INK};vertical-align:top;word-break:break-word;">${esc(value).replace(/\n/g, "<br>")}</td>
+          </tr>`;
+  }
+  const html = `<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(title)}</title>
+</head>
+<body style="margin:0;padding:0;background:${BG};">
+  <!-- preheader: the grey preview line after the subject in the inbox list -->
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(title)} — проверьте указанные данные.</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BG};">
+    <tr><td align="center" style="padding:24px 12px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:10px;overflow:hidden;">
+        <tr><td style="background:${BRAND};padding:18px 28px;">
+          <div style="font:bold 22px/1 ${FONT};letter-spacing:1px;color:#ffffff;">НАША ПОЧТА</div>
+          <div style="font:12px/1.6 ${FONT};color:#ffe3e4;text-transform:uppercase;letter-spacing:2px;">почта по-новому</div>
+        </td></tr>
+        <tr><td style="padding:28px 28px 8px;">
+          <div style="display:inline-block;padding:4px 10px;border-radius:999px;background:#fdecec;font:bold 12px/1.4 ${FONT};color:${BRAND};">✓ Заявка принята</div>
+          <h1 style="margin:14px 0 6px;font:bold 21px/1.3 ${FONT};color:${INK};">${esc(title)}</h1>
+          <p style="margin:0;font:14px/1.5 ${FONT};color:${MUTED};">Проверьте, пожалуйста, данные, которые вы указали в заявке:</p>
+        </td></tr>
+        <tr><td style="padding:8px 28px 4px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${filled.map(rowHtml).join("")}
+          </table>
+        </td></tr>
+        <tr><td style="padding:16px 28px 28px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fafafa;border-left:4px solid ${BRAND};border-radius:6px;">
+            <tr><td style="padding:16px 18px;font:14px/1.5 ${FONT};color:${INK};">
+              <b>Нашли ошибку в данных?</b><br>
+              Свяжитесь с нами по телефонам, указанным на сайте — мы всё исправим.
+              <div style="margin-top:12px;"><a href="${esc(help)}" style="display:inline-block;padding:10px 18px;border-radius:6px;background:${BRAND};color:#ffffff;font:bold 14px/1 ${FONT};text-decoration:none;">Контакты «Наша Почта»</a></div>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;">
+        <tr><td style="padding:16px 28px;font:12px/1.5 ${FONT};color:${MUTED};text-align:center;">
+          Это письмо сформировано автоматически службой уведомлений сайта компании. Отвечать на него не нужно.<br>
+          © «Наша Почта» · <a href="${esc(site)}" style="color:${MUTED};">${esc(site.replace(/^https?:\/\//, ""))}</a>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
   const text = [
     title,
     "",
