@@ -225,23 +225,3 @@ export async function notifyOrderOnlinePay(
     payload,
   );
 }
-
-async function logReceived(
-  notificationType: NotificationType,
-  payload: any,
-  reason: string,
-) {
-  try {
-    await prisma.notificationLog.create({
-      data: {
-        managerChatId: null, // received, nobody to deliver to
-        notificationType,
-        payload: payload || null,
-        success: false,
-        errorMessage: reason,
-      },
-    });
-  } catch (e) {
-    console.error("Failed to persist received notification:", e);
-  }
-}
