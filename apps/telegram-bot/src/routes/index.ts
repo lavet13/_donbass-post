@@ -1,10 +1,6 @@
 import { getBotManager, type TCustomBot } from "@/bot";
 import { config } from "@/config";
-import {
-  cors,
-  handleOptions,
-  requireJSON,
-} from "@/middleware";
+import { cors, handleOptions, requireJSON } from "@/middleware";
 import { createRouter, error, parseJSON, type Router } from "@/router";
 import {
   notifyAliParcelPickup,
@@ -396,6 +392,7 @@ export function createRoutes(bot: TCustomBot): Router {
           ["Цвет товара", d.color],
           ["Количество", d.colvo],
         ],
+        mailToCopy: true,
         customerEmail: (d) => d.mail,
         label: "aliexpress-joom",
         successMsg: "Заявка успешно зарегистрирована!",
@@ -440,6 +437,7 @@ export function createRoutes(bot: TCustomBot): Router {
           ["Описание", d.opisanie],
         ],
         customerEmail: (d) => d.mail,
+        mailToCopy: true,
         label: "dostavka-rus",
         successMsg: "Заявка успешно зарегистрирована!",
       }),
@@ -1318,6 +1316,8 @@ async function handleOrder<T>({
   label,
   confirmation,
   customerEmail,
+  confirmationTitle,
+  mailToCopy = false,
 }: {
   request: Request;
   schema: z.ZodType<T>;
@@ -1328,6 +1328,8 @@ async function handleOrder<T>({
   label: string;
   confirmation?: (data: T) => Row[]; // rows for the customer e-mail
   customerEmail?: (data: T) => string | undefined;
+  confirmationTitle?: string;
+  mailToCopy?: boolean;
 }): Promise<Response> {
   try {
     const body = await parseJSON(request);
@@ -1347,12 +1349,14 @@ async function handleOrder<T>({
     if (confirmation) {
       // Not awaited: the client gets its 200 now; a slow mail server can't delay it.
       // sendOrderConfirmation never throws, so this can't become an unhandled rejection.
-      void sendOrderConfirmation(
-        confirmation(parsed.data),
-        customerEmail?.(parsed.data),
-        siteFromRequest(request),
+      void sendOrderConfirmation({
+        rows: confirmation(parsed.data),
+        customer: customerEmail?.(parsed.data),
+        site: siteFromRequest(request),
         label,
-      );
+        confirmationTitle,
+        mailToCopy,
+      });
     }
 
     // db-columns vs box-keys; client have different keys vs what we have in DB

@@ -30,9 +30,11 @@ export async function verifyMail() {
   }
 }
 
-// The PHP put raw $_POST values into the HTML. Anyone could type
-// <a href="...">Оплатить</a> as their name and get a phishing link
-// sent from your domain. Every user value goes through esc().
+/**
+ * Escapes a value for safe use inside the HTML e-mail body.
+ * Every user-supplied field must pass through this: the PHP inserted raw form
+ * values, so anyone could put a link into an e-mail sent from our domain.
+ */
 export const esc = (v: unknown) =>
   String(v ?? "").replace(
     /[&<>"']/g,
@@ -67,15 +69,29 @@ export async function sendMailSafe(
 
 export type Row = [label: string, value: unknown];
 
-export function orderConfirmation(rows: Row[], site: string) {
+const DEFAULT_TITLE = "Заявка на просчет заказа успешно зарегистрирована";
+/**
+ * Builds the confirmation e-mail: subject, an HTML body and a plain-text body.
+ * The text version is not optional — mail without one scores lower with spam
+ * filters, and some clients show only the text part.
+ */
+export function orderConfirmation({
+  rows,
+  site,
+  title = DEFAULT_TITLE,
+}: {
+  rows: Row[];
+  site: string;
+  title?: string;
+}) {
   const help = `${site}/post-karantin.php#openModal-callcenter`;
-  const html = `<h3>Заявка на просчет заказа успешно зарегистрирована</h3>
+  const html = `<h3>${esc(title)}</h3>
 <h5>Указанные данные</h5>
 ${rows.map(([l, v]) => `<p><b>${esc(l)}</b><br>${esc(v)}</p>`).join("\n")}
 <p><i>Это письмо сформировано автоматически службой уведомлений сайта компании. Отвечать на него не нужно.</i></p>
 <p><b>Если Вы обнаружили ошибку в указанных данных - обратитесь по телефонам, указанным на сайте <a href="${esc(help)}">Наша Почта</a>.</b></p>`;
   const text = [
-    "Заявка на просчет заказа успешно зарегистрирована",
+    title,
     "",
     ...rows.map(([l, v]) => `${l}: ${v ?? ""}`),
     "",
@@ -85,19 +101,35 @@ ${rows.map(([l, v]) => `<p><b>${esc(l)}</b><br>${esc(v)}</p>`).join("\n")}
   return { subject: "Подтверждение регистрации заявки", html, text };
 }
 
-/** Customer (if the address is real) + manager copy, each sent separately. */
-export async function sendOrderConfirmation(
-  rows: Row[],
-  customer: string | undefined,
-  site: string,
-  label: string,
-) {
-  const { subject, html, text } = orderConfirmation(rows, site);
+/**
+ * Sends the order confirmation: to the customer, and — only when mailToCopy is
+ * set (the two forms whose PHP did this) — a copy to MAIL_COPY_TO. Each is a
+ * separate message, so one rejected address can't sink the other.
+ * The customer address is skipped unless it's a valid e-mail (forms send "0"
+ * for none). Never throws: every attempt, sent or failed, becomes an
+ * email_logs row — the caller fires this with `void`.
+ */
+export async function sendOrderConfirmation({
+  rows,
+  customer,
+  site,
+  label,
+  confirmationTitle: title,
+  mailToCopy,
+}: {
+  rows: Row[];
+  customer: string | undefined;
+  site: string;
+  label: string;
+  confirmationTitle?: string;
+  mailToCopy?: boolean;
+}) {
+  const { subject, html, text } = orderConfirmation({ rows, site, title });
   const to = [
     ...(customer && z.email().safeParse(customer).success
       ? [{ addr: customer, kind: "customer" as const }]
       : []),
-    ...(env.MAIL_COPY_TO
+    ...(mailToCopy && env.MAIL_COPY_TO
       ? [{ addr: env.MAIL_COPY_TO, kind: "copy" as const }]
       : []),
   ];
@@ -127,8 +159,11 @@ export async function sendOrderConfirmation(
   }
 }
 
-// `{$currentDomain}` from the PHP: use the form's Origin if it's one of ours.
-// isOriginAllowed is the function your cors middleware already uses.
+/**
+ * The site the customer came from, used for the help link in the e-mail
+ * (the Node version of the PHP currentDomain). The Origin header is
+ * trusted only when it's on the CORS allowlist; otherwise falls back to donbass-post.ru.
+ */
 export function siteFromRequest(request: Request) {
   const origin = request.headers.get("Origin");
   return origin && isOriginAllowed(origin) ? origin : "https://donbass-post.ru";

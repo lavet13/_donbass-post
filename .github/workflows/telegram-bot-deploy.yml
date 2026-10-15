@@ -72,7 +72,7 @@ jobs:
           MYSQL_ODBC_USER=${{ secrets.MYSQL_ODBC_USER }}
           MYSQL_ODBC_PASSWORD=${{ secrets.MYSQL_ODBC_PASSWORD }}
 
-          SMTP_HOST=mx1.hosting.reg.ru
+          SMTP_HOST=mail.hosting.reg.ru
           SMTP_PORT=465
           SMTP_USER=${{ secrets.SMTP_USER }}
           SMTP_PASS=${{ secrets.SMTP_PASS }}
