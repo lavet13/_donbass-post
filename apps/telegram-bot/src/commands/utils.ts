@@ -8,6 +8,7 @@ import {
 } from "@/commands/groups";
 import type { Api } from "grammy";
 import type { BotCommand } from "grammy/types";
+import { getRootAdminChatId } from "@/rbac/guards";
 
 export function getCommandListText({
   manager = false,
@@ -116,4 +117,26 @@ export async function suggestionHandler(ctx: SuggestionContext): Promise<void> {
     // No close match — generic fallback
     await ctx.reply("😕 Неизвестная команда. Используйте /help.");
   }
+}
+
+/**
+ * The command groups a chat's menu should show. The root admin always gets all
+ * three — otherwise /addmanager or /removemanager on yourself replaces the
+ * admin menu, because setMyCommands overwrites the whole chat scope.
+ */
+export function menuGroupsFor(chatId: number, isManager: boolean) {
+  if (chatId === getRootAdminChatId())
+    return [publicCommands, managerCommands, adminCommands];
+  return isManager ? [publicCommands, managerCommands] : [publicCommands];
+}
+
+/**
+ * Brings a chat's command menu in line with its roles. A public-only menu is
+ * exactly the all_private_chats default, so it's applied by deleting the chat
+ * override instead of setting a duplicate one.
+ */
+export async function syncMenu(api: Api, chatId: number, isManager: boolean) {
+  const groups = menuGroupsFor(chatId, isManager);
+  if (groups.length === 1) return clearCommandsForChat(api, chatId); // [publicCommands] only
+  return setCommandsForChat(api, chatId, ...groups);
 }

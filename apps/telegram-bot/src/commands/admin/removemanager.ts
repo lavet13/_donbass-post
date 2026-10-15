@@ -1,7 +1,7 @@
 import { removeManager } from "@/managers/service";
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
-import { clearCommandsForChat } from "@/commands/utils";
+import { syncMenu } from "@/commands/utils";
 import { assertNever } from "@/utils/assert-never";
 import { parseInteger } from "@/utils/parse";
 
@@ -60,7 +60,7 @@ export const removeManagerCommand = new Command<TContext>(
         case "revoked": {
           // Only demote the menu when something was actually revoked.
           try {
-            await clearCommandsForChat(ctx.api, chatId);
+            await syncMenu(ctx.api, chatId, false);
           } catch (err) {
             console.error(
               `Command scope not cleared for ${chatId} (role still revoked):`,

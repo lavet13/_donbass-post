@@ -1,8 +1,7 @@
 import { addManager } from "@/managers/service";
 import type { TContext } from "@/types/context";
 import { Command, LanguageCodes } from "@grammyjs/commands";
-import { setCommandsForChat } from "@/commands/utils";
-import { managerCommands, publicCommands } from "../groups";
+import { syncMenu } from "@/commands/utils";
 import { assertNever } from "@/utils/assert-never";
 import { parseInteger } from "@/utils/parse";
 
@@ -57,12 +56,7 @@ export const addManagerCommand = new Command<TContext>(
       });
 
       try {
-        await setCommandsForChat(
-          ctx.api,
-          chatId,
-          publicCommands,
-          managerCommands,
-        );
+        await syncMenu(ctx.api, chatId, true);
       } catch (err) {
         console.error(
           `Command scope not set for ${chatId} (manager still added):`,
