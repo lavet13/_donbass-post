@@ -171,3 +171,31 @@ export function siteFromRequest(request: Request) {
   const origin = request.headers.get("Origin");
   return origin && isOriginAllowed(origin) ? origin : "https://donbass-post.ru";
 }
+
+export type MailOptions<T> = {
+  rows: (data: T) => Row[];
+  to: (data: T) => string | undefined; // the customer's address field
+  title?: string;
+  copy?: boolean; // MAIL_COPY_TO — only aliexpress-joom and dostavka-rus, whose PHP did this
+};
+
+/**
+ * Fires the confirmation for a handled order without awaiting it: the client
+ * gets its response now, and a slow mail server can't delay it. Safe to call
+ * with `void` because sendOrderConfirmation never throws.
+ */
+export function confirmOrder<T>(
+  mail: MailOptions<T>,
+  data: T,
+  request: Request,
+  label: string,
+) {
+  void sendOrderConfirmation({
+    rows: mail.rows(data),
+    customer: mail.to(data),
+    site: siteFromRequest(request),
+    label,
+    confirmationTitle: mail.title,
+    mailToCopy: mail.copy,
+  });
+}

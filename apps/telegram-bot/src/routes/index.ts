@@ -39,7 +39,7 @@ import {
   MobileOfficeSchema,
 } from "@/orders/schemas";
 import { prismaMysql } from "@/prisma/mysql";
-import { sendOrderConfirmation, siteFromRequest, type Row } from "@/mail";
+import { confirmOrder, type MailOptions } from "@/mail";
 
 export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
@@ -405,19 +405,21 @@ export function createRoutes(bot: TCustomBot): Router {
           quantity: d.colvo,
           mail: d.mail,
         }),
-        confirmation: (d) => [
-          ["ФИО получателя", d.name],
-          ["Телефон", d.phone],
-          ["Пункт выдачи", d.departament],
-          ["Ссылки на товары", d.links],
-          ["Общая сумма", d.amount],
-          ["Описание", d.opisanie],
-          ["Размер товара", d.razmer],
-          ["Цвет товара", d.color],
-          ["Количество", d.colvo],
-        ],
-        mailToCopy: true,
-        customerEmail: (d) => d.mail,
+        mail: {
+          rows: (d) => [
+            ["ФИО получателя", d.name],
+            ["Телефон", d.phone],
+            ["Пункт выдачи", d.departament],
+            ["Ссылки на товары", d.links],
+            ["Общая сумма", d.amount],
+            ["Описание", d.opisanie],
+            ["Размер товара", d.razmer],
+            ["Цвет товара", d.color],
+            ["Количество", d.colvo],
+          ],
+          copy: true,
+          to: (d) => d.mail,
+        },
         label: "aliexpress-joom",
         successMsg: "Заявка успешно зарегистрирована!",
       }),
@@ -452,16 +454,18 @@ export function createRoutes(bot: TCustomBot): Router {
           description: d.opisanie,
           mail: d.mail,
         }),
-        confirmation: (d) => [
-          ["ФИО получателя", d.name],
-          ["Телефон", d.phone],
-          ["Пункт выдачи", d.departament],
-          ["Ссылки на товары", d.links],
-          ["Общая сумма", d.amount],
-          ["Описание", d.opisanie],
-        ],
-        customerEmail: (d) => d.mail,
-        mailToCopy: true,
+        mail: {
+          rows: (d) => [
+            ["ФИО получателя", d.name],
+            ["Телефон", d.phone],
+            ["Пункт выдачи", d.departament],
+            ["Ссылки на товары", d.links],
+            ["Общая сумма", d.amount],
+            ["Описание", d.opisanie],
+          ],
+          to: (d) => d.mail,
+          copy: true,
+        },
         label: "dostavka-rus",
         successMsg: "Заявка успешно зарегистрирована!",
       }),
@@ -1286,16 +1290,37 @@ export function writeIzRfOrder(d: z.infer<typeof IzRfSchema>) {
   });
 }
 
+type NotifyStatus = {
+  sent: number;
+  failed: number;
+  skipped: number;
+  error?: boolean;
+};
+
+/**
+ * Notifies managers about an order that is ALREADY saved. A failure is
+ * reported in the status, never thrown — the order exists in MySQL either way.
+ */
+async function notifySafe<T>(
+  send: (payload: T) => Promise<NotificationResult>,
+  data: T,
+  label: string,
+): Promise<NotifyStatus> {
+  try {
+    const { sent, failed, skipped } = await send(data); // destructure = keep only what the client sees
+    return { sent, failed, skipped };
+  } catch (err) {
+    console.error(`[orders/${label}] notify failed (order still saved):`, err);
+    return { sent: 0, failed: 0, skipped: 0, error: true };
+  }
+}
+
 async function handleNotify<T>(
   request: Request,
   schema: z.ZodType<T>,
   send: (payload: T) => Promise<NotificationResult>,
   label: string,
-  mail?: {
-    rows: (data: T) => Row[];
-    to: (data: T) => string | undefined;
-    title?: string;
-  },
+  mail?: MailOptions<T>,
 ): Promise<Response> {
   try {
     const body = await parseJSON(request);
@@ -1318,17 +1343,7 @@ async function handleNotify<T>(
       );
     }
 
-    if (mail) {
-      // after the 503 gate: confirm only an order a manager actually got
-      void sendOrderConfirmation({
-        rows: mail.rows(parsed.data),
-        customer: mail.to(parsed.data),
-        site: siteFromRequest(request),
-        label,
-        confirmationTitle: mail.title,
-        // no mailToCopy — the copy belongs to the two order forms only
-      });
-    }
+    if (mail) confirmOrder(mail, parsed.data, request, label);
 
     return Response.json({
       success: true,
@@ -1355,10 +1370,7 @@ async function handleOrder<T>({
   successMsg,
   send,
   label,
-  confirmation,
-  customerEmail,
-  confirmationTitle,
-  mailToCopy = false,
+  mail,
 }: {
   request: Request;
   schema: z.ZodType<T>;
@@ -1367,10 +1379,7 @@ async function handleOrder<T>({
   successMsg: string;
   send?: (payload: T) => Promise<NotificationResult>; // the notify — reuses existing notifiers
   label: string;
-  confirmation?: (data: T) => Row[]; // rows for the customer e-mail
-  customerEmail?: (data: T) => string | undefined;
-  confirmationTitle?: string;
-  mailToCopy?: boolean;
+  mail?: MailOptions<T>;
 }): Promise<Response> {
   try {
     const body = await parseJSON(request);
@@ -1387,58 +1396,16 @@ async function handleOrder<T>({
       return error("Не удалось сохранить заявку", { status: 500 });
     }
 
-    if (confirmation) {
-      // Not awaited: the client gets its 200 now; a slow mail server can't delay it.
-      // sendOrderConfirmation never throws, so this can't become an unhandled rejection.
-      void sendOrderConfirmation({
-        rows: confirmation(parsed.data),
-        customer: customerEmail?.(parsed.data),
-        site: siteFromRequest(request),
-        label,
-        confirmationTitle,
-        mailToCopy,
-      });
-    }
-
-    // db-columns vs box-keys; client have different keys vs what we have in DB
-    const responseData = toResponse?.(parsed.data, created) ?? parsed.data;
-
-    // BEST-EFFORT: order is saved. Notify managers, but a notify failure
-    // does NOT fail the request — the order IS in the system. (optional)
-    if (send) {
-      let notifyStatus: {
-        sent: number;
-        failed: number;
-        skipped: number;
-        error?: boolean;
-      };
-      try {
-        const result = await send(parsed.data);
-        notifyStatus = {
-          sent: result.sent,
-          failed: result.failed,
-          skipped: result.skipped,
-        };
-      } catch (notifyErr) {
-        console.error(
-          `[orders/${label}] notify failed (order still saved):`,
-          notifyErr,
-        );
-        notifyStatus = { sent: 0, failed: 0, skipped: 0, error: true };
-      }
-
-      return Response.json({
-        ...responseData,
-        success: true,
-        message: successMsg,
-        notify: notifyStatus,
-      });
-    }
+    if (mail) confirmOrder(mail, parsed.data, request, label);
+    const notify = send
+      ? await notifySafe(send, parsed.data, label)
+      : undefined;
 
     return Response.json({
-      ...responseData,
+      ...(toResponse?.(parsed.data, created) ?? parsed.data),
       success: true,
       message: successMsg,
+      ...(notify && { notify }), // spreading undefined adds nothing, same body as before for routes without send
     });
   } catch (err) {
     console.error(`Error in /api/orders/${label}:`, err);
