@@ -101,7 +101,7 @@ export function orderConfirmation({
     const border = i ? `border-top:1px solid ${LINE};` : "";
     return `
           <tr>
-            <td style="padding:12px 0;${border}font:13px/1.4 ${FONT};color:${MUTED};width:38%;vertical-align:top;">${esc(label)}</td>
+            <td style="padding:12px 0;${border}font:13px/1.4 ${FONT};color:${MUTED};width:38%;vertical-align:top;">${esc(label.trim())}</td>
             <td style="padding:12px 0 12px 16px;${border}font:15px/1.45 ${FONT};color:${INK};vertical-align:top;word-break:break-word;">${esc(value).replace(/\n/g, "<br>")}</td>
           </tr>`;
   }
@@ -257,4 +257,24 @@ export function confirmOrder<T>(
     confirmationTitle: mail.title,
     mailToCopy: mail.copy,
   });
+}
+
+// Same prefixes forms.js writes in buildBody — keep the two lists in sync
+const DELIVERY_PREFIX =
+  /^(Пункт выдачи|Адресная доставка(?:\((?:ЛДНР|Крым)\))?|ПВЗ СДЭК):\s*([\s\S]*)$/i;
+
+/**
+ * Turns the client's "<mode>: <place>" departament into its own row, so the
+ * e-mail says «Адресная доставка — ул. …» instead of a combined label with the
+ * prefix repeated in the value. Unprefixed values (cart, dostavka-rus send a
+ * plain point name) keep the fallback label.
+ */
+export function deliveryRow(
+  departament: string,
+  fallback = "Пункт выдачи",
+): Row {
+  const m = DELIVERY_PREFIX.exec(departament);
+  if (!m) return [fallback, departament];
+  const [, label, place] = m; // groups 1 and 2 always exist on a match
+  return [label ?? fallback, place ?? ""]; // ?? only satisfies noUncheckedIndexedAccess
 }

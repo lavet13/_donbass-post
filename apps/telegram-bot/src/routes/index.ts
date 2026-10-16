@@ -39,7 +39,7 @@ import {
   MobileOfficeSchema,
 } from "@/orders/schemas";
 import { prismaMysql } from "@/prisma/mysql";
-import { confirmOrder, type MailOptions } from "@/mail";
+import { confirmOrder, deliveryRow, type MailOptions } from "@/mail";
 
 export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
@@ -365,6 +365,19 @@ export function createRoutes(bot: TCustomBot): Router {
           vip: d.VIP, // box key "vip" ← field VIP
           mail: d.mail,
         }),
+        mail: {
+          title: "Регистрация ТРЕКа заказа с AliExpress",
+          to: (d) => d.mail,
+          rows: (d) => [
+            ["Фамилия и Имя", d.name],
+            ["Телефон", d.phone],
+            deliveryRow(d.departament),
+            ["Краткое описание товара в заказе", d.links],
+            ["Общая сумма товаров", d.amount],
+            ["№ отслеживания", d.track_number],
+            ["Номер VIP карты", d.VIP],
+          ],
+        },
         label: "aliexpress-rostov",
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
       }),
@@ -409,10 +422,10 @@ export function createRoutes(bot: TCustomBot): Router {
           rows: (d) => [
             ["ФИО получателя", d.name],
             ["Телефон", d.phone],
-            ["Пункт выдачи", d.departament],
+            deliveryRow(d.departament),
             ["Ссылки на товары", d.links],
             ["Общая сумма", d.amount],
-            ["Описание", d.opisanie],
+            ["Описание товара", d.opisanie],
             ["Размер товара", d.razmer],
             ["Цвет товара", d.color],
             ["Количество", d.colvo],
@@ -458,7 +471,7 @@ export function createRoutes(bot: TCustomBot): Router {
           rows: (d) => [
             ["ФИО получателя", d.name],
             ["Телефон", d.phone],
-            ["Пункт выдачи", d.departament],
+            deliveryRow(d.departament),
             ["Ссылки на товары", d.links],
             ["Общая сумма", d.amount],
             ["Описание", d.opisanie],
@@ -487,6 +500,27 @@ export function createRoutes(bot: TCustomBot): Router {
           deliveryCompany: d.TK, // box "deliveryCompany" ← TK
           mail: d.mail, // email line
         }),
+        mail: {
+          title:
+            "Регистрация ТРЕКа Заказов АВИТО отправленных по СДЭК для доставки в ЛДНР",
+          to: (d) => d.mail,
+          rows: (d) => [
+            ["ФИО получателя", d.name],
+            ["Номер телефона получателя", d.phone],
+            deliveryRow(d.departament),
+            ["Город отправления", d.citi_otprav],
+            ["Транспортная компания", d.TK],
+            ["Трек номер в СДЭК", d.track_number],
+            ["Отправитель в СДЭК", d.name_Otpravitelya],
+            [
+              "Номер телефона отправителя при наличии/для оплаты",
+              d.phone_otprav,
+            ],
+            ["Оплата доставки", d.kto_oplachivaet],
+            ["Краткое описание груза", d.opisanie],
+            ["Номер VIP карты", d.VIP],
+          ],
+        },
         label: "iz-rf",
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
       }),
@@ -510,6 +544,21 @@ export function createRoutes(bot: TCustomBot): Router {
           deliveryCompany: d.TK,
           mail: d.mail,
         }),
+        mail: {
+          title:
+            "Регистрация ТРЕКа посылки из интернет-магазинов для оформления доставки в ЛДНР, Запорожье",
+          to: (d) => d.mail,
+          rows: (d) => [
+            ["ФИО получателя", d.name],
+            ["Телефон", d.phone],
+            deliveryRow(d.departament),
+            ["Название интернет магазина", d.name_Otpravitelya],
+            ["Транспортная компания", d.TK],
+            ["Трек номер", d.track_number],
+            ["Краткое описание груза", d.opisanie],
+            ["Номер VIP карты", d.VIP],
+          ],
+        },
         label: "rus-shops",
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
       }),
@@ -531,6 +580,24 @@ export function createRoutes(bot: TCustomBot): Router {
           deliveryCompany: d.TK,
           mail: d.mail,
         }),
+        mail: {
+          rows: (d) => [
+            ["ФИО/Компания получателя", d.name],
+            ["Номер телефона получателя", d.phone],
+            deliveryRow(d.departament),
+            ["ФИО/Компания отправителя", d.name_Otpravitelya],
+            ["Транспортная компания", d.TK],
+            ["Трек номер", d.track_number],
+            ["Город отправления", d.citi_otprav],
+            ["Номер телефона отправителя", d.phone_otprav],
+            ["Оплата доставки", d.kto_oplachivaet],
+            ["Номер VIP карты", d.VIP],
+            ["Краткое описание посылки", d.opisanie],
+          ],
+          title:
+            "Регистрация ТРЕКа посылки из Почты России для доставки в ЛДНР",
+          to: (d) => d.mail,
+        },
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
         label: "package-delivery",
       }),
@@ -552,6 +619,25 @@ export function createRoutes(bot: TCustomBot): Router {
           deliveryCompany: d.TK,
           mail: d.mail,
         }),
+        mail: {
+          rows: (d) => [
+            ["ФИО/Компания получателя", d.name],
+            ["Номер телефона получателя", d.phone],
+            deliveryRow(d.departament),
+            ["ФИО/Компания отправителя", d.name_Otpravitelya],
+            ["Транспортная компания", d.TK],
+            ["ТРЕК номер", d.track_number],
+            ["Город отправления", d.citi_otprav],
+            ["Номер телефона отправителя", d.phone_otprav],
+            ["Оплата доставки", d.kto_oplachivaet],
+            ["Номер VIP карты", d.VIP],
+            ["Ссылки на товары", d.links],
+            ["Краткое описание груза", d.opisanie],
+          ],
+          title:
+            "Регистрация ТРЕКа посылки из любой ТК России для доставки в ЛДНР",
+          to: (d) => d.mail,
+        },
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
         label: "registration-parcel-from-rf",
       }),
@@ -573,6 +659,23 @@ export function createRoutes(bot: TCustomBot): Router {
           deliveryCompany: d.TK,
           mail: d.mail,
         }),
+        mail: {
+          rows: (d) => [
+            ["ФИО/Компания получателя", d.name],
+            ["Номер телефона получателя", d.phone],
+            deliveryRow(d.departament),
+            ["Транспортная компания", d.TK],
+            ["Трек номер в СДЭК", d.track_number],
+            ["Город отправления в СДЭК", d.citi_otprav],
+            ["ФИО/Компания отправителя", d.name_Otpravitelya],
+            ["Номер телефона отправителя", d.phone_otprav],
+            ["Оплата доставки", d.kto_oplachivaet],
+            ["Номер VIP карты", d.VIP],
+            ["Краткое описание груза, посылки", d.opisanie],
+          ],
+          to: (d) => d.mail,
+          title: "Регистрация ТРЕКа посылки из СДЭК для доставки в ЛДНР",
+        },
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!", // matches the PHP
         label: "cdek",
       }),
@@ -605,6 +708,17 @@ export function createRoutes(bot: TCustomBot): Router {
           passport: d.pass, // box key "passport" ← field pass
           mail: d.mail,
         }),
+        mail: {
+          title: "Подача заявки на карту постоянного клиента",
+          to: (d) => d.mail,
+          rows: (d) => [
+            ["ФИО получателя карты", d.name],
+            ["Дата рождения", d.birth],
+            // passport deliberately NOT mailed — it stays in MySQL only
+            ["Телефон", d.phone],
+            deliveryRow(d.departament),
+          ],
+        },
         label: "cart",
         successMsg: "Заявка успешно зарегистрирована!",
       }),
@@ -648,6 +762,23 @@ export function createRoutes(bot: TCustomBot): Router {
           deliveryCompany: d.TK,
           mail: d.mail,
         }),
+        mail: {
+          title: "Регистрация ТРЕКа посылки из-за границы",
+          to: (d) => d.mail,
+          rows: (d) => [
+            ["ФИО получателя", d.name],
+            ["Номер телефона получателя", d.phone],
+            ["Трек номер отправления", d.track_number],
+            ["Заявленная стоимость", d.amount],
+            ["Краткое описание посылки", d.opisanie],
+            deliveryRow(d.departament),
+            ["ФИО отправителя", d.name_Otpravitelya],
+            ["Номер телефона отправителя", d.phone_otprav],
+            ["Транспортная компания", d.TK],
+            ["Город отправления", d.citi_otprav],
+            ["Оплата доставки", d.kto_oplachivaet],
+          ],
+        },
         label: "fromabroad",
         successMsg: "Регистрация ТРЕКа успешно зарегистрирована!",
       }),
@@ -1252,6 +1383,20 @@ export function createRoutes(bot: TCustomBot): Router {
         OrderOnlinePaySchema,
         (p) => notifyOrderOnlinePay(bot, p),
         NotificationTypes.ORDER_ONLINE_PAY,
+        {
+          title: "Оплата за доставку ОНЛАЙН",
+          to: (d) => d.email,
+          rows: (d) => [
+            [
+              "ФИО получателя",
+              `${d.surnameRecipient} ${d.nameRecipient} ${d.patronymicRecipient}`,
+            ],
+            ["Телефон получателя", d.phoneRecipient],
+            ["ТТН", d.orderTtn],
+            ["Оплата доставки", d.shippingPayment],
+            ["Транспортная компания", d.deliveryCompany],
+          ],
+        },
       ),
     requireJSON,
   );
