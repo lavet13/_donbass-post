@@ -1,4 +1,6 @@
 # offline nginx config validation. Never part of a deploy.
+name: donbass-post-test # own project → own network; dev containers no longer show as "orphans"
+
 services:
   # one-shot: generate a throwaway self-signed cert into the volume (idempotent)
   test-certs:
