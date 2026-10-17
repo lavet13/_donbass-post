@@ -12,6 +12,8 @@ const CORS_CONFIG = {
   allowedOrigins: [
     "https://donbass-post.ru",
     "https://donbass-post2.ru",
+    "https://www.donbass-post.ru",
+    "https://www.donbass-post2.ru",
     "https://workplace-post.ru",
     "https://donbass-post.duckdns.org",
 
