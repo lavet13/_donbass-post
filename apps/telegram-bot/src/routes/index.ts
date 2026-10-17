@@ -214,6 +214,112 @@ export function createRoutes(bot: TCustomBot): Router {
         PickUpPointDeliverySchema,
         (p) => notifyPickUpPointDeliveryOrder(bot, p),
         NotificationTypes.PICK_UP_POINT_DELIVERY,
+        {
+          title:
+            "Заявка на забор груза по ЛДНР и Запорожью успешно зарегистрирована",
+          to: (d) => d.sender.emailSender,
+          rows: (d) => [
+            // Sender
+            [
+              "Отправитель",
+              "companySender" in d.sender
+                ? d.sender.companySender // company branch
+                : `${d.sender.surnameSender} ${d.sender.nameSender} ${d.sender.patronymicSender}`, // individual
+            ],
+            ["Телефон отправителя", d.sender.phoneSender],
+            [
+              "Связаться через",
+              "companySender" in d.sender
+                ? undefined
+                : [
+                    d.sender.telegramSender && "Telegram",
+                    d.sender.whatsAppSender && "MAX",
+                  ]
+                    .filter(Boolean) // drop the `false` entries
+                    .join(", ") || undefined, // nothing ticked → "" → undefined → row skipped
+            ],
+            ["Населенный пункт", d.sender.pointFrom],
+            ["Адрес(забор груза отправителя)", d.sender.pickupAddress],
+            [
+              "ИНН",
+              "companySender" in d.sender ? d.sender.innSender : undefined,
+            ],
+
+            // Recipient
+            [
+              "Получатель",
+              "companyRecipient" in d.recipient
+                ? d.recipient.companyRecipient // company branch
+                : `${d.recipient.surnameRecipient} ${d.recipient.nameRecipient} ${d.recipient.patronymicRecipient}`, // individual
+            ],
+            ["Телефон получателя", d.recipient.phoneRecipient],
+            [
+              "Связаться через",
+              "companyRecipient" in d.recipient
+                ? undefined
+                : [
+                    d.recipient.telegramRecipient && "Telegram",
+                    d.recipient.whatsAppRecipient && "MAX",
+                  ]
+                    .filter(Boolean) // drop the `false` entries
+                    .join(", ") || undefined, // nothing ticked → "" → undefined → row skipped
+            ],
+            ["Транспортная компания", d.recipient.deliveryCompany], // the client already sends "name, address" here
+            ["Адрес получателя или ТК", d.recipient.deliveryAddress],
+            [
+              "ИНН получателя",
+              "companyRecipient" in d.recipient
+                ? d.recipient.innRecipient
+                : undefined,
+            ],
+
+            // Customer — optional section: undefined values are dropped by the `filled` filter
+            [
+              "Заказчик",
+              d.customer && // no customer → undefined → row skipped
+                ("companyCustomer" in d.customer
+                  ? d.customer.companyCustomer
+                  : `${d.customer.surnameCustomer} ${d.customer.nameCustomer} ${d.customer.patronymicCustomer}`),
+            ],
+            ["Телефон заказчика", d.customer?.phoneCustomer],
+            [
+              "Связаться через",
+              d.customer &&
+                ("companyCustomer" in d.customer
+                  ? undefined
+                  : [
+                      d.customer.telegramCustomer && "Telegram",
+                      d.customer.whatsAppCustomer && "MAX",
+                    ]
+                      .filter(Boolean) // drop the `false` entries
+                      .join(", ") || undefined), // nothing ticked → "" → undefined → row skipped
+            ],
+            [
+              "ИНН заказчика",
+              d.customer &&
+                ("companyCustomer" in d.customer
+                  ? d.customer.innCustomer
+                  : undefined),
+            ],
+
+            // Cargo
+            ["Общий вес (кг)", d.cargoData.totalWeight],
+            ["Заявленная стоимость (руб)", d.cargoData.declaredPrice],
+            [
+              "Вес самой тяжелой позиции (кг)",
+              d.cargoData.weightHeaviestPosition,
+            ],
+            ["Объём, м³", d.cargoData.cubicMeter],
+            ["Описание", d.cargoData.description],
+            ["Оплата доставки", d.cargoData.shippingPayment],
+
+            // Additional services
+            [
+              "Дополнительные услуги",
+              d.additionalService?.map((s) => s.name).join(", ") || undefined,
+            ],
+          ],
+        },
       ),
     requireJSON,
   );

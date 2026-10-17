@@ -32,8 +32,14 @@ export function blankToUndefined<T extends z.ZodType>(schema: T) {
  * making it dynamic collapses the computed key to an index signature and breaks
  * `discriminatedUnion`'s type-level narrowing.
  *
- * @typeParam C - present-branch object schema (used when `marker` exists)
- * @typeParam I - absent-branch object schema (used when it doesn't)
+ * Generic over the SHAPES, not the schemas: with `C extends z.ZodObject`, the
+ * `extend()` result was typed once from the bare constraint, so every field of the
+ * parsed value came out `unknown` (`Record<string, unknown>`) and callers couldn't
+ * read `d.sender.emailSender`. Taking `z.ZodObject<C>` with `C` a raw shape keeps the
+ * real fields flowing to the caller. Runtime behaviour is identical either way.
+ *
+ * @typeParam C - shape of the present branch (used when `marker` exists)
+ * @typeParam I - shape of the absent branch (used when it doesn't)
  *
  * @param opts - configuration
  * @param opts.marker        - key unique to the present branch, e.g. `"companySender"`
@@ -51,14 +57,15 @@ export function blankToUndefined<T extends z.ZodType>(schema: T) {
  *   }),
  * });
  * // company sender, bad ИНН → fieldErrors: { "sender.innSender": "…" }  (not "sender")
+ * // and the parsed type keeps its fields: d.sender.emailSender is `string`
  */
 export function discriminatedByPresence<
-  C extends z.ZodObject,
-  I extends z.ZodObject,
+  C extends z.ZodRawShape,
+  I extends z.ZodRawShape,
 >(opts: {
   marker: string; // key unique to the "present" branch, e.g. "companySender"
-  presentSchema: C; // branch used when `marker` exists
-  absentSchema: I; // branch used when it doesn't
+  presentSchema: z.ZodObject<C>; // branch used when `marker` exists
+  absentSchema: z.ZodObject<I>; // branch used when it doesn't
 }) {
   const { marker, presentSchema, absentSchema } = opts;
   return z.preprocess(
