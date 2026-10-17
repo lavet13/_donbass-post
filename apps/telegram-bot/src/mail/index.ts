@@ -67,7 +67,15 @@ export async function sendMailSafe(
   }
 }
 
-export type Row = [label: string, value: unknown];
+export type Field = [label: string, value: unknown];
+export type Section = { section: string };
+export type Row = Field | Section;
+export type MailOptions<T> = {
+  rows: (data: T) => Row[];
+  to: (data: T) => string | undefined; // the customer's address field
+  title?: string;
+  copy?: boolean; // MAIL_COPY_TO — only aliexpress-joom and dostavka-rus, whose PHP did this
+};
 
 const DEFAULT_TITLE = "Заявка на просчет заказа успешно зарегистрирована";
 /**
@@ -84,27 +92,18 @@ export function orderConfirmation({
   site: string;
   title?: string;
 }) {
-  const filled = rows.filter(
-    ([, v]) => v !== undefined && v !== null && v !== "",
-  );
+  const items = compact(rows);
   const help = `${site}/post-karantin.php#openModal-callcenter`;
-  // Brand palette — taken from the site (color-red.css) so the mail looks like the forms
-  const BRAND = "#ed1b23";
-  const INK = "#1f2328"; // body text
-  const MUTED = "#6b7280"; // labels, footer
-  const LINE = "#ececec"; // row separators
-  const BG = "#f3f4f6"; // page behind the card
-  const FONT = "Arial, Helvetica, sans-serif"; // web fonts don't load in most mail clients
 
-  /** One label/value line of the data table. The first row has no top border. */
-  function rowHtml([label, value]: Row, i: number) {
-    const border = i ? `border-top:1px solid ${LINE};` : "";
-    return `
-          <tr>
-            <td style="padding:12px 0;${border}font:13px/1.4 ${FONT};color:${MUTED};width:38%;vertical-align:top;">${esc(label.trim())}</td>
-            <td style="padding:12px 0 12px 16px;${border}font:15px/1.45 ${FONT};color:${INK};vertical-align:top;word-break:break-word;">${esc(value).replace(/\n/g, "<br>")}</td>
-          </tr>`;
-  }
+  const tableHtml = items
+    .map((r, i, arr) => {
+      const prev = arr[i - 1];
+      return isSection(r)
+        ? sectionHtml(r.section, i === 0)
+        : fieldHtml(r, prev === undefined || isSection(prev)); // first row, or right under a heading
+    })
+    .join("");
+
   const html = `<!doctype html>
 <html lang="ru">
 <head>
@@ -128,7 +127,7 @@ export function orderConfirmation({
           <p style="margin:0;font:14px/1.5 ${FONT};color:${MUTED};">Проверьте, пожалуйста, данные, которые вы указали в заявке:</p>
         </td></tr>
         <tr><td style="padding:8px 28px 4px;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${filled.map(rowHtml).join("")}
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${tableHtml}
           </table>
         </td></tr>
         <tr><td style="padding:16px 28px 28px;">
@@ -155,7 +154,9 @@ export function orderConfirmation({
   const text = [
     title,
     "",
-    ...filled.map(([l, v]) => `${l}: ${v}`),
+    ...items.map((r) =>
+      isSection(r) ? `\n${r.section.toUpperCase()}` : `${r[0].trim()}: ${r[1]}`,
+    ),
     "",
     "Это письмо сформировано автоматически. Отвечать на него не нужно.",
     `Если Вы обнаружили ошибку в указанных данных, обратитесь по телефонам на сайте: ${help}`,
@@ -231,13 +232,6 @@ export function siteFromRequest(request: Request) {
   return origin && isOriginAllowed(origin) ? origin : "https://donbass-post.ru";
 }
 
-export type MailOptions<T> = {
-  rows: (data: T) => Row[];
-  to: (data: T) => string | undefined; // the customer's address field
-  title?: string;
-  copy?: boolean; // MAIL_COPY_TO — only aliexpress-joom and dostavka-rus, whose PHP did this
-};
-
 /**
  * Fires the confirmation for a handled order without awaiting it: the client
  * gets its response now, and a slow mail server can't delay it. Safe to call
@@ -277,4 +271,52 @@ export function deliveryRow(
   if (!m) return [fallback, departament];
   const [, label, place] = m; // groups 1 and 2 always exist on a match
   return [label ?? fallback, place ?? ""]; // ?? only satisfies noUncheckedIndexedAccess
+}
+
+/** A sub-heading inside the data table («Отправитель», «Данные о грузе», …). */
+export const section = (title: string): Section => ({ section: title });
+
+// Array.isArray tells the two apart: a Field is a tuple, a Section is an object
+function isSection(r: Row): r is Section {
+  return !Array.isArray(r);
+}
+/** Empty = absent, or whitespace-only once stringified. Numbers (0 included) and booleans count as filled. */
+function hasValue(v: unknown) {
+  return v !== undefined && v !== null && String(v).trim() !== "";
+}
+
+/**
+ * Drops empty fields, then any section heading that has no field left under it —
+ * so an absent customer removes «Заказчик» together with its rows.
+ */
+function compact(rows: Row[]): Row[] {
+  const kept = rows.filter((r) => isSection(r) || hasValue(r[1]));
+  return kept.filter((r, i) => {
+    const next = kept[i + 1]; // possibly undefined (noUncheckedIndexedAccess)
+    return !isSection(r) || (next !== undefined && !isSection(next));
+  });
+}
+
+// Brand palette — taken from the site (color-red.css) so the mail looks like the forms
+const BRAND = "#ed1b23";
+const INK = "#1f2328"; // body text
+const MUTED = "#6b7280"; // labels, footer
+const LINE = "#ececec"; // row separators
+const BG = "#f3f4f6"; // page behind the card
+const FONT = "Arial, Helvetica, sans-serif"; // web fonts don't load in most mail clients
+
+/** A red uppercase sub-heading row spanning both columns. */
+function sectionHtml(title: string, first: boolean) {
+  return `
+          <tr><td colspan="2" style="padding:${first ? 4 : 22}px 0 6px;border-bottom:2px solid ${BRAND};font:bold 12px/1.4 ${FONT};color:${BRAND};text-transform:uppercase;letter-spacing:1px;">${esc(title)}</td></tr>`;
+}
+
+/** One label/value line. No top border right under a heading (the heading's underline is enough). */
+function fieldHtml([label, value]: Field, noBorder: boolean) {
+  const border = noBorder ? "" : `border-top:1px solid ${LINE};`;
+  return `
+          <tr>
+            <td style="padding:12px 0;${border}font:13px/1.4 ${FONT};color:${MUTED};width:38%;vertical-align:top;">${esc(label.trim())}</td>
+            <td style="padding:12px 0 12px 16px;${border}font:15px/1.45 ${FONT};color:${INK};vertical-align:top;word-break:break-word;">${esc(value).replace(/\n/g, "<br>")}</td>
+          </tr>`;
 }

@@ -39,7 +39,7 @@ import {
   MobileOfficeSchema,
 } from "@/orders/schemas";
 import { prismaMysql } from "@/prisma/mysql";
-import { confirmOrder, deliveryRow, type MailOptions } from "@/mail";
+import { confirmOrder, deliveryRow, section, type MailOptions } from "@/mail";
 
 export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
@@ -182,24 +182,45 @@ export function createRoutes(bot: TCustomBot): Router {
           title: "Заявка на забор груза по РФ успешно зарегистрирована",
           to: (d) => d.emailRecipient,
           rows: (d) => [
-            [
-              "Отправитель",
-              `${d.surnameSender} ${d.nameSender} ${d.patronymicSender}`,
-            ],
+            section("Отправитель(у кого забрать груз)"),
+            ["ФИО", `${d.surnameSender} ${d.nameSender} ${d.patronymicSender}`],
             ["Телефон отправителя", d.phoneSender],
+            [
+              "Связаться через",
+              [d.telegramSender && "Telegram", d.whatsAppSender && "MAX"]
+                .filter(Boolean) // drop the `false` entries
+                .join(", ") || undefined, // nothing ticked → "" → undefined → row skipped
+            ],
             ["Город и область забора", d.cityRegion],
             ["Адрес забора", d.pickupAddress],
             ["Время забора", d.pickupTime],
+            section("Данные о грузе"),
             ["Вес, кг", d.totalWeight],
             ["Объём, м³", d.cubicMeter],
             ["Описание", d.description],
+            section("Получатель"),
             [
-              "Получатель",
+              "ФИО",
               `${d.surnameRecipient} ${d.nameRecipient} ${d.patronymicRecipient}`,
             ],
-            ["Пункт выдачи", d.pointTo], // the client already sends "name, address" here
-            ["Адрес доставки", d.pickupAddressRecipient],
+            ["Телефон получателя", d.phoneRecipient],
+            [
+              "Связаться через",
+              [d.telegramRecipient && "Telegram", d.whatsAppRecipient && "MAX"]
+                .filter(Boolean) // drop the `false` entries
+                .join(", ") || undefined, // nothing ticked → "" → undefined → row skipped
+            ],
+            deliveryRow(d.pointTo ?? ""), // pickup-point mode ("" → dropped)
+            ["Адрес доставки", d.pickupAddressRecipient], // address mode (undefined → dropped)
             ["Оплата доставки", d.shippingPayment],
+            section("Заказчик(при наличии)"),
+            [
+              "ФИО",
+              [d.surnameCustomer, d.nameCustomer, d.patronymicCustomer]
+                .join(" ")
+                .trim() || undefined,
+            ],
+            ["Телефон", d.phoneCustomer], // undefined → dropped by hasValue
           ],
         },
       ),
@@ -220,11 +241,12 @@ export function createRoutes(bot: TCustomBot): Router {
           to: (d) => d.sender.emailSender,
           rows: (d) => [
             // Sender
+            section("Отправитель"),
             [
-              "Отправитель",
+              "ФИО / Компания",
               "companySender" in d.sender
-                ? d.sender.companySender // company branch
-                : `${d.sender.surnameSender} ${d.sender.nameSender} ${d.sender.patronymicSender}`, // individual
+                ? d.sender.companySender
+                : `${d.sender.surnameSender} ${d.sender.nameSender} ${d.sender.patronymicSender}`,
             ],
             ["Телефон отправителя", d.sender.phoneSender],
             [
@@ -246,8 +268,9 @@ export function createRoutes(bot: TCustomBot): Router {
             ],
 
             // Recipient
+            section("Получатель"),
             [
-              "Получатель",
+              "ФИО / Компания",
               "companyRecipient" in d.recipient
                 ? d.recipient.companyRecipient // company branch
                 : `${d.recipient.surnameRecipient} ${d.recipient.nameRecipient} ${d.recipient.patronymicRecipient}`, // individual
@@ -264,7 +287,7 @@ export function createRoutes(bot: TCustomBot): Router {
                     .filter(Boolean) // drop the `false` entries
                     .join(", ") || undefined, // nothing ticked → "" → undefined → row skipped
             ],
-            ["Транспортная компания", d.recipient.deliveryCompany], // the client already sends "name, address" here
+            ["Транспортная компания", d.recipient.deliveryCompany],
             ["Адрес получателя или ТК", d.recipient.deliveryAddress],
             [
               "ИНН получателя",
@@ -273,9 +296,9 @@ export function createRoutes(bot: TCustomBot): Router {
                 : undefined,
             ],
 
-            // Customer — optional section: undefined values are dropped by the `filled` filter
+            section("Заказчик"), // vanishes by itself when d.customer is absent
             [
-              "Заказчик",
+              "ФИО / Компания",
               d.customer && // no customer → undefined → row skipped
                 ("companyCustomer" in d.customer
                   ? d.customer.companyCustomer
@@ -303,6 +326,7 @@ export function createRoutes(bot: TCustomBot): Router {
             ],
 
             // Cargo
+            section("Данные о грузе"),
             ["Общий вес (кг)", d.cargoData.totalWeight],
             ["Заявленная стоимость (руб)", d.cargoData.declaredPrice],
             [
@@ -314,8 +338,9 @@ export function createRoutes(bot: TCustomBot): Router {
             ["Оплата доставки", d.cargoData.shippingPayment],
 
             // Additional services
+            section("Дополнительные услуги"),
             [
-              "Дополнительные услуги",
+              "Услуги",
               d.additionalService?.map((s) => s.name).join(", ") || undefined,
             ],
           ],
@@ -475,9 +500,11 @@ export function createRoutes(bot: TCustomBot): Router {
           title: "Регистрация ТРЕКа заказа с AliExpress",
           to: (d) => d.mail,
           rows: (d) => [
+            section("Получатель"),
             ["Фамилия и Имя", d.name],
             ["Телефон", d.phone],
             deliveryRow(d.departament),
+            section("Заказ"),
             ["Краткое описание товара в заказе", d.links],
             ["Общая сумма товаров", d.amount],
             ["№ отслеживания", d.track_number],
@@ -526,9 +553,11 @@ export function createRoutes(bot: TCustomBot): Router {
         }),
         mail: {
           rows: (d) => [
+            section("Получатель"),
             ["ФИО получателя", d.name],
             ["Телефон", d.phone],
             deliveryRow(d.departament),
+            section("Заказ"),
             ["Ссылки на товары", d.links],
             ["Общая сумма", d.amount],
             ["Описание товара", d.opisanie],
@@ -575,9 +604,11 @@ export function createRoutes(bot: TCustomBot): Router {
         }),
         mail: {
           rows: (d) => [
+            section("Получатель"),
             ["ФИО получателя", d.name],
             ["Телефон", d.phone],
             deliveryRow(d.departament),
+            section("Заказ"),
             ["Ссылки на товары", d.links],
             ["Общая сумма", d.amount],
             ["Описание", d.opisanie],
@@ -611,9 +642,11 @@ export function createRoutes(bot: TCustomBot): Router {
             "Регистрация ТРЕКа Заказов АВИТО отправленных по СДЭК для доставки в ЛДНР",
           to: (d) => d.mail,
           rows: (d) => [
+            section("Данные получателя"),
             ["ФИО получателя", d.name],
             ["Номер телефона получателя", d.phone],
             deliveryRow(d.departament),
+            section("Данные отправителя"),
             ["Город отправления", d.citi_otprav],
             ["Транспортная компания", d.TK],
             ["Трек номер в СДЭК", d.track_number],
@@ -655,9 +688,11 @@ export function createRoutes(bot: TCustomBot): Router {
             "Регистрация ТРЕКа посылки из интернет-магазинов для оформления доставки в ЛДНР, Запорожье",
           to: (d) => d.mail,
           rows: (d) => [
+            section("Данные получателя"),
             ["ФИО получателя", d.name],
             ["Телефон", d.phone],
             deliveryRow(d.departament),
+            section("Данные отправителя"),
             ["Название интернет магазина", d.name_Otpravitelya],
             ["Транспортная компания", d.TK],
             ["Трек номер", d.track_number],
@@ -688,10 +723,12 @@ export function createRoutes(bot: TCustomBot): Router {
         }),
         mail: {
           rows: (d) => [
-            ["ФИО/Компания получателя", d.name],
+            section("Данные получателя"),
+            ["ФИО/Компания", d.name],
             ["Номер телефона получателя", d.phone],
             deliveryRow(d.departament),
-            ["ФИО/Компания отправителя", d.name_Otpravitelya],
+            section("Данные отправителя"),
+            ["ФИО/Компания", d.name_Otpravitelya],
             ["Транспортная компания", d.TK],
             ["Трек номер", d.track_number],
             ["Город отправления", d.citi_otprav],
@@ -727,9 +764,11 @@ export function createRoutes(bot: TCustomBot): Router {
         }),
         mail: {
           rows: (d) => [
+            section("Данные получателя"),
             ["ФИО/Компания получателя", d.name],
             ["Номер телефона получателя", d.phone],
             deliveryRow(d.departament),
+            section("Данные отправителя"),
             ["ФИО/Компания отправителя", d.name_Otpravitelya],
             ["Транспортная компания", d.TK],
             ["ТРЕК номер", d.track_number],
@@ -767,9 +806,11 @@ export function createRoutes(bot: TCustomBot): Router {
         }),
         mail: {
           rows: (d) => [
+            section("Данные получателя"),
             ["ФИО/Компания получателя", d.name],
             ["Номер телефона получателя", d.phone],
             deliveryRow(d.departament),
+            section("Данные отправителя"),
             ["Транспортная компания", d.TK],
             ["Трек номер в СДЭК", d.track_number],
             ["Город отправления в СДЭК", d.citi_otprav],
@@ -818,6 +859,7 @@ export function createRoutes(bot: TCustomBot): Router {
           title: "Подача заявки на карту постоянного клиента",
           to: (d) => d.mail,
           rows: (d) => [
+            section("Данные получателя карты"),
             ["ФИО получателя карты", d.name],
             ["Дата рождения", d.birth],
             // passport deliberately NOT mailed — it stays in MySQL only
@@ -872,12 +914,14 @@ export function createRoutes(bot: TCustomBot): Router {
           title: "Регистрация ТРЕКа посылки из-за границы",
           to: (d) => d.mail,
           rows: (d) => [
+            section("Данные получателя"),
             ["ФИО получателя", d.name],
             ["Номер телефона получателя", d.phone],
             ["Трек номер отправления", d.track_number],
             ["Заявленная стоимость", d.amount],
             ["Краткое описание посылки", d.opisanie],
             deliveryRow(d.departament),
+            section("Данные отправителя"),
             ["ФИО отправителя", d.name_Otpravitelya],
             ["Номер телефона отправителя", d.phone_otprav],
             ["Транспортная компания", d.TK],
@@ -1493,11 +1537,18 @@ export function createRoutes(bot: TCustomBot): Router {
           title: "Оплата за доставку ОНЛАЙН",
           to: (d) => d.email,
           rows: (d) => [
+            section("Данные получателя"),
             [
               "ФИО получателя",
               `${d.surnameRecipient} ${d.nameRecipient} ${d.patronymicRecipient}`,
             ],
             ["Телефон получателя", d.phoneRecipient],
+            [
+              "Связаться через",
+              [d.telegramRecipient && "Telegram", d.whatsAppRecipient && "MAX"]
+                .filter(Boolean) // drop the `false` entries
+                .join(", ") || undefined, // nothing ticked → "" → undefined → row skipped
+            ],
             ["ТТН", d.orderTtn],
             ["Оплата доставки", d.shippingPayment],
             ["Транспортная компания", d.deliveryCompany],
