@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useLayoutEffect } from "@radix-ui/react-use-layout-effect";
+import { useLayoutEffect } from "radix-ui/internal";
 
 // Prevent bundlers from trying to optimize the import
 const useInsertionEffect: typeof useLayoutEffect =

@@ -11,7 +11,7 @@ import {
   type ScrollAreaProps,
 } from "@radix-ui/themes";
 import { AccessibleIcon } from "@radix-ui/themes";
-import { useComposedRefs } from "@radix-ui/react-compose-refs";
+import { useComposedRefs } from "radix-ui/internal";
 import { createContext } from "@/hooks/create-context";
 
 /* -------------------------------------------------------------------------------------------------

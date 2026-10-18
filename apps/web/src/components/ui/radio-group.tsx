@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
+import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import type { ComponentProps, FC } from "react";
 import { Label } from "@/components/ui/label";
 

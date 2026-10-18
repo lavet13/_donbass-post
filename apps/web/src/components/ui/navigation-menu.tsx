@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
+import { NavigationMenu as NavigationMenuPrimitive } from "radix-ui";
 import type { ComponentProps, FC } from "react";
 
 const NavigationMenu: FC<

@@ -62,7 +62,7 @@ export default defineConfig({
             "@radix-ui/themes",
             "vaul",
             "react-resizable-panels",
-            "@radix-ui/react-navigation-menu",
+            "radix-ui",
           ],
 
           // Form validation and schema

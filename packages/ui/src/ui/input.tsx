@@ -10,7 +10,7 @@ import {
 import { cn, composeEventHandlers } from "../lib/utils";
 import { TextField } from "@radix-ui/themes";
 import { Slot } from "radix-ui";
-import { useComposedRefs } from "@radix-ui/react-compose-refs";
+import { useComposedRefs } from "radix-ui/internal";
 import { isMobile as isMobileDevice, isIOS } from "react-device-detect";
 
 const Input: FC<

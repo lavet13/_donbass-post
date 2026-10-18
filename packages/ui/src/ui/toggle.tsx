@@ -1,5 +1,5 @@
 import { cn } from "../lib/utils";
-import * as TogglePrimitive from "@radix-ui/react-toggle";
+import { Toggle as TogglePrimitive } from "radix-ui";
 import type { ComponentProps, FC } from "react";
 
 const Toggle: FC<ComponentProps<typeof TogglePrimitive.Root>> = ({

@@ -1,5 +1,5 @@
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { Tooltip as TooltipPrimitive } from "radix-ui";
 import {
   Children,
   createContext,
@@ -25,7 +25,7 @@ import { ChevronRight, Menu } from "lucide-react";
 import { Link, Outlet } from "@tanstack/react-router";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useTheme } from "@donbass-post/ui/hooks";
-import { Slot, Slottable } from "@radix-ui/react-slot";
+import { Slot } from "radix-ui";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
@@ -34,7 +34,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { VisuallyHidden } from "radix-ui";
 import { isMobile as isMobileDevice } from "react-device-detect";
 
 type SidebarContextProps = {
@@ -134,7 +134,7 @@ const SidebarProvider: FC<ComponentProps<"div">> = ({ children }) => {
 
   return (
     <SidebarContext value={contextValue}>
-      <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+      <TooltipPrimitive.Provider delayDuration={0}>{children}</TooltipPrimitive.Provider>
     </SidebarContext>
   );
 };
@@ -406,7 +406,7 @@ const SidebarMenuButton: FC<
   side = "right",
   ...props
 }) => {
-  const Comp = asChild ? Slot : "button";
+  const Comp = asChild ? Slot.Root : "button";
   const { open, toggleMenu, hasSidebarSubMenu } = useSidebarMenu();
   const { isInSubmenu } = useSidebarMenuSub();
   const [isHovered, setIsHovered] = useState(false);
@@ -424,7 +424,7 @@ const SidebarMenuButton: FC<
       {...props}
     >
       {leftElement}
-      <Slottable>{children}</Slottable>
+      <Slot.Slottable>{children}</Slot.Slottable>
       {rightElement}
     </Comp>
   );
@@ -480,7 +480,7 @@ const SidebarMenuButton: FC<
       ) : (
         leftElement
       )}
-      <Slottable>{children}</Slottable>
+      <Slot.Slottable>{children}</Slot.Slottable>
       {rightElement}
     </Comp>
   );
@@ -629,11 +629,11 @@ const SidebarMobile: FC<ComponentProps<"div">> = (props) => {
           aria-describedby={undefined}
           className="bg-gray-2 top-0 bottom-0 left-0 w-full max-w-[300px]"
         >
-          <VisuallyHidden>
+          <VisuallyHidden.Root>
             <DrawerTitle>
               Личный кабинет пользователя ТК "Наша Почта"
             </DrawerTitle>
-          </VisuallyHidden>
+          </VisuallyHidden.Root>
           <div className="flex h-full w-full grow flex-col pt-1" {...props} />
         </DrawerContent>
       </Drawer>
