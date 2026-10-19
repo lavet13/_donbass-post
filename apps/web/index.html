@@ -1,23 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" href="/logomini_np-bsd.png" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"
     />
-    <!-- Github Pages workaround -->
-    <script>
-      const redirect = sessionStorage.getItem("redirect");
-
-      if (redirect) {
-        sessionStorage.removeItem("redirect");
-        window.history.replaceState(null, null, redirect);
-      }
-    </script>
-    <!-- Github Pages workaround -->
-    <title>Наша Почта</title>
+    <!-- data-static-head: defaults for crawlers that don't run JS; main.tsx removes them
+         before React renders the route's own tags, so there is only ever one of each -->
+    <title data-static-head>Наша Почта</title>
+    <meta
+      data-static-head
+      name="description"
+      content="Забор и доставка грузов в ЛДНР и Запорожье, забор по России, выкуп интернет-заказов, отслеживание отправлений и расписание отделений."
+    />
   </head>
   <body>
     <div id="root"></div>
