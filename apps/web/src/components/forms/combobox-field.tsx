@@ -34,7 +34,7 @@ import {
   DrawerHandle,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
+} from "@donbass-post/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { isMobile as isMobileDevice, isIOS } from "react-device-detect";
 

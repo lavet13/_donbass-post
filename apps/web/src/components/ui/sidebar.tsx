@@ -33,7 +33,7 @@ import {
   DrawerContent,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
+} from "@donbass-post/ui/drawer";
 import { VisuallyHidden } from "radix-ui";
 import { isMobile as isMobileDevice } from "react-device-detect";
 
