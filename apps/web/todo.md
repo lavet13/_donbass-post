@@ -26,6 +26,7 @@ Backlog + progress log for apps/web (and the shared packages/ui and packages/for
 - 2026-10-19 — fix(web): lang ru, brand favicon, GitHub Pages redirect leftovers removed
 - 2026-10-19 — feat(web): per-route title/description/Open Graph; noindex on /auth, dashboard and the 404 page
 - 2026-10-19 — feat(web): robots.txt and sitemap.xml for donbass-post.duckdns.org
+- 2026-10-19 — build(web): sitemap.xml and robots.txt generated from PRERENDER_PATHS at build time (SITE_URL overrides the origin)
 - 2026-10-19 — feat(web): home page linking every public service (replaced the placeholder)
 - 2026-10-19 — build(ui): Tailwind @source for packages/ui and packages/forms; package-only classes were never generated
 - 2026-10-19 — refactor(web): deleted ten unused copies (main-nav, navigation-menu, border-beam, main-sidebar, hover-card, input, toast)

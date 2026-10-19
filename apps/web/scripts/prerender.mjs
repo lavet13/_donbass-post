@@ -10,7 +10,13 @@ import { render, PRERENDER_PATHS } from "../dist-ssr/entry-server.js";
  * dist/spa.html keeps the untouched shell: nginx falls back to it for client-only
  * routes (dashboard, auth, unknown URLs). Without it, those would get the
  * prerendered home page's HTML, because dist/index.html IS the home page now.
+ *
+ * sitemap.xml and robots.txt are written from the same PRERENDER_PATHS list, so a
+ * page added there is prerendered and listed for crawlers in one place.
+ * SITE_URL overrides the production origin (e.g. for a staging host).
  */
+const SITE_URL = (process.env.SITE_URL ?? "https://donbass-post.duckdns.org").replace(/\/+$/, ""); // no trailing slash; paths start with /
+
 const shell = await readFile("dist/index.html", "utf8");
 await writeFile("dist/spa.html", shell);
 
@@ -36,3 +42,22 @@ for (const path of PRERENDER_PATHS) {
   await writeFile(join(dir, "index.html"), html);
   console.log(`prerendered ${path}`);
 }
+
+// One <url> per page actually written above; <loc> must be an absolute URL
+const urls = PRERENDER_PATHS.map((path) => `  <url><loc>${SITE_URL}${path}</loc></url>`).join("\n");
+await writeFile(
+  "dist/sitemap.xml",
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+);
+await writeFile(
+  "dist/robots.txt",
+  [
+    "User-agent: *",
+    "# Every dashboard URL redirects to the login page for a crawler; nothing to index there.",
+    "Disallow: /dashboard",
+    "",
+    `Sitemap: ${SITE_URL}/sitemap.xml`,
+    "",
+  ].join("\n"),
+);
+console.log(`sitemap.xml + robots.txt for ${SITE_URL}`);
