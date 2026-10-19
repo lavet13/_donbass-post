@@ -42,6 +42,9 @@ jobs:
           # Served at root on your VPS domain
           VITE_BASE_PATH: /
           VITE_YMAPS_API_KEY: ${{ secrets.VITE_YMAPS_API_KEY }}
+          # Origin for sitemap.xml/robots.txt. A repository variable, not a secret: it's public
+          # anyway, and secrets are masked as *** in the logs. Unset = the default in prerender.mjs
+          SITE_URL: ${{ vars.SITE_URL }}
 
       - name: Prepare target directory on VPS
         uses: appleboy/ssh-action@v1.0.3

@@ -13,9 +13,10 @@ import { render, PRERENDER_PATHS } from "../dist-ssr/entry-server.js";
  *
  * sitemap.xml and robots.txt are written from the same PRERENDER_PATHS list, so a
  * page added there is prerendered and listed for crawlers in one place.
- * SITE_URL overrides the production origin (e.g. for a staging host).
+ * SITE_URL overrides the production origin (e.g. for a staging host). `||`, not `??`:
+ * an unset GitHub Actions variable arrives as "" (not undefined), and "" must fall back too.
  */
-const SITE_URL = (process.env.SITE_URL ?? "https://donbass-post.duckdns.org").replace(/\/+$/, ""); // no trailing slash; paths start with /
+const SITE_URL = (process.env.SITE_URL || "https://donbass-post.duckdns.org").replace(/\/+$/, ""); // no trailing slash; paths start with /
 
 const shell = await readFile("dist/index.html", "utf8");
 await writeFile("dist/spa.html", shell);
