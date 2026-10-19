@@ -24,7 +24,7 @@ import { cn } from "@donbass-post/ui/utils";
 import { getEmailErrorMessage, validatePickupTime } from "@/lib/utils";
 import z from "zod";
 import { Fragment } from "react/jsx-runtime";
-import { Toggle } from "@/components/ui/toggle";
+import { Toggle } from "@donbass-post/ui/toggle";
 import { usePointPostQuery } from "@/features/point/queries";
 import { FieldGroupAcceptedField } from "@/components/forms/field-groups/accepted-field";
 
