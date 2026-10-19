@@ -2,7 +2,7 @@ import { withForm } from "@donbass-post/forms/form";
 import { defaultCargoTrackingOpts } from "@/routes/_public/tracking/-shared/shared-form";
 import { Search, X } from "lucide-react";
 import { IconButton, TextField, Tooltip } from "@radix-ui/themes";
-import { cn } from "@/lib/utils";
+import { cn } from "@donbass-post/ui/utils";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useCargoTrackingQuery } from "@/features/cargo-tracking/queries";

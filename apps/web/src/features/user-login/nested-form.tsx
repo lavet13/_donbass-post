@@ -2,7 +2,7 @@ import { withForm } from "@donbass-post/forms/form";
 import { defaultUserLoginOpts } from "./shared-form";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import ru from "react-phone-number-input/locale/ru.json";
-import { isPasswordValid } from "@/lib/utils";
+import { isPasswordValid } from "@donbass-post/forms/utils";
 import { Fragment } from "react/jsx-runtime";
 import * as AutoDismissMessage from "@donbass-post/ui/auto-dismiss-message";
 

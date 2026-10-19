@@ -10,7 +10,7 @@ import {
   Text,
   TextField,
 } from "@radix-ui/themes";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useMediaQuery } from "@donbass-post/ui/hooks/use-media-query";
 import { TypographyH2 } from "@/components/typography/typographyH2";
 import { HighlightText } from "@/components/typography/highlight-text";
 import { TypographyH3 } from "@/components/typography/typographyH3";
@@ -21,7 +21,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { cn } from "@donbass-post/ui/utils";
-import { getEmailErrorMessage, validatePickupTime } from "@/lib/utils";
+import { getEmailErrorMessage, validatePickupTime } from "@donbass-post/forms/utils";
 import z from "zod";
 import { Fragment } from "react/jsx-runtime";
 import { Toggle } from "@donbass-post/ui/toggle";

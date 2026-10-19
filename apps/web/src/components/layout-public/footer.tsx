@@ -1,5 +1,5 @@
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@donbass-post/ui/hooks/use-media-query";
+import { cn } from "@donbass-post/ui/utils";
 import { Text } from "@radix-ui/themes";
 import { useAtomValue } from "jotai";
 import { useEffect, useState, type FC } from "react";

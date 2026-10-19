@@ -6,7 +6,7 @@ import {
   type UseQueryOptions,
 } from "@tanstack/react-query";
 import type { AdditionalServicePickUp } from "@/features/additional-service/types";
-// import { createMockAxiosError } from "@/lib/utils";
+// import { createMockAxiosError } from "@donbass-post/forms/utils";
 
 const additionalServiceKeys = createQueryKeys("additional-service", {
   "pick-up": {

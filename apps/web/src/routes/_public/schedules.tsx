@@ -10,7 +10,7 @@ import {
 } from "@donbass-post/ui/command";
 import { usePointListQuery } from "@/features/point/queries";
 import { useAppForm } from "@donbass-post/forms/form";
-import { cn } from "@/lib/utils";
+import { cn } from "@donbass-post/ui/utils";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 import { pageHead } from "@/lib/seo";
@@ -47,7 +47,7 @@ import {
   Callout,
 } from "@radix-ui/themes";
 import { TypographyH2 } from "@/components/typography/typographyH2";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useMediaQuery } from "@donbass-post/ui/hooks/use-media-query";
 import {
   YMap,
   YMapComponentsProvider,

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@donbass-post/ui/utils";
 import type { ComponentProps, FC } from "react";
 
 export const HighlightText: FC<

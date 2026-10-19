@@ -3,7 +3,7 @@ import { defaultShopCostCalculationOrderOpts } from "@/routes/_public/shop-cost-
 import React, { Fragment } from "react";
 import { Button, Card, Heading, Separator, Tooltip } from "@radix-ui/themes";
 import { z } from "zod";
-import { getEmailErrorMessage } from "@/lib/utils";
+import { getEmailErrorMessage } from "@donbass-post/forms/utils";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import { usePointPostQuery } from "@/features/point/queries";
 import { PackagePlus, Store, X } from "lucide-react";
@@ -12,7 +12,7 @@ import { useBlocker } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-form";
 import { TypographyH2 } from "@/components/typography/typographyH2";
 import { HighlightText } from "@/components/typography/highlight-text";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useMediaQuery } from "@donbass-post/ui/hooks/use-media-query";
 import { TypographyH3 } from "@/components/typography/typographyH3";
 import * as AutoDismissMessage from "@donbass-post/ui/auto-dismiss-message";
 import { FieldGroupAcceptedField } from "@donbass-post/forms/component-fields";

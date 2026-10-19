@@ -1,4 +1,4 @@
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useMediaQuery } from "../../hooks/use-media-query";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 import {
   Children,
