@@ -23,6 +23,7 @@ import {
   redirect,
   useLocation,
 } from "@tanstack/react-router";
+import { NOINDEX } from "@/lib/seo";
 import {
   FileText,
   LogOut,
@@ -32,6 +33,8 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
+  // applies to every dashboard page: child routes merge their meta over this
+  head: () => ({ meta: [NOINDEX] }),
   component: () => (
     <SidebarProvider>
       <AuthenticatedLayout />

@@ -10,6 +10,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import type { useAuth } from "@/hooks/use-auth";
 import { Fragment } from "react/jsx-runtime";
 import { NProgress } from "@/components/nprogress";
+import { pageHead } from "@/lib/seo";
 import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
@@ -19,6 +20,12 @@ type MyRouterContext = {
 };
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  head: () =>
+    pageHead({
+      title: "Наша Почта",
+      description:
+        "Забор и доставка грузов в ЛДНР и Запорожье, забор по России, выкуп интернет-заказов, отслеживание отправлений и расписание отделений.",
+    }),
   component: RootComponent,
 });
 

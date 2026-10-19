@@ -4,6 +4,7 @@ import {
   redirect,
   useSearch,
 } from "@tanstack/react-router";
+import { NOINDEX } from "@/lib/seo";
 import UserRegistrationPage from "@/features/user-registration/page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserLoginPage from "@/features/user-login/page";
@@ -21,6 +22,7 @@ const isValidTab = (value: unknown): value is TabsSearch["tab"] => {
 };
 
 export const Route = createFileRoute("/_public/auth")({
+  head: () => ({ meta: [{ title: "Вход — Наша Почта" }, NOINDEX] }),
   component: AuthComponent,
   validateSearch: (search): TabsSearch => {
     return {

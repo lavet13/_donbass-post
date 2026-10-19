@@ -2,12 +2,18 @@ import { HighlightText } from "@/components/typography/highlight-text";
 import { TrackingPage } from "@/routes/_public/tracking/-shared";
 import { Flex, Text, Strong, Separator, Heading } from "@radix-ui/themes";
 import { createFileRoute } from "@tanstack/react-router";
+import { pageHead } from "@/lib/seo";
 
 type TrackingSearch = {
   q?: string;
 };
 
 export const Route = createFileRoute("/_public/tracking/")({
+  head: () =>
+    pageHead({
+      title: "Отслеживание груза",
+      description: "Узнайте, где ваш груз: введите трек-номер транспортной компании или номер ТТН.",
+    }),
   component: TrackingComponent,
   validateSearch(search): TrackingSearch {
     return {

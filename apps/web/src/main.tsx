@@ -11,6 +11,10 @@ declare module "@tanstack/react-router" {
   }
 }
 
+// The route's <HeadContent /> renders its own title/description; drop the static
+// defaults first, or document.title keeps reading the first <title> in the page.
+document.querySelectorAll("[data-static-head]").forEach((el) => el.remove());
+
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);

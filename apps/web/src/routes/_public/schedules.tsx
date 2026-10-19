@@ -13,6 +13,7 @@ import { useAppForm } from "@/hooks/form";
 import { cn } from "@/lib/utils";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
+import { pageHead } from "@/lib/seo";
 import {
   AlertCircle,
   Building,
@@ -69,6 +70,11 @@ type ScheduleSearch = {
 };
 
 export const Route = createFileRoute("/_public/schedules")({
+  head: () =>
+    pageHead({
+      title: "Расписание отделений",
+      description: "Адреса и график работы отделений «Наша Почта».",
+    }),
   component: SchedulesComponent,
   validateSearch: (search): ScheduleSearch => {
     return {
