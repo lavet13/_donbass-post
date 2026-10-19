@@ -7,7 +7,7 @@ import {
   CommandList,
   CommandLoading,
   CommandSeparator,
-} from "@/components/ui/command";
+} from "@donbass-post/ui/command";
 import { usePointListQuery } from "@/features/point/queries";
 import { useAppForm } from "@/hooks/form";
 import { cn } from "@/lib/utils";

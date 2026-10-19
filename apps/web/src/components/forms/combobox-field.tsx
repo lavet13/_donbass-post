@@ -22,7 +22,7 @@ import {
   CommandList,
   CommandLoading,
   CommandSeparator,
-} from "@/components/ui/command";
+} from "@donbass-post/ui/command";
 import { cn } from "@/lib/utils";
 import { CheckIcon, ChevronsUpDownIcon, X } from "lucide-react";
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
