@@ -1,0 +1,5 @@
+User-agent: *
+# Every dashboard URL redirects to the login page for a crawler; nothing to index there.
+Disallow: /dashboard
+
+Sitemap: https://donbass-post.duckdns.org/sitemap.xml
