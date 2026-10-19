@@ -56,7 +56,7 @@ const NavigationMenuContent: FC<
     <NavigationMenuPrimitive.Content
       data-slot="navigation-menu-content"
       className={cn(
-        "bg-panel-translucent absolute top-0 left-0 h-[80dvh] max-h-fit w-auto overflow-y-auto",
+        "bg-panel-translucent absolute top-0 left-0 max-h-[80dvh] w-auto overflow-y-auto",
         "data-[motion=from-start]:animate-enter-from-left",
         "data-[motion=from-end]:animate-enter-from-right",
         "data-[motion=to-start]:animate-exit-to-left",
@@ -104,9 +104,9 @@ const NavigationMenuLink: FC<
       data-slot="navigation-menu-link"
       className={cn(
         "focus-visible:outline-accent-8 block leading-none no-underline select-none focus-visible:outline-[2px] focus-visible:-outline-offset-1",
-        "rounded-sm px-3 py-2 h-full",
+        "h-full rounded-sm px-3 py-2",
         "data-[status=active]:text-accent-11 text-gray-12 hover:bg-accentA-2 active:text-accent-11 active:bg-accentA-3",
-        "data-[status=active]:bg-accentA-3 data-[status=active]:underline underline-offset-4",
+        "data-[status=active]:bg-accentA-3 underline-offset-4 data-[status=active]:underline",
         className,
       )}
       {...props}
