@@ -1,4 +1,4 @@
-import { createRouter as reactRouter } from "@tanstack/react-router";
+import { createRouter as reactRouter, type RouterHistory } from "@tanstack/react-router";
 import { routeTree } from "@/routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DefaultErrorComponent } from "@/components/default-error-component";
@@ -6,7 +6,7 @@ import { DefaultNotFoundComponent } from "@/components/default-not-found-compone
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 import { Toaster } from "sonner";
 
-function createRouter() {
+export function createAppRouter(opts: { history?: RouterHistory; isServer?: boolean } = {}) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -17,6 +17,7 @@ function createRouter() {
   });
 
   return reactRouter({
+    ...opts,
     context: {
       queryClient,
       auth: undefined!,
@@ -45,4 +46,4 @@ function createRouter() {
   });
 }
 
-export const router = createRouter();
+export const router = createAppRouter();

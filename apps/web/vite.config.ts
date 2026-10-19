@@ -6,7 +6,9 @@ import topLevelAwait from "vite-plugin-top-level-await";
 import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
-export default defineConfig({
+// isSsrBuild: true for the prerender build (vite build --ssr), which runs in Node and
+// must not inherit the browser-only chunking below
+export default defineConfig(({ isSsrBuild }) => ({
   base: process.env.VITE_BASE_PATH ?? "/",
   plugins: [
     tailwindcss(),
@@ -20,6 +22,11 @@ export default defineConfig({
       promiseImportName: (i) => `__tla_${i}`,
     }),
   ],
+  ssr: {
+    // CommonJS-only package: Node can't import its named exports directly, so the
+    // prerender build bundles it and lets Vite do the interop
+    noExternal: ["ymap3-components"],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -34,77 +41,79 @@ export default defineConfig({
       },
     },
   },
-  build: {
-    minify: "esbuild",
-    cssMinify: "lightningcss",
-    // https://vite.dev/config/build-options.html#build-rollupoptions
-    rollupOptions: {
-      input: "./index.html",
-      output: {
-        // https://rollupjs.org/configuration-options/#output-manualchunks
-        manualChunks: {
-          // Core react
-          "react-core": ["react", "react-dom"],
+  build: isSsrBuild
+    ? {}
+    : {
+        minify: "esbuild",
+        cssMinify: "lightningcss",
+        // https://vite.dev/config/build-options.html#build-rollupoptions
+        rollupOptions: {
+          input: "./index.html",
+          output: {
+            // https://rollupjs.org/configuration-options/#output-manualchunks
+            manualChunks: {
+              // Core react
+              "react-core": ["react", "react-dom"],
 
-          // Tanstack ecosystem (data fetching, routing)
-          "tanstack-query": [
-            "@tanstack/react-query",
-            "@tanstack/react-query-devtools",
-            "@lukemorales/query-key-factory",
-          ],
-          "tanstack-router": [
-            "@tanstack/react-router",
-            "@tanstack/react-router-devtools",
-          ],
+              // Tanstack ecosystem (data fetching, routing)
+              "tanstack-query": [
+                "@tanstack/react-query",
+                "@tanstack/react-query-devtools",
+                "@lukemorales/query-key-factory",
+              ],
+              "tanstack-router": [
+                "@tanstack/react-router",
+                "@tanstack/react-router-devtools",
+              ],
 
-          // UI components
-          UI: [
-            "@radix-ui/themes",
-            "vaul",
-            "react-resizable-panels",
-            "radix-ui",
-          ],
+              // UI components
+              UI: [
+                "@radix-ui/themes",
+                "vaul",
+                "react-resizable-panels",
+                "radix-ui",
+              ],
 
-          // Form validation and schema
-          form: [
-            "zod",
-            "@tanstack/react-form",
-            "@tanstack/react-form-devtools",
-          ],
+              // Form validation and schema
+              form: [
+                "zod",
+                "@tanstack/react-form",
+                "@tanstack/react-form-devtools",
+              ],
 
-          devtools: ["@tanstack/react-devtools"],
+              devtools: ["@tanstack/react-devtools"],
 
-          // Styling and class utilities
-          styling: ["class-variance-authority", "tailwind-merge", "clsx"],
+              // Styling and class utilities
+              styling: ["class-variance-authority", "tailwind-merge", "clsx"],
 
-          // State management
-          state: ["jotai"],
+              // State management
+              state: ["jotai"],
 
-          animation: ["motion"],
+              animation: ["motion"],
 
-          // UI and interaction
-          icons: ["lucide-react"],
-          "command-ui": ["cmdk"],
-          "number-input": ["react-number-format"],
-          "phone-input": ["react-phone-number-input"],
+              // UI and interaction
+              icons: ["lucide-react"],
+              "command-ui": ["cmdk"],
+              "number-input": ["react-number-format"],
+              "phone-input": ["react-phone-number-input"],
 
-          misc: [
-            "react-device-detect",
-            "@tanem/react-nprogress",
-            "sonner",
-            "date-fns",
-            "@date-fns/tz",
-          ],
+              misc: [
+                "react-device-detect",
+                "@tanem/react-nprogress",
+                "sonner",
+                "date-fns",
+                "@date-fns/tz",
+              ],
 
-          // Network and API
-          network: ["axios"],
+              // Network and API
+              network: ["axios"],
 
-          // Browser utilities
-          JWT: ["js-cookie", "jose"],
+              // Browser utilities
+              JWT: ["js-cookie", "jose"],
 
-          ymaps3: ["ymap3-components"],
+              ymaps3: ["ymap3-components"],
+            },
+          },
         },
       },
-    },
-  },
-});
+}));

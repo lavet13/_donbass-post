@@ -15,12 +15,12 @@ declare module "@tanstack/react-router" {
 // defaults first, or document.title keeps reading the first <title> in the page.
 document.querySelectorAll("[data-static-head]").forEach((el) => el.remove());
 
+// Public pages arrive prerendered (scripts/prerender.mjs). createRoot replaces that
+// markup with an identical client render; the old `if (!rootElement.innerHTML)`
+// guard would have skipped rendering entirely on those pages.
 const rootElement = document.getElementById("root")!;
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <App />
-    </StrictMode>,
-  );
-}
+ReactDOM.createRoot(rootElement).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
