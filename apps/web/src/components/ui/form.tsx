@@ -1,4 +1,4 @@
-import * as LabelPrimitive from "@radix-ui/react-label";
+import { Label as LabelPrimitive } from "radix-ui";
 import { Label } from "@/components/ui/label";
 import type { FC } from "react";
 import { type ComponentProps } from "react";

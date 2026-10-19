@@ -30,9 +30,9 @@ import { cn, composeEventHandlers } from "@/lib/utils";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { createContext } from "@/hooks/create-context";
 import { useControllableState } from "@/hooks/use-controllable-state";
-import { useComposedRefs } from "@radix-ui/react-compose-refs";
-import { Portal as PortalPrimitive } from "@radix-ui/react-portal";
-import { Presence } from "@radix-ui/react-presence";
+import { useComposedRefs } from "radix-ui/internal";
+import { Portal as PortalPrimitive } from "radix-ui";
+import { Presence } from "radix-ui/internal";
 import { useAtom, useAtomValue } from "jotai";
 import {
   mainSidebarAtom,
@@ -373,7 +373,7 @@ MainSidebarFooter.displayName = MAIN_SIDEBAR_FOOTER_NAME;
 
 const MAIN_SIDEBAR_PORTAL_NAME = "MainSidebarPortal";
 
-type PortalProps = ComponentPropsWithoutRef<typeof PortalPrimitive>;
+type PortalProps = ComponentPropsWithoutRef<typeof PortalPrimitive.Root>;
 type MainSidebarPortalProps = PortalProps & {
   children?: ReactNode;
   /**
@@ -396,11 +396,11 @@ const MainSidebarPortal: FC<MainSidebarPortalProps> = (props) => {
   }
 
   return (
-    <Presence present={forceMount || context.open}>
-      <PortalPrimitive asChild container={container}>
+    <Presence.Root present={forceMount || context.open}>
+      <PortalPrimitive.Root asChild container={container}>
         {children}
-      </PortalPrimitive>
-    </Presence>
+      </PortalPrimitive.Root>
+    </Presence.Root>
   );
 };
 MainSidebarPortal.displayName = MAIN_SIDEBAR_PORTAL_NAME;

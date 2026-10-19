@@ -3,7 +3,7 @@ import { routeTree } from "@/routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DefaultErrorComponent } from "@/components/default-error-component";
 import { DefaultNotFoundComponent } from "@/components/default-not-found-component";
-import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { Tooltip as TooltipPrimitive } from "radix-ui";
 import { Toaster } from "sonner";
 
 function createRouter() {
@@ -37,7 +37,7 @@ function createRouter() {
     Wrap: ({ children }) => {
       return (
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider delayDuration={100}>{children}</TooltipProvider>
+          <TooltipPrimitive.Provider delayDuration={100}>{children}</TooltipPrimitive.Provider>
           <Toaster />
         </QueryClientProvider>
       );

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import * as PasswordToggleFieldPrimitive from "@radix-ui/react-password-toggle-field";
+import { unstable_PasswordToggleField as PasswordToggleFieldPrimitive } from "radix-ui";
 import type { ComponentProps, FC } from "react";
 
 const PasswordToggleField: FC<

@@ -26,6 +26,7 @@
     "@donbass-post/ui": "workspace:*",
     "@radix-ui/themes": "^3.2.1",
     "@tanstack/react-form": "1.26.0",
+    "radix-ui": "~1.4.3",
     "react-device-detect": "^2.2.3",
     "react-number-format": "^5.4.4",
     "react-phone-number-input": "^3.4.12"
