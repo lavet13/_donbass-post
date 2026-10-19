@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { NOINDEX } from "@/lib/seo";
 import UserRegistrationPage from "@/features/user-registration/page";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@donbass-post/ui/tabs";
 import UserLoginPage from "@/features/user-login/page";
 import { Suspend } from "@/components/suspend";
 
