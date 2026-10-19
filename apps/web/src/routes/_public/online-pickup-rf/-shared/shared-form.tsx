@@ -1,7 +1,7 @@
 import { formOptions } from "@tanstack/react-form";
 import { defaultOnSubmitInvalid } from "@/hooks/form";
 import type { ReactNode } from "react";
-import type { AutoDismissMessageProps } from "@/components/ui/auto-dismiss-message";
+import type { AutoDismissMessageProps } from "@donbass-post/ui/auto-dismiss-message";
 
 type FormMeta = {
   setMessage?: React.Dispatch<React.SetStateAction<ReactNode>>;

@@ -14,7 +14,7 @@ import { TypographyH2 } from "@/components/typography/typographyH2";
 import { HighlightText } from "@/components/typography/highlight-text";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { TypographyH3 } from "@/components/typography/typographyH3";
-import * as AutoDismissMessage from "@/components/ui/auto-dismiss-message";
+import * as AutoDismissMessage from "@donbass-post/ui/auto-dismiss-message";
 import { FieldGroupAcceptedField } from "@/components/forms/field-groups/accepted-field";
 
 // https://colinhacks.com/essays/reasonable-email-regex

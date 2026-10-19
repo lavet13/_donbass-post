@@ -4,7 +4,7 @@ import { isPossiblePhoneNumber } from "react-phone-number-input";
 import ru from "react-phone-number-input/locale/ru.json";
 import { isPasswordValid } from "@/lib/utils";
 import { Fragment } from "react";
-import * as AutoDismissMessage from "@/components/ui/auto-dismiss-message";
+import * as AutoDismissMessage from "@donbass-post/ui/auto-dismiss-message";
 
 export const UserRegistrationForm = withForm({
   ...defaultUserRegistrationOpts,

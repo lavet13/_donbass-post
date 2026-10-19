@@ -1,4 +1,4 @@
-import type { AutoDismissMessageProps } from "@/components/ui/auto-dismiss-message";
+import type { AutoDismissMessageProps } from "@donbass-post/ui/auto-dismiss-message";
 import { formOptions } from "@tanstack/react-form";
 import type { ReactNode } from "react";
 
