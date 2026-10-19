@@ -16,7 +16,8 @@ Backlog + progress log for apps/web (and the shared packages/ui and packages/for
 ## CI / infra
 
 - [ ] **nginx marks unhashed public files immutable for a year.** `location ~* \.(js|css|png|jpg|svg|ttf|woff2)$` also matches public/ files without a content hash (logomini_np-bsd.png, fonts/), so a replaced logo never reaches returning visitors. Narrow it to `/assets/`.
-- [ ] **Decide on prerendering after measuring.** Add donbass-post.duckdns.org to Yandex Webmaster and Google Search Console; use their page checks to see what the robots get. Prerender only if public pages come back empty in Yandex, and then only the mostly-text pages (home, schedules) using the portfolio's approach. Yandex: disable its JS rendering if we prerender.
+- [ ] **Register the site with the search engines** (needs your accounts). Add donbass-post.duckdns.org to Yandex Webmaster and Google Search Console and submit /sitemap.xml in both. In Yandex Webmaster, set JavaScript rendering to "Запретить рендеринг": the public pages are prerendered now, and Yandex's own guidance is to disable rendering in that case.
+- [ ] **Prerendered pages contain no fetched data.** Schedules, tracking results and department lists load through React Query in the browser, so crawlers see the page text and form labels, not the list of branches. If branch addresses should be searchable, fetch them at build time in scripts/prerender.mjs and seed the QueryClient before rendering /schedules.
 
 ## Done
 
@@ -33,3 +34,7 @@ Backlog + progress log for apps/web (and the shared packages/ui and packages/for
 - 2026-10-19 — refactor(web): every form runs on @donbass-post/forms (one commit: separate React contexts); web forms layer deleted
 - 2026-10-19 — fix(forms): package validatePickupTime matched the old "с … до" format, not the field's HH:MM - HH:MM mask
 - 2026-10-19 — refactor(web): lib/utils and duplicated hooks deleted in favour of the packages; packages/ui sidebar no longer imports through the app's "@/" alias
+- 2026-10-19 — refactor: no browser-only globals during render (cssVar helper, resolvedTheme in the three theme toggles)
+- 2026-10-19 — refactor(web): Yandex map lazy-loaded inside <ClientOnly> (its module touches document on import)
+- 2026-10-19 — feat(web): build prerenders the six public pages (client build + vite build --ssr + scripts/prerender.mjs); dist/spa.html for client-only routes
+- 2026-10-19 — feat(nginx): try_files serves prerendered pages, then the SPA shell, then index.html (safe in either deploy order)
