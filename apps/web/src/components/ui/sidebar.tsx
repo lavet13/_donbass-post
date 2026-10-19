@@ -17,7 +17,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
+} from "@donbass-post/ui/resizable";
 import type { TooltipProps } from "@radix-ui/themes";
 import { Tooltip, IconButton, HoverCard, Text } from "@radix-ui/themes";
 import { cn } from "@/lib/utils";
