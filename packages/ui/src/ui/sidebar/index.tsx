@@ -662,6 +662,7 @@ const Sidebar: FC<ComponentProps<"div">> = (props) => {
 
 export {
   Sidebar,
+  useSidebar,
   SidebarProvider,
   SidebarHeader,
   SidebarFooter,

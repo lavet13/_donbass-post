@@ -14,7 +14,7 @@ import {
   SidebarModeToggle,
   SidebarProvider,
   useSidebar,
-} from "@/components/ui/sidebar";
+} from "@donbass-post/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import {
