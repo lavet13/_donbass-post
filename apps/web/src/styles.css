@@ -6,6 +6,9 @@
 /* Import complete UI package (includes Tailwind, theme, Radix) */
 @import "@donbass-post/ui/styles";
 
+/* packages/forms renders inside this app too; scan it (path relative to this file) */
+@source "../../../packages/forms/src";
+
 @layer base {
   @font-face {
     font-family: Inter;

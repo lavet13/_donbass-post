@@ -9,6 +9,11 @@
 /* Import Tailwind base with custom variants */
 @import "./base.css";
 
+/* Tailwind only auto-scans the consuming app's own folder (apps/web), so classes
+   that appear only in this package's components were never generated. Paths are
+   relative to this file. */
+@source "../";
+
 /* Import shared theme configuration*/
 @import "./theme.css";
 
