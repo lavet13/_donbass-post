@@ -5,7 +5,7 @@ import {
   RadioGroupItem,
   RadioGroupLabel,
   RadioGroup,
-} from "@/components/ui/radio-group";
+} from "@donbass-post/ui/radio-group";
 import { FormItem, FormLabel, FormMessage } from "../ui/form";
 import { cn } from "@/lib/utils";
 
