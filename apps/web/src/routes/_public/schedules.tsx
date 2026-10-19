@@ -9,7 +9,7 @@ import {
   CommandSeparator,
 } from "@donbass-post/ui/command";
 import { usePointListQuery } from "@/features/point/queries";
-import { useAppForm } from "@/hooks/form";
+import { useAppForm } from "@donbass-post/forms/form";
 import { cn } from "@/lib/utils";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";

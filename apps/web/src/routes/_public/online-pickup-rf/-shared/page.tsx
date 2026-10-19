@@ -1,4 +1,4 @@
-import { useAppForm } from "@/hooks/form";
+import { useAppForm } from "@donbass-post/forms/form";
 import type { FC } from "react";
 import { defaultOnlinePickupRFOpts } from "./shared-form";
 import { Suspend } from "@/components/suspend";

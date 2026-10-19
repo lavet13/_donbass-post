@@ -1,5 +1,5 @@
 import { useUserRegistrationMutation } from "@/features/user-registration/mutations";
-import { useAppForm } from "@/hooks/form";
+import { useAppForm } from "@donbass-post/forms/form";
 import { defaultUserRegistrationOpts } from "@/features/user-registration/shared-form";
 import { UserRegistrationForm } from "@/features/user-registration/nested-form";
 import { Suspend } from "@/components/suspend";

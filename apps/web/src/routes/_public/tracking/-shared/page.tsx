@@ -1,4 +1,4 @@
-import { useAppForm } from "@/hooks/form";
+import { useAppForm } from "@donbass-post/forms/form";
 import { Fragment, useEffect, useState, type FC } from "react";
 import { defaultCargoTrackingOpts } from "@/routes/_public/tracking/-shared/shared-form";
 import { CargoTrackingForm } from "@/routes/_public/tracking/-shared/nested-form";

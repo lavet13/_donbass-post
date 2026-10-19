@@ -1,4 +1,4 @@
-import { withForm } from "@/hooks/form";
+import { withForm } from "@donbass-post/forms/form";
 import { defaultShopCostCalculationOrderOpts } from "@/routes/_public/shop-cost-calculation-order/-shared/shared-form";
 import React, { Fragment } from "react";
 import { Button, Card, Heading, Separator, Tooltip } from "@radix-ui/themes";
@@ -15,7 +15,7 @@ import { HighlightText } from "@/components/typography/highlight-text";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { TypographyH3 } from "@/components/typography/typographyH3";
 import * as AutoDismissMessage from "@donbass-post/ui/auto-dismiss-message";
-import { FieldGroupAcceptedField } from "@/components/forms/field-groups/accepted-field";
+import { FieldGroupAcceptedField } from "@donbass-post/forms/component-fields";
 
 // https://colinhacks.com/essays/reasonable-email-regex
 // Исходный regex из Zod:

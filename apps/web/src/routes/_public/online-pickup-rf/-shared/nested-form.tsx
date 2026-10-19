@@ -1,4 +1,4 @@
-import { withForm } from "@/hooks/form";
+import { withForm } from "@donbass-post/forms/form";
 import { defaultOnlinePickupRFOpts } from "./shared-form";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import {
@@ -26,7 +26,7 @@ import z from "zod";
 import { Fragment } from "react/jsx-runtime";
 import { Toggle } from "@donbass-post/ui/toggle";
 import { usePointPostQuery } from "@/features/point/queries";
-import { FieldGroupAcceptedField } from "@/components/forms/field-groups/accepted-field";
+import { FieldGroupAcceptedField } from "@donbass-post/forms/component-fields";
 
 const emailSchema = z.email({ pattern: z.regexes.email });
 

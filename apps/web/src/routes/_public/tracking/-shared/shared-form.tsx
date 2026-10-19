@@ -1,4 +1,4 @@
-import { defaultOnSubmitInvalid } from "@/hooks/form";
+import { defaultOnSubmitInvalid } from "@donbass-post/forms/utils";
 import { formOptions } from "@tanstack/react-form";
 
 export const defaultCargoTrackingOpts = formOptions({

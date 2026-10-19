@@ -1,4 +1,4 @@
-import { withForm } from "@/hooks/form";
+import { withForm } from "@donbass-post/forms/form";
 import { defaultUserRegistrationOpts } from "@/features/user-registration/shared-form";
 import { isPossiblePhoneNumber } from "react-phone-number-input";
 import ru from "react-phone-number-input/locale/ru.json";

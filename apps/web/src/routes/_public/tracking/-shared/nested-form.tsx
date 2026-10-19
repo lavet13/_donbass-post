@@ -1,4 +1,4 @@
-import { withForm } from "@/hooks/form";
+import { withForm } from "@donbass-post/forms/form";
 import { defaultCargoTrackingOpts } from "@/routes/_public/tracking/-shared/shared-form";
 import { Search, X } from "lucide-react";
 import { IconButton, TextField, Tooltip } from "@radix-ui/themes";
