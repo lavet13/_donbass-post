@@ -7,7 +7,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "@donbass-post/ui/collapsible";
 
 // @see documentation: https://tanstack.com/router/latest/docs/framework/react/guide/external-data-loading#error-handling-with-tanstack-query
 export const DefaultErrorComponent: ErrorRouteComponent = ({ error }) => {

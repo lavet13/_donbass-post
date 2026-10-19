@@ -26,7 +26,7 @@ import { Link, Outlet } from "@tanstack/react-router";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useTheme } from "@donbass-post/ui/hooks";
 import { Slot } from "radix-ui";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent } from "@donbass-post/ui/collapsible";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
   Drawer,
