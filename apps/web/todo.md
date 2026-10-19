@@ -6,27 +6,12 @@ Backlog + progress log for apps/web (and the shared packages/ui and packages/for
 
 ## Remaining — do next
 
-- [ ] **Finish moving apps/web onto packages/ui.** apps/web/src/components/ui duplicated the package; every fix had to land twice (the radix-ui import fix touched 29 files instead of ~15, the Firefox menu fix two). Dead copies and identical ones are done (see Done). What's left are copies that drifted, so each needs a decision, not a mechanical swap:
-
-      | Component          | Web importers | Lines differing | Note                                              |
-      |--------------------|---------------|-----------------|---------------------------------------------------|
-      | auto-dismiss-message | 7           | 8               | `use-auto-dismiss.tsx` inside it is identical      |
-      | autosize-textarea  | 1             | 4               |                                                   |
-      | command            | 2             | 6               | combobox-field, schedules                         |
-      | tabs               | 1             | 20              | /auth; biggest drift, compare behaviour in browser |
-      | toggle             | 1             | 6               | online-pickup-rf form                             |
-      | radio-group        | 1             | 4               | radio-group-field                                 |
-      | resizable          | 1             | 12              | only used by web's sidebar.tsx                    |
-      | sidebar.tsx        | 1             | —               | packages/ui has sidebar/index.tsx; diff those two  |
-
-      Per component: diff the two files, keep the newer behaviour in packages/ui, switch the importers to `@donbass-post/ui/<name>`, delete the web copy. One commit each; check `yarn turbo run check-types --filter=@donbass-post/web` and click the importing page before committing. Tailwind now scans packages/ui (`@source` in its stylesheet), so deleting a web copy can no longer drop CSS.
-
-- [ ] **Move apps/web's forms layer onto packages/forms.** apps/web/src/components/forms (13 field components + field-groups), components/ui/form.tsx and hooks/form-context duplicate packages/forms; the web app imports the package in only 4 files. form.tsx is NOT web-only: it equals packages/forms' form-primitives except that it reads `useFieldContext` from the web copy of form-context. Field components find their form through React context, and the two copies create different context objects, so a form built with web's `useAppForm` cannot render the package's fields. Migrate one form (route) at a time: switch its `useAppForm` and all of its fields together, then delete the web copies once nothing imports them.
+(nothing queued)
 
 ## Structural cleanup
 
 - [ ] **Yarn 4.12.0 → 4.18.1** as its own chore commit: `yarn set version 4.18.1`, remove the old `.yarn/releases/yarn-4.12.0.cjs` if it stays, `yarn install`. Safe: the Dockerfile and the bot deploy copy `.yarn/releases/` wholesale, and neither deploy workflow triggers on the root package.json or yarn.lock.
-- [ ] **19 pre-existing lint problems** (10 errors) in 11 files under apps/web/src (`yarn workspace @donbass-post/web lint`). Present on main before the SEO and dedupe work.
+- [ ] **14 pre-existing lint problems** (9 errors) in 7 files under apps/web/src (`yarn workspace @donbass-post/web lint`). Were 19 in 11 files; the rest went with the deleted duplicate copies.
 
 ## CI / infra
 
@@ -44,3 +29,7 @@ Backlog + progress log for apps/web (and the shared packages/ui and packages/for
 - 2026-10-19 — build(ui): Tailwind @source for packages/ui and packages/forms; package-only classes were never generated
 - 2026-10-19 — refactor(web): deleted ten unused copies (main-nav, navigation-menu, border-beam, main-sidebar, hover-card, input, toast)
 - 2026-10-19 — refactor(web): collapsible, drawer, label, password-toggle-field now from @donbass-post/ui (copies were identical)
+- 2026-10-19 — refactor(web): last eight UI copies (auto-dismiss-message, autosize-textarea, command, radio-group, toggle, tabs, resizable, sidebar) now from @donbass-post/ui; they differed only in import paths and class order
+- 2026-10-19 — refactor(web): every form runs on @donbass-post/forms (one commit: separate React contexts); web forms layer deleted
+- 2026-10-19 — fix(forms): package validatePickupTime matched the old "с … до" format, not the field's HH:MM - HH:MM mask
+- 2026-10-19 — refactor(web): lib/utils and duplicated hooks deleted in favour of the packages; packages/ui sidebar no longer imports through the app's "@/" alias
