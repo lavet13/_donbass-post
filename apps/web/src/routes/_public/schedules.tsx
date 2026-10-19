@@ -10,8 +10,8 @@ import {
 } from "@donbass-post/ui/command";
 import { usePointListQuery } from "@/features/point/queries";
 import { useAppForm } from "@donbass-post/forms/form";
-import { cn } from "@donbass-post/ui/utils";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { cn, cssVar } from "@donbass-post/ui/utils";
+import { ClientOnly, useNavigate, useSearch } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 import { pageHead } from "@/lib/seo";
 import {
@@ -29,7 +29,7 @@ import {
   Truck,
   XIcon,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type FC } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type FC } from "react";
 import { Fragment } from "react/jsx-runtime";
 import {
   Button,
@@ -48,20 +48,12 @@ import {
 } from "@radix-ui/themes";
 import { TypographyH2 } from "@/components/typography/typographyH2";
 import { useMediaQuery } from "@donbass-post/ui/hooks/use-media-query";
-import {
-  YMap,
-  YMapComponentsProvider,
-  YMapControls,
-  YMapDefaultFeaturesLayer,
-  YMapDefaultSchemeLayer,
-  YMapGeolocationControl,
-  YMapListener,
-  YMapZoomControl,
-} from "ymap3-components";
 import { useTheme } from "@donbass-post/ui/hooks";
 import type { YMapLocation } from "@yandex/ymaps3-types/imperative/YMap";
 import type { MapEventUpdateHandler } from "ymaps3";
-import { MAPS_CONFIG } from "@/config/maps";
+
+// Loaded only in the browser (see components/department-map.tsx for why)
+const DepartmentMap = lazy(() => import("@/components/department-map"));
 
 type ScheduleSearch = {
   q?: string;
@@ -99,9 +91,8 @@ const SearchPage: FC = () => {
     }
   };
 
-  const styles = getComputedStyle(document.documentElement);
-  const largeBreakpoint = styles.getPropertyValue("--breakpoint-lg");
-  const smallBreakpoint = styles.getPropertyValue("--breakpoint-md");
+  const largeBreakpoint = cssVar("--breakpoint-lg");
+  const smallBreakpoint = cssVar("--breakpoint-md");
   const isDesktop = useMediaQuery(`(min-width: ${largeBreakpoint})`);
 
   const isMobile = useMediaQuery(`(max-width: ${smallBreakpoint})`);
@@ -798,27 +789,15 @@ const SearchPage: FC = () => {
                         size={isMobile ? "2" : "3"}
                         className="bg-grayA-2 flex h-[450px] items-center justify-center overflow-hidden p-0"
                       >
-                        <YMapComponentsProvider
-                          apiKey={MAPS_CONFIG.apiKey}
-                          lang="ru_RU"
-                        >
-                          <YMap
-                            className="z-[1000]"
-                            location={location}
-                            mode="vector"
-                            theme={resolvedTheme}
-                          >
-                            <YMapDefaultSchemeLayer />
-                            <YMapDefaultFeaturesLayer />
-                            <YMapListener onUpdate={onUpdate} />
-                            <YMapControls position="bottom">
-                              <YMapZoomControl />
-                            </YMapControls>
-                            <YMapControls position="bottom left">
-                              <YMapGeolocationControl />
-                            </YMapControls>
-                          </YMap>
-                        </YMapComponentsProvider>
+                        <ClientOnly>
+                          <Suspense>
+                            <DepartmentMap
+                              location={location}
+                              onUpdate={onUpdate}
+                              theme={resolvedTheme}
+                            />
+                          </Suspense>
+                        </ClientOnly>
                       </Card>
                     </Card>
                   )}
