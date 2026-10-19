@@ -1,3 +1,4 @@
+import { cssVar } from "@donbass-post/ui/utils";
 import { withForm } from "@donbass-post/forms/form";
 import { defaultShopCostCalculationOrderOpts } from "@/routes/_public/shop-cost-calculation-order/-shared/shared-form";
 import React, { Fragment } from "react";
@@ -51,8 +52,7 @@ export const ShopCostCalculationOrderForm = withForm({
       },
     });
 
-    const styles = getComputedStyle(document.documentElement);
-    const smBreakpoint = styles.getPropertyValue("--breakpoint-sm");
+    const smBreakpoint = cssVar("--breakpoint-sm");
 
     const isMobile = useMediaQuery(`(max-width: ${smBreakpoint})`);
 

@@ -71,16 +71,10 @@ export const Header: FC = () => {
 };
 
 const ThemeToggle: FC = () => {
-  let content = "";
-  const { theme } = useTheme();
-  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  if (theme === "dark") {
-    content = "Изменить на светлую тему";
-  } else if (theme === "light") {
-    content = "Изменить на темную тему";
-  } else {
-    content = isDark ? "Изменить на светлую тему" : "Изменить на темную тему";
-  }
+  // resolvedTheme already folds "system" into light/dark (and is safe to call during prerender)
+  const { resolvedTheme } = useTheme();
+  const content =
+    resolvedTheme === "dark" ? "Изменить на светлую тему" : "Изменить на темную тему";
 
   return (
     <Tooltip content={content}>

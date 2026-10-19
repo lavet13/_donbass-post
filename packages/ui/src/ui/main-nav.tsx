@@ -22,7 +22,7 @@ import {
   NavigationMenuLink,
 } from "./navigation-menu";
 import { BorderBeam } from "./border-beam";
-import { cn } from "../lib/utils";
+import { cn, cssVar } from "../lib/utils";
 import { useMediaQuery } from "../hooks/use-media-query";
 
 const ListItem: FC<LinkProps & ComponentProps<"a">> = ({
@@ -63,8 +63,7 @@ type MainNavProps = {
 const MainNav: FC<MainNavProps> = ({ navItems }) => {
   const pathname = useLocation({ select: ({ pathname }) => pathname });
 
-  const styles = getComputedStyle(document.documentElement);
-  const sm = styles.getPropertyValue("--breakpoint-sm"); // 64rem
+  const sm = cssVar("--breakpoint-sm"); // 64rem
   const isMobile = useMediaQuery(`(max-width: ${sm})`);
 
   // https://codesandbox.io/p/sandbox/navigation-menu-track-position-forked-fx5dtd?file=%2Fsrc%2FApp.js%3A51%2C48-51%2C51

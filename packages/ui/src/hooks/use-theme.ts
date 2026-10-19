@@ -9,6 +9,9 @@ const themeAtom = atomWithStorage<Theme>("radix-ui-theme", "system");
 // Helper function to resolve the effective theme
 const resolveTheme = (theme: Theme): "dark" | "light" => {
   if (theme === "system") {
+    // Prerendering runs in Node, where there's no system preference to read.
+    // The inline script in index.html applies the real theme before first paint.
+    if (typeof window === "undefined") return "light";
     return window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "dark"
       : "light";

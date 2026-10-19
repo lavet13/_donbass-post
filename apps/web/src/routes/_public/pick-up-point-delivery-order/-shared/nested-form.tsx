@@ -2,7 +2,7 @@ import { withForm } from "@donbass-post/forms/form";
 import { defaultPickUpPointDeliveryOrderOpts } from "@/routes/_public/pick-up-point-delivery-order/-shared/shared-form";
 import { Suspend } from "@/components/suspend";
 import z from "zod";
-import { cn } from "@donbass-post/ui/utils";
+import { cn, cssVar } from "@donbass-post/ui/utils";
 import { getEmailErrorMessage } from "@donbass-post/forms/utils";
 import { useDeliveryCompaniesQuery } from "@/features/delivery-company/queries";
 import { usePointPostQuery } from "@/features/point/queries";
@@ -121,8 +121,7 @@ export const PickUpPointDeliveryOrderForm = withForm({
     const { open, message, setOpen, setMessage, variant, setVariant } =
       AutoDismissMessage.useAutoDismiss();
 
-    const styles = getComputedStyle(document.documentElement);
-    const smBreakpoint = styles.getPropertyValue("--breakpoint-sm");
+    const smBreakpoint = cssVar("--breakpoint-sm");
 
     const isMobile = useMediaQuery(`(max-width: ${smBreakpoint})`);
 

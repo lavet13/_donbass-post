@@ -20,7 +20,7 @@ import {
   CircleAlertIcon,
   TriangleAlert,
 } from "lucide-react";
-import { cn } from "@donbass-post/ui/utils";
+import { cn, cssVar } from "@donbass-post/ui/utils";
 import { getEmailErrorMessage, validatePickupTime } from "@donbass-post/forms/utils";
 import z from "zod";
 import { Fragment } from "react/jsx-runtime";
@@ -33,8 +33,7 @@ const emailSchema = z.email({ pattern: z.regexes.email });
 export const OnlinePickupRFForm = withForm({
   ...defaultOnlinePickupRFOpts,
   render: function Render({ form }) {
-    const styles = getComputedStyle(document.documentElement);
-    const smBreakpoint = styles.getPropertyValue("--breakpoint-sm");
+    const smBreakpoint = cssVar("--breakpoint-sm");
 
     const isMobile = useMediaQuery(`(max-width: ${smBreakpoint})`);
 

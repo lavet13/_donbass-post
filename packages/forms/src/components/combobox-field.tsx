@@ -23,7 +23,7 @@ import {
   CommandLoading,
   CommandSeparator,
 } from "@donbass-post/ui/command";
-import { cn } from "@donbass-post/ui/utils";
+import { cn, cssVar } from "@donbass-post/ui/utils";
 import { CheckIcon, ChevronsUpDownIcon, X } from "lucide-react";
 import { FormItem, FormLabel, FormMessage } from "./form-primitives";
 import { useFieldAccessibility } from "../hooks/use-field-accessibility";
@@ -104,8 +104,7 @@ const ComboboxGroupField: FC<
     (entry) => entry.value === field.state.value,
   );
 
-  const styles = getComputedStyle(document.documentElement);
-  const sm = styles.getPropertyValue("--breakpoint-sm"); // 64rem
+  const sm = cssVar("--breakpoint-sm"); // 64rem
   const isMobile = useMediaQuery(`(max-width: ${sm})`);
   modal = modal || isMobileDevice;
 

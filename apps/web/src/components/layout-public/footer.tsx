@@ -1,5 +1,5 @@
 import { useMediaQuery } from "@donbass-post/ui/hooks/use-media-query";
-import { cn } from "@donbass-post/ui/utils";
+import { cn, cssVar } from "@donbass-post/ui/utils";
 import { Text } from "@radix-ui/themes";
 import { useAtomValue } from "jotai";
 import { useEffect, useState, type FC } from "react";
@@ -9,8 +9,7 @@ export const Footer: FC = () => {
   const currentYear = new Date().getFullYear();
   const mainSidebar = useAtomValue(mainSidebarAtom);
 
-  const styles = getComputedStyle(document.documentElement);
-  const middleBreakpoint = styles.getPropertyValue("--breakpoint-md");
+  const middleBreakpoint = cssVar("--breakpoint-md");
   const isDesktop = useMediaQuery(
     `(min-width: calc(${middleBreakpoint} - 1px))`,
   );

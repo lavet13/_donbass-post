@@ -5,7 +5,7 @@ import {
   mainSidebarAtom,
 } from "@donbass-post/ui/main-sidebar/atom";
 import { useMediaQuery } from "@donbass-post/ui/hooks";
-import { cn } from "@donbass-post/ui/utils";
+import { cn, cssVar } from "@donbass-post/ui/utils";
 import {
   createFileRoute,
   Outlet,
@@ -31,8 +31,7 @@ function PublicLayout() {
   const [mainSidebar, setMainSidebar] = useAtom(mainSidebarAtom);
   const cookieSidebarState = useAtomValue(sidebarOpenAtom);
   const isSidebarOpen = cookieSidebarState === "open" ? true : false;
-  const styles = getComputedStyle(document.documentElement);
-  const middleBreakpoint = styles.getPropertyValue("--breakpoint-md");
+  const middleBreakpoint = cssVar("--breakpoint-md");
   const isDesktop = useMediaQuery(
     `(min-width: calc(${middleBreakpoint} - 1px))`,
   );

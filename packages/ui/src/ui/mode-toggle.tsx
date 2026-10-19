@@ -12,17 +12,10 @@ export const ModeToggle: FC<ModeToggleProps> = ({
   children,
   ...props
 }) => {
-  const { theme, setTheme } = useTheme();
-
-  let Icon = null;
-  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  if (theme === "light") {
-    Icon = SunIcon;
-  } else if (theme === "dark") {
-    Icon = MoonIcon;
-  } else {
-    Icon = isDark ? MoonIcon : SunIcon;
-  }
+  // resolvedTheme already folds "system" into light/dark (and is safe to call during prerender)
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+  const Icon = isDark ? MoonIcon : SunIcon;
 
   const handleToggle = (e: MouseEvent<HTMLButtonElement>) => {
     let newTheme = theme;
@@ -31,14 +24,7 @@ export const ModeToggle: FC<ModeToggleProps> = ({
     onClickProp?.(e);
   };
 
-  let content = "";
-  if (theme === "dark") {
-    content = "Изменить на светлую тему";
-  } else if (theme === "light") {
-    content = "Изменить на темную тему";
-  } else {
-    content = isDark ? "Изменить на светлую тему" : "Изменить на темную тему";
-  }
+  const content = isDark ? "Изменить на светлую тему" : "Изменить на темную тему";
 
   return (
     <IconButton

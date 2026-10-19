@@ -26,7 +26,7 @@ import {
 } from "../../ui/drawer";
 import { useMediaQuery } from "../../hooks/use-media-query";
 import { isMobile as isMobileDevice } from "react-device-detect";
-import { cn, composeEventHandlers } from "../../lib/utils";
+import { cn, composeEventHandlers, cssVar } from "../../lib/utils";
 import { BorderBeam } from "../../ui/border-beam";
 import { createContext } from "../../hooks/create-context";
 import { useControllableState } from "../../hooks/use-controllable-state";
@@ -61,13 +61,12 @@ const MainSidebar: FC<MainSidebarProps> = (props) => {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const { open: openProp, onOpenChange, defaultOpen, children } = props;
-  const styles = getComputedStyle(document.documentElement);
-  const middleBreakpoint = styles.getPropertyValue("--breakpoint-md");
+  const middleBreakpoint = cssVar("--breakpoint-md");
   const isMobile =
     useMediaQuery(`(max-width: calc(${middleBreakpoint} - 1px))`) ||
     isMobileDevice;
 
-  const largeBreakpoint = styles.getPropertyValue("--breakpoint-lg");
+  const largeBreakpoint = cssVar("--breakpoint-lg");
   const isTablet = useMediaQuery(`(max-width: ${largeBreakpoint})`);
 
   const [cookieState, setCookieState] = useAtom(sidebarOpenAtom);

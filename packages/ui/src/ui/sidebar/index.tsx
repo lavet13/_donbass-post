@@ -20,7 +20,7 @@ import {
 } from "../resizable";
 import type { TooltipProps } from "@radix-ui/themes";
 import { Tooltip, IconButton, HoverCard, Text } from "@radix-ui/themes";
-import { cn } from "../../lib/utils";
+import { cn, cssVar } from "../../lib/utils";
 import { ChevronRight, Menu } from "lucide-react";
 import { Link, Outlet } from "@tanstack/react-router";
 import { ModeToggle } from "../mode-toggle";
@@ -34,22 +34,21 @@ import { isMobile as isMobileDevice } from "react-device-detect";
 import { useSidebar, SidebarContext, type SidebarContextProps } from "./use-sidebar";
 
 const SidebarProvider: FC<ComponentProps<"div">> = ({ children }) => {
-  const styles = getComputedStyle(document.documentElement);
 
-  const middleBreakpoint = styles.getPropertyValue("--breakpoint-md");
+  const middleBreakpoint = cssVar("--breakpoint-md");
   const isMobile =
     useMediaQuery(`(max-width: calc(${middleBreakpoint} - 1px))`) ||
     isMobileDevice;
 
   const isPreMobile = useMediaQuery(`(min-width: ${middleBreakpoint})`);
 
-  const largeBreakpoint = styles.getPropertyValue("--breakpoint-lg");
+  const largeBreakpoint = cssVar("--breakpoint-lg");
   const isTablet = useMediaQuery(`(min-width: ${largeBreakpoint})`);
 
-  const desktopBreakpoint = styles.getPropertyValue("--breakpoint-xl");
+  const desktopBreakpoint = cssVar("--breakpoint-xl");
   const isDesktop = useMediaQuery(`(min-width: ${desktopBreakpoint})`);
 
-  const fullHDBreakpoint = styles.getPropertyValue("--breakpoint-2xl");
+  const fullHDBreakpoint = cssVar("--breakpoint-2xl");
   const isFullHD = useMediaQuery(`(min-width: ${fullHDBreakpoint})`);
 
   const collapsedSizePercent = isFullHD
@@ -532,17 +531,10 @@ const SidebarModeToggle: FC<
     Omit<TooltipProps, "content"> & { content?: string }
 > = ({ className, side = "right", ...props }) => {
   const { isCollapsed, isMobile } = useSidebar();
-  const { theme } = useTheme();
-
-  let content = "";
-  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  if (theme === "dark") {
-    content = "Изменить на светлую тему";
-  } else if (theme === "light") {
-    content = "Изменить на темную тему";
-  } else {
-    content = isDark ? "Изменить на светлую тему" : "Изменить на темную тему";
-  }
+  // resolvedTheme already folds "system" into light/dark (and is safe to call during prerender)
+  const { resolvedTheme } = useTheme();
+  const content =
+    resolvedTheme === "dark" ? "Изменить на светлую тему" : "Изменить на темную тему";
 
   if (isCollapsed && !isMobile) {
     return (
