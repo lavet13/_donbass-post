@@ -1,5 +1,5 @@
 import { Label as LabelPrimitive } from "radix-ui";
-import { Label } from "@/components/ui/label";
+import { Label } from "@donbass-post/ui/label";
 import type { FC } from "react";
 import { type ComponentProps } from "react";
 import { useFieldContext } from "@/hooks/form-context";

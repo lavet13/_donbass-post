@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import type { ComponentProps, FC } from "react";
-import { Label } from "@/components/ui/label";
+import { Label } from "@donbass-post/ui/label";
 
 const RadioGroup: FC<ComponentProps<typeof RadioGroupPrimitive.Root>> = ({
   className,
