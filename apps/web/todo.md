@@ -6,7 +6,8 @@ Backlog + progress log for apps/web (and the shared packages/ui and packages/for
 
 ## Remaining — do next
 
-(nothing queued)
+- [ ] **Hydrate the prerendered pages instead of replacing them** (implement together, step by step). main.tsx uses createRoot, which throws away the prerendered markup and renders again. hydrateRoot would adopt it, but only if the client's first render matches the server's exactly; React logs a mismatch otherwise. Suspects to check first: theme (the server assumes light, so the toggle's label can differ), useMediaQuery (no media queries in Node), auth (the server is always anonymous), anything from React Query.
+- [ ] **prerender.mjs: insert rendered HTML with a replacer function**, `.replace(x, () => html)`, not a string: in a replacement string, $&, $', $1… are special patterns, so page text containing them would corrupt the output. Same fix in the portfolio.
 
 ## Structural cleanup
 
