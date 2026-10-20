@@ -22,6 +22,7 @@ Backlog + progress log for apps/web (and the shared packages/ui and packages/for
 
 ## Done
 
+- 2026-10-20 — fix(web): prerender.mjs inserts HTML with replacer functions and refuses an already-prerendered shell
 - 2026-10-19 — fix(ui): Radix primitives imported from the declared radix-ui package (~1.4.3), not Themes' hoisted sub-packages
 - 2026-10-19 — fix(ui): navigation menu panel sized to content in Firefox (max-height: fit-content acts as none in the block axis there)
 - 2026-10-19 — fix(web): lang ru, brand favicon, GitHub Pages redirect leftovers removed

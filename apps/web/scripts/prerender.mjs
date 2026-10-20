@@ -16,9 +16,20 @@ import { render, PRERENDER_PATHS } from "../dist-ssr/entry-server.js";
  * SITE_URL overrides the production origin (e.g. for a staging host). `||`, not `??`:
  * an unset GitHub Actions variable arrives as "" (not undefined), and "" must fall back too.
  */
-const SITE_URL = (process.env.SITE_URL || "https://donbass-post.duckdns.org").replace(/\/+$/, ""); // no trailing slash; paths start with /
+const SITE_URL = (
+  process.env.SITE_URL || "https://donbass-post.duckdns.org"
+).replace(/\/+$/, ""); // no trailing slash; paths start with /
 
 const shell = await readFile("dist/index.html", "utf8");
+
+// The first run overwrites dist/index.html with the prerendered home page. A second run
+// without `vite build` would read that as the shell and silently produce broken pages.
+if (!shell.includes('<div id="root"></div>')) {
+  throw new Error(
+    "prerender: dist/index.html is already prerendered; run `vite build` first (yarn build)",
+  );
+}
+
 await writeFile("dist/spa.html", shell);
 
 for (const path of PRERENDER_PATHS) {
@@ -26,17 +37,28 @@ for (const path of PRERENDER_PATHS) {
 
   // React 19 moves <title>/<meta>/<link> to the start of renderToString's output:
   // group 1 = that leading run of head tags, group 2 = the page markup after it
-  const [, headTags, rest] = body.match(/^((?:<(?:title|meta|link)\b[^>]*>(?:[^<]*<\/title>)?)*)([\s\S]*)$/);
+  const [, headTags, rest] = body.match(
+    /^((?:<(?:title|meta|link)\b[^>]*>(?:[^<]*<\/title>)?)*)([\s\S]*)$/,
+  );
   if (!rest.trim()) throw new Error(`prerender: ${path} rendered empty`);
-  if (!headTags.includes("<title")) throw new Error(`prerender: ${path} has no <title> (missing head option?)`);
+  if (!headTags.includes("<title"))
+    throw new Error(`prerender: ${path} has no <title> (missing head option?)`);
 
   const html = shell
     // drop the shell's static title + description; the route's own tags replace them
     .replace(/<title data-static-head>[^<]*<\/title>/, "")
     .replace(/<meta\s+data-static-head[^>]*>/, "")
     // data-static-head: main.tsx removes these before React renders its own head tags
-    .replace("</head>", `  ${headTags.replace(/<(title|meta|link)\b/g, "<$1 data-static-head")}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${rest}</div>`);
+    /*
+     * String: for a replacement you wrote yourself, when you need the group commands.
+     * Function: when inserting data you didn’t write.(we chose this one)
+    */
+    .replace(
+      "</head>",
+      () =>
+        `  ${headTags.replace(/<(title|meta|link)\b/g, "<$1 data-static-head")}\n  </head>`,
+    )
+    .replace('<div id="root"></div>', () => `<div id="root">${rest}</div>`);
 
   const dir = join("dist", path);
   await mkdir(dir, { recursive: true });
@@ -45,7 +67,9 @@ for (const path of PRERENDER_PATHS) {
 }
 
 // One <url> per page actually written above; <loc> must be an absolute URL
-const urls = PRERENDER_PATHS.map((path) => `  <url><loc>${SITE_URL}${path}</loc></url>`).join("\n");
+const urls = PRERENDER_PATHS.map(
+  (path) => `  <url><loc>${SITE_URL}${path}</loc></url>`,
+).join("\n");
 await writeFile(
   "dist/sitemap.xml",
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
