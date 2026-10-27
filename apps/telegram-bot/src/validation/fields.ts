@@ -87,3 +87,10 @@ function validatePickupTime(value: string | undefined): string | undefined {
 
   return undefined;
 }
+
+/**
+ * A text field capped at its MySQL column size (VARCHAR counts characters, like .max()),
+ * so an over-long value becomes a 400 on that field instead of a failed insert and a lost order.
+ */
+export const col = (max: number) =>
+  z.string().max(max, `Не более ${max} символов`);
