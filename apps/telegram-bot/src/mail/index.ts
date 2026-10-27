@@ -30,6 +30,49 @@ export async function verifyMail() {
   }
 }
 
+/** Most confirmations one inbox may receive per hour; past it the order still goes through, the e-mail is skipped. */
+const RECIPIENT_HOURLY_CAP = 30;
+
+/**
+ * The inbox an address really lands in: lowercased, "+tag" dropped, and for
+ * Gmail the dots dropped too — so victim+1@…, V.ictim@gmail.com … share one cap.
+ * Used only for counting; the e-mail still goes to the address as typed.
+ */
+export function recipientKey(addr: string) {
+  const at = addr.lastIndexOf("@");
+  const domain = addr
+    .slice(at + 1)
+    .trim()
+    .toLowerCase();
+  const local = addr.slice(0, at).trim().toLowerCase().split("+")[0] ?? "";
+  if (domain === "gmail.com" || domain === "googlemail.com")
+    return `${local.replaceAll(".", "")}@gmail.com`;
+  return `${local}@${domain}`;
+}
+
+/**
+ * True when this inbox already received RECIPIENT_HOURLY_CAP confirmations in
+ * the last hour. Counts only delivered ones, so skipped rows don't extend the
+ * block. Fails closed: if the count itself errors (database down), don't send —
+ * an unverifiable cap is treated as reached.
+ */
+async function overRecipientCap(key: string) {
+  try {
+    const sent = await prisma.emailLog.count({
+      where: {
+        recipientKey: key,
+        kind: "customer",
+        success: true,
+        sentAt: { gte: new Date(Date.now() - 60 * 60 * 1000) }, // sent within the last hour
+      },
+    });
+    return sent >= RECIPIENT_HOURLY_CAP;
+  } catch (err) {
+    console.error("[mail] recipient cap check failed — not sending:", err);
+    return true;
+  }
+}
+
 /**
  * Escapes a value for safe use inside the HTML e-mail body.
  * Every user-supplied field must pass through this: the PHP inserted raw form
@@ -188,16 +231,28 @@ export async function sendOrderConfirmation({
   mailToCopy?: boolean;
 }) {
   const { subject, html, text } = orderConfirmation({ rows, site, title });
-  const to = [
-    ...(customer && z.email().safeParse(customer).success
+  const customerTo =
+    customer && z.email().safeParse(customer).success
       ? [{ addr: customer, kind: "customer" as const }]
-      : []),
+      : [];
+  const capped =
+    customerTo[0] !== undefined &&
+    (await overRecipientCap(recipientKey(customerTo[0].addr)));
+  const to = [
+    ...(capped ? [] : customerTo), // the copy below is ours — never capped
     ...(mailToCopy && env.MAIL_COPY_TO
       ? [{ addr: env.MAIL_COPY_TO, kind: "copy" as const }]
       : []),
   ];
-  // each result carries its own address → no parallel-array indexing to type-check
-  const results = await Promise.all(
+  // a capped customer still gets an email_logs row, so the block is visible
+  const skipped = capped
+    ? customerTo.map((r) => ({
+        ...r,
+        ok: false as const,
+        error: `skipped: over the ${RECIPIENT_HOURLY_CAP}/hour cap`,
+      }))
+    : [];
+  const sent = await Promise.all(
     to.map(async ({ addr, kind }) => ({
       addr,
       kind,
@@ -205,14 +260,14 @@ export async function sendOrderConfirmation({
     })),
   );
   try {
-    // createMany = one INSERT for both rows
     await prisma.emailLog.createMany({
-      data: results.map((r) => ({
+      data: [...skipped, ...sent].map((r) => ({
         label,
         recipient: r.addr,
+        recipientKey: recipientKey(r.addr),
         kind: r.kind,
         success: r.ok,
-        messageId: r.ok ? r.messageId : null, // r.ok narrows the union, so each side type-checks
+        messageId: r.ok ? r.messageId : null,
         errorMessage: r.ok ? null : r.error,
       })),
     });

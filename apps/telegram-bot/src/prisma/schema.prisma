@@ -172,6 +172,7 @@ model EmailLog {
   id           String   @id @default(cuid(2))
   label        String // which form: "aliexpress-joom", …
   recipient    String // address we tried
+  recipientKey String @map("recipient_key") // recipientKey(recipient): the inbox it lands in — what the hourly cap counts
   kind         String // "customer" | "copy"
   success      Boolean
   messageId    String?  @map("message_id") // SMTP Message-ID, to trace it in reg.ru's logs
@@ -180,5 +181,6 @@ model EmailLog {
 
   @@index([sentAt])
   @@index([recipient])
+  @@index([recipientKey, sentAt])
   @@map("email_logs")
 }
