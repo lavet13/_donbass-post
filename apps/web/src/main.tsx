@@ -11,10 +11,6 @@ declare module "@tanstack/react-router" {
   }
 }
 
-// The route's <HeadContent /> renders its own title/description; drop the static
-// defaults first, or document.title keeps reading the first <title> in the page.
-document.querySelectorAll("[data-static-head]").forEach((el) => el.remove());
-
 const rootElement = document.getElementById("root")!;
 
 // Prerendered pages: download the route's code-split chunks BEFORE React replaces the
@@ -27,6 +23,9 @@ const ready = rootElement.hasChildNodes() ? router.load() : Promise.resolve();
 // Promise.resolve(): an already-settled promise, so .then runs right away
 // void: we deliberately don't await or return this promise (and the lint rule knows it)
 void ready.then(() => {
+  // Swap the static head tags for the route's own (<HeadContent />) only now: removed
+  // earlier, the tab would show no title while the chunks download.
+  document.querySelectorAll("[data-static-head]").forEach((el) => el.remove());
   ReactDOM.createRoot(rootElement).render(
     <StrictMode>
       <App />
