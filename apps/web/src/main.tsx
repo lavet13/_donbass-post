@@ -15,16 +15,21 @@ declare module "@tanstack/react-router" {
 // defaults first, or document.title keeps reading the first <title> in the page.
 document.querySelectorAll("[data-static-head]").forEach((el) => el.remove());
 
-// Download the current route's code-split chunks before React replaces the prerendered
-// markup; without this, #root renders empty until they arrive.
-await router.load();
-
-// Public pages arrive prerendered (scripts/prerender.mjs). createRoot replaces that
-// markup with an identical client render; the old `if (!rootElement.innerHTML)`
-// guard would have skipped rendering entirely on those pages.
 const rootElement = document.getElementById("root")!;
-ReactDOM.createRoot(rootElement).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+
+// Prerendered pages: download the route's code-split chunks BEFORE React replaces the
+// markup, or #root goes blank until they arrive. Empty shell (dashboard, auth): render
+// at once, so beforeLoad runs with `auth` from <App />, not before it exists.
+// .then, not top-level await: the lazy chunks import from this entry chunk, which stays
+// "still evaluating" until a top-level await settles, so they could never load (deadlock).
+const ready = rootElement.hasChildNodes() ? router.load() : Promise.resolve();
+// hasChildNodes(): true when #root contains anything, i.e. the prerendered markup
+// Promise.resolve(): an already-settled promise, so .then runs right away
+// void: we deliberately don't await or return this promise (and the lint rule knows it)
+void ready.then(() => {
+  ReactDOM.createRoot(rootElement).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+});
