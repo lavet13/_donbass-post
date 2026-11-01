@@ -48,7 +48,7 @@ const PickUpPointDeliveryOrderPage: FC = () => {
             if (status === 400) {
               formApi.setErrorMap({
                 onChange: {
-                  fields: errors[0],
+                  fields: errors[0] ?? {},
                 },
               });
             }

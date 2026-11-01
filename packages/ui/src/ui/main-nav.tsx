@@ -96,7 +96,8 @@ const MainNav: FC<MainNavProps> = ({ navItems }) => {
     >
       <NavigationMenuList ref={setList}>
         {navItems.map(({ label, icon, items, triggerStyles }) => {
-          if (items.length > 0 && "links" in items[0]) {
+          const first = items[0];
+          if (first && "links" in first) {
             const grouped = items as {
               title?: string;
               links: readonly (LinkOptions & { label: string })[];

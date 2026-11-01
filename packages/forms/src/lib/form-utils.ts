@@ -51,7 +51,7 @@ export const getEmailErrorMessage = (email: string) => {
   }
 
   // Последний символ локальной части должен быть [A-Za-z0-9_+-]
-  const lastLocalChar = localPart[localPart.length - 1];
+  const lastLocalChar = localPart.at(-1) ?? "";
   if (!/[A-Za-z0-9_+-]/.test(lastLocalChar)) {
     return "Локальная часть email должна заканчиваться латинской буквой, цифрой или символом _ + -";
   }

@@ -15,7 +15,7 @@ export const useMessageTimer = ({
     if (!open) return;
 
     setCount(durationMs / 1000);
-    let intervalId: NodeJS.Timeout | null = null;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
     let nextCount = durationMs / 1000;
 
     const onTick = () => {

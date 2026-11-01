@@ -7,6 +7,8 @@
     "jsx": "react-jsx",
     "useDefineForClassFields": true,
     "noEmit": true,
+    "types": ["vite/client"],
+    "noUncheckedIndexedAccess": true,
 
     "erasableSyntaxOnly": true,
     "allowUnusedLabels": false,
