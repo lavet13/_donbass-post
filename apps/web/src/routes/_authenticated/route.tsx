@@ -13,8 +13,8 @@ import {
   SidebarMenuSubItem,
   SidebarModeToggle,
   SidebarProvider,
-  useSidebar,
 } from "@donbass-post/ui/sidebar";
+import { useSidebar } from "@donbass-post/ui/sidebar/use-sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@donbass-post/ui/utils";
 import {

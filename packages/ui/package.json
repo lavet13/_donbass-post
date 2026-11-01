@@ -26,6 +26,7 @@
     "./password-toggle-field": "./src/ui/password-toggle-field.tsx",
     "./toast": "./src/ui/toast/index.ts",
     "./sidebar": "./src/ui/sidebar/index.tsx",
+    "./sidebar/use-sidebar": "./src/ui/sidebar/use-sidebar.ts",
     "./main-sidebar": "./src/ui/main-sidebar/index.tsx",
     "./main-sidebar/atom": "./src/ui/main-sidebar/atom.ts",
     "./autosize-textarea": "./src/ui/autosize-textarea/index.ts",
