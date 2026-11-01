@@ -59,13 +59,13 @@ const UserLoginPage: FC = () => {
             // The request was made but no response was received
             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
             // http.ClientRequest in node.js
-            import.meta.env.DEV && console.log(error.request);
+            if (import.meta.env.DEV) console.log(error.request);
           } else {
             // Something happened in setting up the request that triggered an Error
-            import.meta.env.DEV && console.log("Error", error.message);
+            if (import.meta.env.DEV) console.log("Error", error.message);
           }
         } else {
-          import.meta.env.DEV && console.error("Unknown error");
+          if (import.meta.env.DEV) console.error("Unknown error");
         }
       }
     },

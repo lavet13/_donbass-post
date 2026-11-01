@@ -33,5 +33,5 @@ function RouteComponent() {
 
   console.log({ data });
 
-  return <div></div>;
+  return <div />;
 }

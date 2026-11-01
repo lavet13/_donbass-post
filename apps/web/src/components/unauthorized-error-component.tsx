@@ -7,13 +7,13 @@ export const UnauthorizedErrorComponent: FC<{ pathname: string }> = ({
   pathname,
 }) => {
   return (
-    <main className="flex flex-col items-center justify-start grow shrink-0 my-1">
-      <div className="flex flex-col items-center justify-center min-h-[300px] p-8 text-center rounded-xl border border-border">
-        <div className="bg-destructive-border rounded-full p-4 mb-6">
+    <main className="my-1 flex shrink-0 grow flex-col items-center justify-start">
+      <div className="border-border flex min-h-[300px] flex-col items-center justify-center rounded-xl border p-8 text-center">
+        <div className="bg-destructive-border mb-6 rounded-full p-4">
           <Lock size={32} className="text-destructive" />
         </div>
 
-        <h2 className="text-2xl font-semibold text-foreground mb-2">
+        <h2 className="text-foreground mb-2 text-2xl font-semibold">
           Доступ запрещен
         </h2>
 
@@ -22,10 +22,7 @@ export const UnauthorizedErrorComponent: FC<{ pathname: string }> = ({
         </p>
 
         <Button variant="surface" size="2" asChild>
-          <Link
-            to={"/auth"}
-            search={(prev) => ({ redirect: pathname, ...prev })}
-          >
+          <Link to="/auth" search={(prev) => ({ redirect: pathname, ...prev })}>
             <LogIn size={18} />
             Войти в систему
           </Link>
