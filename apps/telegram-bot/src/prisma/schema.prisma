@@ -172,7 +172,7 @@ model EmailLog {
   id           String   @id @default(cuid(2))
   label        String // which form: "aliexpress-joom", …
   recipient    String // address we tried
-  recipientKey String @map("recipient_key") // recipientKey(recipient): the inbox it lands in — what the hourly cap counts
+  recipientKey String   @map("recipient_key") // recipientKey(recipient): the inbox it lands in — what the hourly cap counts
   kind         String // "customer" | "copy"
   success      Boolean
   messageId    String?  @map("message_id") // SMTP Message-ID, to trace it in reg.ru's logs
@@ -183,4 +183,48 @@ model EmailLog {
   @@index([recipient])
   @@index([recipientKey, sentAt])
   @@map("email_logs")
+}
+
+/// "Ведомость грузов" sheet: one row per shipment (ТТН). Replaced wholesale on every upload.
+model CargoShipment {
+  id              Int     @id @default(autoincrement())
+  receptionDate   String? @map("reception_date")
+  departureCity   String? @map("departure_city")
+  destinationCity String? @map("destination_city")
+  waybillNumber   String  @map("waybill_number")
+  // PERF: searched with LIKE '%…%' (one cell can hold several tracks), so a
+  // B-tree index can't help: the match can start anywhere, Postgres scans every
+  // row either way. Fine at a few thousand rows. If it grows large, enable the
+  // pg_trgm extension and add a GIN trigram index, which does serve '%…%'.
+  trackNumber     String? @map("track_number")
+  departureDate   String? @map("departure_date")
+
+  @@index([waybillNumber])
+  @@map("cargo_shipments")
+}
+
+/// "СВХ ведомости" sheet: a shipment's stops at sorting points, up to a few per ТТН.
+model CargoWarehouseMovement {
+  id              Int     @id @default(autoincrement())
+  waybillNumber   String  @map("waybill_number")
+  departureCity   String? @map("departure_city")
+  destinationCity String? @map("destination_city")
+  arrivalDate     String? @map("arrival_date")
+  departureDate   String? @map("departure_date")
+  warehousePoint  String? @map("warehouse_point")
+
+  @@index([waybillNumber])
+  @@map("cargo_warehouse_movements")
+}
+
+/// "Учет прибывших" sheet: arrival at the pickup point and hand-over to the recipient.
+model CargoDeliveryRecord {
+  id            Int     @id @default(autoincrement())
+  arrivalDate   String? @map("arrival_date")
+  waybillNumber String  @map("waybill_number")
+  deliveryDate  String? @map("delivery_date")
+  deliveryCity  String? @map("delivery_city")
+
+  @@index([waybillNumber])
+  @@map("cargo_delivery_records")
 }
