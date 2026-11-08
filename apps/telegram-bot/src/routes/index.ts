@@ -40,6 +40,7 @@ import {
 } from "@/orders/schemas";
 import { prismaMysql } from "@/prisma/mysql";
 import { confirmOrder, deliveryRow, section, type MailOptions } from "@/mail";
+import { searchCargo } from "@/cargo-tracking/service";
 
 export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
@@ -360,6 +361,9 @@ export function createRoutes(bot: TCustomBot): Router {
       ),
     requireJSON,
   );
+
+  router.get("/api/cargo-tracking/search/:query", async (_req, params) =>
+    Response.json(await searchCargo(params.query ?? "")));
 
   router.get("/api/track-global", async (request) => {
     if (!config.trackGlobal.key || !config.trackGlobal.bearer)

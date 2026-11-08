@@ -70,7 +70,7 @@ describe("createRouter", () => {
 
     const res = await router.handle(new Request("http://localhost/boom"));
     expect(res.status).toBe(500);
-    // Fails today: the throw skipped the middleware's "way out", so no header
+    // Before the fix, the throw skipped the middleware's "way out", so no header
     expect(res.headers.get("X-Outer")).toBe("seen");
   });
 });
