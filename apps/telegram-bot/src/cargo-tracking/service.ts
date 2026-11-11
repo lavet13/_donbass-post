@@ -1,5 +1,7 @@
 import { prisma } from "@/prisma";
 
+/* Job: the search */
+
 /**
  * Cargo search behind GET /api/cargo-tracking/search/:query. Replaces
  * workplace-post.ru's endpoint, so the body mirrors its format field for field;
@@ -20,13 +22,20 @@ export async function searchCargo(rawQuery: string) {
     };
   }
 
+  // Track search needs at least 2 chars: a single "1" appears in hundreds of
+  // tracks and would return a random stranger's parcel. Exact ТТН is unaffected.
+  const MIN_TRACK_QUERY_LENGTH = 2;
+
   const shipment =
     (await prisma.cargoShipment.findFirst({
       where: { waybillNumber: query },
     })) ??
-    (await prisma.cargoShipment.findFirst({
-      where: { trackNumber: { contains: query } },
-    }));
+    (query.length >= MIN_TRACK_QUERY_LENGTH
+      ? await prisma.cargoShipment.findFirst({
+          where: { trackNumber: { contains: query, mode: "insensitive" } },
+          orderBy: { id: "asc" },
+        })
+      : null);
 
   // Not found: the exact shape workplace-post.ru returns (waybillNumber echoes the query)
   if (!shipment) {
@@ -56,28 +65,21 @@ export async function searchCargo(rawQuery: string) {
     },
   });
 
-  // prefer a row that has a delivery date; [0] may be undefined (noUncheckedIndexedAccess)
+  // Newest stop first (the frontend no longer reverses). A stop with no
+  // departure date is where the parcel is now, so it goes on top.
+  // Sorted in TS, not SQL: the dates are DD.MM.YYYY text, which sorts by day
+  // ("01.08" < "07.07"); ruDateKey reorders them to YYYYMMDD first.
+  // no departure = still at that warehouse = the newest stop
+  movements.sort(newestFirst((m) => m.departureDate, "first"));
+
+  // no date = unknown, so it should never win the tie-break
+  deliveryRecords.sort(newestFirst((d) => d.arrivalDate, "last"));
+
+  // Rows are newest-arrival first, so: the latest row that was handed over,
+  // else the latest arrival. Duplicates come from merged months, e.g. October
+  // has the "Дата" placeholder and November the real outcome.
   const delivery =
     deliveryRecords.find((r) => r.deliveryDate) ?? deliveryRecords[0] ?? null;
-
-  // Oldest stop first; a stop with no departure date is the current one, so it goes last
-  // Example:
-  // "20250707" vs "20250801"
-  // 2025 = 2025, then 0 = 0, then 7 < 8 -> July comes first ✓ (decided by the month)
-  //
-  // "07.07.2025" vs "01.08.2025"   <- the raw DD.MM.YYYY text
-  // 0 = 0, then 7 > 1              -> August comes first ✗ (decided by the DAY)
-  // The frontend then calls .reverse(), so the user sees the current stop at the top.
-  movements.sort((a, b) => {
-    const ka = ruDateKey(a.departureDate);
-    const kb = ruDateKey(b.departureDate);
-    if (ka === kb) return 0; // same date, or both missing: keep order
-    if (ka === null) return 1; // a has no date → a goes AFTER b ("still at the warehouse" = latest)
-    if (kb === null) return -1; // b has no date → a goes first
-
-    // negative puts a first, positive puts b first, 0 leaves them as they are
-    return ka < kb ? -1 : 1; // both dates: earlier first
-  });
 
   // Build the body once; the message only decides the status line
   return {
@@ -115,9 +117,41 @@ export async function searchCargo(rawQuery: string) {
 }
 
 /**
+ * Builds a sort comparator: newest DD.MM.YYYY date first. `missing` says where
+ * rows without a parseable date go, because the two callers need opposite
+ * answers: for movements, "no departure" means the current stop (first); for
+ * delivery records, "no arrival" is unknown data (last).
+ */
+function newestFirst<T>(
+  getDate: (row: T) => string | null, // which field to sort by, e.g. (m) => m.departureDate
+  missing: "first" | "last",
+) {
+  // the returned arrow is what .sort() calls; it remembers getDate and
+  // missing through the closure
+  return (a: T, b: T): number => {
+    // -1 = a first
+    // 1 = b first
+    // 0 = no switch
+    const ka = ruDateKey(getDate(a));
+    const kb = ruDateKey(getDate(b));
+    if (ka === kb) return 0;
+    if (ka === null) return missing === "first" ? -1 : 1;
+    if (kb === null) return missing === "first" ? 1 : -1;
+
+    // Both rows have a real date here (equal / missing were handled above).
+    // We want NEWEST first, so the LATER date wins:
+    //   ka > kb → a is later   → -1 → a goes first
+    //   ka < kb → a is earlier →  1 → b goes first
+    // ka/kb are YYYYMMDD strings, so ">" compares them as dates (see ruDateKey).
+    // For oldest-first you'd flip it to `ka < kb ? -1 : 1`.
+    return ka > kb ? -1 : 1; // the flip from before: LATER date → negative → goes first
+  };
+}
+
+/**
  * Turns "07.07.2025" into "20250707": year-month-day with fixed widths, so plain
  * string comparison gives date order. Anything else ("испорчена", null) → null,
- * which the movement sort puts last.
+ * the caller decides where those go.
  */
 export function ruDateKey(raw: string | null): string | null {
   if (!raw) return null;
