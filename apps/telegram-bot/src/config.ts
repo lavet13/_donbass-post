@@ -19,12 +19,14 @@ function buildConfig(env: RawEnv): AppConfig {
       rootAdminChatId: env.ROOT_ADMIN_CHAT_ID,
       webhookUrl: env.WEBHOOK_URL,
       webhookSecret: env.WEBHOOK_SECRET,
+      proxy: env.TELEGRAM_PROXY,
     };
   } else {
     telegram = {
       useWebhook: false,
       token: env.TELEGRAM_BOT_TOKEN,
       rootAdminChatId: env.ROOT_ADMIN_CHAT_ID,
+      proxy: env.TELEGRAM_PROXY,
     };
   }
 
@@ -38,7 +40,6 @@ function buildConfig(env: RawEnv): AppConfig {
       key: env.RAPIDAPI_KEY,
       bearer: env.TRACK_GLOBAL_BEARER,
       host: env.RAPIDAPI_HOST,
-      proxy: env.TRACK_GLOBAL_PROXY ?? env.TELEGRAM_PROXY,
     },
   };
 }

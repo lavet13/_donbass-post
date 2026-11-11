@@ -36,7 +36,6 @@ const BaseSchema = z.object({
       .optional(),
   ),
   TELEGRAM_PROXY: blankToUndefined(z.url().optional()),
-  TRACK_GLOBAL_PROXY: blankToUndefined(z.url().optional()),
   RAPIDAPI_KEY: blankToUndefined(z.string().optional()),
   TRACK_GLOBAL_BEARER: blankToUndefined(z.string().optional()),
   RAPIDAPI_HOST: blankToUndefined(z.string().optional()).default(

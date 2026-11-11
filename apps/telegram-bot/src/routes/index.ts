@@ -384,7 +384,7 @@ export function createRoutes(bot: TCustomBot): Router {
       return Response.json({ source: "cached", data: cached.payload });
     }
 
-    const dispatcher = makeProxyDispatcher(config.trackGlobal.proxy);
+    const dispatcher = makeProxyDispatcher(config.telegram.proxy);
 
     let res: Response;
     try {

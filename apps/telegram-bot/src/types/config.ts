@@ -6,11 +6,13 @@ export type TelegramConfig =
       webhookUrl: string;
       webhookSecret?: string;
       rootAdminChatId?: number;
+      proxy?: string;
     }
   | {
       useWebhook: false;
       token: string;
       rootAdminChatId?: number;
+      proxy?: string;
     };
 
 export type AppConfig = {
@@ -23,6 +25,5 @@ export type AppConfig = {
     key: string | undefined;
     bearer: string | undefined;
     host: string;
-    proxy: string | undefined;
   },
 };
