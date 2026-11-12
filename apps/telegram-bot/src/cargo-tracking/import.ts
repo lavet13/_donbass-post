@@ -32,7 +32,17 @@ export async function readCargoWorkbook(
 ): Promise<CargoWorkbook> {
   const wb = new ExcelJS.Workbook();
 
-  await wb.xlsx.load(buffer);
+  try {
+    await wb.xlsx.load(buffer);
+  } catch (err) {
+    // ExcelJS's errors are about zip internals; keep them for the logs via `cause`
+    throw new Error(
+      "Не удалось открыть файл: это не Excel-файл (.xlsx) или он повреждён",
+      {
+        cause: err,
+      },
+    );
+  }
 
   const shipmentsSheet = wb.getWorksheet("Ведомость грузов");
   if (!shipmentsSheet) {
