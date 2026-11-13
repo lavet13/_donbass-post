@@ -192,10 +192,10 @@ model CargoShipment {
   departureCity   String? @map("departure_city")
   destinationCity String? @map("destination_city")
   waybillNumber   String  @map("waybill_number")
-  // PERF: searched with LIKE '%…%' (one cell can hold several tracks), so a
-  // B-tree index can't help: the match can start anywhere, Postgres scans every
-  // row either way. Fine at a few thousand rows. If it grows large, enable the
-  // pg_trgm extension and add a GIN trigram index, which does serve '%…%'.
+  /// PERF: searched with LIKE '%…%' (one cell can hold several tracks), so a
+  /// B-tree index can't help: the match can start anywhere, Postgres scans every
+  /// row either way. Fine at a few thousand rows. If it grows large, enable the
+  /// pg_trgm extension and add a GIN trigram index, which does serve '%…%'.
   trackNumber     String? @map("track_number")
   departureDate   String? @map("departure_date")
 
@@ -227,4 +227,77 @@ model CargoDeliveryRecord {
 
   @@index([waybillNumber])
   @@map("cargo_delivery_records")
+}
+
+/// Rostov block of the Rostov file. On upload, rows inside the file's
+/// arrival-date range are deleted and re-inserted; older rows stay as history.
+model RostovShipment {
+  id                 Int       @id @default(autoincrement())
+  waybillNumber      String    @map("waybill_number")
+  arrivalDate        DateTime  @map("arrival_date") @db.Date
+  dispatchDate       DateTime? @map("dispatch_date") @db.Date
+  carrier            String?
+  carrierTrackNumber String?   @map("carrier_track_number")
+  createdAt          DateTime  @default(now()) @map("created_at") // = when this row was imported
+
+  @@index([waybillNumber])
+  @@map("rostov_shipments")
+}
+
+/// LNR block of the Rostov file. On upload, rows inside the file’s handover-date
+/// range are deleted and re-inserted; older rows stay as history.
+model LnrShipment {
+  id                Int       @id @default(autoincrement())
+  waybillNumber     String    @map("waybill_number")
+  handoverDate      DateTime? @map("handover_date") @db.Date
+  deliveryAddress   String?   @map("delivery_address")
+  declarationNumber String?   @map("declaration_number")
+  createdAt         DateTime  @default(now()) @map("created_at") // = when this row was imported
+
+  @@index([waybillNumber])
+  @@map("lnr_shipments")
+}
+
+/// Promo files, one per source (ALI, ИМ). On upload, rows of that source inside
+/// the file’s payment-date range, plus that source’s rows without a date, are deleted and re-inserted;
+/// older rows stay as history.
+model PromoOrder {
+  id           Int               @id @default(autoincrement())
+  /// PERF: searched with `has`, because one cell can hold several codes
+  /// ("5244, 5245" → ["5244", "5245"]). Prisma turns `has` into
+  /// `promo_codes @> ARRAY[$1]` ("the array contains this code").
+  /// A B-tree index can't serve that: it indexes the whole array as one value,
+  /// not the codes inside it, so Postgres scans every row and checks each array.
+  /// Fine at a few thousand rows (the file has ~1,000 after two years).
+  /// If it grows large, add `@@index([promoCodes], type: Gin)`. GIN indexes
+  /// every element separately, so `@>` jumps straight to the matching rows.
+  /// The cost is slower inserts (one index entry per code), and every upload
+  /// re-inserts the file's whole period.
+  promoCodes   String[]          @map("promo_codes")
+  promoCodeRaw String            @map("promo_code_raw")
+  amountPaid   Decimal?          @map("amount_paid") @db.Decimal(12, 2) // never a float for money
+  paymentDate  DateTime?         @map("payment_date") @db.Date
+  trackNumber  String?           @map("track_number")
+  status       PromoOrderStatus?
+  source       PromoSource
+  createdAt    DateTime          @default(now()) @map("created_at") // = when this row was imported
+
+  @@map("promo_orders")
+}
+
+enum PromoOrderStatus {
+  READY_TO_SHIP
+  AWAITING_DELIVERY
+  NEEDS_CLARIFICATION
+  DELIVERED
+  CANCELLED
+
+  @@map("promo_order_status")
+}
+
+enum PromoSource {
+  ALI
+  IM
+
+  @@map("promo_source")
 }
