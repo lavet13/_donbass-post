@@ -1,9 +1,12 @@
 import ExcelJS from "exceljs";
 import { describe, it, expect } from "vitest";
 import {
+  cellWaybill,
   decideFileKind,
   detectKind,
+  fillStatus,
   findColumns,
+  promoCodes,
   type SheetSummary,
 } from "./parse";
 
@@ -239,5 +242,73 @@ describe("decideFileKind", () => {
     expect(
       decideFileKind([{ name: "Июль 26", kind: "rostov", dataRows: 5 }, notes]),
     ).toEqual({ ok: true, kind: "rostov", skipped: [notes] });
+  });
+});
+
+describe("cellWaybill", () => {
+  it.each([
+    [20120349, "20120349"], // typed as a number
+    ["20120349", "20120349"],
+    ["21302284 А", "21302284"], // letter after it
+    ["21400464Д", "21400464"], // LNR suffix, no space
+    ["52600001/3", "52600001"], // piece 3 of a multi-piece shipment
+    ["21900459 (23500013)", "21900459"], // two numbers: the first one
+    ["123456789", null], // 9 digits: not cut down to 8
+    ["2130228", null], // 7 digits
+    [null, null],
+    ["   ", null],
+  ])("cellWaybill(%j) → %j", (input, expected) => {
+    expect(cellWaybill(input)).toBe(expected);
+  });
+});
+
+describe("promoCodes", () => {
+  it.each([
+    [129803, ["129803"]], // typed as a number
+    ["129811  129812", ["129811", "129812"]],
+    ["4412/4414", ["4412", "4414"]],
+    ["A-177(3386,3387,3388,3389)", ["3386", "3387", "3388", "3389"]], // not «177»
+    ["(4385) 4386 (4387)", ["4385", "4386", "4387"]],
+    ["127665/66", ["127665"]], // the shortened second code is lost, as agreed
+    ["5244, 5244", ["5244"]], // written twice: stored once
+    ["БЕЗ", []],
+    [null, []],
+  ])("promoCodes(%j) → %j", (input, expected) => {
+    expect(promoCodes(input)).toEqual(expected);
+  });
+});
+
+describe("fillStatus", () => {
+  // A ПРОМОКОД cell, optionally with a solid fill of the given colour
+  function filledCell(fgColor?: { argb: string } | { theme: number }) {
+    const cell = new ExcelJS.Workbook()
+      .addWorksheet("test")
+      .addRow(["129803"])
+      .getCell(1);
+    if (fgColor) cell.fill = { type: "pattern", pattern: "solid", fgColor };
+    return cell;
+  }
+
+  it.each([
+    ["FFFFC000", "ORDER_PLACED"], // orange
+    ["FFFFFF00", "SHIPPED_BY_STORE"], // yellow
+    ["FF00B0F0", "PROCESSED_IN_ROSTOV"], // blue
+    ["FF92D050", "DELIVERED"], // green
+    ["FF00B050", "DELIVERED"], // darker green from the ИМ archive
+    ["FFFF0000", "CANCELLED"], // red
+  ])("maps fill %s to %s", (argb, status) => {
+    expect(fillStatus(filledCell({ argb }))).toBe(status);
+  });
+
+  it("returns null for a cell without a fill", () => {
+    expect(fillStatus(filledCell())).toBeNull();
+  });
+
+  it("returns null for a colour that isn't in the legend", () => {
+    expect(fillStatus(filledCell({ argb: "FF123456" }))).toBeNull();
+  });
+
+  it("returns null for a theme colour, which has no ARGB", () => {
+    expect(fillStatus(filledCell({ theme: 5 }))).toBeNull();
   });
 });

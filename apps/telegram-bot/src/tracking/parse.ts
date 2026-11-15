@@ -1,4 +1,6 @@
-import type { Row } from "exceljs";
+import { cellText } from "@/utils/cell";
+import type { Row, Cell } from "exceljs";
+import type { PromoOrderStatus } from "@/lib/prisma/client";
 
 export type ColumnsResult<K extends string> =
   | {
@@ -209,4 +211,52 @@ export function decideFileKind(sheets: SheetSummary[]): FileKindResult {
     kind: only,
     skipped: voters.filter((s) => s.kind === null), // data, but a layout we don't know
   };
+}
+
+/**
+ * ТТН from a «№ ТТН» cell: the first number of exactly 8 digits, so extras
+ * like «21302284 А», «52600001/3» or «21900459 (23500013)» still give the
+ * waybill. The lookarounds keep it from cutting 8 digits out of a longer
+ * number. null when there's none: the caller skips and reports the row.
+ */
+export function cellWaybill(value: unknown): string | null {
+  return cellText(value)?.match(/(?<!\d)\d{8}(?!\d)/)?.[0] ?? null;
+}
+
+/**
+ * Promo codes in a ПРОМОКОД cell: every run of 4+ digits, so a cell with
+ * several codes («129811  129812», «4412/4414») gives each of them, and
+ * shorter numbers around them («A-177(3386,…)») aren't taken as codes.
+ * Duplicates are dropped. An empty cell or «БЕЗ» → [], which the caller
+ * reports as a row it couldn't import.
+ */
+export function promoCodes(value: unknown): string[] {
+  const text = cellText(value);
+  if (text === null) return [];
+  return [...new Set(text.match(/\d{4,}/g) ?? [])];
+}
+
+const STATUS_BY_FILL = {
+  FFFFC000: "ORDER_PLACED", // orange
+  FFFFFF00: "SHIPPED_BY_STORE", // yellow
+  FF00B0F0: "PROCESSED_IN_ROSTOV", // blue
+  FF92D050: "DELIVERED", // green
+  FF00B050: "DELIVERED", // darker green, 46 ИМ archive rows
+  FFFF0000: "CANCELLED", // red
+} satisfies Record<string, PromoOrderStatus>;
+
+/**
+ * Promo order status from the fill colour of its ПРОМОКОД cell, the
+ * managers' meanings (see STATUS_BY_FILL). No fill, a theme colour or an
+ * unknown shade → null.
+ */
+export function fillStatus(cell: Cell): PromoOrderStatus | null {
+  const argb =
+    cell.fill?.type === "pattern" ? cell.fill.fgColor?.argb : undefined;
+
+  if (!argb) return null;
+
+  return Object.hasOwn(STATUS_BY_FILL, argb)
+    ? STATUS_BY_FILL[argb as keyof typeof STATUS_BY_FILL]
+    : null;
 }
