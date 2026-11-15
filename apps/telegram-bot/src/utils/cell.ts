@@ -38,16 +38,13 @@ const DATE_PLACEHOLDERS = new Set(["Дата", "Дата выдачи"]); // Set
  */
 export function cellDate(value: unknown): string | null {
   if (typeof value === "number") {
-    // Outside Excel's date range (1 … 2958465 = 31.12.9999) it's not a date:
-    // keep what was typed rather than inventing the year 57233
-    if (value < 1 || value > 2_958_465) return cellText(value);
+    const d = serialToDate(value);
 
-    // Excel counts days from 1899-12-30 (not 1900-01-01: that offset absorbs
-    // Excel's fake leap day 29.02.1900). 86_400_000 = ms per day.
-    const d = new Date(Date.UTC(1899, 11, 30) + Math.floor(value) * 86_400_000);
-    // read it back with getUTCDate/getUTCMonth/getUTCFullYear, never getDate etc.:
-    // the local-time getters shift by the server's timezone and can change the day
+    // not a serial: keep what was typed rather than inventing the year 57233
+    if (d === null) return cellText(value);
 
+    // getUTC* getters, never getDate etc.: the local-time getters shift by the
+    // server's timezone and can change the day
     return `${String(d.getUTCDate()).padStart(2, "0")}.${String(d.getUTCMonth() + 1).padStart(2, "0")}.${d.getUTCFullYear()}`;
   }
 
@@ -60,4 +57,90 @@ export function cellDate(value: unknown): string | null {
 
   const [day, month, year] = match.slice(1);
   return `${day?.padStart(2, "0")}.${month?.padStart(2, "0")}.${year}`;
+}
+
+export type DayCell =
+  | { kind: "empty" }
+  | { kind: "day"; day: Date } // UTC midnight, ready for a @db.Date column
+  | { kind: "invalid"; text: string }; // the text as written, for the bot's report
+
+/**
+ * Reads a cell from a date column as a calendar day (UTC midnight), for the
+ * tracking tables' @db.Date columns. Three answers, because the caller treats
+ * them differently:
+ *   - "empty": no date yet (empty cell, "Дата" placeholder, { error }), normal;
+ *   - "day": a Date cell (time dropped), an Excel serial, or text like
+ *     "8.10.2026", "01,06,18", "20.03.18" (two-digit years mean 20yy: the data
+ *     starts in 2018);
+ *   - "invalid": anything else ("выдано", "21-25.10.2019", "31.02.2026"),
+ *     returned as written so the bot can name it.
+ * Only answers "is this a date?": whether the year is plausible is the
+ * import's rule, not this function's.
+ */
+export function cellDay(value: unknown): DayCell {
+  if (value instanceof Date) {
+    // new Date("garbage") is still a Date, but every getter returns NaN
+
+    if (Number.isNaN(value.getTime()))
+      return { kind: "invalid", text: String(value) };
+
+    // Rebuilt from its UTC parts: drops a time of day without moving the day
+    return {
+      kind: "day",
+      day: new Date(
+        Date.UTC(
+          value.getUTCFullYear(),
+          value.getUTCMonth(),
+          value.getUTCDate(),
+        ),
+      ),
+    };
+  }
+
+  if (typeof value === "number") {
+    const day = serialToDate(value);
+    return day
+      ? { kind: "day", day }
+      : { kind: "invalid", text: String(value) };
+  }
+
+  const text = cellText(value);
+  if (text === null || DATE_PLACEHOLDERS.has(text)) return { kind: "empty" };
+
+  // dd.mm.yy or dd.mm.yyyy, with dots or commas: "8.10.2026", "01,06,18"
+  const match = text.match(/^(\d{1,2})[.,](\d{1,2})[.,](\d{2}|\d{4})$/);
+  if (!match) return { kind: "invalid", text };
+
+  const [day, month, year] = match.slice(1).map(Number) as [
+    number,
+    number,
+    number,
+  ];
+  const fullYear = year < 100 ? 2000 + year : year;
+  const date = new Date(Date.UTC(fullYear, month - 1, day));
+
+  // Date.UTC doesn't reject 31.02, it rolls over to 03.03. If the day or month
+  // changed on the way, the input was impossible.
+  if (date.getUTCDate() !== day || date.getUTCMonth() !== month - 1)
+    return { kind: "invalid", text };
+
+  return { kind: "day", day: date };
+}
+
+/**
+ * Excel serial number → UTC midnight of that day, or null when the number is
+ * outside Excel's date range (1 … 2958465 = 31.12.9999) and so isn't a date.
+ * The caller decides what null means: cellDate keeps the typed text, cellDay
+ * reports it as invalid.
+ */
+function serialToDate(serial: number): Date | null {
+  // Outside Excel's date range (1 … 2958465 = 31.12.9999) it's not a date:
+  // keep what was typed rather than inventing the year 57233
+  if (serial < 1 || serial > 2_958_465) return null;
+
+  // Excel counts days from 1899-12-30 (not 1900-01-01: that offset absorbs
+  // Excel's fake leap day 29.02.1900). 86_400_000 = ms per day.
+  // read it back with getUTCDate/getUTCMonth/getUTCFullYear, never getDate etc.:
+  // the local-time getters shift by the server's timezone and can change the day
+  return new Date(Date.UTC(1899, 11, 30) + Math.floor(serial) * 86_400_000);
 }

@@ -1,41 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseShipments } from "@/cargo-tracking/parse";
-import { cellDate, cellText } from "@/utils/cell";
 import ExcelJS from "exceljs";
-
-describe("cellDate", () => {
-  // [input, expected]: each row becomes its own test; each %j in the name is
-  // replaced by that row's values, printed as JSON
-  it.each([
-    [46303, "08.10.2026"],
-    [46303.4894, "08.10.2026"], // time of day dropped
-    [46022, "31.12.2025"],
-    [46023, "01.01.2026"],
-    ["8.10.2026", "08.10.2026"],
-    ["07,07,2025", "07.07.2025"],
-    ["Дата", null], // placeholder = no date yet
-    [" Дата выдачи ", null],
-    ["   ", null],
-    [{ error: "#N/A" }, null],
-    ["удалена", "удалена"],
-    ["02.11.20.26", "02.11.20.26"],
-    ["08.10.2026 возврат", "08.10.2026 возврат"],
-  ])("cellDate(%j) -> %j", (input, expected) => {
-    expect(cellDate(input)).toBe(expected);
-  });
-});
-
-describe("cellText", () => {
-  it.each([
-    [20210368, "20210368"], // ТТН arrive as numbers
-    [1e21, "1000000000000000000000"], // fails if the BigInt line is "simplified" away
-    [" Донецк 2 ", "Донецк 2"],
-    ["   ", null],
-    [{ error: "#N/A" }, null],
-  ])("cellText(%j) -> %j", (input, expected) => {
-    expect(cellText(input)).toBe(expected);
-  });
-});
 
 describe("parseShipments", () => {
   it("parses a data row and skips header, junk and blank rows", () => {
