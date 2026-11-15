@@ -89,3 +89,124 @@ export function findColumns<K extends string>(
 function normalizeHeader(text: string) {
   return text.trim().replace(/\s+/g, " ");
 }
+
+const PROMO = {
+  promoCodes: "ПРОМОКОД",
+  amountPaid: "СУММА В ТТН",
+  paymentDate: "дата", // lowercase on purpose: «ДАТА» is a different column
+  trackNumber: "идентификатор",
+} as const;
+
+/** Header text of every column we read, per file kind. */
+export const SPECS = {
+  rostov: {
+    arrivalDate: "Дата прибытия",
+    waybillNumber: "№ ТТН",
+    dispatchDate: "Дата выдачи, пересылки",
+    carrier: "Отпралено Др дост", // sic: the typo is in the real header
+    carrierTrackNumber: "Трек, индификатор, код чека", // sic
+  },
+  lnr: {
+    waybillNumber: "№ ТТН",
+    handoverDate: 'Дата передачи (в "ПЛ")',
+    deliveryAddress: "Населенный пункт выдачи груза",
+    declarationNumber: '№ декларации "ПЛ"',
+  },
+  // `marker` is never read as data: it only makes ALI and ИМ sheets tell apart
+  ali: { ...PROMO, marker: "ССЫЛКА ЗАКАЗА" },
+  im: { ...PROMO, marker: "ОТКУДА ЗАКАЗ" },
+} as const;
+
+export type Kind = keyof typeof SPECS; // "rostov" | "lnr" | "ali" | "im"
+const KINDS = Object.keys(SPECS) as Kind[];
+
+/**
+ * Tells which kind of file a sheet belongs to, from its header row alone:
+ * a kind matches when every header of its spec is found exactly once.
+ * Returns null for a sheet that matches none (an empty «Лист1», notes,
+ * a layout we don't know).
+ *
+ * The ALI/ИМ `marker` headers keep at most one kind matching. Two matches
+ * would be a bug in SPECS, not in the file, so that throws.
+ */
+export function detectKind(headerRow: Row): Kind | null {
+  // <string>: SPECS[kind] is a union of four specs, and TS can't pick one K
+  // for all of them. Detection only needs `.ok`, not the field names.
+  const matches = KINDS.filter(
+    (kind) => findColumns<string>(headerRow, SPECS[kind]).ok,
+  );
+
+  // Two specs matching one header is a bug in SPECS, not a bad file
+  if (matches.length > 1)
+    throw new Error(`SPECS bug: one header row matches ${matches.join(", ")}`);
+
+  return matches[0] ?? null;
+}
+
+export type SheetSummary = {
+  name: string;
+  kind: Kind | null;
+  dataRows: number;
+};
+
+export type FileKindResult =
+  | { ok: true; kind: Kind; skipped: SheetSummary[] }
+  | { ok: false; error: string };
+
+const KIND_LABELS = {
+  rostov: "Ростов",
+  lnr: "ЛНР",
+  ali: "ALI",
+  im: "ИМ",
+} satisfies Record<Kind, string>; // a new kind without a label is a compile error
+
+/**
+ * Decides the kind of a whole file from its sheets, once all of them are
+ * read, so the order the streaming reader emits them in doesn't matter.
+ *
+ * Only sheets with data rows vote: an empty sheet with another layout (ALI's
+ * «V» has the ИМ headers) can't change the answer. All voters must agree; a
+ * mix is refused, because one upload replaces one dataset's date range.
+ * Sheets with data but an unknown layout come back in `skipped`, so the bot
+ * names them instead of dropping their rows silently.
+ */
+export function decideFileKind(sheets: SheetSummary[]): FileKindResult {
+  // Empty sheets don't vote: they have nothing to import or lose (ALI's «V»)
+  const voters = sheets.filter((s) => s.dataRows > 0);
+
+  // kind -> names of the sheets of that kind
+  const byKind = new Map<Kind, string[]>();
+  for (const s of voters) {
+    if (s.kind === null) continue; // unknown layout: reported in `skipped`, no vote
+    const names = byKind.get(s.kind);
+    if (names) names.push(s.name);
+    else byKind.set(s.kind, [s.name]);
+  }
+
+  // Decided only after every sheet is in, so the streaming order doesn't matter
+  const [only, ...others] = byKind.keys();
+
+  if (only === undefined) {
+    return {
+      ok: false,
+      error:
+        "Не удалось определить тип файла: ни один лист не похож на Ростов, ЛНР, ALI или ИМ",
+    };
+  }
+
+  if (others.length > 0) {
+    const list = [...byKind]
+      .map(([kind, names]) => `${KIND_LABELS[kind]}: «${names.join("», «")}»`)
+      .join("; ");
+    return {
+      ok: false,
+      error: `В файле листы разных типов (${list}). Отправьте их отдельными файлами`,
+    };
+  }
+
+  return {
+    ok: true,
+    kind: only,
+    skipped: voters.filter((s) => s.kind === null), // data, but a layout we don't know
+  };
+}

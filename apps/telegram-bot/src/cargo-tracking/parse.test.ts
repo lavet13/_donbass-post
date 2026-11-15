@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { cellDate, cellText, parseShipments } from "./parse";
+import { parseShipments } from "@/cargo-tracking/parse";
+import { cellDate, cellText } from "@/utils/cell";
 import ExcelJS from "exceljs";
 
 describe("cellDate", () => {
@@ -42,7 +43,14 @@ describe("parseShipments", () => {
     const ws = new ExcelJS.Workbook().addWorksheet("Ведомость грузов");
     ws.addRow([1]);
     ws.addRow(["Дата приема", "Город", "Город", "№ ТТН", "Трек №", "Дата"]);
-    ws.addRow([46303, "Горловка", "Москва", 20210368, "44А, 20А", "08.10.2026"]);
+    ws.addRow([
+      46303,
+      "Горловка",
+      "Москва",
+      20210368,
+      "44А, 20А",
+      "08.10.2026",
+    ]);
     expect(parseShipments(ws)).toEqual([
       {
         receptionDate: "08.10.2026",
@@ -54,4 +62,4 @@ describe("parseShipments", () => {
       },
     ]);
   });
-})
+});
