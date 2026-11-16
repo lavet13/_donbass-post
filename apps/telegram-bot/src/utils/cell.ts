@@ -43,9 +43,7 @@ export function cellDate(value: unknown): string | null {
     // not a serial: keep what was typed rather than inventing the year 57233
     if (d === null) return cellText(value);
 
-    // getUTC* getters, never getDate etc.: the local-time getters shift by the
-    // server's timezone and can change the day
-    return `${String(d.getUTCDate()).padStart(2, "0")}.${String(d.getUTCMonth() + 1).padStart(2, "0")}.${d.getUTCFullYear()}`;
+    return ruDay(d);
   }
 
   const text = cellText(value);
@@ -167,4 +165,13 @@ export function plainValue(value: unknown): unknown {
   if ("result" in value) return plainValue(value.result); // a result can itself be { error }
   if ("text" in value && typeof value.text === "string") return value.text;
   return null;
+}
+
+/**
+ * A day as the managers write it: "08.10.2026". getUTC* getters, never
+ * getDate etc.: the local-time getters shift by the server's timezone and
+ * can change the day.
+ */
+export function ruDay(date: Date): string {
+  return `${String(date.getUTCDate()).padStart(2, "0")}.${String(date.getUTCMonth() + 1).padStart(2, "0")}.${date.getUTCFullYear()}`;
 }

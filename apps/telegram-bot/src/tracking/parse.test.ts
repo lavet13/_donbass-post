@@ -7,6 +7,7 @@ import {
   detectKind,
   fillStatus,
   findColumns,
+  isPlausibleDay,
   parseLnrRow,
   parsePromoRow,
   parseRostovRow,
@@ -14,7 +15,12 @@ import {
   SPECS,
   type SheetSummary,
 } from "./parse";
-import { ALI_HEADERS, IM_HEADERS, LNR_HEADERS, ROSTOV_HEADERS } from "./headers.fixture";
+import {
+  ALI_HEADERS,
+  IM_HEADERS,
+  LNR_HEADERS,
+  ROSTOV_HEADERS,
+} from "./headers.fixture";
 
 function headerRow(...headers: (string | null)[]) {
   return new ExcelJS.Workbook().addWorksheet("test").addRow(headers);
@@ -267,7 +273,15 @@ describe("parseRostovRow", () => {
   it("parses a full row", () => {
     expect(
       parseRostovRow(
-        row({ 1: 1, 2: utcDay("2026-07-03"), 3: 20120349, 4: "Отправитель", 5: utcDay("2026-07-05"), 6: "СДЕК", 7: 1234567890123 }),
+        row({
+          1: 1,
+          2: utcDay("2026-07-03"),
+          3: 20120349,
+          4: "Отправитель",
+          5: utcDay("2026-07-05"),
+          6: "СДЕК",
+          7: 1234567890123,
+        }),
         columns,
       ),
     ).toEqual({
@@ -288,16 +302,25 @@ describe("parseRostovRow", () => {
   });
 
   it.each([
-    [{ 2: utcDay("2026-07-03"), 3: 5200006 }, "в «№ ТТН» нет номера из 8 цифр: «5200006»"],
+    [
+      { 2: utcDay("2026-07-03"), 3: 5200006 },
+      "в «№ ТТН» нет номера из 8 цифр: «5200006»",
+    ],
     [{ 3: 20120349 }, "нет даты прибытия"],
-    [{ 2: "23,.02.2019", 3: 20120349 }, "дата прибытия «23,.02.2019» не распознана"],
+    [
+      { 2: "23,.02.2019", 3: 20120349 },
+      "дата прибытия «23,.02.2019» не распознана",
+    ],
   ])("skips %j: %s", (cells, reason) => {
     expect(parseRostovRow(row(cells), columns)).toEqual({ ok: false, reason });
   });
 
   it("imports a 2018 row and reports an unreadable dispatch date", () => {
     expect(
-      parseRostovRow(row({ 2: "01,06,18", 3: "21302284 А", 5: "выдано", 6: "выдан" }), columns),
+      parseRostovRow(
+        row({ 2: "01,06,18", 3: "21302284 А", 5: "выдано", 6: "выдан" }),
+        columns,
+      ),
     ).toEqual({
       ok: true,
       problems: ["дата выдачи «выдано» не распознана, сохранено без даты"],
@@ -310,6 +333,15 @@ describe("parseRostovRow", () => {
       },
     });
   });
+
+  it("skips a row whose arrival date is a typo from 1900", () => {
+    expect(
+      parseRostovRow(row({ 2: utcDay("1900-01-22"), 3: 20120349 }), columns),
+    ).toEqual({
+      ok: false,
+      reason: "дата прибытия 22.01.1900 вне допустимого периода",
+    });
+  });
 });
 
 describe("parseLnrRow", () => {
@@ -319,7 +351,12 @@ describe("parseLnrRow", () => {
   it("parses a row with a suffixed ТТН and a numeric declaration", () => {
     expect(
       parseLnrRow(
-        row({ 3: "21400464Д", 9: utcDay("2021-05-12"), 11: "294013, Кременная", 12: 29103483001719 }),
+        row({
+          3: "21400464Д",
+          9: utcDay("2021-05-12"),
+          11: "294013, Кременная",
+          12: 29103483001719,
+        }),
         columns,
       ),
     ).toEqual({
@@ -344,9 +381,15 @@ describe("parsePromoRow", () => {
       6: "4412/4414",
       9: { formula: "1050+1200", result: 2250 },
       11: utcDay("2024-06-25"),
-      22: { richText: [{ text: "LC304085044CN " }, { text: "LP00660399782675" }] },
+      22: {
+        richText: [{ text: "LC304085044CN " }, { text: "LP00660399782675" }],
+      },
     });
-    r.getCell(6).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF92D050" } };
+    r.getCell(6).fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FF92D050" },
+    };
 
     expect(parsePromoRow(r, columns, "ALI")).toEqual({
       ok: true,
@@ -364,7 +407,13 @@ describe("parsePromoRow", () => {
   });
 
   it("stores a formula without a cached result as no amount", () => {
-    expect(parsePromoRow(row({ 6: 5240, 9: { formula: "2400-2400" } }), columns, "ALI")).toEqual({
+    expect(
+      parsePromoRow(
+        row({ 6: 5240, 9: { formula: "2400-2400" } }),
+        columns,
+        "ALI",
+      ),
+    ).toEqual({
       ok: true,
       problems: [],
       data: {
@@ -387,6 +436,23 @@ describe("parsePromoRow", () => {
   });
 
   it("returns null for a legend row at the bottom of the sheet", () => {
-    expect(parsePromoRow(row({ 2: "заказ закрыт полностью" }), columns, "ALI")).toBeNull();
+    expect(
+      parsePromoRow(row({ 2: "заказ закрыт полностью" }), columns, "ALI"),
+    ).toBeNull();
+  });
+});
+
+describe("isPlausibleDay", () => {
+  const now = utcDay("2026-11-16");
+
+  it.each([
+    ["2018-01-01", true], // first day allowed
+    ["2017-12-31", false],
+    ["1900-01-22", false], // «22» typed into a date cell
+    ["2026-12-16", true], // within a month ahead
+    ["2026-12-30", false],
+    ["2109-07-13", false],
+  ])("%s → %s", (iso, expected) => {
+    expect(isPlausibleDay(utcDay(iso), now)).toBe(expected);
   });
 });

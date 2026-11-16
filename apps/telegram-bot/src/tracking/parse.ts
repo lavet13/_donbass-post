@@ -1,4 +1,4 @@
-import { cellText, cellDay, plainValue } from "@/utils/cell";
+import { cellText, cellDay, plainValue, ruDay } from "@/utils/cell";
 import type { Row, Cell } from "exceljs";
 import type {
   PromoOrderStatus,
@@ -282,10 +282,22 @@ export type RowResult<T> =
  * An optional date column: a day, or null. An unreadable value also gives
  * null, but adds a line to `problems` so the bot can name it.
  */
-function optionalDay(value: unknown, label: string, problems: string[]): Date | null {
+function optionalDay(
+  value: unknown,
+  label: string,
+  problems: string[],
+): Date | null {
   const day = cellDay(value);
-  if (day.kind === "invalid")
+  if (day.kind === "invalid") {
     problems.push(`${label} «${day.text}» не распознана, сохранено без даты`);
+    return null;
+  }
+  if (day.kind === "day" && !isPlausibleDay(day.day)) {
+    problems.push(
+      `${label} ${ruDay(day.day)} вне допустимого периода, сохранено без даты`,
+    );
+    return null;
+  }
   return day.kind === "day" ? day.day : null;
 }
 
@@ -313,12 +325,25 @@ export function parseRostovRow(
 
   const waybillNumber = cellWaybill(rawWaybill);
   if (waybillNumber === null)
-    return { ok: false, reason: `в «№ ТТН» нет номера из 8 цифр: «${rawWaybill}»` };
+    return {
+      ok: false,
+      reason: `в «№ ТТН» нет номера из 8 цифр: «${rawWaybill}»`,
+    };
 
   const arrival = cellDay(cell(columns.arrivalDate));
-  if (arrival.kind === "empty") return { ok: false, reason: "нет даты прибытия" };
+  if (arrival.kind === "empty")
+    return { ok: false, reason: "нет даты прибытия" };
   if (arrival.kind === "invalid")
-    return { ok: false, reason: `дата прибытия «${arrival.text}» не распознана` };
+    return {
+      ok: false,
+      reason: `дата прибытия «${arrival.text}» не распознана`,
+    };
+
+  if (!isPlausibleDay(arrival.day))
+    return {
+      ok: false,
+      reason: `дата прибытия ${ruDay(arrival.day)} вне допустимого периода`,
+    };
 
   const problems: string[] = [];
   return {
@@ -327,7 +352,11 @@ export function parseRostovRow(
     data: {
       waybillNumber,
       arrivalDate: arrival.day,
-      dispatchDate: optionalDay(cell(columns.dispatchDate), "дата выдачи", problems),
+      dispatchDate: optionalDay(
+        cell(columns.dispatchDate),
+        "дата выдачи",
+        problems,
+      ),
       carrier: cellText(cell(columns.carrier)),
       carrierTrackNumber: cellText(cell(columns.carrierTrackNumber)),
     },
@@ -349,7 +378,10 @@ export function parseLnrRow(
 
   const waybillNumber = cellWaybill(rawWaybill);
   if (waybillNumber === null)
-    return { ok: false, reason: `в «№ ТТН» нет номера из 8 цифр: «${rawWaybill}»` };
+    return {
+      ok: false,
+      reason: `в «№ ТТН» нет номера из 8 цифр: «${rawWaybill}»`,
+    };
 
   const problems: string[] = [];
   return {
@@ -357,7 +389,11 @@ export function parseLnrRow(
     problems,
     data: {
       waybillNumber,
-      handoverDate: optionalDay(cell(columns.handoverDate), "дата передачи", problems),
+      handoverDate: optionalDay(
+        cell(columns.handoverDate),
+        "дата передачи",
+        problems,
+      ),
       deliveryAddress: cellText(cell(columns.deliveryAddress)),
       declarationNumber: cellText(cell(columns.declarationNumber)),
     },
@@ -382,7 +418,10 @@ export function parsePromoRow(
 
   const codes = promoCodes(promoCodeRaw);
   if (codes.length === 0)
-    return { ok: false, reason: `в «ПРОМОКОД» нет кода из 4+ цифр: «${promoCodeRaw}»` };
+    return {
+      ok: false,
+      reason: `в «ПРОМОКОД» нет кода из 4+ цифр: «${promoCodeRaw}»`,
+    };
 
   const problems: string[] = [];
   return {
@@ -393,9 +432,27 @@ export function parsePromoRow(
       promoCodes: codes,
       promoCodeRaw,
       amountPaid: cellAmount(cell(columns.amountPaid)),
-      paymentDate: optionalDay(cell(columns.paymentDate), "дата оплаты", problems),
+      paymentDate: optionalDay(
+        cell(columns.paymentDate),
+        "дата оплаты",
+        problems,
+      ),
       trackNumber: cellText(cell(columns.trackNumber)),
       status: fillStatus(row.getCell(columns.promoCodes)),
     },
   };
+}
+
+const EARLIEST_DAY = new Date(Date.UTC(2018, 0, 1)); // the oldest sheets start in 2018
+const FUTURE_GRACE_MS = 31 * 86_400_000; // a month ahead: dates typed in advance
+
+/**
+ * A day the business could really have: from 2018 to a month from now.
+ * Anything else is a typo («22» read as 22.01.1900, 13.07.2109), and a typo
+ * must not stretch the date range an upload replaces.
+ */
+export function isPlausibleDay(day: Date, now = new Date()): boolean {
+  return (
+    day >= EARLIEST_DAY && day.getTime() <= now.getTime() + FUTURE_GRACE_MS
+  );
 }
