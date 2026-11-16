@@ -1,6 +1,6 @@
 import ExcelJS from "exceljs";
 import { describe, expect, it } from "vitest";
-import { ALI_HEADERS, IM_HEADERS, ROSTOV_HEADERS } from "./headers.fixture";
+import { ALI_HEADERS, IM_HEADERS, LNR_HEADERS, ROSTOV_HEADERS } from "./headers.fixture";
 import { readTrackingWorkbook } from "./read";
 
 const utcDay = (iso: string) => new Date(`${iso}T00:00:00Z`);
@@ -121,5 +121,59 @@ describe("readTrackingWorkbook", () => {
     await expect(readTrackingWorkbook(file.subarray(0, 200))).rejects.toThrow(
       "Не удалось прочитать файл",
     );
+  });
+
+  it("gives a merged ТТН to every row of its block (one ТТН, two declarations)", async () => {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("26");
+    ws.addRow(LNR_HEADERS);
+    ws.addRow([
+      16,
+      null,
+      21505949,
+      "опл",
+      null,
+      null,
+      77000,
+      "Чернова",
+      utcDay("2026-01-22"),
+      null,
+      "292601, г. Сватово",
+      "29103414002983",
+    ]);
+    ws.addRow([
+      16,
+      null,
+      null,
+      "опл",
+      null,
+      null,
+      92050,
+      "Чернова",
+      null,
+      null,
+      null,
+      "29103414003034",
+    ]);
+    ws.addRow([17]); // no ТТН, no declaration: not data, ends the block
+    ws.mergeCells("C2:C3"); // ТТН
+    ws.mergeCells("I2:I3"); // handover date
+    ws.mergeCells("K2:K3"); // address
+
+    const block = {
+      waybillNumber: "21505949",
+      handoverDate: utcDay("2026-01-22"),
+      deliveryAddress: "292601, г. Сватово",
+    };
+    expect(
+      await readTrackingWorkbook(Buffer.from(await wb.xlsx.writeBuffer())),
+    ).toMatchObject({
+      ok: true,
+      kind: "lnr",
+      rows: [
+        { ...block, declarationNumber: "29103414002983" },
+        { ...block, declarationNumber: "29103414003034" },
+      ],
+    });
   });
 });

@@ -1,6 +1,7 @@
 import { Readable } from "node:stream";
 import ExcelJS from "exceljs";
 import type { Row } from "exceljs";
+import { cellText, plainValue } from "@/utils/cell";
 import type { Prisma } from "@/lib/prisma/client";
 import {
   decideFileKind,
@@ -114,13 +115,18 @@ export async function readTrackingWorkbook(
       let kind: Kind | null = null;
       let parse: ((row: Row) => RowResult<unknown> | null) | null = null;
       let dataRows = 0;
+      let block: MergedBlock | null = null; // how this sheet's merged rows look
+      let previous: Row | null = null; // the last data row, for a block to continue
 
       for await (const row of ws) {
         // Only row 1 is a header. A sheet whose first row is empty never
         // emits row 1, so it stays kind null.
         if (row.number === 1) {
           kind = detectKind(row);
-          if (kind !== null) parse = sheetParser(kind, row, collected);
+          if (kind !== null) {
+            parse = sheetParser(kind, row, collected);
+            block = mergedBlock(kind, row);
+          }
           continue;
         }
 
@@ -131,8 +137,22 @@ export async function readTrackingWorkbook(
           continue;
         }
 
+        // A merged ТТН reaches only its block's first row: fill the rest in
+        if (
+          block &&
+          previous?.number === row.number - 1 &&
+          continuesBlock(row, block)
+        )
+          for (const column of block.columns)
+            if (isBlank(row.getCell(column).value))
+              row.getCell(column).value = previous.getCell(column).value;
+
         const result = parse(row);
-        if (result === null) continue; // not a data row
+        if (result === null) {
+          previous = null; // a gap ends any block
+          continue;
+        }
+        previous = row;
         dataRows++;
 
         if (!result.ok)
@@ -234,4 +254,50 @@ function columnsFor<K extends string>(
       `detectKind matched, but findColumns failed: ${JSON.stringify(result)}`,
     );
   return result.columns;
+}
+
+/**
+ * The columns of a merged block. The streaming reader ignores merged cells:
+ * a merged cell's value reaches only the block's first row, the rows below
+ * see it empty. The real files write one ТТН with several declarations (LNR)
+ * or tracks (Rostov) that way: ТТН, dates and address merged, `own` filled
+ * on every row. Promo files have no merged rows.
+ */
+type MergedBlock = { key: number; own: number; columns: number[] };
+
+function mergedBlock(kind: Kind, header: Row): MergedBlock | null {
+  switch (kind) {
+    case "rostov": {
+      const c = columnsFor(header, SPECS.rostov);
+      return {
+        key: c.waybillNumber,
+        own: c.carrierTrackNumber,
+        columns: Object.values(c),
+      };
+    }
+    case "lnr": {
+      const c = columnsFor(header, SPECS.lnr);
+      return {
+        key: c.waybillNumber,
+        own: c.declarationNumber,
+        columns: Object.values(c),
+      };
+    }
+    default:
+      return null;
+  }
+}
+
+/** A row with no ТТН but its own declaration/track continues the row above. */
+function continuesBlock(row: Row, block: MergedBlock): boolean {
+  return (
+    isBlank(row.getCell(block.key).value) &&
+    !isBlank(row.getCell(block.own).value)
+  );
+}
+
+/** An empty cell, for filling. cellText alone would call a Date blank. */
+function isBlank(value: unknown): boolean {
+  const plain = plainValue(value);
+  return !(plain instanceof Date) && cellText(plain) === null;
 }

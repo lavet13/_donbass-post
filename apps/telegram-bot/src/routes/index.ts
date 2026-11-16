@@ -41,6 +41,8 @@ import {
 import { prismaMysql } from "@/prisma/mysql";
 import { confirmOrder, deliveryRow, section, type MailOptions } from "@/mail";
 import { searchCargo } from "@/cargo-tracking/service";
+import { cellWaybill } from "@/tracking/parse";
+import { searchPromo, searchTracking } from "@/tracking/service";
 
 export function createRoutes(bot: TCustomBot): Router {
   const botManager = getBotManager();
@@ -363,7 +365,26 @@ export function createRoutes(bot: TCustomBot): Router {
   );
 
   router.get("/api/cargo-tracking/search/:query", async (_req, params) =>
-    Response.json(await searchCargo(params.query ?? "")));
+    Response.json(await searchCargo(params.query ?? "")),
+  );
+
+  router.get("/api/tracking/:ttn", async (_req, params) => {
+    // the import's rule: «21400464Д» or « 21400464 » still finds 21400464
+    const waybillNumber = cellWaybill(params.ttn ?? "");
+    if (waybillNumber === null)
+      return Response.json({ error: "Номер ТТН — 8 цифр" }, { status: 400 });
+    return Response.json({ data: await searchTracking(waybillNumber) });
+  });
+
+  router.get("/api/im-tracking/:promo", async (_req, params) => {
+    const code = (params.promo ?? "").trim();
+    if (!/^\d{4,}$/.test(code))
+      return Response.json(
+        { error: "Промокод — число из 4 и более цифр" },
+        { status: 400 },
+      );
+    return Response.json({ data: await searchPromo(code) });
+  });
 
   router.get("/api/track-global", async (request) => {
     if (!config.trackGlobal.key || !config.trackGlobal.bearer)
