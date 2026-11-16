@@ -23,6 +23,33 @@ export type CargoWorkbook = {
 };
 
 /**
+ * The three sheets of an «Отслеживание» file. The only copy of their names:
+ * recognising a cargo upload (isCargoWorkbook) and reading it use the same
+ * strings, so a renamed sheet can't make the two disagree.
+ */
+export const CARGO_SHEETS = {
+  shipments: "Ведомость грузов",
+  movements: "СВХ ведомости",
+  deliveries: "Учет прибывших",
+} as const;
+
+/**
+ * Whether a file is meant as a cargo upload, judged by sheet names alone, so
+ * it isn't loaded whole first. One cargo sheet is enough: if another is
+ * missing, readCargoWorkbook's own message is the better answer.
+ */
+export function isCargoWorkbook(sheetNames: string[]): boolean {
+  return Object.values(CARGO_SHEETS).some((name) => sheetNames.includes(name));
+}
+
+/** A sheet the cargo file must have; its absence means a wrong file was sent. */
+function requireSheet(wb: ExcelJS.Workbook, name: string): ExcelJS.Worksheet {
+  const ws = wb.getWorksheet(name);
+  if (!ws) throw new Error(`В файле Отслеживание отсутствует лист «${name}»`);
+  return ws;
+}
+
+/**
  * Loads one uploaded «Отслеживание» workbook and parses its three sheets.
  * Throws if a sheet is missing (a wrong file was sent): the bot shows that
  * message to the manager, and the file is never added to the upload.
@@ -44,27 +71,12 @@ export async function readCargoWorkbook(
     );
   }
 
-  const shipmentsSheet = wb.getWorksheet("Ведомость грузов");
-  if (!shipmentsSheet) {
-    throw new Error(
-      'В файле Отслеживание отсутствует лист "Ведомость грузов" ',
-    );
-  }
-
-  const movementsSheet = wb.getWorksheet("СВХ ведомости");
-  if (!movementsSheet) {
-    throw new Error('В файле Отслеживание отсутствует лист "СВХ ведомости" ');
-  }
-
-  const deliveriesSheet = wb.getWorksheet("Учет прибывших");
-  if (!deliveriesSheet) {
-    throw new Error('В файле Отслеживание отсутствует лист "Учет прибывших"');
-  }
-
   return {
-    shipments: parseShipments(shipmentsSheet),
-    movements: parseWarehouseMovements(movementsSheet),
-    deliveries: parseDeliveryRecords(deliveriesSheet),
+    shipments: parseShipments(requireSheet(wb, CARGO_SHEETS.shipments)),
+    movements: parseWarehouseMovements(
+      requireSheet(wb, CARGO_SHEETS.movements),
+    ),
+    deliveries: parseDeliveryRecords(requireSheet(wb, CARGO_SHEETS.deliveries)),
   };
 }
 

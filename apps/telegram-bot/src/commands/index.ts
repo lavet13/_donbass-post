@@ -15,7 +15,7 @@ import "@/commands/admin";
 
 import { setCommandsForChat, suggestionHandler } from "@/commands/utils";
 import { Permissions } from "@/rbac/types";
-import { registerCargoUpload } from "@/cargo-tracking/upload";
+import { registerUploads } from "@/uploads/document";
 
 export const VALID_SLUGS = Object.values(NotificationTypes);
 
@@ -32,7 +32,7 @@ export async function registerCommands(bot: Bot<TContext>) {
       userHasPermission(ctx, Permissions.BOT_VIEW_STATUS),
     );
     managerRouter.use(managerCommands);
-    registerCargoUpload(managerRouter);
+    registerUploads(managerRouter);
 
     // adminCommands = /addmanager etc. → gated by users:manage
     const adminRouter = bot.filter(async (ctx) =>

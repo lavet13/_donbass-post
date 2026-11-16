@@ -20,11 +20,19 @@ describe("readTrackingWorkbook", () => {
     const file = await workbook({
       "Июль 26": [
         ROSTOV_HEADERS,
-        [1, utcDay("2026-07-03"), 20120349, "Отправитель", utcDay("2026-07-05"), "СДЕК", 1234567890123],
+        [
+          1,
+          utcDay("2026-07-03"),
+          20120349,
+          "Отправитель",
+          utcDay("2026-07-05"),
+          "СДЕК",
+          1234567890123,
+        ],
         [2, null, 20210207], // no arrival date
         [3], // pre-numbered, no ТТН: not data
       ],
-      "Лист2": [], // a new empty sheet: ignored
+      Лист2: [], // a new empty sheet: ignored
     });
 
     expect(await readTrackingWorkbook(file)).toEqual({
@@ -48,7 +56,19 @@ describe("readTrackingWorkbook", () => {
   });
 
   it("ignores ALI's empty «V» sheet with the ИМ layout", async () => {
-    const promoRow = [null, null, null, null, null, "4153", null, null, 300, null, utcDay("2024-06-25")];
+    const promoRow = [
+      null,
+      null,
+      null,
+      null,
+      null,
+      "4153",
+      null,
+      null,
+      300,
+      null,
+      utcDay("2024-06-25"),
+    ];
     const result = await readTrackingWorkbook(
       await workbook({ ALI: [ALI_HEADERS, promoRow], V: [IM_HEADERS] }),
     );
@@ -64,6 +84,8 @@ describe("readTrackingWorkbook", () => {
 
     expect(await readTrackingWorkbook(file)).toEqual({
       ok: false,
+      reason: "mixed",
+      sheetNames: ["Июль 26", "ALI"],
       error:
         "В файле листы разных типов (Ростов: «Июль 26»; ALI: «ALI»). Отправьте их отдельными файлами",
     });
@@ -85,12 +107,16 @@ describe("readTrackingWorkbook", () => {
   it("refuses something that isn't an xlsx", async () => {
     expect(await readTrackingWorkbook(Buffer.from("not excel"))).toEqual({
       ok: false,
+      reason: "not-xlsx",
+      sheetNames: [],
       error: "Это не Excel-файл (.xlsx): отправьте таблицу в формате .xlsx",
     });
   });
 
   it("throws on a truncated xlsx", async () => {
-    const file = await workbook({ "Июль 26": [ROSTOV_HEADERS, [1, utcDay("2026-07-03"), 20120349]] });
+    const file = await workbook({
+      "Июль 26": [ROSTOV_HEADERS, [1, utcDay("2026-07-03"), 20120349]],
+    });
 
     await expect(readTrackingWorkbook(file.subarray(0, 200))).rejects.toThrow(
       "Не удалось прочитать файл",

@@ -1,4 +1,6 @@
 import { prisma } from "@/prisma";
+import type { Prisma, PromoSource } from "@/lib/prisma/client";
+import { promoSource } from "./parse";
 import { trackingPeriod, type Period, type ReadyWorkbook } from "./period";
 
 export type ImportSummary = {
@@ -21,7 +23,6 @@ export async function replaceTrackingRows(
     throw new Error("В файле нет ни одной строки для загрузки");
 
   const period = trackingPeriod(workbook);
-  const inPeriod = period ? { gte: period.from, lte: period.to } : null;
 
   return prisma.$transaction(
     async (tx) => {
@@ -30,9 +31,8 @@ export async function replaceTrackingRows(
           // arrivalDate is required, so rows.length > 0 means a period exists.
           // Checked anyway: `where: { arrivalDate: undefined }` would match
           // EVERY row (Prisma ignores undefined filters) and empty the table.
-          if (!inPeriod) throw new Error("Rostov rows without arrival dates");
           const { count: deleted } = await tx.rostovShipment.deleteMany({
-            where: { arrivalDate: inPeriod },
+            where: rostovWhere(period),
           });
           const { count: created } = await tx.rostovShipment.createMany({
             data: workbook.rows,
@@ -42,12 +42,7 @@ export async function replaceTrackingRows(
 
         case "lnr": {
           const { count: deleted } = await tx.lnrShipment.deleteMany({
-            where: {
-              OR: [
-                { handoverDate: null },
-                ...(inPeriod ? [{ handoverDate: inPeriod }] : []),
-              ],
-            },
+            where: lnrWhere(period),
           });
           const { count: created } = await tx.lnrShipment.createMany({
             data: workbook.rows,
@@ -57,15 +52,8 @@ export async function replaceTrackingRows(
 
         case "ali":
         case "im": {
-          const source = workbook.kind === "ali" ? "ALI" : "IM";
           const { count: deleted } = await tx.promoOrder.deleteMany({
-            where: {
-              source,
-              OR: [
-                { paymentDate: null },
-                ...(inPeriod ? [{ paymentDate: inPeriod }] : []),
-              ],
-            },
+            where: promoWhere(promoSource(workbook.kind), period),
           });
           const { count: created } = await tx.promoOrder.createMany({
             data: workbook.rows,
@@ -77,4 +65,60 @@ export async function replaceTrackingRows(
     // ~21,000 Rostov rows: well past the 5 s default when the server is busy
     { timeout: 30_000 },
   );
+}
+
+// The rows an upload replaces, per table. Shared by countReplacedRows and
+// replaceTrackingRows, so the number shown before the import is the number
+// the import deletes.
+
+function rostovWhere(period: Period | null): Prisma.RostovShipmentWhereInput {
+  // arrivalDate is required, so a Rostov file with rows always has a period.
+  // Checked anyway: `{ arrivalDate: undefined }` would match EVERY row
+  // (Prisma ignores undefined filters) and empty the table.
+  if (!period) throw new Error("Rostov rows without arrival dates");
+  return { arrivalDate: { gte: period.from, lte: period.to } };
+}
+
+function lnrWhere(period: Period | null): Prisma.LnrShipmentWhereInput {
+  return {
+    OR: [
+      { handoverDate: null },
+      ...(period
+        ? [{ handoverDate: { gte: period.from, lte: period.to } }]
+        : []),
+    ],
+  };
+}
+
+function promoWhere(
+  source: PromoSource,
+  period: Period | null,
+): Prisma.PromoOrderWhereInput {
+  return {
+    source,
+    OR: [
+      { paymentDate: null },
+      ...(period
+        ? [{ paymentDate: { gte: period.from, lte: period.to } }]
+        : []),
+    ],
+  };
+}
+
+/** How many rows importing this file would delete: shown before «Загрузить». */
+export async function countReplacedRows(
+  workbook: ReadyWorkbook,
+): Promise<number> {
+  const period = trackingPeriod(workbook);
+  switch (workbook.kind) {
+    case "rostov":
+      return prisma.rostovShipment.count({ where: rostovWhere(period) });
+    case "lnr":
+      return prisma.lnrShipment.count({ where: lnrWhere(period) });
+    case "ali":
+    case "im":
+      return prisma.promoOrder.count({
+        where: promoWhere(promoSource(workbook.kind), period),
+      });
+  }
 }

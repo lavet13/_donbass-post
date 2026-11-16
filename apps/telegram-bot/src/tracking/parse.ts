@@ -157,9 +157,9 @@ export type SheetSummary = {
 
 export type FileKindResult =
   | { ok: true; kind: Kind; skipped: SheetSummary[] }
-  | { ok: false; error: string };
+  | { ok: false; reason: "unknown" | "mixed"; error: string };
 
-const KIND_LABELS = {
+export const KIND_LABELS = {
   rostov: "Ростов",
   lnr: "ЛНР",
   ali: "ALI",
@@ -195,6 +195,7 @@ export function decideFileKind(sheets: SheetSummary[]): FileKindResult {
   if (only === undefined) {
     return {
       ok: false,
+      reason: "unknown",
       error:
         "Не удалось определить тип файла: ни один лист не похож на Ростов, ЛНР, ALI или ИМ",
     };
@@ -206,6 +207,7 @@ export function decideFileKind(sheets: SheetSummary[]): FileKindResult {
       .join("; ");
     return {
       ok: false,
+      reason: "mixed",
       error: `В файле листы разных типов (${list}). Отправьте их отдельными файлами`,
     };
   }
@@ -455,4 +457,9 @@ export function isPlausibleDay(day: Date, now = new Date()): boolean {
   return (
     day >= EARLIEST_DAY && day.getTime() <= now.getTime() + FUTURE_GRACE_MS
   );
+}
+
+/** The promo_orders source a promo file kind writes. */
+export function promoSource(kind: "ali" | "im"): PromoSource {
+  return kind === "ali" ? "ALI" : "IM";
 }

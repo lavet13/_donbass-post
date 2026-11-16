@@ -150,6 +150,7 @@ describe("decideFileKind", () => {
 
     expect(decideFileKind(sheets)).toEqual({
       ok: false,
+      reason: "mixed",
       error:
         "В файле листы разных типов (ALI: «август 23», «ALI»; Ростов: «Июль 26»). Отправьте их отдельными файлами",
     });
@@ -160,6 +161,7 @@ describe("decideFileKind", () => {
       decideFileKind([{ name: "Лист1", kind: null, dataRows: 0 }]),
     ).toEqual({
       ok: false,
+      reason: "unknown",
       error:
         "Не удалось определить тип файла: ни один лист не похож на Ростов, ЛНР, ALI или ИМ",
     });
