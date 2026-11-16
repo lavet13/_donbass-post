@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cellDate, cellDay, cellText } from "@/utils/cell";
+import { cellDate, cellDay, cellText, plainValue } from "@/utils/cell";
 
 describe("cellText", () => {
   it.each([
@@ -77,5 +77,21 @@ describe("cellDay", () => {
     [{ error: "#N/A" }, empty],
   ])("cellDay(%j) → %j", (input, expected) => {
     expect(cellDay(input)).toEqual(expected);
+  });
+});
+
+describe("plainValue", () => {
+  it.each([
+    [{ richText: [{ text: "LC30" }, { text: "4085" }] }, "LC304085"],
+    [{ formula: "1050+1200", result: 2250 }, 2250],
+    [{ formula: "2400-2400" }, null], // no cached result: can't evaluate
+    [{ sharedFormula: "A1", result: 5 }, 5],
+    [{ text: "ссылка", hyperlink: "https://example.com" }, "ссылка"],
+    [{ error: "#N/A" }, null],
+    ["abc", "abc"],
+    [42, 42],
+    [null, null],
+  ])("plainValue(%j) → %j", (input, expected) => {
+    expect(plainValue(input)).toEqual(expected);
   });
 });

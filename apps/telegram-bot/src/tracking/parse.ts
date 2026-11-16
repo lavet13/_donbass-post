@@ -1,6 +1,10 @@
-import { cellText } from "@/utils/cell";
+import { cellText, cellDay, plainValue } from "@/utils/cell";
 import type { Row, Cell } from "exceljs";
-import type { PromoOrderStatus } from "@/lib/prisma/client";
+import type {
+  PromoOrderStatus,
+  Prisma,
+  PromoSource,
+} from "@/lib/prisma/client";
 
 export type ColumnsResult<K extends string> =
   | {
@@ -259,4 +263,139 @@ export function fillStatus(cell: Cell): PromoOrderStatus | null {
   return Object.hasOwn(STATUS_BY_FILL, argb)
     ? STATUS_BY_FILL[argb as keyof typeof STATUS_BY_FILL]
     : null;
+}
+
+/** The columns findColumns found for one kind: field → column number. */
+export type ColumnsOf<K extends Kind> = Record<keyof (typeof SPECS)[K], number>;
+
+/**
+ * One data row, parsed. `ok: false` means the row can't be imported at all
+ * (no ТТН, no arrival date…); `problems` are smaller issues in a row that is
+ * imported anyway (an unreadable optional date, stored as null). Both carry
+ * Russian text for the bot's report; the caller adds sheet and row number.
+ */
+export type RowResult<T> =
+  | { ok: true; data: T; problems: string[] }
+  | { ok: false; reason: string };
+
+/**
+ * An optional date column: a day, or null. An unreadable value also gives
+ * null, but adds a line to `problems` so the bot can name it.
+ */
+function optionalDay(value: unknown, label: string, problems: string[]): Date | null {
+  const day = cellDay(value);
+  if (day.kind === "invalid")
+    problems.push(`${label} «${day.text}» не распознана, сохранено без даты`);
+  return day.kind === "day" ? day.day : null;
+}
+
+/** An amount cell → "2250.00" for a Decimal(12, 2) column, or null. */
+function cellAmount(value: unknown): string | null {
+  return typeof value === "number" && Number.isFinite(value)
+    ? value.toFixed(2)
+    : null;
+}
+
+/**
+ * One row of a Rostov sheet → a rostov_shipments row.
+ * null: not a data row (empty «№ ТТН»: blank pre-numbered rows, totals).
+ * Skipped: a ТТН without 8 digits, or a missing or unreadable arrival date,
+ * which the table requires.
+ */
+export function parseRostovRow(
+  row: Row,
+  columns: ColumnsOf<"rostov">,
+): RowResult<Prisma.RostovShipmentCreateManyInput> | null {
+  const cell = (column: number) => plainValue(row.getCell(column).value);
+
+  const rawWaybill = cellText(cell(columns.waybillNumber));
+  if (rawWaybill === null) return null;
+
+  const waybillNumber = cellWaybill(rawWaybill);
+  if (waybillNumber === null)
+    return { ok: false, reason: `в «№ ТТН» нет номера из 8 цифр: «${rawWaybill}»` };
+
+  const arrival = cellDay(cell(columns.arrivalDate));
+  if (arrival.kind === "empty") return { ok: false, reason: "нет даты прибытия" };
+  if (arrival.kind === "invalid")
+    return { ok: false, reason: `дата прибытия «${arrival.text}» не распознана` };
+
+  const problems: string[] = [];
+  return {
+    ok: true,
+    problems,
+    data: {
+      waybillNumber,
+      arrivalDate: arrival.day,
+      dispatchDate: optionalDay(cell(columns.dispatchDate), "дата выдачи", problems),
+      carrier: cellText(cell(columns.carrier)),
+      carrierTrackNumber: cellText(cell(columns.carrierTrackNumber)),
+    },
+  };
+}
+
+/**
+ * One row of an LNR sheet → an lnr_shipments row. Only the ТТН is required.
+ * null: not a data row (empty «№ ТТН»).
+ */
+export function parseLnrRow(
+  row: Row,
+  columns: ColumnsOf<"lnr">,
+): RowResult<Prisma.LnrShipmentCreateManyInput> | null {
+  const cell = (column: number) => plainValue(row.getCell(column).value);
+
+  const rawWaybill = cellText(cell(columns.waybillNumber));
+  if (rawWaybill === null) return null;
+
+  const waybillNumber = cellWaybill(rawWaybill);
+  if (waybillNumber === null)
+    return { ok: false, reason: `в «№ ТТН» нет номера из 8 цифр: «${rawWaybill}»` };
+
+  const problems: string[] = [];
+  return {
+    ok: true,
+    problems,
+    data: {
+      waybillNumber,
+      handoverDate: optionalDay(cell(columns.handoverDate), "дата передачи", problems),
+      deliveryAddress: cellText(cell(columns.deliveryAddress)),
+      declarationNumber: cellText(cell(columns.declarationNumber)),
+    },
+  };
+}
+
+/**
+ * One row of an ALI or ИМ sheet → a promo_orders row. The status comes from
+ * the fill colour of the ПРОМОКОД cell, so it reads the cell itself, not its value.
+ * null: not a data row (empty ПРОМОКОД: legend rows at the bottom, totals).
+ * Skipped: a ПРОМОКОД without any code («БЕЗ»).
+ */
+export function parsePromoRow(
+  row: Row,
+  columns: ColumnsOf<"ali" | "im">,
+  source: PromoSource,
+): RowResult<Prisma.PromoOrderCreateManyInput> | null {
+  const cell = (column: number) => plainValue(row.getCell(column).value);
+
+  const promoCodeRaw = cellText(cell(columns.promoCodes));
+  if (promoCodeRaw === null) return null;
+
+  const codes = promoCodes(promoCodeRaw);
+  if (codes.length === 0)
+    return { ok: false, reason: `в «ПРОМОКОД» нет кода из 4+ цифр: «${promoCodeRaw}»` };
+
+  const problems: string[] = [];
+  return {
+    ok: true,
+    problems,
+    data: {
+      source,
+      promoCodes: codes,
+      promoCodeRaw,
+      amountPaid: cellAmount(cell(columns.amountPaid)),
+      paymentDate: optionalDay(cell(columns.paymentDate), "дата оплаты", problems),
+      trackNumber: cellText(cell(columns.trackNumber)),
+      status: fillStatus(row.getCell(columns.promoCodes)),
+    },
+  };
 }

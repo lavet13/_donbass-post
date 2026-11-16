@@ -140,7 +140,31 @@ function serialToDate(serial: number): Date | null {
 
   // Excel counts days from 1899-12-30 (not 1900-01-01: that offset absorbs
   // Excel's fake leap day 29.02.1900). 86_400_000 = ms per day.
-  // read it back with getUTCDate/getUTCMonth/getUTCFullYear, never getDate etc.:
-  // the local-time getters shift by the server's timezone and can change the day
   return new Date(Date.UTC(1899, 11, 30) + Math.floor(serial) * 86_400_000);
+}
+
+/**
+ * Unwraps the object shapes ExcelJS uses for some cells, so the readers
+ * above (cellText, cellDay) see a plain value:
+ *   - rich text { richText: [{ text }, …] } → the pieces joined ("LC3040…" in ALI tracks);
+ *   - a formula { formula, result } (shared ones too) → its result;
+ *     no cached result → null, because we can't evaluate the formula;
+ *   - a hyperlink { text, hyperlink } → its text;
+ *   - an error { error: "#N/A" } → null.
+ * Anything else (string, number, Date, null) passes through unchanged.
+ */
+export function plainValue(value: unknown): unknown {
+  if (typeof value !== "object" || value === null || value instanceof Date)
+    return value;
+
+  if ("richText" in value && Array.isArray(value.richText))
+    return value.richText
+      .map((part: { text?: unknown }) =>
+        typeof part.text === "string" ? part.text : "",
+      )
+      .join("");
+
+  if ("result" in value) return plainValue(value.result); // a result can itself be { error }
+  if ("text" in value && typeof value.text === "string") return value.text;
+  return null;
 }

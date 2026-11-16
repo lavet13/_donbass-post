@@ -1,4 +1,5 @@
 import ExcelJS from "exceljs";
+import type { Row, CellValue } from "exceljs";
 import { describe, it, expect } from "vitest";
 import {
   cellWaybill,
@@ -6,7 +7,11 @@ import {
   detectKind,
   fillStatus,
   findColumns,
+  parseLnrRow,
+  parsePromoRow,
+  parseRostovRow,
   promoCodes,
+  SPECS,
   type SheetSummary,
 } from "./parse";
 
@@ -310,5 +315,160 @@ describe("fillStatus", () => {
 
   it("returns null for a theme colour, which has no ARGB", () => {
     expect(fillStatus(filledCell({ theme: 5 }))).toBeNull();
+  });
+});
+
+// A sheet with the given header row; row({ 3: 20120349 }) adds a data row
+// with those cells filled (column number → value), everything else empty.
+function sheet(headers: string[]) {
+  const ws = new ExcelJS.Workbook().addWorksheet("test");
+  const header = ws.addRow(headers);
+  const row = (cells: Record<number, CellValue>) => {
+    const r = ws.addRow([]);
+    for (const [column, value] of Object.entries(cells))
+      r.getCell(Number(column)).value = value;
+    return r;
+  };
+  return { header, row };
+}
+
+// The columns of a spec, or a thrown error: a test whose headers don't match
+// is a broken test, not a case to assert on.
+function mustFind<K extends string>(header: Row, spec: Record<K, string>) {
+  const result = findColumns(header, spec);
+  if (!result.ok) throw new Error(`test setup: ${JSON.stringify(result)}`);
+  return result.columns;
+}
+
+const utcDay = (iso: string) => new Date(`${iso}T00:00:00Z`);
+
+describe("parseRostovRow", () => {
+  const { header, row } = sheet(ROSTOV_HEADERS);
+  const columns = mustFind(header, SPECS.rostov);
+
+  it("parses a full row", () => {
+    expect(
+      parseRostovRow(
+        row({ 1: 1, 2: utcDay("2026-07-03"), 3: 20120349, 4: "Отправитель", 5: utcDay("2026-07-05"), 6: "СДЕК", 7: 1234567890123 }),
+        columns,
+      ),
+    ).toEqual({
+      ok: true,
+      problems: [],
+      data: {
+        waybillNumber: "20120349",
+        arrivalDate: utcDay("2026-07-03"),
+        dispatchDate: utcDay("2026-07-05"),
+        carrier: "СДЕК",
+        carrierTrackNumber: "1234567890123",
+      },
+    });
+  });
+
+  it("returns null for a pre-numbered row without a ТТН", () => {
+    expect(parseRostovRow(row({ 1: 57 }), columns)).toBeNull();
+  });
+
+  it.each([
+    [{ 2: utcDay("2026-07-03"), 3: 5200006 }, "в «№ ТТН» нет номера из 8 цифр: «5200006»"],
+    [{ 3: 20120349 }, "нет даты прибытия"],
+    [{ 2: "23,.02.2019", 3: 20120349 }, "дата прибытия «23,.02.2019» не распознана"],
+  ])("skips %j: %s", (cells, reason) => {
+    expect(parseRostovRow(row(cells), columns)).toEqual({ ok: false, reason });
+  });
+
+  it("imports a 2018 row and reports an unreadable dispatch date", () => {
+    expect(
+      parseRostovRow(row({ 2: "01,06,18", 3: "21302284 А", 5: "выдано", 6: "выдан" }), columns),
+    ).toEqual({
+      ok: true,
+      problems: ["дата выдачи «выдано» не распознана, сохранено без даты"],
+      data: {
+        waybillNumber: "21302284",
+        arrivalDate: utcDay("2018-06-01"),
+        dispatchDate: null,
+        carrier: "выдан",
+        carrierTrackNumber: null,
+      },
+    });
+  });
+});
+
+describe("parseLnrRow", () => {
+  const { header, row } = sheet(LNR_HEADERS);
+  const columns = mustFind(header, SPECS.lnr);
+
+  it("parses a row with a suffixed ТТН and a numeric declaration", () => {
+    expect(
+      parseLnrRow(
+        row({ 3: "21400464Д", 9: utcDay("2021-05-12"), 11: "294013, Кременная", 12: 29103483001719 }),
+        columns,
+      ),
+    ).toEqual({
+      ok: true,
+      problems: [],
+      data: {
+        waybillNumber: "21400464",
+        handoverDate: utcDay("2021-05-12"),
+        deliveryAddress: "294013, Кременная",
+        declarationNumber: "29103483001719",
+      },
+    });
+  });
+});
+
+describe("parsePromoRow", () => {
+  const { header, row } = sheet(ALI_HEADERS);
+  const columns = mustFind(header, SPECS.ali);
+
+  it("parses a row with a formula amount, a rich-text track and a fill", () => {
+    const r = row({
+      6: "4412/4414",
+      9: { formula: "1050+1200", result: 2250 },
+      11: utcDay("2024-06-25"),
+      22: { richText: [{ text: "LC304085044CN " }, { text: "LP00660399782675" }] },
+    });
+    r.getCell(6).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF92D050" } };
+
+    expect(parsePromoRow(r, columns, "ALI")).toEqual({
+      ok: true,
+      problems: [],
+      data: {
+        source: "ALI",
+        promoCodes: ["4412", "4414"],
+        promoCodeRaw: "4412/4414",
+        amountPaid: "2250.00",
+        paymentDate: utcDay("2024-06-25"),
+        trackNumber: "LC304085044CN LP00660399782675",
+        status: "DELIVERED",
+      },
+    });
+  });
+
+  it("stores a formula without a cached result as no amount", () => {
+    expect(parsePromoRow(row({ 6: 5240, 9: { formula: "2400-2400" } }), columns, "ALI")).toEqual({
+      ok: true,
+      problems: [],
+      data: {
+        source: "ALI",
+        promoCodes: ["5240"],
+        promoCodeRaw: "5240",
+        amountPaid: null,
+        paymentDate: null,
+        trackNumber: null,
+        status: null,
+      },
+    });
+  });
+
+  it("skips a row whose ПРОМОКОД has no code", () => {
+    expect(parsePromoRow(row({ 6: "БЕЗ", 9: 1000 }), columns, "ALI")).toEqual({
+      ok: false,
+      reason: "в «ПРОМОКОД» нет кода из 4+ цифр: «БЕЗ»",
+    });
+  });
+
+  it("returns null for a legend row at the bottom of the sheet", () => {
+    expect(parsePromoRow(row({ 2: "заказ закрыт полностью" }), columns, "ALI")).toBeNull();
   });
 });
