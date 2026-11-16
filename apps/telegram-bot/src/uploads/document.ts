@@ -8,10 +8,7 @@ import {
 } from "@/cargo-tracking/upload";
 import type { ReadyWorkbook } from "@/tracking/period";
 import { readTrackingWorkbook } from "@/tracking/read";
-import {
-  offerTrackingImport,
-  registerTrackingCallbacks,
-} from "@/tracking/upload";
+import { addTrackingFile, registerTrackingCallbacks } from "@/tracking/upload";
 import { downloadTelegramFile } from "@/utils/telegram-file";
 import { withProgress } from "@/utils/with-progress";
 
@@ -72,9 +69,20 @@ export function registerUploads(router: Composer<TContext>) {
     // success: the next message (confirmation or session list) replaces the progress one
     await ctx.api.deleteMessage(chatId, progress.message_id).catch(() => {});
 
-    if (upload.kind === "tracking")
-      await offerTrackingImport(ctx, chatId, fileName, upload.workbook);
-    else await addCargoFile(ctx, chatId, fileName, upload.workbook);
+    if (upload.kind === "tracking") {
+      // the progress message becomes this file's report
+      await addTrackingFile(
+        ctx,
+        chatId,
+        progress.message_id,
+        fileName,
+        upload.workbook,
+      );
+    } else {
+      // the re-posted cargo list replaces the progress message
+      await ctx.api.deleteMessage(chatId, progress.message_id).catch(() => {});
+      await addCargoFile(ctx, chatId, fileName, upload.workbook);
+    }
   });
 }
 
