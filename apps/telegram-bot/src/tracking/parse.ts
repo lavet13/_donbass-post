@@ -446,7 +446,7 @@ export function parsePromoRow(
 }
 
 const EARLIEST_DAY = new Date(Date.UTC(2018, 0, 1)); // the oldest sheets start in 2018
-const FUTURE_GRACE_MS = 31 * 86_400_000; // a month ahead: dates typed in advance
+const FUTURE_GRACE_MS = 31 * 86_400_000; // a month ahead: dates typed in advance, 86_400_000 = ms per day.
 
 /**
  * A day the business could really have: from 2018 to a month from now.
