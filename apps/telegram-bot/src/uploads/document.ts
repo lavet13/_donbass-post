@@ -66,9 +66,6 @@ export function registerUploads(router: Composer<TContext>) {
       return;
     }
 
-    // success: the next message (confirmation or session list) replaces the progress one
-    await ctx.api.deleteMessage(chatId, progress.message_id).catch(() => {});
-
     if (upload.kind === "tracking") {
       // the progress message becomes this file's report
       await addTrackingFile(
